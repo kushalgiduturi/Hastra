@@ -46,6 +46,9 @@ render_sidebar(
       ['key' => 'attendance',    'label' => 'Attendance Matrix & Logs', 'href' => get_base_url() . 'portals/admin/attendance',       'current' => $nav_current === 'attendance'],
       ['key' => 'leave',         'label' => 'Leave Management & Requests', 'href' => get_base_url() . 'portals/admin/leave_management', 'current' => $nav_current === 'leave'],
     ]],
+    ['label' => 'System Security', 'links' => [
+      ['key' => 'security', 'label' => 'Security & Activity Log', 'href' => get_base_url() . 'portals/admin/security', 'current' => $nav_current === 'security'],
+    ]],
   ],
   [
     ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'portals/user/profile', 'tag' => 'a'],
