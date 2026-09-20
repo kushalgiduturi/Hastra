@@ -776,7 +776,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="field">
           <label for="company_domain">Company Website <span class="optional">(optional, improves logo match)</span></label>
-          <input type="text" id="company_domain" maxlength="150" placeholder="acme.com">
+          <input type="text" id="company_domain" maxlength="150" placeholder="acme.com" autocomplete="off">
         </div>
 
         <div class="field logo-finder">
