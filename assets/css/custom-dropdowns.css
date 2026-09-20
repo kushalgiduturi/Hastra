@@ -1,0 +1,133 @@
+/* ── Custom Dropdown component ──────────────────────────────────────────
+   Wraps native <select> elements (see assets/js/custom-dropdowns.js).
+   The native select stays in the DOM (visually hidden, not display:none)
+   so name/id/required/value and existing form submission keep working. */
+
+.cd-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+.cd-wrap.cd-fill {
+  display: block;
+  width: 100%;
+}
+
+.cd-native-select {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0;
+}
+
+.cd-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 120px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-dim);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 9px 12px;
+  outline: none;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.cd-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cd-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: var(--text-dim);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cd-trigger.cd-open .cd-chevron {
+  transform: rotate(180deg);
+}
+.cd-trigger:hover {
+  border-color: var(--accent-bright);
+}
+.cd-trigger:focus-visible,
+.cd-trigger.cd-open {
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+}
+.cd-trigger:disabled,
+.cd-trigger.cd-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--navy-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  box-shadow: var(--shadow), 0 12px 28px -8px rgba(0, 0, 0, 0.35);
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  overflow: hidden;
+  pointer-events: none;
+  padding: 4px;
+  transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, transform 0.2s ease;
+}
+.cd-menu.open {
+  max-height: 280px;
+  opacity: 1;
+  transform: translateY(0);
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+.cd-option {
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cd-option:hover,
+.cd-option.cd-option-highlight {
+  background: var(--hover-bg);
+}
+.cd-option.cd-option-active {
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+.cd-option.cd-option-disabled {
+  color: var(--text-dim);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.cd-menu::-webkit-scrollbar { width: 8px; }
+.cd-menu::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-menu, .cd-chevron { transition: none; }
+}

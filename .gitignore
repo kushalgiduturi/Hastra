@@ -1,0 +1,17 @@
+# Secrets / encryption keys
+config/*.key
+config/anthropic.key
+
+# DB backups / dumps
+config/backups/
+*.sql
+
+# User-uploaded content
+uploads/
+
+# Stale/manual backups
+_backup_*/
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store

@@ -1,0 +1,616 @@
+<?php
+include __DIR__ . '/../core/db.php';
+secure_session_start();
+$msg = "";
+
+if (!isset($_SESSION["reset_email"])) {
+    header("Location: forgot");
+    exit();
+}
+
+if (!isset($_SESSION["reset_otp_attempts"])) {
+    $_SESSION["reset_otp_attempts"] = 0;
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    verify_csrf_token();
+
+    $_SESSION["reset_otp_attempts"]++;
+    if ($_SESSION["reset_otp_attempts"] > 5) {
+        unset($_SESSION["reset_email"]);
+        unset($_SESSION["reset_otp_attempts"]);
+        header("Location: forgot");
+        exit();
+    }
+
+    $entered_otp = trim($_POST["otp"]);
+    $email       = $_SESSION["reset_email"];
+
+    $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? AND otp = ? AND otp_expiry > NOW()");
+    mysqli_stmt_bind_param($stmt, "ss", $email, $entered_otp);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+
+    if (mysqli_stmt_num_rows($stmt) > 0) {
+        $clear = mysqli_prepare($conn, "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE email = ?");
+        mysqli_stmt_bind_param($clear, "s", $email);
+        mysqli_stmt_execute($clear);
+
+        $_SESSION["reset_verified"]     = true;
+        $_SESSION["reset_otp_attempts"] = 0;
+
+        header("Location: reset");
+        exit();
+    } else {
+        $remaining = 5 - $_SESSION["reset_otp_attempts"];
+        $msg = "Invalid OTP. $remaining attempt(s) remaining.";
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset Password OTP · Astra</title>
+<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--navy);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    padding: 1.5rem;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem 2.5rem 2rem;
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08),
+                0 20px 60px rgba(0,0,0,0.5),
+                0 0 40px var(--accent-glow);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-icon svg { width: 18px; height: 18px; fill: white; }
+
+  .brand-text .title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .brand-text .sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Progress bar — step 2 of 3 */
+  .progress-wrap {
+    margin-bottom: 2rem;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-step {
+    font-size: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .progress-step.active { color: var(--yellow); }
+  .progress-step.done   { color: var(--green); }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border-dim);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 66%;
+    background: linear-gradient(90deg, var(--green), var(--yellow));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 1.8rem;
+    line-height: 1.5;
+  }
+
+  .subtitle span {
+    color: var(--accent-bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-dim);
+    margin-bottom: 1.8rem;
+  }
+
+  /* OTP boxes */
+  .otp-wrap {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 1.6rem;
+  }
+
+  .otp-box {
+    width: 52px;
+    height: 58px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: var(--yellow);
+  }
+
+  .otp-box:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+  }
+
+  .otp-box.filled {
+    border-color: rgba(245,158,11,0.4);
+    background: rgba(245,158,11,0.05);
+  }
+
+  #otpHidden { display: none; }
+
+  /* Attempt dots */
+  .attempts-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .attempt-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.3s;
+  }
+
+  .attempt-dot.used { background: var(--red); box-shadow: 0 0 5px var(--red); }
+
+  .attempts-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    margin-bottom: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: var(--red-bg);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-left: 3px solid var(--red);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 1.4rem;
+    font-size: 13px;
+    color: #fca5a5;
+    line-height: 1.4;
+  }
+
+  .alert svg { width: 15px; height: 15px; fill: var(--red); flex-shrink: 0; margin-top: 1px; }
+
+  .btn-verify {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-verify:hover {
+    background: #2563eb;
+    box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
+  }
+
+  .btn-verify:disabled {
+    background: #1e3a5f;
+    color: var(--text-dim);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .timer-wrap {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  #countdown { color: var(--yellow); }
+
+  .footer-links {
+    margin-top: 1.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border-dim);
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .footer-links a {
+    color: var(--accent-bright);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent-bright); }
+
+  .btn-theme-toggle {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: #94a3b8;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 6px 12px; border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .btn-theme-toggle:hover {
+    background: rgba(var(--accent-rgb),0.08);
+    color: #f1f5f9;
+  }
+  .btn-theme-toggle .theme-icon svg {
+    width: 13px; height: 13px;
+    vertical-align: middle;
+    fill: currentColor;
+  }
+
+  /* ── Intro: ambient glow fades in, palm-point pulses, then the card
+     emerges from that same point (scale + blur-to-sharp + fade in) ── */
+  .reveal-wrap { position: fixed; top: 34%; left: 50%; width: 620px; height: 620px;
+    margin: -310px 0 0 -310px; pointer-events: none; z-index: 0; }
+
+  .glow { position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 68%);
+    opacity: 0; filter: blur(20px);
+    animation: glowIn 1.3s .3s cubic-bezier(.16,1,.3,1) forwards,
+               glowBreathe 3.2s 1.8s ease-in-out infinite alternate;
+    transition: background .5s ease; }
+  @keyframes glowIn { to { opacity: .55; } }
+  @keyframes glowBreathe { from { opacity: .4; transform: scale(1); } to { opacity: .6; transform: scale(1.045); } }
+
+  .pulse { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; border: 1.5px solid var(--accent-bright); opacity: 0; pointer-events: none;
+    animation: pulseOut 1.25s cubic-bezier(.2,.7,.2,1) forwards; transition: border-color .4s ease; }
+  .pulse.p1 { animation-delay: 1.4s; }
+  .pulse.p2 { animation-delay: 1.68s; }
+  @keyframes pulseOut {
+    0%   { width: 10px; height: 10px; margin: -5px 0 0 -5px; opacity: .8; }
+    100% { width: 300px; height: 300px; margin: -150px 0 0 -150px; opacity: 0; }
+  }
+
+  .card {
+    position: relative; z-index: 1;
+    opacity: 0; transform: translateY(4px) scale(.34); filter: blur(13px);
+    animation: cardEmerge 1s 1.9s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes cardEmerge { to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse { display: none; }
+    .glow { opacity: .5; animation: none; }
+    .card { opacity: 1; transform: none; filter: none; animation: none; }
+  }
+
+  /* ═══ VISUAL REFRESH — match reference mockup: glass card, Sora type,
+     bare icon, gradient sentence-case button, no grid/box chrome ═══ */
+  .card {
+    background: rgba(20,10,10,.55) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(var(--accent-rgb),.28) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
+  }
+  [data-theme="light"] .card { background: rgba(255,255,255,.72) !important; }
+  .card::before { display: none !important; }
+
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.6rem !important; }
+  .brand-icon {
+    width: 26px !important; height: 26px !important;
+    background: none !important; border-radius: 0 !important;
+  }
+  .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--accent) !important; }
+  .brand-text { display: flex; align-items: center; }
+  .brand-text .title {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 21px !important; font-weight: 700 !important;
+    letter-spacing: .01em !important; text-transform: none !important;
+    color: var(--text) !important;
+  }
+  .brand-text .sub { display: none !important; }
+
+  .card h1, .card h2 {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 19px !important; font-weight: 600 !important;
+    letter-spacing: .005em !important; margin: 0 0 4px !important;
+  }
+  .card .subtitle, .card p.sub {
+    font-size: 13.5px !important; margin: 0 0 1.8rem !important;
+  }
+
+  .card label {
+    font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
+  }
+
+  .card input[type="email"], .card input[type="password"], .card input[type="text"],
+  .card input[type="tel"], .card select, .card textarea {
+    background: rgba(127,127,127,.06) !important;
+    border-radius: 7px !important;
+    padding: 11px 13px !important;
+  }
+
+  .card button[type="submit"], .card .btn-login, .card .btn-send,
+  .card .btn-submit, .card .btn-primary, .card a.btn-primary {
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
+    border-radius: 7px !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: .02em !important;
+    text-transform: none !important;
+    box-shadow: 0 8px 24px -8px var(--accent-glow) !important;
+    transition: transform .15s, box-shadow .15s !important;
+  }
+  .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
+  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
+</style>
+</head>
+<body>
+
+
+<div class="reveal-wrap">
+  <div class="glow"></div>
+  <div class="pulse p1"></div>
+  <div class="pulse p2"></div>
+</div>
+
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+    </div>
+    <div class="brand-text">
+      <div class="title">Astra</div>
+      <div class="sub">Password Recovery</div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span class="progress-step done">1. Email</span>
+      <span class="progress-step active">2. Verify OTP</span>
+      <span class="progress-step">3. New Password</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+
+  <h2>Verify OTP</h2>
+  <p class="subtitle">
+    Enter the 6-digit code sent to<br>
+    <span><?= htmlspecialchars($_SESSION["reset_email"]) ?></span>
+  </p>
+  <div class="divider"></div>
+
+  <?php if ($msg): ?>
+  <div class="alert">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <?= htmlspecialchars($msg) ?>
+  </div>
+  <?php endif; ?>
+
+  <!-- Attempt dots -->
+  <div class="attempts-bar">
+    <?php for ($i = 0; $i < 5; $i++): ?>
+      <div class="attempt-dot <?= ($i < $_SESSION["reset_otp_attempts"]) ? 'used' : '' ?>"></div>
+    <?php endfor; ?>
+  </div>
+  <div class="attempts-label">
+    <?= $_SESSION["reset_otp_attempts"] ?> / 5 ATTEMPTS USED
+  </div>
+
+  <form method="POST" action="forgot_otp.php" id="otpForm">
+    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+    <input type="hidden" name="otp" id="otpHidden">
+
+    <div class="otp-wrap">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b0">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b1">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b2">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b3">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b4">
+      <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="b5">
+    </div>
+
+    <button type="submit" class="btn-verify" id="verifyBtn" disabled>Verify OTP</button>
+  </form>
+
+  <div class="timer-wrap">
+    Code expires in <span id="countdown">10:00</span>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.07);">
+    <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
+      <span class="theme-icon"></span>
+      <span class="theme-label"></span>
+    </button>
+  </div>
+  <div class="footer-links">
+    <span>Didn't get it?</span>
+    <a href="forgot.php">Resend OTP</a>
+  </div>
+
+</div>
+
+<script>
+// ── OTP boxes ─────────────────────────────────────────────────────────────────
+const boxes     = Array.from(document.querySelectorAll('.otp-box'));
+const hidden    = document.getElementById('otpHidden');
+const verifyBtn = document.getElementById('verifyBtn');
+
+boxes.forEach((box, idx) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/[^0-9]/g, '');
+    box.classList.toggle('filled', box.value !== '');
+    if (box.value && idx < 5) boxes[idx + 1].focus();
+    syncHidden();
+  });
+
+  box.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !box.value && idx > 0) {
+      boxes[idx - 1].value = '';
+      boxes[idx - 1].classList.remove('filled');
+      boxes[idx - 1].focus();
+      syncHidden();
+    }
+  });
+
+  box.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData)
+      .getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+    pasted.split('').forEach((char, i) => {
+      if (boxes[i]) { boxes[i].value = char; boxes[i].classList.add('filled'); }
+    });
+    if (boxes[Math.min(pasted.length, 5)]) boxes[Math.min(pasted.length, 5)].focus();
+    syncHidden();
+  });
+});
+
+function syncHidden() {
+  const val = boxes.map(b => b.value).join('');
+  hidden.value    = val;
+  verifyBtn.disabled = val.length < 6;
+}
+
+document.getElementById('otpForm').addEventListener('submit', syncHidden);
+boxes[0].focus();
+
+// ── Countdown timer ───────────────────────────────────────────────────────────
+let seconds = 600;
+const countdownEl = document.getElementById('countdown');
+
+const timer = setInterval(() => {
+  seconds--;
+  if (seconds <= 0) {
+    clearInterval(timer);
+    countdownEl.textContent  = '00:00';
+    countdownEl.style.color  = 'var(--red)';
+    verifyBtn.disabled       = true;
+    verifyBtn.textContent    = 'Code Expired';
+    return;
+  }
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  countdownEl.textContent = m + ':' + s;
+  if (seconds < 60) countdownEl.style.color = 'var(--red)';
+}, 1000);
+</script>
+
+</body>
+</html>

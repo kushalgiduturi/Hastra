@@ -1,0 +1,47 @@
+/* ── Mandatory profile-completion barrier ───────────────────────────────────
+   Solid background only (no backdrop-filter blur — see core/theme.css's
+   light-theme notes for why that moirés over the app's grid background). */
+
+.profile-barrier-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(2, 4, 10, 0.82);
+  display: flex; align-items: center; justify-content: center; padding: 1.2rem;
+}
+
+.profile-barrier-modal {
+  background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 8px;
+  box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5);
+  max-width: 420px; width: 100%; padding: 1.8rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-barrier-modal h2 {
+  font-size: 17px; font-weight: 600; color: var(--text); margin: 0 0 8px;
+}
+
+.profile-barrier-modal p {
+  font-size: 13px; color: var(--text-dim); line-height: 1.6; margin: 0 0 1.2rem;
+}
+
+.pb-options { display: flex; flex-direction: column; gap: 8px; }
+
+.pb-opt {
+  display: block; width: 100%; text-align: left;
+  background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 5px;
+  color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  padding: 12px 14px; cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.pb-opt:hover { background: var(--hover-bg); border-color: var(--accent-bright); }
+.pb-opt.selected {
+  background: rgba(var(--accent-rgb),0.12); border-color: var(--accent-bright); color: var(--accent-bright);
+}
+.pb-opt:disabled { opacity: 0.6; cursor: wait; }
+
+.pb-error {
+  margin-top: 12px; font-size: 12.5px; color: #fca5a5; line-height: 1.5; display: none;
+}
+.pb-error.show { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-opt { transition: none; }
+}

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astra — Brand (Blue / Red)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* LIGHT theme — white + blue */
+    --bg:#f6f8fc; --bg2:#ffffff; --card:rgba(255,255,255,.72); --card-border:rgba(37,99,235,.18);
+    --accent:#2563eb; --accent-bright:#3b82f6; --accent-dim:#1d4ed8; --accent-glow:rgba(37,99,235,.30); --accent-glow2:rgba(59,130,246,.45);
+    --text:#0f172a; --dim:#5b6472; --faint:#94a3b8;
+    --line:rgba(15,23,42,.09);
+    --btn-text:#ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      /* DARK theme — black + red */
+      --bg:#050505; --bg2:#0a0707; --card:rgba(20,10,10,.55); --card-border:rgba(220,38,38,.28);
+      --accent:#dc2626; --accent-bright:#ef4444; --accent-dim:#991b1b; --accent-glow:rgba(220,38,38,.30); --accent-glow2:rgba(239,68,68,.45);
+      --text:#f5f0f0; --dim:#a89494; --faint:#5c4848;
+      --line:rgba(245,240,240,.08);
+      --btn-text:#0a0505;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#050505; --bg2:#0a0707; --card:rgba(20,10,10,.55); --card-border:rgba(220,38,38,.28);
+    --accent:#dc2626; --accent-bright:#ef4444; --accent-dim:#991b1b; --accent-glow:rgba(220,38,38,.30); --accent-glow2:rgba(239,68,68,.45);
+    --text:#f5f0f0; --dim:#a89494; --faint:#5c4848;
+    --line:rgba(245,240,240,.08);
+    --btn-text:#0a0505;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text); font-family:'Inter',sans-serif; overflow:hidden; position:relative;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    transition: background .5s ease, color .4s ease;
+  }
+  .stage{position:fixed; inset:0; display:flex; align-items:center; justify-content:center;}
+
+  .hand-wrap{position:absolute; top:50%; left:50%; width:640px; height:640px; margin:-320px 0 0 -320px; pointer-events:none;}
+
+  .glow{position:absolute; inset:-70px; border-radius:50%;
+    background: radial-gradient(circle, var(--accent-glow2) 0%, transparent 65%);
+    opacity:0; filter:blur(20px);
+    animation: glowIn 1.4s .4s cubic-bezier(.16,1,.3,1) forwards, glowBreathe 3.4s 2.1s ease-in-out infinite alternate;
+    transition: background .5s ease;}
+  @keyframes glowIn{ to{opacity:.5} }
+  @keyframes glowBreathe{ from{opacity:.36; transform:scale(1)} to{opacity:.56; transform:scale(1.045)} }
+
+  .pulse{position:absolute; left:50%; top:57%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%;
+    border:1.5px solid var(--accent-bright); opacity:0; pointer-events:none;
+    animation: pulseOut 1.3s cubic-bezier(.2,.7,.2,1) forwards;
+    transition: border-color .4s ease;}
+  .pulse.p1{animation-delay:1.5s}
+  .pulse.p2{animation-delay:1.8s}
+  @keyframes pulseOut{ 0%{width:10px;height:10px;margin:-5px 0 0 -5px; opacity:.75} 100%{width:320px;height:320px;margin:-160px 0 0 -160px; opacity:0} }
+
+  .card{width:min(400px,88vw); background:var(--card); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--card-border); border-radius:12px; padding:2.4rem 2.2rem 2rem;
+    box-shadow:0 30px 80px -20px rgba(15,23,42,.18), 0 0 0 1px rgba(255,255,255,.02) inset;
+    opacity:0; transform:translateY(4px) scale(.32); filter:blur(14px);
+    animation: cardEmerge 1.05s 2.0s cubic-bezier(.16,1,.3,1) forwards;
+    transition: background .5s ease, border-color .5s ease, box-shadow .5s ease;}
+  @keyframes cardEmerge{to{opacity:1; transform:translateY(0) scale(1); filter:blur(0)}}
+
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:1.6rem;}
+  .brand svg{width:26px;height:26px}
+  .brand span{font-family:'Sora',sans-serif; font-size:21px; letter-spacing:.01em; font-weight:700; color:var(--text);}
+  h1{font-family:'Sora',sans-serif; font-size:19px; font-weight:600; margin:0 0 4px; letter-spacing:.005em; color:var(--text);}
+  p.sub{margin:0 0 1.8rem; color:var(--dim); font-size:13.5px;}
+  label{display:block; font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 0 6px;}
+  .field{margin-bottom:1.1rem;}
+  input{width:100%; background:rgba(127,127,127,.06); border:1px solid var(--line); border-radius:7px; color:var(--text);
+    font-family:'Inter',sans-serif; font-size:14px; padding:11px 13px; outline:none; transition:border-color .2s, box-shadow .2s;}
+  input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow);}
+  input::placeholder{color:var(--faint)}
+  button{width:100%; margin-top:.6rem; background:linear-gradient(135deg,var(--accent-bright),var(--accent)); color:var(--btn-text); border:none;
+    border-radius:7px; padding:12px; font-family:'Sora',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.02em; cursor:pointer;
+    box-shadow:0 8px 24px -8px var(--accent-glow); transition:transform .15s, box-shadow .15s, background .5s;}
+  button:hover{transform:translateY(-1px); box-shadow:0 12px 28px -8px var(--accent-glow2);}
+  .foot{margin-top:1.4rem; text-align:center; font-size:12px; color:var(--faint);}
+  .foot a{color:var(--accent); text-decoration:none;}
+  .label-tag{position:fixed; bottom:18px; left:18px; font-family:'Inter'; font-size:11px; color:var(--faint); letter-spacing:.08em; text-transform:uppercase; z-index:5;}
+
+  .theme-toggle{position:fixed; top:18px; right:18px; z-index:10; display:flex; align-items:center; gap:8px;
+    background:var(--card); border:1px solid var(--card-border); border-radius:999px; padding:6px 14px 6px 6px;
+    font-family:'Inter',sans-serif; font-size:12px; color:var(--dim); cursor:pointer; backdrop-filter:blur(10px);
+    transition:background .4s, border-color .4s;}
+  .theme-toggle .dot{width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,var(--accent-bright),var(--accent)); flex:none; transition:background .4s;}
+</style>
+</head>
+<body>
+<div class="label-tag">D — Brand (Blue / Red)</div>
+<div class="theme-toggle" id="themeToggle"><span class="dot"></span><span id="themeLabel">Light — White/Blue</span></div>
+<div class="stage">
+  <div class="hand-wrap">
+  <div class="glow"></div>
+  <div class="pulse p1"></div>
+  <div class="pulse p2"></div>
+  </div>
+  <div class="card">
+    <div class="brand">
+      <svg viewBox="0 0 24 24"><path fill="var(--accent)" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+      <span>Astra</span>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to continue to your workspace</p>
+    <div class="field"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+    <div class="field"><label>Password</label><input type="password" placeholder="••••••••••"></div>
+    <button>Sign in</button>
+    <div class="foot">Forgot your password? <a href="#">Reset it</a></div>
+  </div>
+</div>
+<script>
+  const root = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const label = document.getElementById('themeLabel');
+  function apply(theme){
+    root.setAttribute('data-theme', theme);
+    label.textContent = theme === 'dark' ? 'Dark — Black/Red' : 'Light — White/Blue';
+  }
+  let current = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  apply(current);
+  toggle.addEventListener('click', () => { current = current === 'dark' ? 'light' : 'dark'; apply(current); });
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.querySelectorAll('.pulse').forEach(b=>b.style.display='none');
+    document.querySelector('.glow').style.cssText='opacity:.5;animation:none';
+    document.querySelector('.card').style.cssText='opacity:1;transform:none;filter:none';
+  }
+</script>
+</body>
+</html>

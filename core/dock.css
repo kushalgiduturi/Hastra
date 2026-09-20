@@ -1,0 +1,96 @@
+/* core/dock.css — floating magnification quick-nav, shared across portals */
+
+.astra-dock-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.astra-dock {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(6, 6, 6, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-dim);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.astra-dock-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--navy-card, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-dim);
+  color: var(--text-dim);
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    width 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.astra-dock-item svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  pointer-events: none;
+  transition: width 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.astra-dock-item:hover,
+.astra-dock-item.is-current {
+  color: var(--accent-bright);
+  border-color: rgba(var(--accent-rgb), 0.4);
+  background: rgba(var(--accent-rgb), 0.12);
+}
+
+.astra-dock-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  margin-bottom: 10px;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: var(--navy-card, #111318);
+  border: 1px solid var(--border-dim);
+  color: var(--text);
+  font-size: 11px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.astra-dock-item:hover .astra-dock-tooltip {
+  opacity: 1;
+  transform: translate(-50%, -4px);
+}
+
+@media (max-width: 640px) {
+  .astra-dock-wrap { bottom: 12px; }
+  .astra-dock { gap: 6px; padding: 6px 10px; }
+  .astra-dock-item { width: 38px; height: 38px; }
+  .astra-dock-item svg { width: 18px; height: 18px; }
+}

@@ -1,0 +1,782 @@
+<?php
+// auth/register.php
+include __DIR__ . '/../core/db.php';
+secure_session_start();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require __DIR__ . '/../PHPMailer/PHPMailer.php';
+require __DIR__ . '/../PHPMailer/SMTP.php';
+require __DIR__ . '/../PHPMailer/Exception.php';
+
+$msg = "";
+$msg_type = "error";
+$EMPLOYEE_DOMAIN = EMPLOYEE_EMAIL_DOMAIN;
+
+if (isset($_SESSION["user_id"])) {
+    switch ($_SESSION["user_role"]) {
+        case "sysadmin":         header("Location: " . get_base_url() . "portals/sysadmin/sysadmin_portal"); break;
+        case "admin":            header("Location: " . get_base_url() . "portals/admin/admin_portal");       break;
+        case "employee":         header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal"); break;
+        case "pending_employee": header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
+        default:                 header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
+    }
+    exit();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    verify_csrf_token();
+
+    $account_type = $_POST["account_type"] ?? "client";
+    $name         = trim($_POST["name"] ?? "");
+    $email        = trim($_POST["email"] ?? "");
+    $phone        = trim($_POST["phone_number"] ?? "");
+    $company_name = trim($_POST["company_name"] ?? "");
+    $company_size = trim($_POST["company_size"] ?? "");
+    $contract_ref = trim($_POST["contract_ref"] ?? "");
+    $existing_co  = ($account_type !== "employee") ? find_company_by_name($conn, $company_name) : null;
+    $password     = $_POST["password"] ?? "";
+    $confirm      = $_POST["confirm"] ?? "";
+
+    if ($name === "" || $email === "" || $phone === "" || $password === "" || $confirm === "") {
+        $msg = "All required fields must be filled.";
+    } elseif ($account_type !== "employee" && $company_name === "") {
+        $msg = "Enter your company's name.";
+    } elseif ($account_type !== "employee" && !isset(COMPANY_SIZES[$company_size])) {
+        $msg = "Choose your company's size.";
+    } elseif (mb_strlen($contract_ref) > 60) {
+        $msg = "The contract reference can be at most 60 characters.";
+    } elseif ($existing_co) {
+        $msg = htmlspecialchars($existing_co["company_name"]) . " is already registered on Astra. Ask your company's IT Manager to add you to the team.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $msg = "Please enter a valid email address.";
+    } elseif (!preg_match('/^\+[1-9]\d{6,14}$/', $phone)) {
+        $msg = "Please enter a valid phone number.";
+    } elseif ($account_type === "employee" && stripos($email, $EMPLOYEE_DOMAIN) !== strlen($email) - strlen($EMPLOYEE_DOMAIN)) {
+        $msg = "Employee registration requires a $EMPLOYEE_DOMAIN email address.";
+    } elseif ($password !== $confirm) {
+        $msg = "Passwords do not match.";
+    } elseif (strlen($password) < 8) {
+        $msg = "Password must be at least 8 characters.";
+    } elseif (!preg_match('/[A-Z]/', $password)) {
+        $msg = "Password must contain at least 1 uppercase letter.";
+    } elseif (!preg_match('/[a-z]/', $password)) {
+        $msg = "Password must contain at least 1 lowercase letter.";
+    } elseif (!preg_match('/[0-9]/', $password)) {
+        $msg = "Password must contain at least 1 number.";
+    } elseif (!preg_match('/[^a-zA-Z0-9]/', $password)) {
+        $msg = "Password must contain at least 1 special character.";
+    } else {
+        // Check users table
+        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+
+        // Check pending_registrations table
+        $stmt2 = mysqli_prepare($conn, "SELECT id FROM pending_registrations WHERE email = ?");
+        mysqli_stmt_bind_param($stmt2, "s", $email);
+        mysqli_stmt_execute($stmt2);
+        mysqli_stmt_store_result($stmt2);
+
+        if (mysqli_stmt_num_rows($stmt) > 0) {
+            $msg = "An account with that email already exists.";
+        } elseif (mysqli_stmt_num_rows($stmt2) > 0) {
+            $msg = "A verification is already pending for this email. <a href='verify_register'>Verify here</a>.";
+            $msg_type = "error";
+        } else {
+            $hashed = password_hash($password, PASSWORD_BCRYPT);
+            $role   = ($account_type === "employee") ? "pending_employee" : "client";
+
+            // ── EMPLOYEE: insert directly into users (uses set_password token flow) ──
+            if ($account_type === "employee") {
+                // Self-registered staff join the internal company (IDs 2000–2999).
+                $new_id = insert_user_in_company($conn, get_internal_company($conn), [
+                    'name'         => $name,
+                    'email'        => $email,
+                    'phone_number' => $phone,
+                    'password'     => $hashed,
+                    'role'         => $role,
+                ]);
+
+                if ($new_id) {
+                    $msg      = "Employee account registered. Pending sysadmin approval. <a href='login'>Login here</a> once approved.";
+                    $msg_type = "success";
+                } else {
+                    $msg = "Registration failed. Please try again.";
+                }
+
+            // ── CLIENT: insert into pending_registrations, send OTP ───────────────
+            } else {
+                $otp = rand(100000, 999999);
+
+                if (onboarding_schema_ready($conn)) {
+                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, company_size, contract_ref, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
+                    mysqli_stmt_bind_param($pend_insert, "sssssssss", $name, $email, $phone, $hashed, $role, $company_name, $company_size, $contract_ref, $otp);
+                } else {
+                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
+                    mysqli_stmt_bind_param($pend_insert, "sssssss", $name, $email, $phone, $hashed, $role, $company_name, $otp);
+                }
+
+                if (mysqli_stmt_execute($pend_insert)) {
+                    $mail = new PHPMailer(true);
+                    try {
+                        $mail->isSMTP();
+                        $mail->Host        = MAIL_HOST;
+                        $mail->SMTPAuth    = MAIL_AUTH;
+                        $mail->Port        = MAIL_PORT;
+                        $mail->SMTPSecure  = MAIL_SECURE;
+                        $mail->SMTPAutoTLS = false;
+
+                        $mail->setFrom(MAIL_FROM, MAIL_NAME);
+                        $mail->addAddress($email);
+                        $mail->Subject = 'Verify your email';
+                        $mail->Body    = "Hi $name,\n\nThank you for registering!\n\nYour email verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not register, please ignore this email.";
+
+                        $mail->send();
+
+                        $_SESSION["verify_email"] = $email;
+                        header("Location: " . get_base_url() . "auth/verify_register");
+                        exit();
+
+                    } catch (Exception $e) {
+                        // Mail failed — clean up pending record
+                        $del = mysqli_prepare($conn, "DELETE FROM pending_registrations WHERE email = ?");
+                        mysqli_stmt_bind_param($del, "s", $email);
+                        mysqli_stmt_execute($del);
+                        $msg = "Could not send verification email. Please try again.";
+                    }
+                } else {
+                    $msg = "Registration failed. Please try again.";
+                }
+            }
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register · Astra</title>
+<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--navy);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    padding: 1.5rem;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 460px;
+    padding: 2.5rem 2.5rem 2rem;
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.8rem;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .brand-icon svg { width: 18px; height: 18px; fill: white; }
+
+  .brand-text .title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .brand-text .sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 1.6rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-dim);
+    margin-bottom: 1.6rem;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .field { margin-bottom: 1.1rem; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  label .optional {
+    text-transform: none;
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .input-wrap { position: relative; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  select {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  select { cursor: pointer; }
+  select option { background: var(--navy-card); color: var(--text); }
+
+  input:focus, select:focus {
+    border-color: var(--accent-bright);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.12);
+  }
+
+  input::placeholder { color: var(--text-dim); }
+
+  input[type="password"] { padding-right: 40px; }
+
+  .eye-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+  .eye-btn:hover { color: var(--accent-bright); }
+  .eye-btn svg { width: 16px; height: 16px; }
+
+  /* intl-tel-input theming to match Astra's dark inputs */
+  .iti { width: 100%; display: block; }
+  /* .card input[...] sets padding-left:13px !important above, which would
+     otherwise swallow the space intl-tel-input reserves for the flag/dial
+     code — force enough room for it regardless. */
+  #phone_number { padding-left: 88px !important; }
+  .iti__flag-container { border-radius: 3px 0 0 3px; }
+  .iti__selected-flag { background: transparent !important; border-radius: 3px 0 0 3px; }
+  .iti__selected-flag:hover, .iti__selected-flag:focus { background: var(--hover-bg) !important; }
+  .iti__country-list {
+    background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px;
+    box-shadow: 0 12px 28px -8px rgba(0,0,0,0.5); color: var(--text);
+  }
+  .iti__country { color: var(--text); }
+  .iti__country.iti__highlight { background: var(--hover-bg); }
+  .iti__divider { border-bottom: 1px solid var(--border-dim); }
+  .iti__dial-code { color: var(--text-dim); }
+
+  .req-box {
+    background: var(--section-header-bg);
+    border: 1px solid var(--border-dim);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 1.1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px 12px;
+  }
+
+  .req-item {
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+  }
+
+  .req-item .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #334155;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .req-item.valid   { color: var(--green); }
+  .req-item.valid .dot { background: var(--green); box-shadow: 0 0 4px var(--green); }
+  .req-item.invalid { color: var(--red); }
+  .req-item.invalid .dot { background: var(--red); }
+
+  .match-msg {
+    font-size: 12px;
+    margin-top: 5px;
+    height: 16px;
+  }
+
+  .match-msg.ok  { color: var(--green); }
+  .match-msg.err { color: var(--red); }
+
+  .btn-register {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .btn-register:hover {
+    background: #2563eb;
+    box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
+  }
+
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 1.2rem;
+    font-size: 13px;
+    line-height: 1.4;
+    border-left-width: 3px;
+    border-left-style: solid;
+  }
+
+  .alert.error {
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: #fca5a5;
+  }
+
+  .alert.error a { color: #fca5a5; text-decoration: underline; }
+
+  .alert svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; fill: var(--red); }
+
+  .footer-links {
+    margin-top: 1.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border-dim);
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .footer-links a {
+    color: var(--accent-bright);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent-bright); }
+
+  .btn-theme-toggle {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: #94a3b8;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 6px 12px; border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .btn-theme-toggle:hover {
+    background: rgba(var(--accent-rgb),0.08);
+    color: #f1f5f9;
+  }
+  .btn-theme-toggle .theme-icon svg {
+    width: 13px; height: 13px;
+    vertical-align: middle;
+    fill: currentColor;
+  }
+
+  /* ── Intro: ambient glow fades in, palm-point pulses, then the card
+     emerges from that same point (scale + blur-to-sharp + fade in) ── */
+  .reveal-wrap { position: fixed; top: 34%; left: 50%; width: 620px; height: 620px;
+    margin: -310px 0 0 -310px; pointer-events: none; z-index: 0; }
+
+  .glow { position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 68%);
+    opacity: 0; filter: blur(20px);
+    animation: glowIn 1.3s .3s cubic-bezier(.16,1,.3,1) forwards,
+               glowBreathe 3.2s 1.8s ease-in-out infinite alternate;
+    transition: background .5s ease; }
+  @keyframes glowIn { to { opacity: .55; } }
+  @keyframes glowBreathe { from { opacity: .4; transform: scale(1); } to { opacity: .6; transform: scale(1.045); } }
+
+  .pulse { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; border: 1.5px solid var(--accent-bright); opacity: 0; pointer-events: none;
+    animation: pulseOut 1.25s cubic-bezier(.2,.7,.2,1) forwards; transition: border-color .4s ease; }
+  .pulse.p1 { animation-delay: 1.4s; }
+  .pulse.p2 { animation-delay: 1.68s; }
+  @keyframes pulseOut {
+    0%   { width: 10px; height: 10px; margin: -5px 0 0 -5px; opacity: .8; }
+    100% { width: 300px; height: 300px; margin: -150px 0 0 -150px; opacity: 0; }
+  }
+
+  .card {
+    position: relative; z-index: 1;
+    opacity: 0; transform: translateY(4px) scale(.34); filter: blur(13px);
+    animation: cardEmerge 1s 1.9s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes cardEmerge { to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse { display: none; }
+    .glow { opacity: .5; animation: none; }
+    .card { opacity: 1; transform: none; filter: none; animation: none; }
+  }
+
+  /* ═══ VISUAL REFRESH — match reference mockup: glass card, Sora type,
+     bare icon, gradient sentence-case button, no grid/box chrome ═══ */
+  .card {
+    background: rgba(20,10,10,.55) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(var(--accent-rgb),.28) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
+  }
+  [data-theme="light"] .card { background: rgba(255,255,255,.72) !important; }
+  .card::before { display: none !important; }
+
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.6rem !important; }
+  .brand-icon {
+    width: 26px !important; height: 26px !important;
+    background: none !important; border-radius: 0 !important;
+  }
+  .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--accent) !important; }
+  .brand-text { display: flex; align-items: center; }
+  .brand-text .title {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 21px !important; font-weight: 700 !important;
+    letter-spacing: .01em !important; text-transform: none !important;
+    color: var(--text) !important;
+  }
+  .brand-text .sub { display: none !important; }
+
+  .card h1, .card h2 {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 19px !important; font-weight: 600 !important;
+    letter-spacing: .005em !important; margin: 0 0 4px !important;
+  }
+  .card .subtitle, .card p.sub {
+    font-size: 13.5px !important; margin: 0 0 1.8rem !important;
+  }
+
+  .card label {
+    font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
+  }
+
+  .card input[type="email"], .card input[type="password"], .card input[type="text"],
+  .card input[type="tel"], .card select, .card textarea {
+    background: rgba(127,127,127,.06) !important;
+    border-radius: 7px !important;
+    padding: 11px 13px !important;
+  }
+
+  .card button[type="submit"], .card .btn-login, .card .btn-send,
+  .card .btn-submit, .card .btn-primary, .card a.btn-primary {
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
+    border-radius: 7px !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: .02em !important;
+    text-transform: none !important;
+    box-shadow: 0 8px 24px -8px var(--accent-glow) !important;
+    transition: transform .15s, box-shadow .15s !important;
+  }
+  .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
+  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
+</style>
+</head>
+<body>
+
+
+<div class="reveal-wrap">
+  <div class="glow"></div>
+  <div class="pulse p1"></div>
+  <div class="pulse p2"></div>
+</div>
+
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+    </div>
+    <div class="brand-text">
+      <div class="title">Astra</div>
+      <div class="sub">Create New Account</div>
+    </div>
+  </div>
+
+  <h2>Register your company</h2>
+  <p class="subtitle">You'll be your company's IT Manager on Astra. After signing in you can upload your team roster and invite everyone.</p>
+  <div class="divider"></div>
+
+  <?php if ($msg): ?>
+  <div class="alert error">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <span><?= $msg ?></span>
+  </div>
+  <?php endif; ?>
+
+  <form method="POST" action="register" id="registerForm">
+    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+
+    <div class="row-2">
+      <div class="field">
+        <label for="name">Full Name</label>
+        <input type="text" name="name" id="name" maxlength="100" required placeholder="John Doe">
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" maxlength="100" required placeholder="you@example.com">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="phone_number">Phone Number</label>
+      <input type="tel" name="phone_number" id="phone_number" required placeholder="9876543210">
+    </div>
+
+    <div class="field">
+      <label for="company_name">Company Name</label>
+      <input type="text" name="company_name" id="company_name" maxlength="150" required placeholder="Acme Inc."
+             value="<?= htmlspecialchars($_POST['company_name'] ?? '') ?>">
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label for="company_size">Company Size</label>
+        <select name="company_size" id="company_size" required>
+          <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
+          <?php foreach (COMPANY_SIZES as $val => $label): ?>
+          <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="field">
+        <label for="contract_ref">Contract / PO Reference <span class="optional">(optional)</span></label>
+        <input type="text" name="contract_ref" id="contract_ref" maxlength="60" placeholder="PO-2026-014"
+               value="<?= htmlspecialchars($_POST['contract_ref'] ?? '') ?>">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <input type="password" name="password" id="password"
+               maxlength="128" required placeholder="••••••••••••"
+               oninput="checkPassword(this.value)">
+        <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')">
+          <svg id="eye1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="req-box">
+      <div class="req-item" id="req_length"> <span class="dot"></span> 8+ characters </div>
+      <div class="req-item" id="req_upper">  <span class="dot"></span> Uppercase (A-Z) </div>
+      <div class="req-item" id="req_lower">  <span class="dot"></span> Lowercase (a-z) </div>
+      <div class="req-item" id="req_number"> <span class="dot"></span> Number (0-9) </div>
+      <div class="req-item" id="req_special"><span class="dot"></span> Special character </div>
+    </div>
+
+    <div class="field">
+      <label for="confirm">Confirm Password</label>
+      <div class="input-wrap">
+        <input type="password" name="confirm" id="confirm"
+               maxlength="128" required placeholder="••••••••••••"
+               oninput="checkMatch()">
+        <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')">
+          <svg id="eye2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+        </button>
+      </div>
+      <div class="match-msg" id="matchMsg"></div>
+    </div>
+
+    <button type="submit" class="btn-register">Create Account</button>
+  </form>
+
+  <div style="display:flex; align-items:center; justify-content:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.07);">
+    <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
+      <span class="theme-icon"></span>
+      <span class="theme-label"></span>
+    </button>
+  </div>
+  <div class="footer-links">
+    <span>Already have an account?</span>
+    <a href="login">Sign in</a>
+  </div>
+
+</div>
+
+<script>
+const eyeOpenSVG   = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>`;
+const eyeClosedSVG = `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
+
+function toggleEye(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon  = document.getElementById(iconId);
+  const show  = input.type === 'password';
+  input.type  = show ? 'text' : 'password';
+  icon.innerHTML = show ? eyeOpenSVG : eyeClosedSVG;
+}
+
+function setReq(id, passed) {
+  const el = document.getElementById(id);
+  el.className = 'req-item ' + (passed ? 'valid' : 'invalid');
+}
+
+function checkPassword(value) {
+  setReq('req_length',  value.length >= 8);
+  setReq('req_upper',   /[A-Z]/.test(value));
+  setReq('req_lower',   /[a-z]/.test(value));
+  setReq('req_number',  /[0-9]/.test(value));
+  setReq('req_special', /[^a-zA-Z0-9]/.test(value));
+  checkMatch();
+}
+
+function checkMatch() {
+  const password = document.getElementById('password').value;
+  const confirm  = document.getElementById('confirm').value;
+  const msg      = document.getElementById('matchMsg');
+  if (confirm.length === 0) { msg.textContent = ''; msg.className = 'match-msg'; return; }
+  if (password === confirm) {
+    msg.className   = 'match-msg ok';
+    msg.textContent = '✓ Passwords match';
+  } else {
+    msg.className   = 'match-msg err';
+    msg.textContent = '✗ Passwords do not match';
+  }
+}
+
+// ── Phone input: flags, dial codes, IP-based country auto-detect ──────────────
+const phoneInput = document.getElementById('phone_number');
+const phoneIti = window.intlTelInput(phoneInput, {
+  initialCountry: 'auto',
+  preferredCountries: ['in', 'us', 'gb'],
+  separateDialCode: true,
+  utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js',
+  geoIpLookup: function (callback) {
+    fetch('<?= get_base_url() ?>api/geo_country.php')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { callback(d.country || 'us'); })
+      .catch(function () { callback('us'); });
+  },
+});
+
+document.getElementById('registerForm').addEventListener('submit', function () {
+  if (phoneInput.value.trim() !== '') {
+    phoneInput.value = phoneIti.getNumber(); // E.164, e.g. +919876543210
+  }
+});
+</script>
+
+</body>
+</html>
