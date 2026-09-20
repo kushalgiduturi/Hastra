@@ -28,6 +28,7 @@ require __DIR__ . '/../config/migrations/2026_09_tours.php';
 require __DIR__ . '/../config/migrations/2026_09_crypto.php';
 require __DIR__ . '/../config/migrations/2026_09_attendance.php';
 require __DIR__ . '/../config/migrations/2026_09_company_logo.php';
+require __DIR__ . '/../config/migrations/2026_09_account_type.php';
 
 $reindex = in_array('--reindex', $argv, true);
 
@@ -43,6 +44,7 @@ try {
     astra_migrate_crypto($conn, $out);
     astra_migrate_attendance($conn, $out);
     astra_migrate_company_logo($conn, $out);
+    astra_migrate_account_type($conn, $out);
     echo "\nDone." . ($reindex ? "" : " (companies ran in list-only mode — pass --reindex to move users)") . "\n";
 } catch (Throwable $e) {
     fwrite(STDERR, "\n!! " . $e->getMessage() . "\n");

@@ -1374,3 +1374,47 @@ body::before {
     transform: none !important;
   }
 }
+
+/* ── Global AX preloader (injected by core/theme.js via document.write) ── */
+#astra-page-loader {
+  position: fixed; inset: 0; z-index: 99999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px;
+  background: var(--navy);
+  background-image:
+    radial-gradient(ellipse 80% 55% at 50% 40%, var(--accent-glow), transparent 65%);
+  opacity: 1;
+  transition: opacity 0.25s ease-out;
+}
+
+.astra-loader-spinner {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 3px solid rgba(var(--accent-rgb), 0.18);
+  border-top-color: var(--accent-bright);
+  box-shadow: 0 0 24px -4px var(--accent-glow);
+  animation: astraLoaderSpin 0.85s linear infinite;
+}
+
+@keyframes astraLoaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-status-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 80vw;
+  animation: astraLoaderPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes astraLoaderPulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astra-loader-spinner { animation-duration: 1.6s; }
+  .loader-status-text { animation: none; opacity: 0.85; }
+}

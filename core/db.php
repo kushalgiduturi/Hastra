@@ -5,7 +5,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '12');
+    define('ASSET_VERSION', '14');
 }
 
 header("X-Frame-Options: DENY");

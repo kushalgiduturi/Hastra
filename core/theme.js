@@ -1,4 +1,60 @@
 (function() {
+  // ── Global AX preloader ─────────────────────────────────────────────────
+  // Injected via document.write() so it lands the instant this (synchronous,
+  // <head>-loaded) script runs — before the rest of the page has painted —
+  // and removed on window 'load' so it never outlives real content or
+  // blocks a click. A page can opt out entirely by adding
+  // data-loader-manual to this very <script core/theme.js> tag (body isn't
+  // parsed yet at this point, so a <body> attribute can't be read here).
+  (function initPageLoader() {
+    if (document.currentScript && document.currentScript.hasAttribute('data-loader-manual')) return;
+
+    // Matched against just the final path segment (e.g. "login.php" or
+    // "project_portal") — NOT the full pathname, which always contains
+    // "login" here since the whole app is served under an /login/ base path.
+    const LOADER_TEXT_MAP = [
+      [/^(login|otp|forgot)/,           'Initializing defense-grade workspace…'],
+      [/^(register|verify_register)/,   'Provisioning your Astra workspace…'],
+      [/project|requirement/,           'Fetching SDLC project pipeline…'],
+      [/team|roster|directory/,         'Loading enterprise team matrix…'],
+      [/deliver/,                       'Decrypting delivery dossier…'],
+      [/attendance/,                    'Syncing attendance records…'],
+      [/leave_management/,              'Loading leave policy console…'],
+      [/testing_portal|bug/,            'Pulling QA bug queue…'],
+      [/deployment/,                    'Preparing deployment pipeline…'],
+      [/billing|invoice/,               'Reconciling billing ledger…'],
+      [/security/,                      'Running security diagnostics…'],
+      [/doc/,                           'Loading documentation…'],
+    ];
+    function contextualText() {
+      const segments = window.location.pathname.toLowerCase().split('/').filter(Boolean);
+      const page = (segments[segments.length - 1] || '').replace(/\.php$/, '');
+      for (const [re, text] of LOADER_TEXT_MAP) {
+        if (re.test(page)) return text;
+      }
+      return 'Loading…';
+    }
+
+    document.write(
+      '<div id="astra-page-loader">' +
+        '<div class="astra-loader-spinner"></div>' +
+        '<p id="astra-loader-text" class="loader-status-text">' + contextualText() + '</p>' +
+      '</div>'
+    );
+
+    function hidePageLoader() {
+      const el = document.getElementById('astra-page-loader');
+      if (!el) return;
+      el.style.opacity = '0';
+      el.style.pointerEvents = 'none';
+      setTimeout(function() { el.remove(); }, 260);
+    }
+    window.addEventListener('load', hidePageLoader);
+    // Fail-safe: never let a stuck asset (slow font, video, etc.) hold the
+    // loader up indefinitely — the rest of the page is interactive either way.
+    setTimeout(hidePageLoader, 4000);
+  })();
+
   const THEME_KEY = 'astra_theme';
   const LEGACY_THEME_KEY = 'cycops_theme'; // pre-rename key, read once for migration
 
