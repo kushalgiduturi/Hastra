@@ -249,5 +249,6 @@ require_once __DIR__ . '/docs.php';
 require_once __DIR__ . '/audit.php';  // P17
 require_once __DIR__ . '/dock.php';
 require_once __DIR__ . '/tours.php';  // P18
+require_once __DIR__ . '/leave.php';
 require_once __DIR__ . '/auth_check.php';
 ?>

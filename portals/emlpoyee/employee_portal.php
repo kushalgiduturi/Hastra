@@ -19,6 +19,15 @@ mysqli_stmt_bind_param($me_stmt, "i", $user_id);
 mysqli_stmt_execute($me_stmt);
 $me = mysqli_fetch_assoc(mysqli_stmt_get_result($me_stmt));
 
+$company = null;
+if (!empty($me["company_id"])) {
+    $co_stmt = mysqli_prepare($conn,
+        "SELECT leave_cycle, monthly_general_leaves, monthly_sick_leaves, annual_leave_allowance FROM companies WHERE id = ?");
+    mysqli_stmt_bind_param($co_stmt, "i", $me["company_id"]);
+    mysqli_stmt_execute($co_stmt);
+    $company = mysqli_fetch_assoc(mysqli_stmt_get_result($co_stmt));
+}
+
 $leave_msg      = "";
 $leave_msg_type = "error";
 
@@ -44,16 +53,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "reque
         $leave_msg = "You're not marked as eligible for maternity leave. Contact your admin.";
     } else {
         $total_days = ((int)$end_ts->diff($start_ts)->format("%a")) + 1;
-        $ins = mysqli_prepare($conn,
-            "INSERT INTO leave_requests (user_id, company_id, leave_type, start_date, end_date, total_days, reason)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
-        );
-        mysqli_stmt_bind_param($ins, "iisssds", $user_id, $me["company_id"], $leave_type, $start, $end, $total_days, $reason);
-        if (mysqli_stmt_execute($ins)) {
-            $leave_msg      = "Leave request submitted — pending approval.";
-            $leave_msg_type = "success";
+        $bal = $company ? astra_leave_balance($conn, $user_id, $company, $leave_type) : null;
+        if ($bal !== null && $total_days > $bal["remaining"]) {
+            $leave_msg = sprintf(
+                "That's %s day(s), but you only have %s %s leave day(s) left this %s.",
+                rtrim(rtrim(number_format($total_days, 1), '0'), '.'),
+                rtrim(rtrim(number_format($bal["remaining"], 1), '0'), '.'),
+                $leave_type,
+                ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollover' ? 'year' : 'month'
+            );
         } else {
-            $leave_msg = "Failed to submit leave request. Please try again.";
+            $ins = mysqli_prepare($conn,
+                "INSERT INTO leave_requests (user_id, company_id, leave_type, start_date, end_date, total_days, reason)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
+            mysqli_stmt_bind_param($ins, "iisssds", $user_id, $me["company_id"], $leave_type, $start, $end, $total_days, $reason);
+            if (mysqli_stmt_execute($ins)) {
+                $leave_msg      = "Leave request submitted — pending approval.";
+                $leave_msg_type = "success";
+            } else {
+                $leave_msg = "Failed to submit leave request. Please try again.";
+            }
         }
     }
 }
@@ -68,6 +88,10 @@ mysqli_stmt_execute($my_leave_result);
 $my_leave = mysqli_fetch_all(mysqli_stmt_get_result($my_leave_result), MYSQLI_ASSOC);
 
 $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "Maternity", "unpaid" => "Unpaid"];
+
+$leave_bal_general = $company ? astra_leave_balance($conn, $user_id, $company, "general") : null;
+$leave_bal_sick    = $company ? astra_leave_balance($conn, $user_id, $company, "sick") : null;
+$leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollover' ? 'this year' : 'this month';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -117,6 +141,7 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
   }
   .field textarea { min-height: 70px; resize: vertical; }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-bright); }
+  .field-hint { margin-top: 6px; font-size: 11.5px; color: var(--text-dim); }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .modal-btns { display: flex; gap: 10px; margin-top: 1.4rem; }
   .modal-btn-confirm {
@@ -203,6 +228,13 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
           <?php endif; ?>
           <option value="unpaid">Unpaid</option>
         </select>
+        <?php if ($leave_bal_general !== null || $leave_bal_sick !== null): ?>
+        <p class="field-hint">
+          <?php if ($leave_bal_general !== null): ?>General: <?= rtrim(rtrim(number_format($leave_bal_general["remaining"], 1), '0'), '.') ?>/<?= (int)$leave_bal_general["limit"] ?> left <?= htmlspecialchars($leave_period_label) ?><?php endif; ?>
+          <?php if ($leave_bal_general !== null && $leave_bal_sick !== null): ?> &middot; <?php endif; ?>
+          <?php if ($leave_bal_sick !== null): ?>Sick: <?= rtrim(rtrim(number_format($leave_bal_sick["remaining"], 1), '0'), '.') ?>/<?= (int)$leave_bal_sick["limit"] ?> left <?= htmlspecialchars($leave_period_label) ?><?php endif; ?>
+        </p>
+        <?php endif; ?>
       </div>
 
       <div class="form-row-2">
