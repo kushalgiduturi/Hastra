@@ -776,8 +776,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
 
         <div class="footer-links">
-          <span>New team member?</span>
-          <span>Ask your admin for an invite</span>
+          <span>New organization?</span>
+          <a href="register?track=enterprise">Set up your workspace</a>
         </div>
       </div>
 

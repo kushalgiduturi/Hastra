@@ -34,6 +34,17 @@ function astra_migrate_account_type($conn, callable $out) {
     } else {
         $out("   already present");
     }
+
+    if (db_column_exists($conn, 'pending_registrations', 'id')) {
+        if (!db_column_exists($conn, 'pending_registrations', 'flow')) {
+            mysqli_query($conn, "ALTER TABLE pending_registrations ADD COLUMN flow VARCHAR(24) NULL");
+            $out("   added pending_registrations.flow");
+        }
+        if (!db_column_exists($conn, 'pending_registrations', 'country')) {
+            mysqli_query($conn, "ALTER TABLE pending_registrations ADD COLUMN country VARCHAR(60) NULL");
+            $out("   added pending_registrations.country");
+        }
+    }
 }
 
 if ($__astra_acct_cli) {

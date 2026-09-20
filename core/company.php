@@ -256,7 +256,41 @@ function create_company($conn, $company_name, $owner_user_id = null, array $extr
         mysqli_stmt_execute($upd);
     }
 
+    if (!empty($extra['account_type']) && db_column_exists($conn, 'companies', 'account_type')) {
+        $type = $extra['account_type'];
+        $upd  = mysqli_prepare($conn, "UPDATE companies SET account_type = ? WHERE id = ?");
+        mysqli_stmt_bind_param($upd, "si", $type, $id);
+        mysqli_stmt_execute($upd);
+    }
+
+    // Enterprise "Full Organization" onboarding: leave policy + an
+    // auto-generated biometric attendance webhook secret, so there's
+    // nothing left to configure before the admin can actually use the
+    // attendance/leave features (matches the button in
+    // portals/admin/attendance.php's existing "Generate Secret" flow).
+    if (!empty($extra['leave_policy']) && db_column_exists($conn, 'companies', 'leave_cycle')) {
+        $lp = $extra['leave_policy'];
+        $upd = mysqli_prepare($conn,
+            "UPDATE companies SET leave_cycle = ?, monthly_general_leaves = ?, monthly_sick_leaves = ?, annual_leave_allowance = ? WHERE id = ?");
+        mysqli_stmt_bind_param($upd, "siiii",
+            $lp['leave_cycle'], $lp['monthly_general_leaves'], $lp['monthly_sick_leaves'], $lp['annual_leave_allowance'], $id);
+        mysqli_stmt_execute($upd);
+    }
+    if (!empty($extra['generate_webhook_secret']) && db_column_exists($conn, 'companies', 'attendance_webhook_secret')) {
+        $secret = bin2hex(random_bytes(24));
+        $upd = mysqli_prepare($conn, "UPDATE companies SET attendance_webhook_secret = ? WHERE id = ?");
+        mysqli_stmt_bind_param($upd, "si", $secret, $id);
+        mysqli_stmt_execute($upd);
+    }
+
     return get_company($conn, $id);
+}
+
+// Solo enterprise workspaces and individual clients have no team, so
+// attendance/leave/roster/webhook UI would be dead weight — see
+// portals/*/_nav.php.
+function astra_is_solo_company($company) {
+    return $company && in_array($company['account_type'] ?? '', ['solo_enterprise', 'client_individual'], true);
 }
 
 // Turns a pending registration's logo_data (an http(s) URL picked from the

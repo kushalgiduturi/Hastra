@@ -10,8 +10,6 @@ require __DIR__ . '/../PHPMailer/SMTP.php';
 require __DIR__ . '/../PHPMailer/Exception.php';
 
 $msg = "";
-$msg_type = "error";
-$EMPLOYEE_DOMAIN = EMPLOYEE_EMAIL_DOMAIN;
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
@@ -24,36 +22,58 @@ if (isset($_SESSION["user_id"])) {
     exit();
 }
 
+// Four self-serve tracks (auth/login.php's "Ask your admin for an invite"
+// dead end is gone — Enterprise Workspace now provisions its own company
+// and admin account here, same as Client Gateway always has):
+//   client_company     — Client Gateway → Company
+//   client_individual  — Client Gateway → Individual / Freelancer
+//   enterprise_full    — Enterprise Workspace → Full Organization
+//   enterprise_solo    — Enterprise Workspace → Solo Enterprise / Developer
+$VALID_FLOWS = ['client_company', 'client_individual', 'enterprise_full', 'enterprise_solo'];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     verify_csrf_token();
 
-    $account_type = $_POST["account_type"] ?? "client";
+    $flow = $_POST["flow"] ?? "client_company";
+    if (!in_array($flow, $VALID_FLOWS, true)) $flow = "client_company";
+
+    $needs_org_name  = in_array($flow, ['client_company', 'enterprise_full', 'enterprise_solo'], true);
+    $needs_org_size  = in_array($flow, ['client_company', 'enterprise_full'], true);
+    $needs_country   = in_array($flow, ['client_individual', 'enterprise_solo'], true);
+    $needs_leave     = $flow === 'enterprise_full';
+    $role            = in_array($flow, ['enterprise_full', 'enterprise_solo'], true) ? 'admin' : 'client';
+
     $name         = trim($_POST["name"] ?? "");
     $email        = trim($_POST["email"] ?? "");
     $phone        = trim($_POST["phone_number"] ?? "");
-    $company_name = trim($_POST["company_name"] ?? "");
-    $company_size = trim($_POST["company_size"] ?? "");
-    $contract_ref = trim($_POST["contract_ref"] ?? "");
-    $existing_co  = ($account_type !== "employee") ? find_company_by_name($conn, $company_name) : null;
     $password     = $_POST["password"] ?? "";
     $confirm      = $_POST["confirm"] ?? "";
+    $country      = trim($_POST["country"] ?? "");
+    $company_name = $needs_org_name ? trim($_POST["company_name"] ?? "") : ($name !== "" ? "$name (Individual)" : "");
+    $company_size = $needs_org_size ? trim($_POST["company_size"] ?? "") : "";
+    $contract_ref = ($flow === 'client_company') ? trim($_POST["contract_ref"] ?? "") : "";
+    $leave_cycle  = in_array($_POST["leave_cycle"] ?? "", ["monthly", "yearly_rollover"], true) ? $_POST["leave_cycle"] : "monthly";
+    $gen_leaves   = max(0, min(30, (int)($_POST["monthly_general_leaves"] ?? 1)));
+    $sick_leaves  = max(0, min(30, (int)($_POST["monthly_sick_leaves"] ?? 1)));
+    $annual_leave = max(0, min(90, (int)($_POST["annual_leave_allowance"] ?? 18)));
+    $existing_co  = $company_name !== "" ? find_company_by_name($conn, $company_name) : null;
 
     if ($name === "" || $email === "" || $phone === "" || $password === "" || $confirm === "") {
         $msg = "All required fields must be filled.";
-    } elseif ($account_type !== "employee" && $company_name === "") {
-        $msg = "Enter your company's name.";
-    } elseif ($account_type !== "employee" && !isset(COMPANY_SIZES[$company_size])) {
+    } elseif ($needs_org_name && $company_name === "") {
+        $msg = $flow === 'enterprise_solo' ? "Enter your studio or developer name." : "Enter your organization's name.";
+    } elseif ($needs_org_size && !isset(COMPANY_SIZES[$company_size])) {
         $msg = "Choose your company's size.";
+    } elseif ($needs_country && $country === "") {
+        $msg = "Enter your country.";
     } elseif (mb_strlen($contract_ref) > 60) {
         $msg = "The contract reference can be at most 60 characters.";
     } elseif ($existing_co) {
-        $msg = htmlspecialchars($existing_co["company_name"]) . " is already registered on Astra. Ask your company's IT Manager to add you to the team.";
+        $msg = htmlspecialchars($existing_co["company_name"]) . " is already registered on Astra. Ask its admin or IT Manager to add you to the team.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $msg = "Please enter a valid email address.";
     } elseif (!preg_match('/^\+[1-9]\d{6,14}$/', $phone)) {
         $msg = "Please enter a valid phone number.";
-    } elseif ($account_type === "employee" && stripos($email, $EMPLOYEE_DOMAIN) !== strlen($email) - strlen($EMPLOYEE_DOMAIN)) {
-        $msg = "Employee registration requires a $EMPLOYEE_DOMAIN email address.";
     } elseif ($password !== $confirm) {
         $msg = "Passwords do not match.";
     } elseif (strlen($password) < 8) {
@@ -67,13 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!preg_match('/[^a-zA-Z0-9]/', $password)) {
         $msg = "Password must contain at least 1 special character.";
     } else {
-        // Check users table
         $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
 
-        // Check pending_registrations table
         $stmt2 = mysqli_prepare($conn, "SELECT id FROM pending_registrations WHERE email = ?");
         mysqli_stmt_bind_param($stmt2, "s", $email);
         mysqli_stmt_execute($stmt2);
@@ -83,77 +101,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $msg = "An account with that email already exists.";
         } elseif (mysqli_stmt_num_rows($stmt2) > 0) {
             $msg = "A verification is already pending for this email. <a href='verify_register'>Verify here</a>.";
-            $msg_type = "error";
         } else {
-            $hashed = password_hash($password, PASSWORD_BCRYPT);
-            $role   = ($account_type === "employee") ? "pending_employee" : "client";
+            $hashed    = password_hash($password, PASSWORD_BCRYPT);
+            $otp       = rand(100000, 999999);
+            $logo_data = trim($_POST["logo_data"] ?? "");
+            if (mb_strlen($logo_data) > 900000) $logo_data = ""; // guard against an oversized payload
+            $has_leave_cols = db_column_exists($conn, 'pending_registrations', 'monthly_general_leaves');
+            $has_logo_col   = db_column_exists($conn, 'pending_registrations', 'logo_data');
+            $has_flow_col   = db_column_exists($conn, 'pending_registrations', 'flow');
 
-            // ── EMPLOYEE: insert directly into users (uses set_password token flow) ──
-            if ($account_type === "employee") {
-                // Self-registered staff join the internal company (IDs 2000–2999).
-                $new_id = insert_user_in_company($conn, get_internal_company($conn), [
-                    'name'         => $name,
-                    'email'        => $email,
-                    'phone_number' => $phone,
-                    'password'     => $hashed,
-                    'role'         => $role,
-                ]);
+            $cols = ['name', 'email', 'phone_number', 'password', 'role', 'company_name'];
+            $vals = [$name, $email, $phone, $hashed, $role, $company_name];
+            $types = 'ssssss';
 
-                if ($new_id) {
-                    $msg      = "Employee account registered. Pending sysadmin approval. <a href='login'>Login here</a> once approved.";
-                    $msg_type = "success";
-                } else {
-                    $msg = "Registration failed. Please try again.";
+            if (onboarding_schema_ready($conn)) {
+                $cols[] = 'company_size'; $vals[] = $company_size; $types .= 's';
+                $cols[] = 'contract_ref'; $vals[] = $contract_ref; $types .= 's';
+            }
+            if ($has_leave_cols && $needs_leave) {
+                $cols[] = 'leave_cycle';             $vals[] = $leave_cycle;  $types .= 's';
+                $cols[] = 'monthly_general_leaves';  $vals[] = $gen_leaves;   $types .= 'i';
+                $cols[] = 'monthly_sick_leaves';     $vals[] = $sick_leaves;  $types .= 'i';
+                $cols[] = 'annual_leave_allowance';  $vals[] = $annual_leave; $types .= 'i';
+            }
+            if ($has_logo_col && $logo_data !== '') {
+                $cols[] = 'logo_data'; $vals[] = $logo_data; $types .= 's';
+            }
+            if ($has_flow_col) {
+                $cols[] = 'flow'; $vals[] = $flow; $types .= 's';
+                $cols[] = 'country'; $vals[] = $country; $types .= 's';
+            }
+            $cols[] = 'otp'; $vals[] = $otp; $types .= 's';
+
+            $placeholders = implode(', ', array_fill(0, count($cols), '?'));
+            $sql = "INSERT INTO pending_registrations (" . implode(', ', $cols) . ", otp_expiry)
+                    VALUES ($placeholders, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
+            $pend_insert = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($pend_insert, $types, ...$vals);
+
+            if (mysqli_stmt_execute($pend_insert)) {
+                $mail = new PHPMailer(true);
+                try {
+                    $mail->isSMTP();
+                    $mail->Host        = MAIL_HOST;
+                    $mail->SMTPAuth    = MAIL_AUTH;
+                    $mail->Port        = MAIL_PORT;
+                    $mail->SMTPSecure  = MAIL_SECURE;
+                    $mail->SMTPAutoTLS = false;
+
+                    $mail->setFrom(MAIL_FROM, MAIL_NAME);
+                    $mail->addAddress($email);
+                    $mail->Subject = 'Verify your email';
+                    $mail->Body    = "Hi $name,\n\nThank you for registering!\n\nYour email verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not register, please ignore this email.";
+
+                    $mail->send();
+
+                    $_SESSION["verify_email"] = $email;
+                    header("Location: " . get_base_url() . "auth/verify_register");
+                    exit();
+
+                } catch (Exception $e) {
+                    $del = mysqli_prepare($conn, "DELETE FROM pending_registrations WHERE email = ?");
+                    mysqli_stmt_bind_param($del, "s", $email);
+                    mysqli_stmt_execute($del);
+                    $msg = "Could not send verification email. Please try again.";
                 }
-
-            // ── CLIENT: insert into pending_registrations, send OTP ───────────────
             } else {
-                $otp       = rand(100000, 999999);
-                $logo_data = trim($_POST["logo_data"] ?? "");
-                if (mb_strlen($logo_data) > 900000) $logo_data = ""; // guard against an oversized payload
-
-                if (onboarding_schema_ready($conn) && db_column_exists($conn, 'pending_registrations', 'logo_data')) {
-                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, company_size, contract_ref, logo_data, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
-                    mysqli_stmt_bind_param($pend_insert, "ssssssssss", $name, $email, $phone, $hashed, $role, $company_name, $company_size, $contract_ref, $logo_data, $otp);
-                } elseif (onboarding_schema_ready($conn)) {
-                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, company_size, contract_ref, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
-                    mysqli_stmt_bind_param($pend_insert, "sssssssss", $name, $email, $phone, $hashed, $role, $company_name, $company_size, $contract_ref, $otp);
-                } else {
-                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
-                    mysqli_stmt_bind_param($pend_insert, "sssssss", $name, $email, $phone, $hashed, $role, $company_name, $otp);
-                }
-
-                if (mysqli_stmt_execute($pend_insert)) {
-                    $mail = new PHPMailer(true);
-                    try {
-                        $mail->isSMTP();
-                        $mail->Host        = MAIL_HOST;
-                        $mail->SMTPAuth    = MAIL_AUTH;
-                        $mail->Port        = MAIL_PORT;
-                        $mail->SMTPSecure  = MAIL_SECURE;
-                        $mail->SMTPAutoTLS = false;
-
-                        $mail->setFrom(MAIL_FROM, MAIL_NAME);
-                        $mail->addAddress($email);
-                        $mail->Subject = 'Verify your email';
-                        $mail->Body    = "Hi $name,\n\nThank you for registering!\n\nYour email verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not register, please ignore this email.";
-
-                        $mail->send();
-
-                        $_SESSION["verify_email"] = $email;
-                        header("Location: " . get_base_url() . "auth/verify_register");
-                        exit();
-
-                    } catch (Exception $e) {
-                        // Mail failed — clean up pending record
-                        $del = mysqli_prepare($conn, "DELETE FROM pending_registrations WHERE email = ?");
-                        mysqli_stmt_bind_param($del, "s", $email);
-                        mysqli_stmt_execute($del);
-                        $msg = "Could not send verification email. Please try again.";
-                    }
-                } else {
-                    $msg = "Registration failed. Please try again.";
-                }
+                $msg = "Registration failed. Please try again.";
             }
         }
     }
@@ -590,6 +604,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
 
+  /* ── Registration track tabs + sub-toggle ── */
+  .registration-tabs {
+    display: flex; gap: 4px; background: rgba(127,127,127,.08);
+    border: 1px solid var(--border-dim); border-radius: 10px; padding: 4px;
+    margin-bottom: 12px;
+  }
+  .reg-tab {
+    flex: 1 1 0; border: none; background: transparent; color: var(--text-dim);
+    font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 10px 8px; border-radius: 7px; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .reg-tab.active {
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    color: #fff; box-shadow: 0 6px 16px -6px var(--accent-glow);
+  }
+  .reg-tab:not(.active):hover { color: var(--text); }
+
+  .registration-subtoggle {
+    display: flex; gap: 4px; margin-bottom: 1.4rem;
+  }
+  .reg-sub {
+    flex: 1 1 0; border: 1.5px solid var(--border-dim); background: var(--input-bg); color: var(--text-dim);
+    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: border-color .2s, color .2s, background .2s;
+  }
+  .reg-sub.active { border-color: var(--accent-bright); color: var(--accent-bright); background: rgba(var(--accent-rgb),0.08); }
+  .reg-sub:not(.active):hover { color: var(--text); }
+
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  @media (max-width: 560px) { .row-3 { grid-template-columns: 1fr; } }
+
   /* ── Full-bleed registration sheet ── */
   .sheet-grid { display: grid; grid-template-columns: 340px 1fr; min-height: 560px; }
   @media (max-width: 800px) { .sheet-grid { grid-template-columns: 1fr; } }
@@ -730,11 +775,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </div>
 
-    <h1>Register your company</h1>
-    <p>You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
+    <h1 id="sheetHeading">Register your company</h1>
+    <p id="sheetIntro">You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
 
     <ul class="sheet-steps" id="sheetSteps">
-      <li class="current" data-step="1"><span class="step-num">1</span> Company &amp; brand logo</li>
+      <li class="current" data-step="1"><span class="step-num">1</span> <span id="step1Label">Workspace details</span></li>
       <li data-step="2"><span class="step-num">2</span> Your account</li>
     </ul>
 
@@ -761,25 +806,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form method="POST" action="register" id="registerForm">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="logo_data" id="logoData" value="">
+      <input type="hidden" name="flow" id="flowInput" value="client_company">
 
-      <!-- ── STEP 1: Company + logo ── -->
+      <!-- ── STEP 1: Workspace details (fields shown vary by track) ── -->
       <div class="step-panel active" id="step1">
-        <h2>Tell us about your company</h2>
-        <p class="subtitle">We'll try to find your brand logo automatically.</p>
+
+        <div class="registration-tabs" id="regTabs">
+          <button type="button" class="reg-tab" data-tab="enterprise">Enterprise Workspace</button>
+          <button type="button" class="reg-tab active" data-tab="client">Client Gateway</button>
+        </div>
+        <div class="registration-subtoggle" id="regSubtoggle">
+          <button type="button" class="reg-sub active" data-sub="org">Company</button>
+          <button type="button" class="reg-sub" data-sub="solo">Individual / Freelancer</button>
+        </div>
+
+        <h2 id="step1Heading">Tell us about your company</h2>
+        <p class="subtitle" id="step1Subtitle">We'll try to find your brand logo automatically.</p>
         <div class="divider"></div>
 
-        <div class="field">
-          <label for="company_name">Company Name</label>
-          <input type="text" name="company_name" id="company_name" maxlength="150" required placeholder="Acme Inc."
+        <div class="field" data-flows="client_company,enterprise_full,enterprise_solo">
+          <label for="company_name" id="orgNameLabel">Company Name</label>
+          <input type="text" name="company_name" id="company_name" maxlength="150" placeholder="Acme Inc."
                  value="<?= htmlspecialchars($_POST['company_name'] ?? '') ?>">
         </div>
 
-        <div class="field">
+        <div class="field" data-flows="client_company,enterprise_full">
           <label for="company_domain">Company Website <span class="optional">(optional, improves logo match)</span></label>
           <input type="text" id="company_domain" maxlength="150" placeholder="acme.com" autocomplete="off">
         </div>
 
-        <div class="field logo-finder">
+        <div class="field logo-finder" data-flows="client_company,enterprise_full">
           <div class="logo-finder-label" id="logoFinderLabel"><span class="spinner"></span> Select your official brand logo</div>
           <div class="logo-tiles" id="logoTiles"></div>
           <div class="logo-dropzone" id="logoDropzone">
@@ -793,22 +849,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="logo-status" id="logoStatus"></div>
         </div>
 
-        <div class="row-2">
+        <div class="field" data-flows="client_company,enterprise_full">
+          <label for="company_size">Company Size</label>
+          <select name="company_size" id="company_size">
+            <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
+            <?php foreach (COMPANY_SIZES as $val => $label): ?>
+            <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+
+        <div class="field" data-flows="client_company">
+          <label for="contract_ref">Contract / PO Reference <span class="optional">(optional)</span></label>
+          <input type="text" name="contract_ref" id="contract_ref" maxlength="60" placeholder="PO-2026-014"
+                 value="<?= htmlspecialchars($_POST['contract_ref'] ?? '') ?>">
+        </div>
+
+        <div class="field" data-flows="client_individual,enterprise_solo">
+          <label for="country">Country</label>
+          <input type="text" name="country" id="country" maxlength="60" placeholder="India"
+                 value="<?= htmlspecialchars($_POST['country'] ?? '') ?>">
+        </div>
+
+        <div class="field" data-flows="enterprise_full">
+          <label for="leave_cycle">Employee Leave Policy</label>
+          <select name="leave_cycle" id="leave_cycle">
+            <option value="monthly">Monthly allowance</option>
+            <option value="yearly_rollover">Annual pool</option>
+          </select>
+        </div>
+        <div class="row-3" data-flows="enterprise_full">
           <div class="field">
-            <label for="company_size">Company Size</label>
-            <select name="company_size" id="company_size" required>
-              <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
-              <?php foreach (COMPANY_SIZES as $val => $label): ?>
-              <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
-              <?php endforeach; ?>
-            </select>
+            <label for="monthly_general_leaves">General / month</label>
+            <input type="number" name="monthly_general_leaves" id="monthly_general_leaves" min="0" max="30" value="1">
           </div>
           <div class="field">
-            <label for="contract_ref">Contract / PO Reference <span class="optional">(optional)</span></label>
-            <input type="text" name="contract_ref" id="contract_ref" maxlength="60" placeholder="PO-2026-014"
-                   value="<?= htmlspecialchars($_POST['contract_ref'] ?? '') ?>">
+            <label for="monthly_sick_leaves">Sick / month</label>
+            <input type="number" name="monthly_sick_leaves" id="monthly_sick_leaves" min="0" max="30" value="1">
+          </div>
+          <div class="field">
+            <label for="annual_leave_allowance">Annual total</label>
+            <input type="number" name="annual_leave_allowance" id="annual_leave_allowance" min="0" max="90" value="18">
           </div>
         </div>
+        <p class="logo-status" data-flows="enterprise_full" style="margin-top:-0.6rem;">A biometric attendance webhook secret is generated automatically — find it under Attendance once you're signed in.</p>
 
         <div class="step-actions">
           <button type="button" class="btn-register" id="toStep2">Continue</button>
@@ -817,8 +901,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <!-- ── STEP 2: Your account ── -->
       <div class="step-panel" id="step2">
-        <h2>Your account</h2>
-        <p class="subtitle">You'll sign in with this email once your company is set up.</p>
+        <h2 id="step2Heading">Your account</h2>
+        <p class="subtitle" id="step2Subtitle">You'll sign in with this email once your company is set up.</p>
         <div class="divider"></div>
 
         <div class="row-2">
@@ -979,13 +1063,107 @@ function goToStep(n) {
 }
 
 document.getElementById('toStep2').addEventListener('click', function () {
-  const companyName = document.getElementById('company_name');
-  const companySize = document.getElementById('company_size');
-  if (!companyName.reportValidity()) return;
-  if (!companySize.reportValidity()) return;
+  const step1Fields = step1.querySelectorAll('input:not([disabled]), select:not([disabled])');
+  for (const f of step1Fields) { if (!f.reportValidity()) return; }
   goToStep(2);
 });
 document.getElementById('toStep1').addEventListener('click', function () { goToStep(1); });
+
+// ── Registration track (tab) + sub-toggle (org vs solo) ─────────────────────
+// Four flows: client_company, client_individual, enterprise_full, enterprise_solo.
+// Every field that only applies to some flows is wrapped in an element with
+// data-flows="flow1,flow2"; applyFlow() shows/hides + disables/enables those
+// wrappers' inputs so hidden fields are neither validated nor submitted.
+const regTabs      = document.querySelectorAll('.reg-tab');
+const regSubs      = document.querySelectorAll('.reg-sub');
+const flowInput    = document.getElementById('flowInput');
+const orgNameLabel = document.getElementById('orgNameLabel');
+
+const FLOW_COPY = {
+  client_company: {
+    heading: 'Register your company', intro: "You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.",
+    stepLabel: 'Company & brand logo', step1Heading: 'Tell us about your company', step1Subtitle: "We'll try to find your brand logo automatically.",
+    step2Heading: 'Your account', step2Subtitle: "You'll sign in with this email once your company is set up.",
+    orgLabel: 'Company Name',
+  },
+  client_individual: {
+    heading: 'Register as a client', intro: "You're joining as an individual client. You'll be able to submit requirements, track delivery, and settle invoices directly.",
+    stepLabel: 'Your details', step1Heading: 'Where are you based?', step1Subtitle: 'Just enough to set up your workspace — no company required.',
+    step2Heading: 'Your account', step2Subtitle: "You'll sign in with this email once you're verified.",
+    orgLabel: 'Company Name',
+  },
+  enterprise_full: {
+    heading: 'Set up your organization', intro: "You'll be the admin of your own Astra workspace — no waiting on anyone. Invite your team, configure leave policy, and start tracking delivery today.",
+    stepLabel: 'Organization & brand logo', step1Heading: 'Tell us about your organization', step1Subtitle: "We'll try to find your brand logo automatically, and set up your leave policy.",
+    step2Heading: 'Your admin account', step2Subtitle: "You'll sign in as the admin of this workspace.",
+    orgLabel: 'Organization Name',
+  },
+  enterprise_solo: {
+    heading: 'Set up your solo workspace', intro: "A lightweight workspace built for a solo developer or studio — just the SDLC pipeline, delivery tracking, and invoicing. No team overhead.",
+    stepLabel: 'Your studio', step1Heading: 'Tell us about you', step1Subtitle: 'A lean setup — just the essentials.',
+    step2Heading: 'Your admin account', step2Subtitle: "You'll sign in as the admin of this workspace.",
+    orgLabel: 'Studio / Developer Name',
+  },
+};
+
+function computeFlow() {
+  const tab = document.querySelector('.reg-tab.active').dataset.tab;
+  const sub = document.querySelector('.reg-sub.active').dataset.sub;
+  if (tab === 'client') return sub === 'org' ? 'client_company' : 'client_individual';
+  return sub === 'org' ? 'enterprise_full' : 'enterprise_solo';
+}
+
+function applyFlow() {
+  const flow = computeFlow();
+  flowInput.value = flow;
+
+  document.querySelectorAll('[data-flows]').forEach(function (el) {
+    const show = el.dataset.flows.split(',').includes(flow);
+    el.style.display = show ? '' : 'none';
+    el.querySelectorAll('input, select, textarea').forEach(function (inp) { inp.disabled = !show; });
+  });
+
+  const copy = FLOW_COPY[flow];
+  document.getElementById('sheetHeading').textContent  = copy.heading;
+  document.getElementById('sheetIntro').textContent    = copy.intro;
+  document.getElementById('step1Label').textContent    = copy.stepLabel;
+  document.getElementById('step1Heading').textContent  = copy.step1Heading;
+  document.getElementById('step1Subtitle').textContent = copy.step1Subtitle;
+  document.getElementById('step2Heading').textContent  = copy.step2Heading;
+  document.getElementById('step2Subtitle').textContent = copy.step2Subtitle;
+  orgNameLabel.textContent = copy.orgLabel;
+
+  const subLabels = tab => tab === 'client' ? ['Company', 'Individual / Freelancer'] : ['Full Organization', 'Solo Enterprise'];
+  const activeTab = document.querySelector('.reg-tab.active').dataset.tab;
+  const [orgLabel, soloLabel] = subLabels(activeTab);
+  regSubs[0].textContent = orgLabel;
+  regSubs[1].textContent = soloLabel;
+}
+
+regTabs.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    regTabs.forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    regSubs.forEach(function (b) { b.classList.remove('active'); });
+    regSubs[0].classList.add('active'); // reset sub-toggle to the first option on tab switch
+    applyFlow();
+  });
+});
+regSubs.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    regSubs.forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    applyFlow();
+  });
+});
+
+// Honor ?track=enterprise (linked from auth/login.php's "New team member?"
+// footer, which used to be a dead-end "ask your admin" notice).
+if (new URLSearchParams(window.location.search).get('track') === 'enterprise') {
+  document.querySelector('.reg-tab[data-tab="enterprise"]').click();
+} else {
+  applyFlow();
+}
 
 // ── Automated brand-logo finder ─────────────────────────────────────────────
 // Builds a domain guess from the company name/website, then probes a few

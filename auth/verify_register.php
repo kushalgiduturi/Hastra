@@ -157,17 +157,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // The person who registers a company becomes its IT Manager.
                     // Their company gets its own email domain and ID block.
                     $company_name = trim($pending["company_name"] ?? "");
+                    $flow         = $pending["flow"] ?? "client_company";
+                    $account_type_map = [
+                        'client_company'    => 'client_org',
+                        'client_individual' => 'client_individual',
+                        'enterprise_full'   => 'full_org',
+                        'enterprise_solo'   => 'solo_enterprise',
+                    ];
                     $company      = null;
                     $blocked      = false;
                     if (company_schema_ready($conn) && $company_name !== "") {
                         if (find_company_by_name($conn, $company_name)) {
                             $blocked = true;
                         } else {
-                            $company = create_company($conn, $company_name, null, [
+                            $extra = [
                                 'size_band'    => $pending["company_size"] ?? null,
                                 'contract_ref' => ($pending["contract_ref"] ?? '') !== '' ? $pending["contract_ref"] : null,
                                 'logo_url'     => astra_resolve_company_logo($pending["logo_data"] ?? null),
-                            ]);
+                                'account_type' => $account_type_map[$flow] ?? 'client_org',
+                            ];
+                            if ($flow === 'enterprise_full') {
+                                $extra['leave_policy'] = [
+                                    'leave_cycle'             => in_array($pending['leave_cycle'] ?? '', ['monthly', 'yearly_rollover'], true) ? $pending['leave_cycle'] : 'monthly',
+                                    'monthly_general_leaves'  => (int)($pending['monthly_general_leaves'] ?? 1),
+                                    'monthly_sick_leaves'     => (int)($pending['monthly_sick_leaves'] ?? 1),
+                                    'annual_leave_allowance'  => (int)($pending['annual_leave_allowance'] ?? 18),
+                                ];
+                                $extra['generate_webhook_secret'] = true;
+                            }
+                            $company = create_company($conn, $company_name, null, $extra);
                         }
                     }
 
@@ -178,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         'password'     => $pending["password"],
                         'role'         => $pending["role"],
                     ];
-                    if (onboarding_schema_ready($conn)) {
+                    if (onboarding_schema_ready($conn) && $pending["role"] === 'client') {
                         $new_user['client_role'] = $company ? 'it_manager' : 'pm';
                     }
                     $new_user_id = $blocked ? null : insert_user_in_company($conn, $company, $new_user);
@@ -195,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $owner = mysqli_prepare($conn, "UPDATE companies SET user_id = ? WHERE id = ?");
                             mysqli_stmt_bind_param($owner, "ii", $new_user_id, $company["id"]);
                             mysqli_stmt_execute($owner);
-                            if (onboarding_schema_ready($conn)) {
+                            if (onboarding_schema_ready($conn) && $pending["role"] === 'client') {
                                 $itm = mysqli_prepare($conn, "UPDATE companies SET it_manager_id = ? WHERE id = ?");
                                 mysqli_stmt_bind_param($itm, "ii", $new_user_id, $company["id"]);
                                 mysqli_stmt_execute($itm);
