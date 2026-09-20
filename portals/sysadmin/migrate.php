@@ -14,6 +14,7 @@ require __DIR__ . '/../../config/migrations/2026_09_docs.php';
 require __DIR__ . '/../../config/migrations/2026_09_tours.php';
 require __DIR__ . '/../../config/migrations/2026_09_crypto.php';
 require __DIR__ . '/../../config/migrations/2026_09_attendance.php';
+require __DIR__ . '/../../config/migrations/2026_09_company_logo.php';
 
 const BACKUP_DIR        = __DIR__ . '/../../config/backups';
 const BACKUP_VALID_SECS = 3600;
@@ -58,6 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_tours($conn, $out);
             astra_migrate_crypto($conn, $out);
             astra_migrate_attendance($conn, $out);
+            astra_migrate_company_logo($conn, $out);
             $ran = "Dry run"; $result = 'ok';
         } elseif ($action === "apply") {
             if (!$backup_fresh) throw new RuntimeException("Take a backup first (step 1). Backups older than an hour don't count.");
@@ -70,6 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_tours($conn, $out);
             astra_migrate_crypto($conn, $out);
             astra_migrate_attendance($conn, $out);
+            astra_migrate_company_logo($conn, $out);
             $ran = "Apply"; $result = 'ok';
             // Your own ID may have moved — keep this session pointing at it.
             $again = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
@@ -98,6 +101,7 @@ $tours_ready   = tours_schema_ready($conn);
 $crypto_ready  = astra_crypto_column_type($conn, 'users', 'phone_number') === 'text'
               && astra_crypto_column_type($conn, 'logs', 'geo') === 'text';
 $attendance_ready = db_column_exists($conn, 'users', 'gender') && db_column_exists($conn, 'companies', 'leave_cycle');
+$logo_ready = db_column_exists($conn, 'companies', 'logo_url');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,6 +158,7 @@ $attendance_ready = db_column_exists($conn, 'users', 'gender') && db_column_exis
     <span>Onboarding tours (P18) <b class="<?= $tours_ready ? 'ok' : 'warn' ?>"><?= $tours_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Column encryption <b class="<?= $crypto_ready ? 'ok' : 'warn' ?>"><?= $crypto_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Attendance & leave <b class="<?= $attendance_ready ? 'ok' : 'warn' ?>"><?= $attendance_ready ? 'installed' : 'not installed' ?></b></span>
+    <span>Company logo <b class="<?= $logo_ready ? 'ok' : 'warn' ?>"><?= $logo_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Backup <b class="<?= $backup_fresh ? 'ok' : 'warn' ?>"><?= $backup_fresh ? htmlspecialchars(basename($backup['file'])) . ' · ' . date('H:i', $backup['at']) : 'none this hour' ?></b></span>
   </div>
 

@@ -36,6 +36,9 @@ $has_qa_access = mysqli_stmt_num_rows($__qa_check) > 0;
     </a>
     <a class="nav-badge <?= $is_lead ? 'lead' : '' ?>" href="<?= get_base_url() ?>portals/emlpoyee/employee_portal"><?= $is_lead ? 'Team Lead' : 'Employee' ?></a>
   </div>
+  <?php $__company_logo = astra_session_company_logo($conn); if ($__company_logo): ?>
+  <div class="nav-center-logo"><img src="<?= htmlspecialchars($__company_logo) ?>" alt="Company logo"></div>
+  <?php endif; ?>
   <div class="nav-right">
     <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
       <span class="theme-icon"></span>

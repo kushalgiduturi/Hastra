@@ -18,6 +18,9 @@ $display_name  = $logged_in_name ?? ($_SESSION['user_name'] ?? '');
     </a>
     <a class="nav-badge" href="<?= get_base_url() ?>portals/sysadmin/sysadmin_portal">Sysadmin</a>
   </div>
+  <?php $__company_logo = astra_session_company_logo($conn); if ($__company_logo): ?>
+  <div class="nav-center-logo"><img src="<?= htmlspecialchars($__company_logo) ?>" alt="Company logo"></div>
+  <?php endif; ?>
   <div class="nav-right">
     <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
       <span class="theme-icon"></span>

@@ -166,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $company = create_company($conn, $company_name, null, [
                                 'size_band'    => $pending["company_size"] ?? null,
                                 'contract_ref' => ($pending["contract_ref"] ?? '') !== '' ? $pending["contract_ref"] : null,
+                                'logo_url'     => astra_resolve_company_logo($pending["logo_data"] ?? null),
                             ]);
                         }
                     }

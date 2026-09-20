@@ -55,6 +55,19 @@
 }
 .nav-badge.lead { color: var(--accent-bright); background: rgba(var(--accent-rgb),0.1); }
 
+/* ── Center: the signed-in user's company logo, alongside the Astra mark ──
+   Absolutely centered so it never disrupts the left/right flex clusters;
+   .topnav's own `position: sticky` already establishes the containing block. */
+.nav-center-logo {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 8px; pointer-events: none;
+}
+.nav-center-logo img {
+  width: 26px; height: 26px; border-radius: 50%; object-fit: contain;
+  background: #fff; border: 1px solid var(--border-dim);
+}
+@media (max-width: 640px) { .nav-center-logo { display: none; } }
+
 /* ── Right cluster: theme toggle + user ── */
 .nav-right { display: flex; align-items: center; gap: 12px; }
 .nav-user { font-size: 13px; color: var(--text-dim); }

@@ -108,9 +108,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // ── CLIENT: insert into pending_registrations, send OTP ───────────────
             } else {
-                $otp = rand(100000, 999999);
+                $otp       = rand(100000, 999999);
+                $logo_data = trim($_POST["logo_data"] ?? "");
+                if (mb_strlen($logo_data) > 900000) $logo_data = ""; // guard against an oversized payload
 
-                if (onboarding_schema_ready($conn)) {
+                if (onboarding_schema_ready($conn) && db_column_exists($conn, 'pending_registrations', 'logo_data')) {
+                    $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, company_size, contract_ref, logo_data, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
+                    mysqli_stmt_bind_param($pend_insert, "ssssssssss", $name, $email, $phone, $hashed, $role, $company_name, $company_size, $contract_ref, $logo_data, $otp);
+                } elseif (onboarding_schema_ready($conn)) {
                     $pend_insert = mysqli_prepare($conn, "INSERT INTO pending_registrations (name, email, phone_number, password, role, company_name, company_size, contract_ref, otp, otp_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))");
                     mysqli_stmt_bind_param($pend_insert, "sssssssss", $name, $email, $phone, $hashed, $role, $company_name, $company_size, $contract_ref, $otp);
                 } else {
@@ -192,9 +197,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     border: 1px solid var(--border);
     border-radius: 4px;
     width: 100%;
-    max-width: 460px;
-    padding: 2.5rem 2.5rem 2rem;
+    max-width: 1040px;
+    padding: 0;
     box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow);
+    overflow: hidden;
   }
 
   .card::before {
@@ -583,6 +589,122 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
+
+  /* ── Full-bleed registration sheet ── */
+  .sheet-grid { display: grid; grid-template-columns: 340px 1fr; min-height: 560px; }
+  @media (max-width: 800px) { .sheet-grid { grid-template-columns: 1fr; } }
+
+  .sheet-side {
+    background: linear-gradient(160deg, rgba(var(--accent-rgb),0.14), rgba(0,0,0,0.15));
+    border-right: 1px solid var(--border-dim);
+    padding: 2.6rem 2.2rem;
+    display: flex; flex-direction: column;
+  }
+  @media (max-width: 800px) { .sheet-side { border-right: none; border-bottom: 1px solid var(--border-dim); padding: 2rem 1.6rem; } }
+
+  .sheet-side .brand { margin-bottom: 2.2rem !important; }
+  .sheet-side h1 {
+    font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 700;
+    color: var(--text); line-height: 1.25; margin: 0 0 0.8rem;
+  }
+  .sheet-side p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; margin: 0; }
+
+  .sheet-steps { list-style: none; margin: 2.2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .sheet-steps li {
+    display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim);
+    transition: color 0.2s;
+  }
+  .sheet-steps .step-num {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Share Tech Mono', monospace; font-size: 11px;
+    border: 1.5px solid var(--border-dim); color: var(--text-dim);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .sheet-steps li.current { color: var(--text); font-weight: 600; }
+  .sheet-steps li.current .step-num,
+  .sheet-steps li.done .step-num { background: var(--accent-bright); border-color: var(--accent-bright); color: #fff; }
+  .sheet-steps li.done { color: var(--text-dim); }
+
+  .navbar-preview {
+    margin-top: auto; padding-top: 1.6rem;
+  }
+  .navbar-preview .np-label { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .navbar-preview .np-bar {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(127,127,127,0.08); border: 1px solid var(--border-dim); border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .navbar-preview .np-bar .np-astra { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
+  .navbar-preview .np-logo {
+    width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
+    border: 1px solid var(--border-dim); background: #fff;
+  }
+  .navbar-preview .np-logo-placeholder {
+    width: 26px; height: 26px; border-radius: 50%; border: 1.5px dashed var(--border-dim);
+    display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 10px;
+  }
+
+  .sheet-main { padding: 2.6rem 2.8rem; }
+  @media (max-width: 800px) { .sheet-main { padding: 2rem 1.6rem; } }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; animation: stepFadeIn 0.35s ease; }
+  @keyframes stepFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .step-actions { display: flex; gap: 10px; margin-top: 1.4rem; }
+  .step-actions .btn-back {
+    flex: 0 0 auto; background: transparent; border: 1px solid var(--border-dim); color: var(--text-dim);
+    border-radius: 7px; padding: 11px 18px; font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13.5px;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .step-actions .btn-back:hover { border-color: var(--accent-bright); color: var(--text); }
+  .step-actions .btn-register { margin-top: 0; }
+
+  /* ── Logo finder ── */
+  .logo-finder { margin-top: 0.4rem; }
+  .logo-finder-label {
+    font-size: 11px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.07em;
+    text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .logo-finder-label .spinner {
+    width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--border-dim);
+    border-top-color: var(--accent-bright); animation: spin 0.7s linear infinite; display: none;
+  }
+  .logo-finder-label.searching .spinner { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .logo-tiles { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .logo-tile {
+    width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--border-dim);
+    background: #fff; cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .logo-tile img { width: 100%; height: 100%; object-fit: contain; }
+  .logo-tile:hover { transform: translateY(-2px); }
+  .logo-tile.selected {
+    border-color: var(--accent-bright);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.18), 0 0 20px -4px rgba(var(--accent-rgb),0.5);
+  }
+
+  .logo-dropzone {
+    border: 1.5px dashed var(--border-dim); border-radius: 10px; padding: 1.2rem;
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .logo-dropzone:hover, .logo-dropzone.drag-over { border-color: var(--accent-bright); background: rgba(var(--accent-rgb),0.05); }
+  .logo-dropzone .dz-icon {
+    width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
+    background: rgba(var(--accent-rgb),0.12); display: flex; align-items: center; justify-content: center;
+    color: var(--accent-bright);
+  }
+  .logo-dropzone .dz-icon svg { width: 18px; height: 18px; }
+  .logo-dropzone .dz-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+  .logo-dropzone .dz-text b { color: var(--text); }
+  .logo-dropzone .dz-preview { width: 44px; height: 44px; border-radius: 50%; object-fit: contain; background: #fff; border: 1px solid var(--border-dim); display: none; }
+  .logo-dropzone.has-file .dz-preview { display: block; }
+
+  .logo-status { font-size: 12px; color: var(--text-dim); margin-top: 8px; min-height: 16px; }
 </style>
 </head>
 <body>
@@ -595,124 +717,187 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 <div class="card">
+<div class="sheet-grid">
 
-  <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+  <!-- ── Left: brand, steps, live navbar preview ── -->
+  <div class="sheet-side">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="title">Astra</div>
+      </div>
     </div>
-    <div class="brand-text">
-      <div class="title">Astra</div>
-      <div class="sub">Create New Account</div>
+
+    <h1>Register your company</h1>
+    <p>You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
+
+    <ul class="sheet-steps" id="sheetSteps">
+      <li class="current" data-step="1"><span class="step-num">1</span> Company &amp; brand logo</li>
+      <li data-step="2"><span class="step-num">2</span> Your account</li>
+    </ul>
+
+    <div class="navbar-preview">
+      <div class="np-label">Top bar preview</div>
+      <div class="np-bar">
+        <span class="np-astra">ASTRA</span>
+        <img id="navPreviewLogo" class="np-logo" style="display:none;" alt="Company logo preview">
+        <span id="navPreviewPlaceholder" class="np-logo-placeholder">?</span>
+      </div>
     </div>
   </div>
 
-  <h2>Register your company</h2>
-  <p class="subtitle">You'll be your company's IT Manager on Astra. After signing in you can upload your team roster and invite everyone.</p>
-  <div class="divider"></div>
+  <!-- ── Right: the multi-step form itself ── -->
+  <div class="sheet-main">
 
-  <?php if ($msg): ?>
-  <div class="alert error">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-    <span><?= $msg ?></span>
+    <?php if ($msg): ?>
+    <div class="alert error">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <span><?= $msg ?></span>
+    </div>
+    <?php endif; ?>
+
+    <form method="POST" action="register" id="registerForm">
+      <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+      <input type="hidden" name="logo_data" id="logoData" value="">
+
+      <!-- ── STEP 1: Company + logo ── -->
+      <div class="step-panel active" id="step1">
+        <h2>Tell us about your company</h2>
+        <p class="subtitle">We'll try to find your brand logo automatically.</p>
+        <div class="divider"></div>
+
+        <div class="field">
+          <label for="company_name">Company Name</label>
+          <input type="text" name="company_name" id="company_name" maxlength="150" required placeholder="Acme Inc."
+                 value="<?= htmlspecialchars($_POST['company_name'] ?? '') ?>">
+        </div>
+
+        <div class="field">
+          <label for="company_domain">Company Website <span class="optional">(optional, improves logo match)</span></label>
+          <input type="text" id="company_domain" maxlength="150" placeholder="acme.com">
+        </div>
+
+        <div class="field logo-finder">
+          <div class="logo-finder-label" id="logoFinderLabel"><span class="spinner"></span> Select your official brand logo</div>
+          <div class="logo-tiles" id="logoTiles"></div>
+          <div class="logo-dropzone" id="logoDropzone">
+            <div class="dz-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0L7 8m5-5l5 5"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+            </div>
+            <img class="dz-preview" id="dzPreview" alt="">
+            <div class="dz-text"><b>Upload your logo</b><br>or drag a PNG/JPG/WebP here (max 700KB)</div>
+            <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
+          </div>
+          <div class="logo-status" id="logoStatus"></div>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="company_size">Company Size</label>
+            <select name="company_size" id="company_size" required>
+              <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
+              <?php foreach (COMPANY_SIZES as $val => $label): ?>
+              <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="field">
+            <label for="contract_ref">Contract / PO Reference <span class="optional">(optional)</span></label>
+            <input type="text" name="contract_ref" id="contract_ref" maxlength="60" placeholder="PO-2026-014"
+                   value="<?= htmlspecialchars($_POST['contract_ref'] ?? '') ?>">
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-register" id="toStep2">Continue</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Your account ── -->
+      <div class="step-panel" id="step2">
+        <h2>Your account</h2>
+        <p class="subtitle">You'll sign in with this email once your company is set up.</p>
+        <div class="divider"></div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input type="text" name="name" id="name" maxlength="100" required placeholder="John Doe">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" maxlength="100" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="phone_number">Phone Number</label>
+          <input type="tel" name="phone_number" id="phone_number" required placeholder="9876543210">
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" name="password" id="password"
+                   maxlength="128" required placeholder="••••••••••••"
+                   oninput="checkPassword(this.value)">
+            <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')">
+              <svg id="eye1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="req-box">
+          <div class="req-item" id="req_length"> <span class="dot"></span> 8+ characters </div>
+          <div class="req-item" id="req_upper">  <span class="dot"></span> Uppercase (A-Z) </div>
+          <div class="req-item" id="req_lower">  <span class="dot"></span> Lowercase (a-z) </div>
+          <div class="req-item" id="req_number"> <span class="dot"></span> Number (0-9) </div>
+          <div class="req-item" id="req_special"><span class="dot"></span> Special character </div>
+        </div>
+
+        <div class="field">
+          <label for="confirm">Confirm Password</label>
+          <div class="input-wrap">
+            <input type="password" name="confirm" id="confirm"
+                   maxlength="128" required placeholder="••••••••••••"
+                   oninput="checkMatch()">
+            <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')">
+              <svg id="eye2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <div class="match-msg" id="matchMsg"></div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-back" id="toStep1">Back</button>
+          <button type="submit" class="btn-register" style="flex:1 1 auto;">Create Account</button>
+        </div>
+      </div>
+    </form>
+
+    <div style="display:flex; align-items:center; justify-content:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.07);">
+      <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
+        <span class="theme-icon"></span>
+        <span class="theme-label"></span>
+      </button>
+    </div>
+    <div class="footer-links">
+      <span>Already have an account?</span>
+      <a href="login">Sign in</a>
+    </div>
   </div>
-  <?php endif; ?>
 
-  <form method="POST" action="register" id="registerForm">
-    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-
-    <div class="row-2">
-      <div class="field">
-        <label for="name">Full Name</label>
-        <input type="text" name="name" id="name" maxlength="100" required placeholder="John Doe">
-      </div>
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" maxlength="100" required placeholder="you@example.com">
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="phone_number">Phone Number</label>
-      <input type="tel" name="phone_number" id="phone_number" required placeholder="9876543210">
-    </div>
-
-    <div class="field">
-      <label for="company_name">Company Name</label>
-      <input type="text" name="company_name" id="company_name" maxlength="150" required placeholder="Acme Inc."
-             value="<?= htmlspecialchars($_POST['company_name'] ?? '') ?>">
-    </div>
-
-    <div class="row-2">
-      <div class="field">
-        <label for="company_size">Company Size</label>
-        <select name="company_size" id="company_size" required>
-          <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
-          <?php foreach (COMPANY_SIZES as $val => $label): ?>
-          <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div class="field">
-        <label for="contract_ref">Contract / PO Reference <span class="optional">(optional)</span></label>
-        <input type="text" name="contract_ref" id="contract_ref" maxlength="60" placeholder="PO-2026-014"
-               value="<?= htmlspecialchars($_POST['contract_ref'] ?? '') ?>">
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="password">Password</label>
-      <div class="input-wrap">
-        <input type="password" name="password" id="password"
-               maxlength="128" required placeholder="••••••••••••"
-               oninput="checkPassword(this.value)">
-        <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')">
-          <svg id="eye1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-            <line x1="1" y1="1" x2="23" y2="23"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="req-box">
-      <div class="req-item" id="req_length"> <span class="dot"></span> 8+ characters </div>
-      <div class="req-item" id="req_upper">  <span class="dot"></span> Uppercase (A-Z) </div>
-      <div class="req-item" id="req_lower">  <span class="dot"></span> Lowercase (a-z) </div>
-      <div class="req-item" id="req_number"> <span class="dot"></span> Number (0-9) </div>
-      <div class="req-item" id="req_special"><span class="dot"></span> Special character </div>
-    </div>
-
-    <div class="field">
-      <label for="confirm">Confirm Password</label>
-      <div class="input-wrap">
-        <input type="password" name="confirm" id="confirm"
-               maxlength="128" required placeholder="••••••••••••"
-               oninput="checkMatch()">
-        <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')">
-          <svg id="eye2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-            <line x1="1" y1="1" x2="23" y2="23"/>
-          </svg>
-        </button>
-      </div>
-      <div class="match-msg" id="matchMsg"></div>
-    </div>
-
-    <button type="submit" class="btn-register">Create Account</button>
-  </form>
-
-  <div style="display:flex; align-items:center; justify-content:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.07);">
-    <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
-      <span class="theme-icon"></span>
-      <span class="theme-label"></span>
-    </button>
-  </div>
-  <div class="footer-links">
-    <span>Already have an account?</span>
-    <a href="login">Sign in</a>
-  </div>
+</div>
 
 </div>
 
@@ -771,11 +956,177 @@ const phoneIti = window.intlTelInput(phoneInput, {
   },
 });
 
-document.getElementById('registerForm').addEventListener('submit', function () {
+document.getElementById('registerForm').addEventListener('submit', function (e) {
   if (phoneInput.value.trim() !== '') {
     phoneInput.value = phoneIti.getNumber(); // E.164, e.g. +919876543210
   }
 });
+
+// ── Step navigation ─────────────────────────────────────────────────────────
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const stepsList = document.querySelectorAll('#sheetSteps li');
+
+function goToStep(n) {
+  step1.classList.toggle('active', n === 1);
+  step2.classList.toggle('active', n === 2);
+  stepsList.forEach(function (li) {
+    const s = parseInt(li.dataset.step, 10);
+    li.classList.toggle('current', s === n);
+    li.classList.toggle('done', s < n);
+  });
+  if (n === 2) document.getElementById('name').focus();
+}
+
+document.getElementById('toStep2').addEventListener('click', function () {
+  const companyName = document.getElementById('company_name');
+  const companySize = document.getElementById('company_size');
+  if (!companyName.reportValidity()) return;
+  if (!companySize.reportValidity()) return;
+  goToStep(2);
+});
+document.getElementById('toStep1').addEventListener('click', function () { goToStep(1); });
+
+// ── Automated brand-logo finder ─────────────────────────────────────────────
+// Builds a domain guess from the company name/website, then probes a few
+// public logo endpoints as plain <img> loads — no API keys, no CORS/fetch
+// needed. Whichever ones actually load become selectable tiles; a manual
+// upload is always available underneath as a fallback.
+const logoTiles      = document.getElementById('logoTiles');
+const logoStatus     = document.getElementById('logoStatus');
+const logoFinderLbl  = document.getElementById('logoFinderLabel');
+const logoDataInput  = document.getElementById('logoData');
+const navPreviewImg  = document.getElementById('navPreviewLogo');
+const navPreviewPh   = document.getElementById('navPreviewPlaceholder');
+
+function guessDomain(nameOrDomain) {
+  const v = (nameOrDomain || '').trim().toLowerCase();
+  if (!v) return '';
+  if (/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(v.replace(/^https?:\/\//, '').split('/')[0])) {
+    return v.replace(/^https?:\/\//, '').split('/')[0];
+  }
+  const slug = v.replace(/[^a-z0-9]+/g, '');
+  return slug ? slug + '.com' : '';
+}
+
+function selectLogo(url, tileEl) {
+  logoTiles.querySelectorAll('.logo-tile').forEach(function (t) { t.classList.remove('selected'); });
+  if (tileEl) tileEl.classList.add('selected');
+  logoDataInput.value = url;
+  dropzone.classList.remove('has-file');
+  updateNavPreview(url);
+}
+
+function updateNavPreview(url) {
+  if (url) {
+    navPreviewImg.src = url;
+    navPreviewImg.style.display = 'block';
+    navPreviewPh.style.display = 'none';
+  } else {
+    navPreviewImg.style.display = 'none';
+    navPreviewPh.style.display = 'flex';
+  }
+}
+
+let logoSearchSeq = 0;
+function searchLogos(domain) {
+  logoSearchSeq++;
+  const seq = logoSearchSeq;
+  logoTiles.innerHTML = '';
+  logoStatus.textContent = '';
+  if (!domain) { logoFinderLbl.classList.remove('searching'); return; }
+
+  logoFinderLbl.classList.add('searching');
+  const candidates = [
+    'https://logo.clearbit.com/' + domain,
+    'https://www.google.com/s2/favicons?domain=' + domain + '&sz=128',
+    'https://icons.duckduckgo.com/ip3/' + domain + '.ico',
+  ];
+  let pending = candidates.length;
+  let found = 0;
+
+  candidates.forEach(function (src) {
+    const probe = new Image();
+    probe.onload = function () {
+      if (seq !== logoSearchSeq) return;
+      pending--; found++;
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'logo-tile';
+      const img = document.createElement('img');
+      img.src = src; img.alt = 'Logo option';
+      tile.appendChild(img);
+      tile.addEventListener('click', function () { selectLogo(src, tile); });
+      logoTiles.appendChild(tile);
+      if (!logoDataInput.value) selectLogo(src, tile); // auto-pick the first hit
+      if (pending === 0) finishSearch(seq, found);
+    };
+    probe.onerror = function () {
+      if (seq !== logoSearchSeq) return;
+      pending--;
+      if (pending === 0) finishSearch(seq, found);
+    };
+    probe.src = src;
+  });
+}
+
+function finishSearch(seq, found) {
+  if (seq !== logoSearchSeq) return;
+  logoFinderLbl.classList.remove('searching');
+  logoStatus.textContent = found > 0
+    ? 'Pick the one that matches your brand, or upload your own below.'
+    : "Couldn't find a logo automatically — upload your own below.";
+}
+
+let domainDebounce = null;
+function onDomainInputChanged() {
+  clearTimeout(domainDebounce);
+  domainDebounce = setTimeout(function () {
+    const explicit = document.getElementById('company_domain').value.trim();
+    const domain = guessDomain(explicit || document.getElementById('company_name').value);
+    searchLogos(domain);
+  }, 500);
+}
+document.getElementById('company_domain').addEventListener('input', onDomainInputChanged);
+document.getElementById('company_name').addEventListener('input', onDomainInputChanged);
+
+// ── Manual upload fallback (click or drag-and-drop) ─────────────────────────
+const dropzone   = document.getElementById('logoDropzone');
+const fileInput  = document.getElementById('logoFileInput');
+const dzPreview  = document.getElementById('dzPreview');
+
+dropzone.addEventListener('click', function () { fileInput.click(); });
+dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('drag-over'); });
+dropzone.addEventListener('drop', function (e) {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleLogoFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', function () {
+  if (fileInput.files[0]) handleLogoFile(fileInput.files[0]);
+});
+
+function handleLogoFile(file) {
+  if (!/^image\/(png|jpeg|jpg|webp|gif)$/.test(file.type)) {
+    logoStatus.textContent = 'Please choose a PNG, JPG, WebP, or GIF image.';
+    return;
+  }
+  if (file.size > 700 * 1024) {
+    logoStatus.textContent = 'That image is too large — please use one under 700KB.';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function () {
+    logoTiles.querySelectorAll('.logo-tile').forEach(function (t) { t.classList.remove('selected'); });
+    logoDataInput.value = reader.result;
+    dzPreview.src = reader.result;
+    dropzone.classList.add('has-file');
+    updateNavPreview(reader.result);
+    logoStatus.textContent = 'Using your uploaded logo.';
+  };
+  reader.readAsDataURL(file);
+}
 </script>
 
 </body>

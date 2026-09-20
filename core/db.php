@@ -5,7 +5,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '11');
+    define('ASSET_VERSION', '12');
 }
 
 header("X-Frame-Options: DENY");
@@ -14,7 +14,7 @@ header("Content-Security-Policy: default-src 'self'; "
      . "script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; "
      . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
      . "font-src 'self' https://fonts.gstatic.com; "
-     . "img-src 'self' data: https://cdn.jsdelivr.net; "
+     . "img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; "
      . "frame-src https://www.google.com; "
      . "connect-src 'self'; "
      . "object-src 'none'; base-uri 'self'; frame-ancestors 'none'");

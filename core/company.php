@@ -249,7 +249,60 @@ function create_company($conn, $company_name, $owner_user_id = null, array $extr
         mysqli_stmt_execute($upd);
     }
 
+    if (!empty($extra['logo_url']) && db_column_exists($conn, 'companies', 'logo_url')) {
+        $logo = $extra['logo_url'];
+        $upd  = mysqli_prepare($conn, "UPDATE companies SET logo_url = ? WHERE id = ?");
+        mysqli_stmt_bind_param($upd, "si", $logo, $id);
+        mysqli_stmt_execute($upd);
+    }
+
     return get_company($conn, $id);
+}
+
+// Turns a pending registration's logo_data (an http(s) URL picked from the
+// automated logo search, or a data: URI from the manual upload fallback —
+// see auth/register.php) into a companies.logo_url value. An external URL
+// is stored as-is; an upload is decoded and written to
+// uploads/company_logos/ under a random name. Returns null on anything
+// that doesn't look like a valid image (bad data, unsupported type, too
+// large) rather than storing junk.
+function astra_resolve_company_logo($logo_data) {
+    $logo_data = trim((string)$logo_data);
+    if ($logo_data === '') return null;
+
+    if (preg_match('#^https?://#i', $logo_data)) {
+        return mb_strlen($logo_data) <= 500 ? $logo_data : null;
+    }
+
+    if (!preg_match('#^data:image/(png|jpeg|jpg|webp|gif);base64,(.+)$#i', $logo_data, $m)) {
+        return null;
+    }
+    $ext  = strtolower($m[1]) === 'jpeg' ? 'jpg' : strtolower($m[1]);
+    $blob = base64_decode($m[2], true);
+    if ($blob === false || strlen($blob) > 700 * 1024 || !@getimagesizefromstring($blob)) {
+        return null;
+    }
+
+    $dir = __DIR__ . '/../uploads/company_logos/';
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    $name = bin2hex(random_bytes(16)) . '.' . $ext;
+    if (file_put_contents($dir . $name, $blob) === false) return null;
+
+    return 'uploads/company_logos/' . $name;
+}
+
+// The signed-in user's company logo (absolute URL, or a base_url-relative
+// uploads/ path), or null if they have none/belong to the internal company.
+// Used by every portal's _nav.php to show it in the top bar.
+function astra_session_company_logo($conn) {
+    if (!isset($_SESSION['user_id']) || !db_column_exists($conn, 'companies', 'logo_url')) return null;
+    $stmt = mysqli_prepare($conn, "SELECT c.logo_url FROM users u JOIN companies c ON c.id = u.company_id
+                                    WHERE u.id = ? AND c.is_internal = 0 AND c.logo_url IS NOT NULL");
+    mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    if (!$row || !$row['logo_url']) return null;
+    return preg_match('#^https?://#i', $row['logo_url']) ? $row['logo_url'] : get_base_url() . $row['logo_url'];
 }
 
 function find_or_create_company($conn, $company_name, $owner_user_id = null) {
