@@ -21,6 +21,7 @@ if (isset($_SESSION["user_id"])) {
 }
 
 $msg = "";
+$active_portal = ($_POST["portal"] ?? "") === "client" ? "client" : "enterprise";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     verify_csrf_token();
@@ -646,6 +647,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
 
+  /* ── Two-portal sliding gate ── */
+  .portal-toggle {
+    display: flex; gap: 4px; background: rgba(127,127,127,.08);
+    border: 1px solid var(--border-dim); border-radius: 9px; padding: 4px;
+    margin-bottom: 1.6rem;
+  }
+  .portal-toggle button {
+    flex: 1 1 0; border: none; background: transparent; color: var(--text-dim);
+    font-family: 'Sora', sans-serif; font-size: 12.5px; font-weight: 600;
+    letter-spacing: .01em; padding: 9px 8px; border-radius: 6px; cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .portal-toggle button.active {
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    color: #fff; box-shadow: 0 6px 16px -6px var(--accent-glow);
+  }
+  .portal-toggle button:not(.active):hover { color: var(--text); }
+
+  .login-viewport { overflow: hidden; position: relative; }
+  .login-track {
+    display: flex; width: 200%;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .login-track.show-client { transform: translateX(-50%); }
+  .login-panel { flex: 0 0 50%; width: 50%; min-width: 0; }
+  .login-panel:first-child { padding-right: 1px; }
+  .login-panel:last-child { padding-left: 1px; }
+
 </style>
 </head>
 <body data-intro-manual>
@@ -682,68 +711,138 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </div>
 
-  <h2>Sign In</h2>
-  <p class="subtitle">Enter your credentials to access your account.</p>
-  <div class="divider"></div>
-
-  <!-- Error message -->
-  <?php if ($msg): ?>
-  <div class="alert">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-    <?= htmlspecialchars($msg) ?>
+  <!-- Portal toggle -->
+  <div class="portal-toggle" role="tablist" aria-label="Choose sign-in portal">
+    <button type="button" id="toggleEnterprise" class="<?= $active_portal === 'enterprise' ? 'active' : '' ?>" role="tab" aria-selected="<?= $active_portal === 'enterprise' ? 'true' : 'false' ?>">Enterprise Workspace</button>
+    <button type="button" id="toggleClient" class="<?= $active_portal === 'client' ? 'active' : '' ?>" role="tab" aria-selected="<?= $active_portal === 'client' ? 'true' : 'false' ?>">Client Gateway</button>
   </div>
-  <?php endif; ?>
 
-  <form method="POST" action="login" id="loginForm" autocomplete="on">
-    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+  <div class="login-viewport">
+    <div class="login-track<?= $active_portal === 'client' ? ' show-client' : '' ?>" id="loginTrack">
 
-    <!-- Email -->
-    <div class="field">
-      <label for="email">Email Address</label>
-      <input type="email" name="email" id="email"
-             maxlength="100" required autocomplete="username"
-             placeholder="you@example.com">
-    </div>
+      <!-- ── Enterprise Workspace panel ── -->
+      <div class="login-panel">
+        <h2>Sign In</h2>
+        <p class="subtitle">Enter your workspace credentials to access Astra.</p>
+        <div class="divider"></div>
 
-    <!-- Password -->
-    <div class="field">
-      <label for="password">Password</label>
-      <div class="input-wrap">
-        <input type="password" name="password" id="password"
-               maxlength="128" required autocomplete="current-password"
-               placeholder="••••••••••••">
-        <button type="button" class="eye-btn" id="eyeBtn" aria-label="Toggle password visibility">
-          <!-- Eye icon (closed by default since password is hidden) -->
-          <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-            <line x1="1" y1="1" x2="23" y2="23"/>
-          </svg>
-        </button>
+        <?php if ($msg && $active_portal === 'enterprise'): ?>
+        <div class="alert">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <?= htmlspecialchars($msg) ?>
+        </div>
+        <?php endif; ?>
+
+        <form method="POST" action="login" class="loginForm" autocomplete="on">
+          <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+          <input type="hidden" name="portal" value="enterprise">
+
+          <div class="field">
+            <label for="email-enterprise">Email Address</label>
+            <input type="email" name="email" id="email-enterprise"
+                   maxlength="100" required autocomplete="username"
+                   placeholder="you@company.com">
+          </div>
+
+          <div class="field">
+            <label for="password-enterprise">Password</label>
+            <div class="input-wrap">
+              <input type="password" name="password" id="password-enterprise" class="pwd-input"
+                     maxlength="128" required autocomplete="current-password"
+                     placeholder="••••••••••••">
+              <button type="button" class="eye-btn" aria-label="Toggle password visibility">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="checkbox-wrap">
+              <input type="checkbox" name="remember_me">
+              <span>Remember me</span>
+            </label>
+            <a href="forgot" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <div class="recaptcha-wrap">
+            <div class="recaptcha-slot" id="recaptchaContainer-enterprise"></div>
+          </div>
+
+          <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <div class="footer-links">
+          <span>New team member?</span>
+          <span>Ask your admin for an invite</span>
+        </div>
       </div>
+
+      <!-- ── Client Gateway panel ── -->
+      <div class="login-panel">
+        <h2>Client Sign In</h2>
+        <p class="subtitle">Access the project workspace your company was onboarded into.</p>
+        <div class="divider"></div>
+
+        <?php if ($msg && $active_portal === 'client'): ?>
+        <div class="alert">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <?= htmlspecialchars($msg) ?>
+        </div>
+        <?php endif; ?>
+
+        <form method="POST" action="login" class="loginForm" autocomplete="on">
+          <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+          <input type="hidden" name="portal" value="client">
+
+          <div class="field">
+            <label for="email-client">Email Address</label>
+            <input type="email" name="email" id="email-client"
+                   maxlength="100" required autocomplete="username"
+                   placeholder="you@example.com">
+          </div>
+
+          <div class="field">
+            <label for="password-client">Password</label>
+            <div class="input-wrap">
+              <input type="password" name="password" id="password-client" class="pwd-input"
+                     maxlength="128" required autocomplete="current-password"
+                     placeholder="••••••••••••">
+              <button type="button" class="eye-btn" aria-label="Toggle password visibility">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="checkbox-wrap">
+              <input type="checkbox" name="remember_me">
+              <span>Remember me</span>
+            </label>
+            <a href="forgot" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <div class="recaptcha-wrap">
+            <div class="recaptcha-slot" id="recaptchaContainer-client"></div>
+          </div>
+
+          <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <div class="footer-links">
+          <span>New client company?</span>
+          <a href="register">Create your workspace</a>
+        </div>
+      </div>
+
     </div>
-
-    <!-- Remember Me + Forgot -->
-    <div class="row">
-      <label class="checkbox-wrap">
-        <input type="checkbox" name="remember_me" id="rememberMe">
-        <span>Remember me</span>
-      </label>
-      <a href="forgot" class="forgot-link">Forgot password?</a>
-    </div>
-
-    <!-- reCAPTCHA -->
-    <div class="recaptcha-wrap">
-      <div id="recaptchaContainer-0"></div>
-    </div>
-
-    <button type="submit" class="btn-login">Sign In</button>
-  </form>
-
-  <!-- Footer links -->
-  <div class="footer-links">
-    <span>Don't have an account?</span>
-    <a href="register">Create account</a>
   </div>
 
   <!-- System status -->
@@ -812,18 +911,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }, 2500);
 })();
 
-// ── Show / Hide password ──────────────────────────────────────────────────────
-const passwordInput = document.getElementById('password');
-const eyeBtn        = document.getElementById('eyeBtn');
-const eyeIcon       = document.getElementById('eyeIcon');
+// ── Two-portal sliding gate ─────────────────────────────────────────────────
+const loginTrack       = document.getElementById('loginTrack');
+const toggleEnterprise  = document.getElementById('toggleEnterprise');
+const toggleClient      = document.getElementById('toggleClient');
 
+function setActivePortal(portal) {
+  loginTrack.classList.toggle('show-client', portal === 'client');
+  toggleEnterprise.classList.toggle('active', portal === 'enterprise');
+  toggleClient.classList.toggle('active', portal === 'client');
+  toggleEnterprise.setAttribute('aria-selected', portal === 'enterprise' ? 'true' : 'false');
+  toggleClient.setAttribute('aria-selected', portal === 'client' ? 'true' : 'false');
+}
+toggleEnterprise.addEventListener('click', function() { setActivePortal('enterprise'); });
+toggleClient.addEventListener('click', function() { setActivePortal('client'); });
+
+// ── Show / Hide password (one eye button per panel) ────────────────────────
 const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>`;
 const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
 
-eyeBtn.addEventListener('click', function() {
-  const isHidden = passwordInput.type === 'password';
-  passwordInput.type = isHidden ? 'text' : 'password';
-  eyeIcon.innerHTML  = isHidden ? eyeOpen : eyeClosed;
+document.querySelectorAll('.eye-btn').forEach(function(btn) {
+  const wrap  = btn.closest('.input-wrap');
+  const input = wrap.querySelector('.pwd-input');
+  const icon  = btn.querySelector('.eye-icon');
+  btn.addEventListener('click', function() {
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    icon.innerHTML = isHidden ? eyeOpen : eyeClosed;
+  });
 });
 
 // ── Credential Management API ─────────────────────────────────────────────────
@@ -831,47 +946,48 @@ if (window.PasswordCredential) {
   navigator.credentials.get({ password: true, mediation: 'optional' })
     .then(credential => {
       if (credential) {
-        document.getElementById('email').value    = credential.id;
-        document.getElementById('password').value = credential.password;
+        document.querySelectorAll('input[name="email"]').forEach(el => el.value = credential.id);
+        document.querySelectorAll('.pwd-input').forEach(el => el.value = credential.password);
       }
     }).catch(() => {});
 
-  document.getElementById('loginForm').addEventListener('submit', async function() {
-    const email    = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    if (email && password) {
-      try {
-        const cred = new PasswordCredential({ id: email, password: password, name: email });
-        await navigator.credentials.store(cred);
-      } catch(e) {}
-    }
+  document.querySelectorAll('.loginForm').forEach(function(form) {
+    form.addEventListener('submit', async function() {
+      const email    = form.querySelector('input[name="email"]').value;
+      const password = form.querySelector('.pwd-input').value;
+      if (email && password) {
+        try {
+          const cred = new PasswordCredential({ id: email, password: password, name: email });
+          await navigator.credentials.store(cred);
+        } catch(e) {}
+      }
+    });
   });
 } else {
   const savedEmail = "<?= isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : '' ?>";
-  if (savedEmail) document.getElementById('email').value = savedEmail;
+  if (savedEmail) document.querySelectorAll('input[name="email"]').forEach(el => el.value = savedEmail);
 }
 
-// ── reCAPTCHA: rendered explicitly so its theme can match the site's ──────────
-let recaptchaWidgetId = null;
-let recaptchaSeq = 0;
+// ── reCAPTCHA: one widget per panel, rendered explicitly so its theme can
+//    match the site's ──────────────────────────────────────────────────────
+let recaptchaWidgetIds = {};
 function currentSiteTheme() {
   return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 function renderRecaptcha() {
-  const wrap = document.querySelector('.recaptcha-wrap');
-  if (!wrap || !window.grecaptcha || !window.grecaptcha.render) return;
-  const old = wrap.querySelector('[id^="recaptchaContainer"]');
-  // reCAPTCHA binds its widget to the actual DOM node (and appears to key
-  // internally by element id too) — swap in a brand new node with a fresh,
-  // never-before-used id each time so nothing gets confused with a stale one.
-  recaptchaSeq++;
-  const fresh = document.createElement('div');
-  fresh.id = 'recaptchaContainer-' + recaptchaSeq;
-  if (old) { old.remove(); }
-  wrap.appendChild(fresh);
-  recaptchaWidgetId = window.grecaptcha.render(fresh, {
-    sitekey: '6LcjNg4tAAAAALrE033V1uMvYdaDs4jCQ8qboPIL',
-    theme: currentSiteTheme()
+  if (!window.grecaptcha || !window.grecaptcha.render) return;
+  document.querySelectorAll('.recaptcha-slot').forEach(function(slot) {
+    // reCAPTCHA binds to the actual DOM node — swap in a fresh node each
+    // re-render (e.g. on theme change) so nothing confuses it with a stale one.
+    const key = slot.id;
+    const fresh = document.createElement('div');
+    fresh.id = key;
+    fresh.className = 'recaptcha-slot';
+    slot.replaceWith(fresh);
+    recaptchaWidgetIds[key] = window.grecaptcha.render(fresh, {
+      sitekey: '6LcjNg4tAAAAALrE033V1uMvYdaDs4jCQ8qboPIL',
+      theme: currentSiteTheme()
+    });
   });
 }
 window.onRecaptchaApiLoad = renderRecaptcha;
