@@ -61,7 +61,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
 <title>Deployment Approvals · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -72,7 +72,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -177,17 +177,17 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
         <input type="hidden" name="project_id" value="<?= $proj['id'] ?>">
         <div style="margin-bottom:10px;">
           <label style="display:block;font-size:10px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Admin Note <span style="text-transform:none;color:#475569;font-weight:400;">(optional)</span></label>
-          <textarea name="admin_deployment_notes" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;outline:none;resize:vertical;min-height:60px;" placeholder="Add a note for the team lead…"></textarea>
+          <textarea name="admin_deployment_notes" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:var(--font-sans);font-size:13px;padding:9px 12px;outline:none;resize:vertical;min-height:60px;" placeholder="Add a note for the team lead…"></textarea>
         </div>
         <div style="display:flex;gap:8px;">
           <?php $can_approve = !$docs_ready || !empty($proj['doc_approved']); ?>
           <button type="submit" name="decision" value="approve" <?= $can_approve ? '' : 'disabled title="Approve the documentation first"' ?>
-            style="<?= $can_approve ? '' : 'opacity:0.45;cursor:not-allowed;' ?>background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
+            style="<?= $can_approve ? '' : 'opacity:0.45;cursor:not-allowed;' ?>background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
             onclick="return confirm('Approve deployment and mark project as Completed?')">
             ✓ Approve & Complete
           </button>
           <button type="submit" name="decision" value="reject"
-            style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
+            style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
             onclick="return confirm('Reject deployment and move project back to Testing?')">
             ✗ Reject
           </button>

@@ -47,7 +47,7 @@ if ($__can_team) {
 render_sidebar(
   [
     ['label' => 'Core Delivery',      'links' => $__core_links],
-    ['label' => 'Team & Governance',  'links' => $__team_links],
+    ['label' => 'Team',  'links' => $__team_links],
   ],
   [
     ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'portals/user/profile'],

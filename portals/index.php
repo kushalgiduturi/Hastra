@@ -72,16 +72,16 @@ $ICONS = [
 ];
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard · Astra</title>
-<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:Inter,system-ui,sans-serif}
-.workspace-index .bar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 6vw;border-bottom:1px solid var(--border);background:var(--topnav-bg);position:sticky;top:0;z-index:5;backdrop-filter:blur(6px)}
+body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:var(--font-sans)}
+.workspace-index .bar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 6vw;border-bottom:1px solid var(--border);background:var(--topnav-bg);position:sticky;top:0;z-index:5}
 .workspace-index .brand{display:flex;align-items:center;gap:10px;color:var(--text);font:600 14px 'Share Tech Mono',monospace;letter-spacing:.1em;text-decoration:none}
 .workspace-index .brand-mark{width:28px;height:28px;display:flex;align-items:center;justify-content:center}
 .workspace-index .brand-mark svg{width:14px;height:14px;fill:#fff}
 .workspace-index .actions{display:flex;gap:.6rem;align-items:center}
 .workspace-index .account{font-size:12px;color:var(--text-dim);text-decoration:none}
-.workspace-index .btn-theme-toggle{display:flex;align-items:center;gap:6px;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text-dim);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border-radius:3px;cursor:pointer;transition:var(--transition)}
+.workspace-index .btn-theme-toggle{display:flex;align-items:center;gap:6px;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text-dim);font-family:var(--font-sans);font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:6px 12px;border-radius:3px;cursor:pointer;transition:var(--transition)}
 .workspace-index .btn-theme-toggle:hover{background:var(--hover-bg);color:var(--text);border-color:var(--border)}
 .workspace-index .btn-theme-toggle .theme-icon svg{width:13px;height:13px;vertical-align:middle;fill:currentColor}
 .workspace-index main{width:min(1080px,90vw);margin:0 auto;padding:clamp(2.4rem,6vw,4.2rem) 0 5rem}

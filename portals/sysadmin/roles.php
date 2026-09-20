@@ -155,7 +155,7 @@ foreach ($company_sections as $sec) {
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -166,7 +166,7 @@ foreach ($company_sections as $sec) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -195,7 +195,7 @@ foreach ($company_sections as $sec) {
   .migration-note { margin: 1rem 1.4rem 0; padding: 0.7rem 0.9rem; font-size: 12px; line-height: 1.6; color: var(--yellow); background: var(--yellow-bg); border: 1px solid rgba(245,158,11,0.25); border-radius: 3px; }
   .migration-note a { color: var(--text); font-weight: 600; }
   .company-index { display: flex; flex-wrap: wrap; gap: 8px; padding: 0.9rem 1.4rem; border-bottom: 1px solid var(--border-dim); }
-  .company-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; padding: 6px 12px; cursor: pointer; color: var(--text); text-align: left; font-family: 'Inter', sans-serif; transition: var(--transition); }
+  .company-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; padding: 6px 12px; cursor: pointer; color: var(--text); text-align: left; font-family: var(--font-sans); transition: var(--transition); }
   .company-chip:hover { border-color: var(--border); }
   .company-chip.active { border-color: var(--accent-bright); background: rgba(var(--accent-rgb),0.12); }
   .company-chip:focus-visible, .role-filters .btn-clear:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
@@ -246,27 +246,27 @@ foreach ($company_sections as $sec) {
   .badge-danger   { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
   .badge-info     { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
 
-  .role-select { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; padding: 5px 8px; outline: none; cursor: pointer; transition: border-color 0.2s; appearance: auto; }
+  .role-select { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 12px; padding: 5px 8px; outline: none; cursor: pointer; transition: border-color 0.2s; appearance: auto; }
   .role-select option { background: var(--navy-card); color: var(--text); }
   .role-select:focus  { border-color: var(--accent-bright); background: var(--navy-mid); }
 
-  .btn-save { background: var(--accent); color: white; border: none; border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 9px 20px; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 6px; }
+  .btn-save { background: var(--accent); color: white; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 9px 20px; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 6px; }
   .btn-save svg { width: 14px; height: 14px; fill: white; }
   .btn-save:hover { background: var(--accent-dim); box-shadow: 0 0 16px rgba(var(--accent-rgb),0.3); }
 
   .filters { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
-  .filters input, .filters select { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 10px; outline: none; transition: border-color 0.2s; }
+  .filters input, .filters select { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 12px; padding: 7px 10px; outline: none; transition: border-color 0.2s; }
   .filters input:focus, .filters select:focus { border-color: var(--accent-bright); }
   .filters input { width: 160px; }
   .filters input::placeholder { color: var(--text-dim); }
   .filters select option { background: var(--navy-card); }
 
-  .btn-clear { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .btn-clear { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text-dim); font-family: var(--font-sans); font-size: 12px; padding: 7px 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
   .btn-clear:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
   .own-row td { color: var(--text-dim); font-size: 12px; font-style: italic; }
 
-  .btn-delete { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 3px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+  .btn-delete { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 3px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
   .btn-delete:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
 
   .modal-overlay { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
@@ -285,10 +285,10 @@ foreach ($company_sections as $sec) {
   .otp-box.filled { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); }
 
   .modal-btns { display: flex; gap: 8px; }
-  .modal-btn-confirm { flex: 1; background: var(--red); color: white; border: none; border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
+  .modal-btn-confirm { flex: 1; background: var(--red); color: white; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
   .modal-btn-confirm:hover { background: #dc2626; }
   .modal-btn-confirm:disabled { background: #4b1c1c; color: #6b2f2f; cursor: not-allowed; }
-  .modal-btn-cancel { flex: 1; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim); border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
+  .modal-btn-cancel { flex: 1; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
   .modal-btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
   .sending-spinner { text-align: center; padding: 1.5rem 0; color: var(--text-dim); font-size: 13px; }

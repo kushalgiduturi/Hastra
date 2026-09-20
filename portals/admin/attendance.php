@@ -269,7 +269,7 @@ if ($employees) {
 <title>Attendance · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -280,7 +280,7 @@ if ($employees) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -331,7 +331,7 @@ if ($employees) {
 
   .btn-save-attendance {
     background: var(--accent); color: #fff; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 8px 18px; cursor: pointer; transition: background 0.2s;
   }
   .btn-save-attendance:hover { background: var(--accent-dim); }
@@ -344,7 +344,7 @@ if ($employees) {
   }
   .btn-gen-secret {
     background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim);
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 8px 14px; border-radius: 3px; cursor: pointer; transition: background 0.2s;
   }
   .btn-gen-secret:hover { background: var(--hover-bg); color: var(--text); }
@@ -375,8 +375,8 @@ if ($employees) {
   .modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
   .modal p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
   .modal-btns { display: flex; gap: 10px; margin-top: 1.2rem; }
-  .modal-btn-confirm { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 9px; cursor: pointer; }
-  .modal-btn-cancel { background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; padding: 9px 16px; cursor: pointer; }
+  .modal-btn-confirm { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px; cursor: pointer; }
+  .modal-btn-cancel { background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px 16px; cursor: pointer; }
 </style>
 </head>
 <body>

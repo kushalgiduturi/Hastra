@@ -71,7 +71,7 @@ $status_order = ["pending_review", "under_review", "approved"];
 <title>My Requirements · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,7 +83,7 @@ $status_order = ["pending_review", "under_review", "approved"];
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -378,7 +378,7 @@ $status_order = ["pending_review", "under_review", "approved"];
   .modal-btn-confirm {
     flex: 1; background: var(--red); color: white;
     border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px; font-weight: 600;
     padding: 10px; cursor: pointer;
     transition: background 0.2s; text-transform: uppercase;
@@ -390,7 +390,7 @@ $status_order = ["pending_review", "under_review", "approved"];
     background: var(--input-bg);
     border: 1px solid var(--border-dim);
     color: var(--text-dim); border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px; font-weight: 500;
     padding: 10px; cursor: pointer;
     transition: background 0.2s; text-transform: uppercase;

@@ -101,7 +101,9 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 <title>Employee Portal · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/tour.css?v=<?= ASSET_VERSION ?>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -113,7 +115,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -136,7 +138,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   }
   .field input, .field select, .field textarea {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; font-family: 'Inter', sans-serif;
+    border-radius: 3px; font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s;
   }
   .field textarea { min-height: 70px; resize: vertical; }
@@ -146,13 +148,13 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   .modal-btns { display: flex; gap: 10px; margin-top: 1.4rem; }
   .modal-btn-confirm {
     flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     padding: 10px; cursor: pointer; transition: background 0.2s;
   }
   .modal-btn-confirm:hover { background: var(--accent-dim); }
   .modal-btn-cancel {
     background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     padding: 10px 16px; cursor: pointer; transition: background 0.2s;
   }
   .modal-btn-cancel:hover { background: var(--hover-bg); }

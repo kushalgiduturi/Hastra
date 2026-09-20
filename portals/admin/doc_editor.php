@@ -84,7 +84,7 @@ $has_key  = anthropic_api_key() !== '';
 <title>Documentation <?= htmlspecialchars($project['project_code']) ?> · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/doc_content.css">
 <style>

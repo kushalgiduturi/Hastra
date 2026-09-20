@@ -121,7 +121,7 @@ $project_status_labels = [
 <title>My Projects · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -133,7 +133,7 @@ $project_status_labels = [
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -285,7 +285,7 @@ $project_status_labels = [
   .comment-form  { display: flex; gap: 8px; margin-top: 10px; }
   .comment-input {
     flex: 1; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; resize: none;
     min-height: 70px; transition: border-color 0.2s;
   }
@@ -293,7 +293,7 @@ $project_status_labels = [
   .comment-input::placeholder { color: var(--text-dim); }
   .btn-comment {
     background: #1d4ed8; color: white; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 0 16px; cursor: pointer; transition: background 0.2s;
     align-self: flex-end; height: 36px;

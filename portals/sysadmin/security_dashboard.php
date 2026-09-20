@@ -20,10 +20,10 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
 <title>Security Dashboard · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; }
+  body { margin: 0; background: var(--navy); color: var(--text); font-family: var(--font-sans); font-size: 14px; }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
   .back:hover { color: var(--text); }

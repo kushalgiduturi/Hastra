@@ -1,9 +1,8 @@
 /* ── Mandatory profile-completion barrier ───────────────────────────────────
-   The overlay itself stays solid/near-opaque, not blurred — a blurred pane
-   over this app's 40px grid background moirés in light theme (see
-   core/theme.css's topnav/dock notes for the same issue elsewhere). The
-   glass effect lives on the modal card instead, which sits on top of that
-   already-opaque overlay, so it never touches the grid directly. */
+   Solid charcoal card, no backdrop-filter — a blurred pane over this app's
+   40px grid background moirés in light theme (see core/theme.css's
+   topnav/dock notes for the same issue elsewhere), and a flat solid
+   surface reads sharper than glass for a defense-grade product anyway. */
 
 .profile-barrier-overlay {
   position: fixed; inset: 0; z-index: 500;
@@ -15,29 +14,17 @@
 
 .profile-barrier-modal {
   position: relative;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 22px;
+  background: var(--navy-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
   box-shadow:
     0 25px 60px -15px rgba(0,0,0,0.55),
-    0 0 0 1px rgba(255,255,255,0.04) inset,
-    0 0 80px -20px rgba(var(--accent-rgb),0.35);
+    0 0 0 1px rgba(var(--accent-rgb),0.08) inset;
   max-width: 480px; width: 100%; padding: 2.2rem 2rem;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   transform: scale(1); transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .profile-barrier-overlay.pb-done .profile-barrier-modal { transform: scale(0.96); opacity: 0; }
-
-[data-theme="light"] .profile-barrier-modal {
-  background: rgba(255,255,255,0.75);
-  border-color: rgba(15,23,42,0.1);
-  box-shadow:
-    0 25px 60px -15px rgba(15,23,42,0.25),
-    0 0 0 1px rgba(255,255,255,0.4) inset,
-    0 0 80px -20px rgba(var(--accent-rgb),0.25);
-}
 
 .profile-barrier-modal h2 {
   font-size: 19px; font-weight: 700; color: var(--text); margin: 0 0 8px; letter-spacing: -0.01em;
@@ -51,15 +38,15 @@
 
 .pb-opt {
   display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
-  background: var(--input-bg); border: 1.5px solid var(--border-dim); border-radius: 14px;
-  color: var(--text); font-family: 'Inter', sans-serif;
+  background: var(--input-bg); border: 1.5px solid var(--border-dim); border-radius: 8px;
+  color: var(--text); font-family: var(--font-sans);
   padding: 13px 16px; cursor: pointer; transition: background 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.12s;
 }
 .pb-opt:hover { background: var(--hover-bg); border-color: rgba(var(--accent-rgb),0.5); transform: translateY(-1px); }
 .pb-opt:active { transform: translateY(0); }
 
 .pb-opt-icon {
-  flex: 0 0 auto; width: 40px; height: 40px; border-radius: 11px;
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   background: rgba(var(--accent-rgb),0.1); color: var(--accent-bright);
   transition: background 0.18s, color 0.18s;
@@ -93,8 +80,8 @@
 .pb-error.show { display: block; }
 
 .pb-submit {
-  width: 100%; margin-top: 1.4rem; padding: 13px; border-radius: 12px; border: none;
-  background: var(--accent); color: #fff; font-family: 'Inter', sans-serif;
+  width: 100%; margin-top: 1.4rem; padding: 13px; border-radius: 8px; border: none;
+  background: var(--accent); color: #fff; font-family: var(--font-sans);
   font-size: 14.5px; font-weight: 600; cursor: pointer;
   box-shadow: 0 10px 25px -8px rgba(var(--accent-rgb),0.6);
   transition: filter 0.15s, transform 0.12s, opacity 0.15s;

@@ -1,5 +1,5 @@
 /* core/doc_content.css — typography for project documentation (editor + viewer) */
-.doc-content { font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; color: var(--text); max-width: 78ch; }
+.doc-content { font-family: var(--font-sans); font-size: 15px; line-height: 1.7; color: var(--text); max-width: 78ch; }
 .doc-content h1 { font-size: 28px; line-height: 1.2; margin: 0 0 0.6em; font-weight: 700; letter-spacing: -0.01em; }
 .doc-content h2 { font-size: 20px; margin: 1.8em 0 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-dim); font-weight: 600; }
 .doc-content h3 { font-size: 16px; margin: 1.4em 0 0.4em; font-weight: 600; }

@@ -146,7 +146,7 @@ $status_labels = [
 <title>Deployment Portal · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -157,7 +157,7 @@ $status_labels = [
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -259,7 +259,7 @@ $status_labels = [
   .field-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
   .field textarea, .field input[type=url] {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; resize: vertical;
     min-height: 80px; transition: border-color 0.2s;
   }
@@ -269,7 +269,7 @@ $status_labels = [
 
   .btn-deploy {
     background: var(--green); color: white; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 10px 22px; cursor: pointer; margin-top: 10px;
     transition: background 0.2s, box-shadow 0.2s;

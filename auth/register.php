@@ -183,8 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 <style>
@@ -200,7 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     padding: 1.5rem;
   }
 
@@ -319,7 +318,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     border: 1px solid var(--border-dim);
     border-radius: 3px;
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     padding: 10px 14px;
     outline: none;
@@ -422,7 +421,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     color: white;
     border: none;
     border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -484,7 +483,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.07);
     color: #94a3b8;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px; font-weight: 500;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px;
@@ -538,14 +537,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .card { opacity: 1; transform: none; filter: none; animation: none; }
   }
 
-  /* ═══ VISUAL REFRESH — match reference mockup: glass card, Sora type,
-     bare icon, gradient sentence-case button, no grid/box chrome ═══ */
+  /* ═══ Defense-grade surface: solid charcoal card, system type, bare icon, flat authoritative button ═══ */
   .card {
-    background: rgba(20,10,10,.55) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(var(--accent-rgb),.28) !important;
-    border-radius: 12px !important;
+    background: var(--navy-card) !important;
+    border: 1px solid var(--border-dim) !important;
+    border-radius: 8px !important;
     box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
   }
   [data-theme="light"] .card { background: rgba(255,255,255,.72) !important; }
@@ -559,7 +555,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--accent) !important; }
   .brand-text { display: flex; align-items: center; }
   .brand-text .title {
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-size: 21px !important; font-weight: 700 !important;
     letter-spacing: .01em !important; text-transform: none !important;
     color: var(--text) !important;
@@ -567,7 +563,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .brand-text .sub { display: none !important; }
 
   .card h1, .card h2 {
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-size: 19px !important; font-weight: 600 !important;
     letter-spacing: .005em !important; margin: 0 0 4px !important;
   }
@@ -590,7 +586,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .card .btn-submit, .card .btn-primary, .card a.btn-primary {
     background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
     border-radius: 7px !important;
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
@@ -607,12 +603,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   /* ── Registration track tabs + sub-toggle ── */
   .registration-tabs {
     display: flex; gap: 4px; background: rgba(127,127,127,.08);
-    border: 1px solid var(--border-dim); border-radius: 10px; padding: 4px;
+    border: 1px solid var(--border-dim); border-radius: 8px; padding: 4px;
     margin-bottom: 12px;
   }
   .reg-tab {
     flex: 1 1 0; border: none; background: transparent; color: var(--text-dim);
-    font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     padding: 10px 8px; border-radius: 7px; cursor: pointer; transition: background .2s, color .2s;
   }
   .reg-tab.active {
@@ -626,7 +622,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
   .reg-sub {
     flex: 1 1 0; border: 1.5px solid var(--border-dim); background: var(--input-bg); color: var(--text-dim);
-    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 12.5px; font-weight: 600;
     padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: border-color .2s, color .2s, background .2s;
   }
   .reg-sub.active { border-color: var(--accent-bright); color: var(--accent-bright); background: rgba(var(--accent-rgb),0.08); }
@@ -649,7 +645,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .sheet-side .brand { margin-bottom: 2.2rem !important; }
   .sheet-side h1 {
-    font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 700;
+    font-family: var(--font-sans); font-size: 24px; font-weight: 700;
     color: var(--text); line-height: 1.25; margin: 0 0 0.8rem;
   }
   .sheet-side p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; margin: 0; }
@@ -700,7 +696,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .step-actions { display: flex; gap: 10px; margin-top: 1.4rem; }
   .step-actions .btn-back {
     flex: 0 0 auto; background: transparent; border: 1px solid var(--border-dim); color: var(--text-dim);
-    border-radius: 7px; padding: 11px 18px; font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13.5px;
+    border-radius: 7px; padding: 11px 18px; font-family: var(--font-sans); font-weight: 600; font-size: 13.5px;
     cursor: pointer; transition: border-color 0.2s, color 0.2s;
   }
   .step-actions .btn-back:hover { border-color: var(--accent-bright); color: var(--text); }
@@ -733,13 +729,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   .logo-dropzone {
-    border: 1.5px dashed var(--border-dim); border-radius: 10px; padding: 1.2rem;
+    border: 1.5px dashed var(--border-dim); border-radius: 8px; padding: 1.2rem;
     display: flex; align-items: center; gap: 12px; cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
   }
   .logo-dropzone:hover, .logo-dropzone.drag-over { border-color: var(--accent-bright); background: rgba(var(--accent-rgb),0.05); }
   .logo-dropzone .dz-icon {
-    width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
+    width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
     background: rgba(var(--accent-rgb),0.12); display: flex; align-items: center; justify-content: center;
     color: var(--accent-bright);
   }

@@ -1,78 +1,78 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Deliberately no Google Fonts import — Astra runs the system UI stack
+   (see --font-sans below) plus Share Tech Mono for tabular IDs/timestamps/
+   matrices, loaded per-page only where that mono face is actually used. */
 
 :root {
-  --navy:        #060606;
-  --navy-card:   #111111;
-  --navy-deep:   #0a0a0a;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Dark: industrial obsidian + charcoal cards, signal-red accent */
+  --navy:        #090b10;
+  --navy-card:   #12161f;
+  --navy-deep:   #06070a;
   --blue:        #1d4ed8;
   --blue-bright: #3b82f6;
-  /* Brand accent — dark theme runs black + red */
-  --accent:        #dc2626;
-  --accent-bright: #ef4444;
-  --accent-dim:    #991b1b;
-  --accent-rgb:    220,38,38;
-  --accent-glow:   rgba(220,38,38,0.30);
-  --accent-soft:   rgba(220,38,38,0.10);
-  --border:      rgba(220,38,38,0.22);
-  --border-dim:  rgba(255,255,255,0.07);
-  --text:        #f5f0f0;
-  --text-dim:    #a89494;
-  --red:         #ef4444;
-  --red-bg:      rgba(239,68,68,0.1);
+  --accent:        #e02e3c;
+  --accent-bright: #ff4655;
+  --accent-dim:    #a3202c;
+  --accent-rgb:    224,46,60;
+  --accent-glow:   rgba(224,46,60,0.28);
+  --accent-soft:   rgba(224,46,60,0.10);
+  --border:      rgba(224,46,60,0.22);
+  --border-dim:  #1f2633;
+  --text:        #eef0f4;
+  --text-dim:    #8b93a3;
+  --red:         #ff4655;
+  --red-bg:      rgba(224,46,60,0.1);
   --green:       #22c55e;
   --green-bg:    rgba(34,197,94,0.1);
   --yellow:      #f59e0b;
   --yellow-bg:   rgba(245,158,11,0.08);
-  --purple:      #a78bfa;
+  --purple:      #8b93a3;
   --cyan:        #22d3ee;
   --orange:      #f97316;
-  --navy-mid:    #161616;
-  --grid-line:   rgba(220,38,38,0.035);
-  --topnav-bg:   rgba(6,6,6,0.92);
-  --input-bg:    rgba(255,255,255,0.04);
-  --hover-bg:    rgba(220,38,38,0.05);
+  --navy-mid:    #161b26;
+  --grid-line:   rgba(224,46,60,0.035);
+  --topnav-bg:   rgba(9,11,16,0.96);
+  --input-bg:    rgba(255,255,255,0.03);
+  --hover-bg:    rgba(224,46,60,0.06);
   --section-header-bg: rgba(255,255,255,0.02);
   --shadow:      none;
   --transition:  background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 [data-theme="light"] {
-  --navy:        #f6f8fc;
+  /* Light: structured paper/canvas, architectural navy-cyan accent */
+  --navy:        #f4f5f7;
   --navy-card:   #ffffff;
-  --navy-deep:   #eef2fa;
+  --navy-deep:   #eceef1;
   --blue:        #1d4ed8;
-  --blue-bright: #2563eb;
-  /* Brand accent — light theme runs white + blue */
-  --accent:        #2563eb;
-  --accent-bright: #3b82f6;
-  --accent-dim:    #1d4ed8;
-  --accent-rgb:    37,99,235;
-  --accent-glow:   rgba(37,99,235,0.28);
-  --accent-soft:   rgba(37,99,235,0.08);
-  --border:      rgba(37,99,235,0.22);
-  --border-dim:  rgba(0,0,0,0.1);
+  --blue-bright: #0265dc;
+  --accent:        #0265dc;
+  --accent-bright: #1a7ae8;
+  --accent-dim:    #024fac;
+  --accent-rgb:    2,101,220;
+  --accent-glow:   rgba(2,101,220,0.22);
+  --accent-soft:   rgba(2,101,220,0.08);
+  --border:      rgba(2,101,220,0.22);
+  --border-dim:  #d0d7de;
   --text:        #0f172a;
-  --text-dim:    #334155;
-  --red:         #dc2626;
-  --red-bg:      rgba(220,38,38,0.08);
+  --text-dim:    #3d4756;
+  --red:         #c62031;
+  --red-bg:      rgba(198,32,49,0.08);
   --green:       #16a34a;
   --green-bg:    rgba(22,163,74,0.08);
   --yellow:      #d97706;
   --yellow-bg:   rgba(217,119,6,0.08);
-  --purple:      #7c3aed;
+  --purple:      #3d4756;
   --cyan:        #0891b2;
   --orange:      #ea580c;
-  --navy-mid:    #eef1f8;
-  --grid-line:   rgba(37,99,235,0.04);
-  --topnav-bg:   rgba(246,248,252,0.95);
-  --input-bg:    rgba(0,0,0,0.04);
-  --hover-bg:    rgba(37,99,235,0.04);
-  --section-header-bg: rgba(0,0,0,0.02);
-  --shadow:      0 1px 3px rgba(0,0,0,0.08);
-  --radius-card: 32px;
-  --radius-btn:  16px;
-  --radius-sm:   8px;
-  --font-sans:   'Plus Jakarta Sans', 'Inter', sans-serif;
+  --navy-mid:    #eef1f5;
+  --grid-line:   rgba(2,101,220,0.05);
+  --topnav-bg:   rgba(255,255,255,0.97);
+  --input-bg:    #ffffff;
+  --hover-bg:    rgba(2,101,220,0.05);
+  --section-header-bg: rgba(2,101,220,0.03);
+  --shadow:      0 1px 3px rgba(15,23,42,0.06);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -163,7 +163,9 @@ html { scroll-behavior: smooth; }
     linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px) !important;
 }
-[data-theme="light"] body { font-family: var(--font-sans) !important; }
+body { font-family: var(--font-sans) !important; }
+input, select, textarea, button { font-family: var(--font-sans); }
+.mono, [class*="-mono"], code, pre { font-variant-numeric: tabular-nums; }
 
 /* Structural parity: cards, sections, buttons, inputs and badges keep
    whatever border-radius their own (theme-agnostic) component CSS already

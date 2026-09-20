@@ -41,7 +41,7 @@ render_sidebar(
       ['key' => 'requirements',  'label' => 'Requirements & Deliveries','href' => get_base_url() . 'portals/admin/requirements',    'current' => $nav_current === 'requirements'],
       ['key' => 'deployment',    'label' => 'Deployments',              'href' => get_base_url() . 'portals/admin/deployments',      'current' => $nav_current === 'deployments'],
     ]],
-    ['label' => 'Team & Governance', 'links' => $__is_solo ? [] : [
+    ['label' => 'Governance', 'links' => $__is_solo ? [] : [
       ['key' => 'team',          'label' => 'Team Roster',              'href' => get_base_url() . 'portals/admin/directory',        'current' => $nav_current === 'directory'],
       ['key' => 'attendance',    'label' => 'Attendance Matrix & Logs', 'href' => get_base_url() . 'portals/admin/attendance',       'current' => $nav_current === 'attendance'],
       ['key' => 'leave',         'label' => 'Leave Management & Requests', 'href' => get_base_url() . 'portals/admin/leave_management', 'current' => $nav_current === 'leave'],

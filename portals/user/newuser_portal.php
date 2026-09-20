@@ -11,7 +11,7 @@ verify_session($conn, ["client", "pending_employee"]);
 <title>Welcome · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,7 +22,7 @@ verify_session($conn, ["client", "pending_employee"]);
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -33,7 +33,6 @@ verify_session($conn, ["client", "pending_employee"]);
     top: 0;
     z-index: 100;
     background: var(--topnav-bg);
-    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 0 2rem;
     height: 56px;
@@ -84,7 +83,7 @@ verify_session($conn, ["client", "pending_employee"]);
     background: rgba(239,68,68,0.1);
     border: 1px solid rgba(239,68,68,0.25);
     color: #fca5a5;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px; font-weight: 500;
     letter-spacing: 0.05em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px;
@@ -100,7 +99,7 @@ verify_session($conn, ["client", "pending_employee"]);
     background: var(--input-bg);
     border: 1px solid var(--border-dim);
     color: var(--text-dim);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px; font-weight: 500;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px;
@@ -124,7 +123,7 @@ verify_session($conn, ["client", "pending_employee"]);
     background: rgba(var(--accent-rgb),0.08);
     border: 1px solid rgba(var(--accent-rgb),0.25);
     color: var(--accent-bright);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.04em;

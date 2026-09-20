@@ -81,7 +81,9 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
 <title>Leave Management · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -92,7 +94,7 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -137,7 +139,7 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
   .badge-rejected { background: rgba(239,68,68,0.1);  color: var(--red);    border: 1px solid rgba(239,68,68,0.25); }
 
   .review-btns { display: flex; gap: 6px; }
-  .action-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 3px; border: 1px solid; font-family: 'Inter', sans-serif; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: background 0.15s; letter-spacing: 0.03em; text-transform: uppercase; background: none; }
+  .action-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 3px; border: 1px solid; font-family: var(--font-sans); font-size: 11.5px; font-weight: 600; cursor: pointer; transition: background 0.15s; letter-spacing: 0.03em; text-transform: uppercase; background: none; }
   .action-btn.approve { border-color: rgba(34,197,94,0.3); color: var(--green); }
   .action-btn.approve:hover { background: rgba(34,197,94,0.15); }
   .action-btn.reject { border-color: rgba(239,68,68,0.3); color: #fca5a5; }
@@ -151,14 +153,14 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
   }
   .field input, .field select {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 12px; outline: none;
+    border-radius: 3px; font-family: var(--font-sans); font-size: 13px; padding: 9px 12px; outline: none;
     transition: border-color 0.2s;
   }
   .field input:focus, .field select:focus { border-color: var(--accent-bright); }
   .policy-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; }
   .btn-save-policy {
     background: var(--accent); color: #fff; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 9px 20px; cursor: pointer; transition: background 0.2s;
   }
   .btn-save-policy:hover { background: var(--accent-dim); }

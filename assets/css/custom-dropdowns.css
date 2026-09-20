@@ -37,7 +37,7 @@
   border: 1px solid var(--border-dim);
   border-radius: 3px;
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   padding: 9px 12px;
   outline: none;
@@ -103,7 +103,7 @@
 .cd-option {
   padding: 8px 10px;
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text);
   cursor: pointer;

@@ -14,7 +14,7 @@ if (isset($_SESSION["user_id"])) {
 <title>Astra · Enterprise Software Delivery Platform</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Sora:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <meta name="description" content="Astra — encrypted, audited, governed software delivery for teams that can't afford to guess.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +26,7 @@ if (isset($_SESSION["user_id"])) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -50,7 +50,7 @@ if (isset($_SESSION["user_id"])) {
   .btn-theme-toggle {
     display: flex; align-items: center; gap: 6px;
     background: var(--input-bg); border: 1px solid var(--border-dim);
-    color: var(--text-dim); font-family: 'Inter', sans-serif;
+    color: var(--text-dim); font-family: var(--font-sans);
     font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 8px 12px; border-radius: 3px; cursor: pointer; transition: var(--transition);
   }
@@ -77,7 +77,7 @@ if (isset($_SESSION["user_id"])) {
     border: 1px solid var(--border); padding: 5px 12px; border-radius: 999px; margin-bottom: 1.4rem;
   }
   .hero h1 {
-    font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -0.02em;
+    font-family: var(--font-sans); font-weight: 800; letter-spacing: -0.02em;
     font-size: clamp(32px, 5.5vw, 56px); line-height: 1.08; max-width: 820px; margin: 0 auto 1.2rem;
   }
   .hero h1 span { color: var(--accent-bright); }
@@ -109,7 +109,7 @@ if (isset($_SESSION["user_id"])) {
     font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--accent-bright); margin-bottom: 10px; display: block;
   }
-  .section-head h2 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: clamp(24px,3.5vw,32px); letter-spacing: -0.01em; margin-bottom: 10px; }
+  .section-head h2 { font-family: var(--font-sans); font-weight: 700; font-size: clamp(24px,3.5vw,32px); letter-spacing: -0.01em; margin-bottom: 10px; }
   .section-head p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
 
   /* ── Platform feature grid ── */
@@ -185,7 +185,7 @@ if (isset($_SESSION["user_id"])) {
     background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 8px;
     padding: 3rem 2rem; text-align: center; margin: 0 1.5rem;
   }
-  .cta-band h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px,3vw,28px); font-weight: 700; margin-bottom: 10px; }
+  .cta-band h2 { font-family: var(--font-sans); font-size: clamp(22px,3vw,28px); font-weight: 700; margin-bottom: 10px; }
   .cta-band p { font-size: 13.5px; color: var(--text-dim); margin-bottom: 1.6rem; }
 
   footer { padding: 2.5rem 1.5rem; text-align: center; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--border-dim); }

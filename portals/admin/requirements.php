@@ -126,7 +126,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -137,7 +137,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -190,7 +190,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .req-id-badge { font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent-bright); background: rgba(var(--accent-rgb),0.08); border: 1px solid rgba(var(--accent-rgb),0.2); padding: 2px 8px; border-radius: 2px; letter-spacing: 0.08em; }
 
   .filter-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim); background: rgba(255,255,255,0.01); }
-  .filter-bar select, .filter-bar input { background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; padding: 6px 10px; outline: none; transition: border-color 0.2s; }
+  .filter-bar select, .filter-bar input { background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 12px; padding: 6px 10px; outline: none; transition: border-color 0.2s; }
   .filter-bar select:focus, .filter-bar input:focus { border-color: var(--accent-bright); }
   .filter-bar select option { background: var(--navy-card); }
   .filter-bar input::placeholder { color: var(--text-dim); }
@@ -217,7 +217,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .review-form-title { font-size: 10px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
   .review-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 
-  .action-btn { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 3px; border: 1px solid; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; letter-spacing: 0.03em; text-transform: uppercase; }
+  .action-btn { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 3px; border: 1px solid; font-family: var(--font-sans); font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; letter-spacing: 0.03em; text-transform: uppercase; }
   .action-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
   .action-btn.review { background: rgba(var(--accent-rgb),0.1); border-color: rgba(var(--accent-rgb),0.3); color: var(--accent-bright); }
   .action-btn.review:hover, .action-btn.review.selected { background: rgba(var(--accent-rgb),0.2); box-shadow: 0 0 10px rgba(var(--accent-rgb),0.2); }
@@ -231,18 +231,18 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
 
   .notes-field { margin-top: 8px; }
   .notes-field label { display: block; font-size: 10px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px; }
-  .notes-field textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; resize: vertical; min-height: 72px; transition: border-color 0.2s; }
+  .notes-field textarea { width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 13px; padding: 9px 12px; outline: none; resize: vertical; min-height: 72px; transition: border-color 0.2s; }
   .notes-field textarea:focus { border-color: var(--accent-bright); }
   .notes-field textarea::placeholder { color: var(--text-dim); }
 
-  .btn-save-review { margin-top: 10px; background: var(--accent); color: white; border: none; border-radius: 3px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 9px 20px; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; }
+  .btn-save-review { margin-top: 10px; background: var(--accent); color: white; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 9px 20px; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; }
   .btn-save-review:hover { background: var(--accent-dim); box-shadow: 0 0 14px rgba(var(--accent-rgb),0.3); }
   .btn-save-review:disabled { background: #1e3a5f; color: var(--text-dim); cursor: not-allowed; }
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 13px; }
   .empty-state svg { width: 32px; height: 32px; fill: var(--border-dim); margin: 0 auto 0.8rem; display: block; }
 
-  .btn-nav-portal { display: inline-flex; align-items: center; gap: 6px; background: rgba(var(--accent-rgb),0.1); border: 1px solid rgba(var(--accent-rgb),0.3); color: var(--accent-bright); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 14px; border-radius: 3px; text-decoration: none; transition: background 0.2s, box-shadow 0.2s; }
+  .btn-nav-portal { display: inline-flex; align-items: center; gap: 6px; background: rgba(var(--accent-rgb),0.1); border: 1px solid rgba(var(--accent-rgb),0.3); color: var(--accent-bright); font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 14px; border-radius: 3px; text-decoration: none; transition: background 0.2s, box-shadow 0.2s; }
   .btn-nav-portal:hover { background: rgba(var(--accent-rgb),0.2); box-shadow: 0 0 12px rgba(var(--accent-rgb),0.25); }
   .btn-nav-portal svg { width: 14px; height: 14px; fill: var(--accent-bright); }
 

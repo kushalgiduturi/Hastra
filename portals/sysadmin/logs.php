@@ -68,7 +68,7 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -79,7 +79,7 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -112,19 +112,19 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   td.muted { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
   .filters { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
-  .filters input, .filters select { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 10px; outline: none; transition: border-color 0.2s; }
+  .filters input, .filters select { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 12px; padding: 7px 10px; outline: none; transition: border-color 0.2s; }
   .filters input:focus, .filters select:focus { border-color: var(--accent-bright); }
   .filters input { width: 160px; }
   .filters input::placeholder { color: var(--text-dim); }
   .filters select option { background: var(--navy-card); }
 
-  .btn-clear { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .btn-clear { background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text-dim); font-family: var(--font-sans); font-size: 12px; padding: 7px 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
   .btn-clear:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
   .log-meta { font-size: 11px; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 0.04em; }
   .geo-cell { font-size: 11px; color: var(--text-dim); }
   .show-more-wrap { text-align: center; margin-top: 1rem; }
-  .btn-more { background: rgba(var(--accent-rgb),0.08); border: 1px solid var(--border); border-radius: 3px; color: var(--accent-bright); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; padding: 7px 20px; cursor: pointer; transition: background 0.2s; }
+  .btn-more { background: rgba(var(--accent-rgb),0.08); border: 1px solid var(--border); border-radius: 3px; color: var(--accent-bright); font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 20px; cursor: pointer; transition: background 0.2s; }
   .btn-more:hover { background: rgba(var(--accent-rgb),0.15); }
 </style>
 </head>

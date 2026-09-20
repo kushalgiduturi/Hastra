@@ -346,7 +346,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 <title>My Profile · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
 <style>
@@ -359,7 +359,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -367,7 +367,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   /* ── TOPNAV ── */
   .topnav {
     position: sticky; top: 0; z-index: 100;
-    background: var(--topnav-bg); backdrop-filter: blur(12px);
+    background: var(--topnav-bg); 
     border-bottom: 1px solid var(--border);
     padding: 0 2rem; height: 56px;
     display: flex; align-items: center; justify-content: space-between;
@@ -399,7 +399,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
     background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
-    color: #fca5a5; font-family: 'Inter', sans-serif;
+    color: #fca5a5; font-family: var(--font-sans);
     font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px; text-decoration: none;
     transition: background 0.2s, border-color 0.2s;
@@ -412,7 +412,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     background: var(--input-bg);
     border: 1px solid var(--border-dim);
     color: var(--text-dim);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px; font-weight: 500;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px;
@@ -436,7 +436,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     background: rgba(var(--accent-rgb),0.08);
     border: 1px solid rgba(var(--accent-rgb),0.25);
     color: var(--accent-bright);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.04em;
@@ -475,7 +475,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   }
   .tab-btn {
     background: none; border: none; border-bottom: 2px solid transparent;
-    color: var(--text-dim); font-family: 'Inter', sans-serif;
+    color: var(--text-dim); font-family: var(--font-sans);
     font-size: 13px; font-weight: 500; padding: 10px 18px;
     cursor: pointer; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s;
   }
@@ -523,7 +523,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .field input[type="url"],
   .field input[type="password"] {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s;
   }
   .field input:focus { border-color: var(--accent-bright); }
@@ -547,7 +547,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 
   .btn-save {
     background: var(--accent); color: white; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 10px 22px; cursor: pointer; margin-top: 0.5rem;
     transition: background 0.2s, box-shadow 0.2s;
@@ -557,7 +557,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .btn-action {
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(var(--accent-rgb),0.1); border: 1px solid rgba(var(--accent-rgb),0.3);
-    color: var(--accent-bright); font-family: 'Inter', sans-serif;
+    color: var(--accent-bright); font-family: var(--font-sans);
     font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 8px 16px; border-radius: 3px; cursor: pointer;
     transition: background 0.2s; margin-top: 0.5rem;

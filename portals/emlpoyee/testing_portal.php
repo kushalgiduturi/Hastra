@@ -599,7 +599,7 @@ foreach ($qa_projects as $pid => $info) {
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -610,7 +610,7 @@ foreach ($qa_projects as $pid => $info) {
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -706,7 +706,7 @@ foreach ($qa_projects as $pid => $info) {
   }
   .field input[type="text"], .field textarea, .field select {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s;
   }
   .field textarea { min-height: 80px; resize: vertical; }
@@ -719,7 +719,7 @@ foreach ($qa_projects as $pid => $info) {
 
   .btn-report {
     background: var(--red); color: white; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 10px 22px; cursor: pointer; margin-top: 0.5rem;
     transition: background 0.2s, box-shadow 0.2s;
@@ -743,7 +743,7 @@ foreach ($qa_projects as $pid => $info) {
   .action-btn {
     display: flex; align-items: center; gap: 5px;
     padding: 6px 12px; border-radius: 3px; border: 1px solid;
-    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 11px; font-weight: 600;
     cursor: pointer; transition: background 0.15s;
     letter-spacing: 0.03em; text-transform: uppercase;
   }

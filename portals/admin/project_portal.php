@@ -346,7 +346,7 @@ $status_labels = [
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -357,7 +357,7 @@ $status_labels = [
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -453,7 +453,7 @@ $status_labels = [
   .field textarea,
   .field select {
     width: 100%; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 9px 12px; outline: none; transition: border-color 0.2s;
   }
   .field textarea   { min-height: 80px; resize: vertical; }
@@ -474,7 +474,7 @@ $status_labels = [
   }
   .member-row select {
     background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 13px; padding: 8px 10px; outline: none; width: 100%;
     transition: border-color 0.2s;
   }
@@ -493,7 +493,7 @@ $status_labels = [
   .btn-add-member {
     display: flex; align-items: center; gap: 6px;
     background: rgba(var(--accent-rgb),0.08); border: 1px solid var(--border);
-    color: var(--accent-bright); font-family: 'Inter', sans-serif;
+    color: var(--accent-bright); font-family: var(--font-sans);
     font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 3px;
     cursor: pointer; margin-top: 4px; transition: background 0.2s;
   }
@@ -502,7 +502,7 @@ $status_labels = [
 
   .btn-create-project {
     background: var(--accent); color: white; border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 14px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 11px 28px; cursor: pointer; margin-top: 1rem;
     transition: background 0.2s, box-shadow 0.2s;
@@ -593,7 +593,7 @@ $status_labels = [
   .add-member-row.open { display: grid; }
   .add-member-row select {
     background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text);
-    border-radius: 3px; color: var(--text); font-family: 'Inter', sans-serif;
+    border-radius: 3px; color: var(--text); font-family: var(--font-sans);
     font-size: 12px; padding: 7px 10px; outline: none; width: 100%;
   }
   .add-member-row select:focus { border-color: var(--accent-bright); }
@@ -602,7 +602,7 @@ $status_labels = [
   .btn-toggle-add {
     display: flex; align-items: center; gap: 5px;
     background: none; border: 1px dashed var(--border-dim);
-    color: var(--text-dim); font-family: 'Inter', sans-serif;
+    color: var(--text-dim); font-family: var(--font-sans);
     font-size: 12px; padding: 7px 12px; border-radius: 3px;
     cursor: pointer; margin-top: 8px; width: 100%; justify-content: center;
     transition: border-color 0.2s, color 0.2s;
@@ -613,7 +613,7 @@ $status_labels = [
   .btn-confirm-add {
     background: var(--accent); color: white; border: none; border-radius: 3px;
     font-size: 12px; font-weight: 600; padding: 7px 14px; cursor: pointer;
-    font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.04em;
+    font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.04em;
     transition: background 0.2s;
   }
   .btn-confirm-add:hover { background: var(--accent-dim); }

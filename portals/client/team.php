@@ -267,7 +267,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 
 <style>
@@ -311,7 +311,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
     color: white;
     border: none;
     border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px; font-weight: 600;
     padding: 10px;
     cursor: pointer;
@@ -325,7 +325,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
     border: 1px solid var(--border-dim);
     color: var(--text-dim);
     border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px; font-weight: 500;
     padding: 10px;
     cursor: pointer;

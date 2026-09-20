@@ -104,7 +104,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -116,7 +116,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -181,7 +181,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
     border: 1px solid var(--border-dim);
     border-radius: 3px;
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     padding: 10px 12px;
     outline: none;
@@ -208,7 +208,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
   .btn-submit {
     background: var(--accent); color: white;
     border: none; border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 11px 28px; cursor: pointer;

@@ -3,10 +3,10 @@
   body {
     margin: 0; min-height: 100vh; background-color: var(--navy);
     background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text);
+    background-size: 40px 40px; font-family: var(--font-sans); font-size: 14px; color: var(--text);
   }
   .topnav {
-    position: sticky; top: 0; z-index: 100; background: var(--topnav-bg); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100; background: var(--topnav-bg);
     border-bottom: 1px solid var(--border); padding: 0 2rem; min-height: 56px;
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
   }
@@ -19,7 +19,7 @@
   .nav-link { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; padding: 6px 10px; border-radius: 3px; border: 1px solid transparent; }
   .nav-link:hover { color: var(--text); border-color: var(--border-dim); }
   .nav-link.current { color: var(--accent-bright); border-color: rgba(var(--accent-rgb),0.28); background: rgba(var(--accent-rgb),0.1); }
-  .btn-theme-toggle, .btn-logout { display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border-radius: 3px; cursor: pointer; text-decoration: none; }
+  .btn-theme-toggle, .btn-logout { display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border-radius: 3px; cursor: pointer; text-decoration: none; }
   .btn-theme-toggle { background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim); }
   .btn-theme-toggle:hover { background: var(--hover-bg); color: var(--text); border-color: var(--border); }
   .btn-theme-toggle .theme-icon svg { width: 13px; height: 13px; vertical-align: middle; fill: currentColor; }
@@ -31,7 +31,7 @@
   .btn-profile {
     display: flex; align-items: center; gap: 7px;
     background: rgba(var(--accent-rgb),0.08); border: 1px solid rgba(var(--accent-rgb),0.25);
-    color: var(--accent-bright); font-family: 'Inter', sans-serif;
+    color: var(--accent-bright); font-family: var(--font-sans);
     font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
     padding: 6px 13px; border-radius: 3px; text-decoration: none;
     transition: background 0.2s, border-color 0.2s, color 0.2s;
@@ -73,7 +73,7 @@
   .hint { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin: 10px 0 0; }
   .hint code { font-family: 'Share Tech Mono', monospace; color: var(--text); }
 
-  button, .btn { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.03em; border-radius: 3px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); }
+  button, .btn { font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.03em; border-radius: 3px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); }
   button:hover { border-color: var(--accent-bright); }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button.danger { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.35); color: var(--red); }
@@ -92,7 +92,7 @@
   tr.done td { color: var(--text-dim); }
   .grid input[type=text], .grid input[type=email], .grid select {
     width: 100%; min-width: 120px; background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px;
-    color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; padding: 6px 8px;
+    color: var(--text); font-family: var(--font-sans); font-size: 13px; padding: 6px 8px;
   }
   .grid select option, .role-form select option { background: var(--navy-card); }
   .issues { list-style: none; margin: 0; padding: 0; font-size: 12px; display: flex; flex-direction: column; gap: 2px; }

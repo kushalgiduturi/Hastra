@@ -136,8 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Login · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaApiLoad&render=explicit" async defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -153,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
@@ -377,7 +376,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     border: 1px solid var(--border-dim);
     border-radius: 3px;
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     padding: 10px 14px;
     outline: none;
@@ -466,7 +465,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     color: white;
     border: none;
     border-radius: 3px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -541,7 +540,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   background: var(--input-bg);
   border: 1px solid var(--border-dim);
   color: var(--text-dim);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px; font-weight: 500;
   letter-spacing: 0.04em; text-transform: uppercase;
   padding: 6px 12px; border-radius: 3px;
@@ -568,25 +567,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* ═══ VISUAL REFRESH — match reference mockup: glass card, Sora type,
-     bare icon, gradient sentence-case button, no grid/box chrome ═══ */
+  /* ═══ Defense-grade surface: solid charcoal card, system type, bare icon, flat authoritative button ═══ */
   .card {
-    background: rgba(20,10,10,.55) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(var(--accent-rgb),.28) !important;
-    border-radius: 12px !important;
+    background: var(--navy-card) !important;
+    border: 1px solid var(--border-dim) !important;
+    border-radius: 8px !important;
     box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
   }
-  /* core/theme.css has a global `[data-theme="light"] .card {...}` rule
-     (border-radius:32px, a near-flat box-shadow) for generic portal cards.
-     Its selector is more specific than the plain `.card` above, so even
-     with !important on both sides it would otherwise win here — this
-     re-asserts the same glass proportions/shadow the dark theme uses,
-     only swapping the tint to a light frost glass. */
+  /* A `[data-theme="light"] .card` selector, if one existed, would be more
+     specific than the plain `.card` above and win even with !important on
+     both sides — this explicit light-theme block re-asserts the same
+     solid-surface proportions regardless. */
   [data-theme="light"] .card {
-    background: rgba(255,255,255,.72) !important;
-    border-radius: 12px !important;
+    background: var(--navy-card) !important;
+    border: 1px solid var(--border-dim) !important;
+    border-radius: 8px !important;
     box-shadow: 0 30px 80px -20px rgba(15,23,42,.25), 0 0 40px var(--accent-glow) !important;
   }
   .card::before { display: none !important; }
@@ -602,7 +597,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .brand-icon svg { width: 34px !important; height: 34px !important; fill: var(--accent) !important; }
   .brand-text { display: flex; flex-direction: column; align-items: center; }
   .brand-text .title {
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-size: 21px !important; font-weight: 700 !important;
     letter-spacing: .01em !important; text-transform: none !important;
     color: var(--text) !important;
@@ -610,7 +605,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .brand-text .sub { display: none !important; }
 
   .card h1, .card h2 {
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-size: 19px !important; font-weight: 600 !important;
     letter-spacing: .005em !important; margin: 0 0 4px !important;
   }
@@ -633,7 +628,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .card .btn-submit, .card .btn-primary, .card a.btn-primary {
     background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
     border-radius: 7px !important;
-    font-family: 'Sora', sans-serif !important;
+    font-family: var(--font-sans) !important;
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
@@ -650,12 +645,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   /* ── Two-portal sliding gate ── */
   .portal-toggle {
     display: flex; gap: 4px; background: rgba(127,127,127,.08);
-    border: 1px solid var(--border-dim); border-radius: 9px; padding: 4px;
+    border: 1px solid var(--border-dim); border-radius: 8px; padding: 4px;
     margin-bottom: 1.6rem;
   }
   .portal-toggle button {
     flex: 1 1 0; border: none; background: transparent; color: var(--text-dim);
-    font-family: 'Sora', sans-serif; font-size: 12.5px; font-weight: 600;
+    font-family: var(--font-sans); font-size: 12.5px; font-weight: 600;
     letter-spacing: .01em; padding: 9px 8px; border-radius: 6px; cursor: pointer;
     transition: background .2s, color .2s;
   }

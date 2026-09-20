@@ -110,7 +110,7 @@ unset($dr);
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>core/client_pages.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,7 +122,7 @@ unset($dr);
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 40px 40px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
@@ -262,7 +262,7 @@ unset($dr);
                   onsubmit="return confirm('The security summary can be opened only once. Open it now?')">
               <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="delivery_id" value="<?= (int)$d['id'] ?>">
-              <button type="submit" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);color:var(--yellow);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:5px 12px;border-radius:3px;cursor:pointer;">Open security summary</button>
+              <button type="submit" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);color:var(--yellow);font-family:var(--font-sans);font-size:12px;font-weight:600;padding:5px 12px;border-radius:3px;cursor:pointer;">Open security summary</button>
             </form>
           <?php else: ?>
             Your Project Manager can open this project's one-time security summary.
@@ -283,7 +283,7 @@ unset($dr);
           <span class="badge badge-<?= $matched_invoice['status'] === 'paid' ? 'approved' : 'clarification_needed' ?>" style="margin-left:6px;"><?= htmlspecialchars($matched_invoice['status']) ?></span>
           <?php if ($matched_invoice['status'] !== 'paid' && $can_pay): ?>
           <button onclick="openPayModal(<?= $matched_invoice['id'] ?>, '<?= htmlspecialchars($matched_invoice['invoice_code']) ?>', '<?= number_format($matched_invoice['total_amount'], 2) ?>')"
-            style="margin-left:10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:5px 14px;border-radius:3px;cursor:pointer;">
+            style="margin-left:10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:5px 14px;border-radius:3px;cursor:pointer;">
             Pay Now
           </button>
           <?php else: ?>
@@ -336,7 +336,7 @@ unset($dr);
       <div id="upi_fields" style="display:none;margin-bottom:1.2rem;">
         <div style="margin-bottom:0.8rem;">
           <label style="display:block;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">UPI ID</label>
-          <input type="text" id="upi_id" placeholder="yourname@upi" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+          <input type="text" id="upi_id" placeholder="yourname@upi" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:var(--font-sans);font-size:13px;padding:9px 12px;outline:none;">
         </div>
       </div>
 
@@ -358,7 +358,7 @@ unset($dr);
         </div>
         <div style="margin-top:0.8rem;">
           <label style="display:block;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Name on Card</label>
-          <input type="text" id="card_name" placeholder="John Doe" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+          <input type="text" id="card_name" placeholder="John Doe" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:var(--font-sans);font-size:13px;padding:9px 12px;outline:none;">
         </div>
       </div>
 
@@ -366,7 +366,7 @@ unset($dr);
       <div id="netbanking_fields" style="display:none;margin-bottom:1.2rem;">
         <div>
           <label style="display:block;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Select Bank</label>
-          <select id="bank_select" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:9px 12px;outline:none;">
+          <select id="bank_select" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:var(--font-sans);font-size:13px;padding:9px 12px;outline:none;">
             <option value="">— Select Bank —</option>
             <option value="sbi">State Bank of India</option>
             <option value="hdfc">HDFC Bank</option>
@@ -384,11 +384,11 @@ unset($dr);
 
       <div style="display:flex;gap:8px;">
         <button onclick="processPayment()" id="btnPay"
-          style="flex:1;background:var(--green);color:white;border:none;border-radius:3px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:11px;cursor:pointer;transition:background 0.2s;">
+          style="flex:1;background:var(--green);color:white;border:none;border-radius:3px;font-family:var(--font-sans);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:11px;cursor:pointer;transition:background 0.2s;">
           Pay ₹<span id="payAmountBtn">0</span>
         </button>
         <button onclick="closePayModal()"
-          style="flex:1;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text-dim);border-radius:3px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:11px;cursor:pointer;text-transform:uppercase;">
+          style="flex:1;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text-dim);border-radius:3px;font-family:var(--font-sans);font-size:13px;font-weight:500;padding:11px;cursor:pointer;text-transform:uppercase;">
           Cancel
         </button>
       </div>
@@ -408,7 +408,7 @@ unset($dr);
       </div>
       <div style="font-size:18px;font-weight:600;margin-bottom:4px;">Payment Successful!</div>
       <div style="font-size:13px;color:var(--text-dim);margin-bottom:1.4rem;" id="paySuccessDesc"></div>
-      <button onclick="closePayModal()" style="background:var(--accent);color:white;border:none;border-radius:3px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;text-transform:uppercase;padding:10px 24px;cursor:pointer;">Done</button>
+      <button onclick="closePayModal()" style="background:var(--accent);color:white;border:none;border-radius:3px;font-family:var(--font-sans);font-size:13px;font-weight:600;text-transform:uppercase;padding:10px 24px;cursor:pointer;">Done</button>
     </div>
 
   </div>

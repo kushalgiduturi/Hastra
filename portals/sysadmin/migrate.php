@@ -115,10 +115,10 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
 <title>Database Migration · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; }
+  body { margin: 0; background: var(--navy); color: var(--text); font-family: var(--font-sans); font-size: 14px; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
   .back:hover { color: var(--text); }
@@ -134,7 +134,7 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
   .step p { margin: 0; color: var(--text-dim); font-size: 13px; max-width: 56ch; line-height: 1.5; }
   .num { font-family: 'Share Tech Mono', monospace; color: var(--accent-bright); margin-right: 6px; }
   .actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-  button { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; border-radius: 3px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); }
+  button { font-family: var(--font-sans); font-size: 13px; font-weight: 600; border-radius: 3px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); }
   button:hover:not(:disabled) { border-color: var(--accent-bright); }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button.danger  { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); color: var(--red); }
