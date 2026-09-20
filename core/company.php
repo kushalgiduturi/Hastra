@@ -293,6 +293,18 @@ function astra_is_solo_company($company) {
     return $company && in_array($company['account_type'] ?? '', ['solo_enterprise', 'client_individual'], true);
 }
 
+// The signed-in user's own company row (internal Cycops included, unlike
+// astra_session_company_logo() which deliberately excludes it), or null if
+// they're not tied to one. Used to decide whether to hide team/attendance/
+// leave/webhook nav for a solo workspace — see portals/*/_nav.php.
+function astra_session_company($conn) {
+    if (!isset($_SESSION['user_id'])) return null;
+    $stmt = mysqli_prepare($conn, "SELECT c.* FROM users u JOIN companies c ON c.id = u.company_id WHERE u.id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    return mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: null;
+}
+
 // Turns a pending registration's logo_data (an http(s) URL picked from the
 // automated logo search, or a data: URI from the manual upload fallback —
 // see auth/register.php) into a companies.logo_url value. An external URL

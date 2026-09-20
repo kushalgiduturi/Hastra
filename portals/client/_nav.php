@@ -4,7 +4,9 @@
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === '_nav.php') { http_response_code(404); exit(); }
 $nav_current    = $nav_current ?? '';
 $__can_projects = client_can($ctx, 'view_projects');
-$__can_team     = client_can($ctx, 'manage_team');
+// Individual/freelancer clients have no team to manage — a one-person
+// "roster" is dead weight (see core/company.php's astra_is_solo_company()).
+$__can_team     = client_can($ctx, 'manage_team') && !astra_is_solo_company($ctx['company'] ?? null);
 ?>
 <nav class="topnav">
   <div class="nav-left">

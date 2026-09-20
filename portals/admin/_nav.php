@@ -4,6 +4,11 @@
 // included.
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === '_nav.php') { http_response_code(404); exit(); }
 $nav_current = $nav_current ?? '';
+// Solo Enterprise admins have no team — hide roster/attendance/leave (and,
+// since it lives inside the attendance page, the biometric webhook secret
+// UI with it). See core/company.php's astra_is_solo_company().
+$__admin_company = astra_session_company($conn);
+$__is_solo        = astra_is_solo_company($__admin_company);
 ?>
 <nav class="topnav">
   <div class="nav-left">
@@ -36,7 +41,7 @@ render_sidebar(
       ['key' => 'requirements',  'label' => 'Requirements & Deliveries','href' => get_base_url() . 'portals/admin/requirements',    'current' => $nav_current === 'requirements'],
       ['key' => 'deployment',    'label' => 'Deployments',              'href' => get_base_url() . 'portals/admin/deployments',      'current' => $nav_current === 'deployments'],
     ]],
-    ['label' => 'Team & Governance', 'links' => [
+    ['label' => 'Team & Governance', 'links' => $__is_solo ? [] : [
       ['key' => 'team',          'label' => 'Team Roster',              'href' => get_base_url() . 'portals/admin/directory',        'current' => $nav_current === 'directory'],
       ['key' => 'attendance',    'label' => 'Attendance Matrix & Logs', 'href' => get_base_url() . 'portals/admin/attendance',       'current' => $nav_current === 'attendance'],
       ['key' => 'leave',         'label' => 'Leave Management & Requests', 'href' => get_base_url() . 'portals/admin/leave_management', 'current' => $nav_current === 'leave'],
