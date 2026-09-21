@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'network.php') { http_response_code(404); exit(); }
 // Astra — client IP resolution.
 //
 // astra_get_client_ip() is the single source of truth for "what is the

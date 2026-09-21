@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'dock.php') { http_response_code(404); exit(); }
 // core/dock.php
 // Shared floating "magnification dock" quick-nav, used alongside each
 // portal's top nav bar. Renders a small pill of icon links that grow when

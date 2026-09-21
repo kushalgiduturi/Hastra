@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'integrity.php') { http_response_code(404); exit(); }
 // core/integrity.php  (P15)
 // • next_code(): race-free IDs like 26R0001, 26P0001, 26T0001, 26B0001, 26INV0001
 // • Vulnerability classes + CWE IDs for security bugs

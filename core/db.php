@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'db.php') { http_response_code(404); exit(); }
 
 require __DIR__ . '/../config/config.php';
 

@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'crypto.php') { http_response_code(404); exit(); }
 // Astra — application-level column encryption (AES-256-GCM).
 //
 // astra_encrypt()/astra_decrypt() are the low-level primitives. Call sites

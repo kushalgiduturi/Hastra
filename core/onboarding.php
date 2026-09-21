@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'onboarding.php') { http_response_code(404); exit(); }
 // core/onboarding.php
 // Enterprise onboarding: client roles, roster parsing, staging validation,
 // activation invites. Loaded by core/db.php.

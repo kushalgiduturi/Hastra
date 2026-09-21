@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'docs.php') { http_response_code(404); exit(); }
 // core/docs.php  (P16)
 // Project documentation: drafting (AI via tools/doc_generator, or a built-in
 // template), versioning, HTML sanitising and the approval gate for deployment.

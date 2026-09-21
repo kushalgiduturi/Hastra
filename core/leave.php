@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'leave.php') { http_response_code(404); exit(); }
 // Astra — leave quota enforcement.
 //
 // 'maternity' and 'unpaid' are unlimited (maternity is gated separately by

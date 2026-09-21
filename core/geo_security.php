@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'geo_security.php') { http_response_code(404); exit(); }
 // Astra — IP reputation / anti-VPN engine.
 //
 // astra_inspect_ip($ip) is the single entry point: it checks the ip_cache

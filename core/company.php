@@ -1,4 +1,5 @@
 <?php
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'company.php') { http_response_code(404); exit(); }
 // core/company.php
 // Companies, company email domains and per-company user-ID blocks.
 //
