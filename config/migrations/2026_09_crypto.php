@@ -43,14 +43,24 @@ function astra_crypto_widen_to_text($conn, callable $out, $table, $column, $null
 
 // Encrypts every not-yet-encrypted, non-empty value in $table.$column with
 // astra_db_encrypt(), verifying each one round-trips before moving on.
+// Both envelope prefixes count as "already encrypted" — a row carrying the
+// current astra:v1: format must not be handed back to astra_db_encrypt() as if
+// it were plaintext, or the round-trip self-check below compares a plaintext
+// against its own ciphertext and fails.
+//
+// cli/migrate_encryption.php is the canonical runner now (chunked, resumable,
+// and it also rewrites adb:v1: rows forward). This stays only so the sysadmin
+// migration page keeps working on a database that predates it.
 function astra_crypto_encrypt_column($conn, callable $out, $table, $column, $id_column = 'id') {
-    $prefix = ASTRA_DB_ENC_PREFIX;
     $rows = mysqli_query($conn,
         "SELECT `$id_column` AS row_id, `$column` AS val FROM `$table`
-         WHERE `$column` IS NOT NULL AND `$column` <> '' AND `$column` NOT LIKE '" . mysqli_real_escape_string($conn, $prefix) . "%'");
+         WHERE `$column` IS NOT NULL AND `$column` <> ''
+           AND `$column` NOT LIKE '" . mysqli_real_escape_string($conn, ASTRA_ENC_PREFIX) . "%'
+           AND `$column` NOT LIKE '" . mysqli_real_escape_string($conn, ASTRA_DB_ENC_PREFIX) . "%'");
     $upd = mysqli_prepare($conn, "UPDATE `$table` SET `$column` = ? WHERE `$id_column` = ?");
     $n = 0;
     while ($r = mysqli_fetch_assoc($rows)) {
+        if (astra_is_encrypted($r['val'])) continue;
         $enc = astra_db_encrypt($r['val']);
         if (astra_db_decrypt($enc) !== $r['val']) {
             throw new RuntimeException("Encryption self-check failed for $table.$column #{$r['row_id']}");

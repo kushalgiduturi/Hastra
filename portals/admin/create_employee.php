@@ -81,9 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
 
                 $token        = bin2hex(random_bytes(32));
                 $token_insert = mysqli_prepare($conn,
-                    "INSERT INTO password_set_tokens (user_id, token) VALUES (?, ?)"
+                    "INSERT INTO password_set_tokens (user_id, token, token_bindex) VALUES (?, ?, ?)"
                 );
-                mysqli_stmt_bind_param($token_insert, "is", $new_user_id, $token);
+                $token_enc    = astra_db_encrypt($token);
+                $token_bindex = astra_blind_index($token);
+                mysqli_stmt_bind_param($token_insert, "iss", $new_user_id, $token_enc, $token_bindex);
                 mysqli_stmt_execute($token_insert);
 
                 $set_link = "http://" . $_SERVER['HTTP_HOST'] . get_base_url() . "auth/set_password.php?token=" . $token;

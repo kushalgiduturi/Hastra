@@ -91,9 +91,12 @@ function company_domain_from_name($company_name) {
     return ($slug === '' ? 'company' : $slug) . '.com';
 }
 
+// email_domain is encrypted, so uniqueness is enforced and tested through its
+// blind index (UNIQUE on companies.domain_bindex) rather than the column.
 function company_domain_taken($conn, $domain, $except_company_id = 0) {
-    $stmt = mysqli_prepare($conn, "SELECT id FROM companies WHERE email_domain = ? AND id <> ?");
-    mysqli_stmt_bind_param($stmt, "si", $domain, $except_company_id);
+    $stmt = mysqli_prepare($conn, "SELECT id FROM companies WHERE domain_bindex = ? AND id <> ?");
+    $bindex = astra_blind_index(normalize_domain($domain));
+    mysqli_stmt_bind_param($stmt, "si", $bindex, $except_company_id);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_store_result($stmt);
     $taken = mysqli_stmt_num_rows($stmt) > 0;
@@ -134,13 +137,16 @@ function get_company($conn, $company_id) {
     mysqli_stmt_execute($stmt);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
+    astra_decrypt_company_row($row);
     return $row ?: null;
 }
 
 function get_internal_company($conn) {
     if (!company_schema_ready($conn)) return null;
     $res = mysqli_query($conn, "SELECT * FROM companies WHERE is_internal = 1 ORDER BY id LIMIT 1");
-    return ($res && ($row = mysqli_fetch_assoc($res))) ? $row : null;
+    if (!$res || !($row = mysqli_fetch_assoc($res))) return null;
+    astra_decrypt_company_row($row);
+    return $row;
 }
 
 // Internal company first, then client companies in block order.
@@ -149,7 +155,7 @@ function list_companies($conn) {
     $res = mysqli_query($conn,
         "SELECT * FROM companies
          ORDER BY is_internal DESC, id_block_start IS NULL, id_block_start ASC, company_name ASC");
-    return $res ? mysqli_fetch_all($res, MYSQLI_ASSOC) : [];
+    return $res ? astra_decrypt_company_rows(mysqli_fetch_all($res, MYSQLI_ASSOC)) : [];
 }
 
 // ── ID blocks ─────────────────────────────────────────────────────────────────
@@ -219,12 +225,16 @@ function find_company_by_name($conn, $company_name) {
     $company_name = trim((string)$company_name);
     if ($company_name === '' || !company_schema_ready($conn)) return null;
     $base = company_domain_from_name($company_name);
+    // company_name stays plaintext, so it is still matched in SQL; the domain
+    // half of the OR goes through the blind index.
     $stmt = mysqli_prepare($conn,
-        "SELECT * FROM companies WHERE is_internal = 0 AND (email_domain = ? OR LOWER(company_name) = LOWER(?)) ORDER BY id LIMIT 1");
-    mysqli_stmt_bind_param($stmt, "ss", $base, $company_name);
+        "SELECT * FROM companies WHERE is_internal = 0 AND (domain_bindex = ? OR LOWER(company_name) = LOWER(?)) ORDER BY id LIMIT 1");
+    $bindex = astra_blind_index(normalize_domain($base));
+    mysqli_stmt_bind_param($stmt, "ss", $bindex, $company_name);
     mysqli_stmt_execute($stmt);
     $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
+    astra_decrypt_company_row($existing);
     return $existing ?: null;
 }
 
@@ -237,8 +247,10 @@ function create_company($conn, $company_name, $owner_user_id = null, array $extr
     $domain = unique_company_domain($conn, $company_name);
 
     $ins = mysqli_prepare($conn,
-        "INSERT INTO companies (user_id, company_name, email_domain, id_block_start, is_internal) VALUES (?, ?, ?, ?, 0)");
-    mysqli_stmt_bind_param($ins, "issi", $owner_user_id, $company_name, $domain, $block);
+        "INSERT INTO companies (user_id, company_name, email_domain, domain_bindex, id_block_start, is_internal) VALUES (?, ?, ?, ?, ?, 0)");
+    $domain_enc    = astra_db_encrypt(normalize_domain($domain));
+    $domain_bindex = astra_blind_index(normalize_domain($domain));
+    mysqli_stmt_bind_param($ins, "isssi", $owner_user_id, $company_name, $domain_enc, $domain_bindex, $block);
     if (!mysqli_stmt_execute($ins)) return null;
     $id = mysqli_insert_id($conn);
 
@@ -365,6 +377,7 @@ function insert_user_in_company($conn, $company, array $u, &$error = null) {
     $company_id = $company['id'] ?? null;
     $range      = user_id_range_for($company, $u['role']);
     $email_bindex       = astra_blind_index($u['email'] ?? null);
+    $phone_bindex       = astra_blind_index($u['phone_number'] ?? null);
     $u['phone_number']  = astra_db_encrypt($u['phone_number'] ?? null);
     $u['name']          = astra_db_encrypt($u['name'] ?? null);
     $u['email']         = astra_db_encrypt($u['email'] ?? null);
@@ -378,22 +391,22 @@ function insert_user_in_company($conn, $company, array $u, &$error = null) {
 
         if ($ready && isset($u['client_role'])) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, email_bindex, phone_number, password, role, company_id, client_role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "issssssis",
-                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role'], $company_id, $u['client_role']);
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, client_role, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "isssssssis",
+                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role'], $company_id, $u['client_role']);
         } elseif ($ready) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, email_bindex, phone_number, password, role, company_id, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "issssssi",
-                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role'], $company_id);
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "isssssssi",
+                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role'], $company_id);
         } else {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (name, email, email_bindex, phone_number, password, role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "ssssss",
-                $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role']);
+                "INSERT INTO users (name, email, email_bindex, phone_number, phone_bindex, password, role, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "sssssss",
+                $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role']);
         }
 
         $errno = 0; $errmsg = '';

@@ -5,6 +5,8 @@ config/anthropic.key
 # DB backups / dumps
 config/backups/
 *.sql
+# schema_v2.sql is a reference schema, not a dump — keep it tracked
+!schema_v2.sql
 
 # User-uploaded content
 uploads/

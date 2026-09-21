@@ -47,12 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "updat
     } elseif ($linkedin !== "" && !filter_var($linkedin, FILTER_VALIDATE_URL)) {
         $msg = "Please enter a valid LinkedIn URL.";
     } else {
-        $phone_enc = astra_db_encrypt($phone);
-        $name_enc  = astra_db_encrypt($name);
+        $phone_enc    = astra_db_encrypt($phone);
+        $phone_bindex = astra_blind_index($phone);
+        $name_enc     = astra_db_encrypt($name);
         $upd = mysqli_prepare($conn,
-            "UPDATE users SET name = ?, phone_number = ?, github_url = ?, linkedin_url = ? WHERE id = ?"
+            "UPDATE users SET name = ?, phone_number = ?, phone_bindex = ?, github_url = ?, linkedin_url = ? WHERE id = ?"
         );
-        mysqli_stmt_bind_param($upd, "ssssi", $name_enc, $phone_enc, $github, $linkedin, $user_id);
+        mysqli_stmt_bind_param($upd, "sssssi", $name_enc, $phone_enc, $phone_bindex, $github, $linkedin, $user_id);
         if (mysqli_stmt_execute($upd)) {
             $_SESSION["user_name"] = $name;
             $msg      = "Profile updated successfully.";
@@ -306,6 +307,8 @@ if ($role === 'employee') {
     mysqli_stmt_bind_param($log_q, "i", $user_id);
     mysqli_stmt_execute($log_q);
     $activity_logs = mysqli_stmt_get_result($log_q)->fetch_all(MYSQLI_ASSOC);
+    foreach ($activity_logs as &$__log) { $__log['geo'] = astra_db_decrypt($__log['geo']); }
+    unset($__log);
 
     // Task activity
     $task_q = mysqli_prepare($conn,

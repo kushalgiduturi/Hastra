@@ -61,9 +61,14 @@ function send_activation_invite($conn, $user_id, $name, $email, $company_name, &
     mysqli_stmt_bind_param($old, "i", $user_id);
     mysqli_stmt_execute($old);
 
+    // The token only ever travels by email; the row stores it encrypted, and
+    // auth/set_password.php finds it by blind index. A dump of this table is
+    // therefore not a set of usable account-activation links.
     $token = bin2hex(random_bytes(32));
-    $ins   = mysqli_prepare($conn, "INSERT INTO password_set_tokens (user_id, token) VALUES (?, ?)");
-    mysqli_stmt_bind_param($ins, "is", $user_id, $token);
+    $ins   = mysqli_prepare($conn, "INSERT INTO password_set_tokens (user_id, token, token_bindex) VALUES (?, ?, ?)");
+    $token_enc    = astra_db_encrypt($token);
+    $token_bindex = astra_blind_index($token);
+    mysqli_stmt_bind_param($ins, "iss", $user_id, $token_enc, $token_bindex);
     mysqli_stmt_execute($ins);
 
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -108,8 +113,7 @@ function company_members_with_activation($conn, $company_id) {
     $rows = astra_decrypt_user_rows($rows);
     foreach ($rows as &$r) {
         // Resending retires older links, so at most one link is open per person.
-        $r['state']        = activation_state((bool)$r['has_open'], (bool)$r['open_expired']);
-        $r['phone_number'] = astra_db_decrypt($r['phone_number']);
+        $r['state'] = activation_state((bool)$r['has_open'], (bool)$r['open_expired']);
     }
     unset($r);
     $role_order = ['it_manager' => 0, 'pm' => 1, 'teammate' => 2];

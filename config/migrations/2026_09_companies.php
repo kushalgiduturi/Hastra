@@ -31,6 +31,29 @@ if (!function_exists('mig_one')) {
     }
 }
 
+// companies.email_domain is plaintext until cli/migrate_encryption.php runs and
+// encrypted afterwards. This migration predates that and must work in both
+// states, so every domain read/write here goes through these three helpers.
+if (!function_exists('mig_domain_read')) {
+    function mig_domain_has_bindex($conn) {
+        return db_column_exists($conn, 'companies', 'domain_bindex');
+    }
+    function mig_domain_read($stored) {
+        return function_exists('astra_db_decrypt') ? astra_db_decrypt($stored) : $stored;
+    }
+    function mig_domain_store($conn, $plain) {
+        return mig_domain_has_bindex($conn) && function_exists('astra_db_encrypt')
+            ? astra_db_encrypt($plain) : $plain;
+    }
+    function mig_domain_reindex($conn, $company_id, $plain) {
+        if (!mig_domain_has_bindex($conn) || !function_exists('astra_blind_index')) return;
+        $s = mysqli_prepare($conn, "UPDATE companies SET domain_bindex = ? WHERE id = ?");
+        $b = astra_blind_index(normalize_domain($plain));
+        mysqli_stmt_bind_param($s, "si", $b, $company_id);
+        mysqli_stmt_execute($s);
+    }
+}
+
 // $out receives one line of text at a time.
 function astra_migrate_companies($conn, bool $reindex, callable $out) {
     $step    = function ($msg) use ($out) { $out(""); $out("== $msg"); };
@@ -103,12 +126,15 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
         $start  = INTERNAL_ADMIN_RANGE[0];
         $stmt = mysqli_prepare($conn,
             "INSERT INTO companies (user_id, company_name, email_domain, id_block_start, is_internal) VALUES (NULL, ?, ?, ?, 1)");
-        mysqli_stmt_bind_param($stmt, "ssi", $name, $domain, $start);
+        $domain_stored = mig_domain_store($conn, $domain);
+        mysqli_stmt_bind_param($stmt, "ssi", $name, $domain_stored, $start);
         mysqli_stmt_execute($stmt);
-        $internal = mig_one($conn, "SELECT * FROM companies WHERE id = " . mysqli_insert_id($conn));
-        $info("created {$internal['company_name']} (@{$internal['email_domain']}, IDs 1000–2999)");
+        $new_id = mysqli_insert_id($conn);
+        mig_domain_reindex($conn, $new_id, $domain);
+        $internal = mig_one($conn, "SELECT * FROM companies WHERE id = " . $new_id);
+        $info("created {$internal['company_name']} (@" . mig_domain_read($internal['email_domain']) . ", IDs 1000–2999)");
     } else {
-        $info("{$internal['company_name']} (@{$internal['email_domain']}) already exists");
+        $info("{$internal['company_name']} (@" . mig_domain_read($internal['email_domain']) . ") already exists");
     }
     $internal_id = (int)$internal['id'];
 
@@ -117,7 +143,8 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
     $clients = mig_all($conn, "SELECT * FROM companies WHERE is_internal = 0 ORDER BY id");
     $groups  = [];
     foreach ($clients as $c) {
-        $key = $c['email_domain'] ? normalize_domain($c['email_domain']) : company_domain_from_name($c['company_name']);
+        $domain_plain = mig_domain_read($c['email_domain']);
+        $key = $domain_plain ? normalize_domain($domain_plain) : company_domain_from_name($c['company_name']);
         $groups[$key][] = $c;
     }
     $owner_to_company = [];   // client user_id → canonical company id
@@ -163,8 +190,10 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
         if (!$c['email_domain']) {
             $d = unique_company_domain($conn, $c['company_name'], (int)$c['id']);
             $s = mysqli_prepare($conn, "UPDATE companies SET email_domain = ? WHERE id = ?");
-            mysqli_stmt_bind_param($s, "si", $d, $c['id']);
+            $d_stored = mig_domain_store($conn, $d);
+            mysqli_stmt_bind_param($s, "si", $d_stored, $c['id']);
             mysqli_stmt_execute($s);
+            mig_domain_reindex($conn, (int)$c['id'], $d);
             $sets[] = "@$d";
         }
         if ($c['id_block_start'] === null) {
@@ -176,7 +205,13 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
         if ($sets) $info("{$c['company_name']}: " . implode(', ', $sets));
     }
 
-    foreach (['email_domain' => 'uq_companies_domain', 'id_block_start' => 'uq_companies_block'] as $col => $idx) {
+    // Once email_domain is encrypted its uniqueness lives on domain_bindex
+    // instead — a random IV makes two rows holding the same domain look
+    // different, so a UNIQUE key on the column itself would enforce nothing.
+    $unique_cols = mig_domain_has_bindex($conn)
+        ? ['domain_bindex' => 'uq_companies_domain_bindex', 'id_block_start' => 'uq_companies_block']
+        : ['email_domain'  => 'uq_companies_domain',        'id_block_start' => 'uq_companies_block'];
+    foreach ($unique_cols as $col => $idx) {
         if (!mig_has_index($conn, 'companies', $idx)) {
             mysqli_query($conn, "ALTER TABLE companies ADD UNIQUE KEY $idx ($col)");
             $info("added unique key on companies.$col");

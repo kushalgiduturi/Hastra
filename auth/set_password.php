@@ -11,8 +11,9 @@ if ($token === "") {
     exit();
 }
 
-$check = mysqli_prepare($conn, "SELECT *, created_at < NOW() - INTERVAL 24 HOUR AS is_expired FROM password_set_tokens WHERE token = ? AND is_used = 0");
-mysqli_stmt_bind_param($check, "s", $token);
+$check = mysqli_prepare($conn, "SELECT *, created_at < NOW() - INTERVAL 24 HOUR AS is_expired FROM password_set_tokens WHERE token_bindex = ? AND is_used = 0");
+$token_bindex = astra_blind_index($token);
+mysqli_stmt_bind_param($check, "s", $token_bindex);
 mysqli_stmt_execute($check);
 $result = mysqli_stmt_get_result($check);
 $token_row = mysqli_fetch_assoc($result);
