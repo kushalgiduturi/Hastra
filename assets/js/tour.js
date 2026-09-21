@@ -372,13 +372,35 @@
 
       fetchStatus(key, function (status) {
         if (status === 'completed' || status === 'skipped') { cacheSet(key, status); return; }
-        window.setTimeout(function () {
-          try { start(key, configs[key]); } catch (e) { console.warn('Astra tour: auto-start failed.', e); }
-        }, AUTO_START_DELAY);
+        waitForProfileBarrier(function () {
+          window.setTimeout(function () {
+            try { start(key, configs[key]); } catch (e) { console.warn('Astra tour: auto-start failed.', e); }
+          }, AUTO_START_DELAY);
+        });
       });
     } catch (e) {
       console.warn('Astra tour: init failed — the page will work normally, just without the guided tour.', e);
     }
+  }
+
+  // The mandatory profile-completion barrier (core/auth_check.php) also
+  // renders unconditionally on every authenticated page, at a lower
+  // z-index than the tour (500 vs 9000) — so without this guard, a tour
+  // auto-starting for a user who also hasn't set their gender yet would
+  // pop up its popover directly on top of that modal, overlapping it.
+  // The barrier is unclosable except by completing it (it removes itself
+  // from the DOM on success — see assets/js/profile-barrier.js), so wait
+  // for that removal before ever starting a tour.
+  function waitForProfileBarrier(cb) {
+    var overlay = document.getElementById('profileBarrierOverlay');
+    if (!overlay) { cb(); return; }
+    var observer = new MutationObserver(function () {
+      if (!document.getElementById('profileBarrierOverlay')) {
+        observer.disconnect();
+        cb();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   window.AstraTour = { start: start, restart: restart, init: init };
