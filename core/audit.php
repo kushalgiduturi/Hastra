@@ -145,6 +145,7 @@ function export_company_logs_csv($conn, $company_id, $company_name) {
     $out = fopen('php://output', 'w');
     fputcsv($out, ['Log ID', 'User ID', 'Name', 'Email', 'Action', 'IP Address', 'Timestamp']);
     while ($row = mysqli_fetch_assoc($res)) {
+        astra_decrypt_user_row($row);
         fputcsv($out, [$row['id'], $row['user_id'], $row['name'], $row['email'], $row['action'], $row['ip_address'], $row['timestamp']]);
     }
     fclose($out);

@@ -95,7 +95,10 @@ $invoices_result = mysqli_query($conn,
      ORDER BY inv.created_at DESC"
 );
 $all_invoices = [];
-while ($row = mysqli_fetch_assoc($invoices_result)) $all_invoices[] = $row;
+while ($row = mysqli_fetch_assoc($invoices_result)) {
+    $row['generated_by_name'] = astra_db_decrypt($row['generated_by_name']);
+    $all_invoices[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

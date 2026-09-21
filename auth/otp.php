@@ -23,18 +23,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $entered_otp = trim($_POST["otp"]);
-    $email       = $_SESSION["otp_email"];
+    $entered_otp  = trim($_POST["otp"]);
+    $email        = $_SESSION["otp_email"];
+    $email_bindex = astra_blind_index($email);
 
-    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? AND otp = ? AND otp_expiry > NOW()");
-    mysqli_stmt_bind_param($stmt, "ss", $email, $entered_otp);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email_bindex = ? AND otp = ? AND otp_expiry > NOW()");
+    mysqli_stmt_bind_param($stmt, "ss", $email_bindex, $entered_otp);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $user   = mysqli_fetch_assoc($result);
+    astra_decrypt_user_row($user);
 
     if ($user) {
-        $clear = mysqli_prepare($conn, "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE email = ?");
-        mysqli_stmt_bind_param($clear, "s", $email);
+        $clear = mysqli_prepare($conn, "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE email_bindex = ?");
+        mysqli_stmt_bind_param($clear, "s", $email_bindex);
         mysqli_stmt_execute($clear);
 
         $_SESSION["user_id"]   = $user["id"];

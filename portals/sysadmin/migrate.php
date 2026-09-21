@@ -16,6 +16,7 @@ require __DIR__ . '/../../config/migrations/2026_09_crypto.php';
 require __DIR__ . '/../../config/migrations/2026_09_attendance.php';
 require __DIR__ . '/../../config/migrations/2026_09_company_logo.php';
 require __DIR__ . '/../../config/migrations/2026_09_account_type.php';
+require __DIR__ . '/../../config/migrations/2026_09_user_pii.php';
 
 const BACKUP_DIR        = __DIR__ . '/../../config/backups';
 const BACKUP_VALID_SECS = 3600;
@@ -26,6 +27,7 @@ $me = mysqli_prepare($conn, "SELECT name, email FROM users WHERE id = ?");
 mysqli_stmt_bind_param($me, "i", $_SESSION["user_id"]);
 mysqli_stmt_execute($me);
 $me = mysqli_fetch_assoc(mysqli_stmt_get_result($me));
+astra_decrypt_user_row($me); // no-op pre-migration (plaintext), correct post-migration (encrypted)
 if (!$me || strcasecmp($me["email"], PRIMARY_SYSADMIN_EMAIL) !== 0) {
     http_response_code(403);
     exit("Only the primary sysadmin can run database migrations.");
@@ -62,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_attendance($conn, $out);
             astra_migrate_company_logo($conn, $out);
             astra_migrate_account_type($conn, $out);
+            astra_migrate_user_pii($conn, $out);
             $ran = "Dry run"; $result = 'ok';
         } elseif ($action === "apply") {
             if (!$backup_fresh) throw new RuntimeException("Take a backup first (step 1). Backups older than an hour don't count.");
@@ -76,10 +79,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_attendance($conn, $out);
             astra_migrate_company_logo($conn, $out);
             astra_migrate_account_type($conn, $out);
+            astra_migrate_user_pii($conn, $out);
             $ran = "Apply"; $result = 'ok';
             // Your own ID may have moved — keep this session pointing at it.
-            $again = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
-            mysqli_stmt_bind_param($again, "s", $me["email"]);
+            // (Matched via the blind index, not email = ?, since email may
+            // have just been encrypted by astra_migrate_user_pii() above.)
+            $again = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ? OR email = ?");
+            $me_bindex = function_exists('astra_blind_index') ? astra_blind_index($me["email"]) : null;
+            mysqli_stmt_bind_param($again, "ss", $me_bindex, $me["email"]);
             mysqli_stmt_execute($again);
             $new_me = mysqli_fetch_assoc(mysqli_stmt_get_result($again));
             if ($new_me && (int)$new_me["id"] !== (int)$_SESSION["user_id"]) {

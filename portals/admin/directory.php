@@ -12,12 +12,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "toggl
     $target_id = (int)($_POST["user_id"] ?? 0);
     $eligible  = ($_POST["eligible"] ?? "") === "1" ? 1 : 0;
 
-    $chk = mysqli_prepare($conn, "SELECT id FROM users WHERE id = ? AND role = 'employee' AND gender = 'female'");
+    // gender is encrypted, so it can't be filtered in SQL — fetch by
+    // id+role, then check the decrypted value in PHP.
+    $chk = mysqli_prepare($conn, "SELECT gender FROM users WHERE id = ? AND role = 'employee'");
     mysqli_stmt_bind_param($chk, "i", $target_id);
     mysqli_stmt_execute($chk);
-    mysqli_stmt_store_result($chk);
+    $chk_row = mysqli_fetch_assoc(mysqli_stmt_get_result($chk));
+    astra_decrypt_user_row($chk_row);
 
-    if ($target_id && mysqli_stmt_num_rows($chk) > 0) {
+    if ($target_id && $chk_row && $chk_row['gender'] === 'female') {
         $upd = mysqli_prepare($conn, "UPDATE users SET maternity_leave_eligible = ? WHERE id = ?");
         mysqli_stmt_bind_param($upd, "ii", $eligible, $target_id);
         mysqli_stmt_execute($upd);
@@ -116,7 +119,7 @@ $users = mysqli_query($conn, company_schema_ready($conn)
           <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Phone</th><th>Role</th><th>Maternity Leave</th></tr>
         </thead>
         <tbody>
-          <?php while ($row = mysqli_fetch_assoc($users)): ?>
+          <?php while ($row = mysqli_fetch_assoc($users)): astra_decrypt_user_row($row); ?>
           <tr>
             <td class="muted"><?= htmlspecialchars($row['id']) ?></td>
             <td><?= htmlspecialchars($row['name']) ?></td>

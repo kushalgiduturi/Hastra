@@ -176,7 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "impor
                     } elseif (!isset($map['work_date'])) {
                         $msg = 'Couldn\'t find a Date column. Add a header such as "Work Date".';
                     } else {
-                        $find_user = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? AND company_id = ? AND role = 'employee'");
+                        $find_user = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ? AND company_id = ? AND role = 'employee'");
                         $check_ov  = mysqli_prepare($conn, "SELECT is_overridden FROM attendance WHERE user_id = ? AND work_date = ?");
                         $upsert2   = mysqli_prepare($conn,
                             "INSERT INTO attendance (user_id, company_id, work_date, status, check_in, source, is_overridden)
@@ -206,7 +206,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "impor
                             if (!$status) { $errors[] = "Row $line: unrecognized status \"$status_raw\"."; continue; }
                             $check_in = ($check_in_raw !== '' && preg_match('/^\d{1,2}:\d{2}/', $check_in_raw)) ? substr($check_in_raw, 0, 5) : null;
 
-                            mysqli_stmt_bind_param($find_user, "si", $email, $company_id);
+                            $email_bindex = astra_blind_index($email);
+                            mysqli_stmt_bind_param($find_user, "si", $email_bindex, $company_id);
                             mysqli_stmt_execute($find_user);
                             $u = mysqli_fetch_assoc(mysqli_stmt_get_result($find_user));
                             if (!$u) { $skipped[] = "Row $line: no employee with email $email."; continue; }
@@ -245,8 +246,12 @@ $next_month = date("Y-m", strtotime("+1 month", $month_ts));
 
 // ── Employees + their attendance for this month ───────────────────────────────
 $employees = mysqli_fetch_all(mysqli_query($conn,
-    "SELECT id, name FROM users WHERE role = 'employee' ORDER BY name ASC"
+    "SELECT id, name FROM users WHERE role = 'employee'"
 ), MYSQLI_ASSOC);
+// name is encrypted — decrypt before sorting, since SQL's ORDER BY can no
+// longer sort it (ciphertext order is meaningless).
+$employees = astra_decrypt_user_rows($employees);
+usort($employees, fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
 $att_map = []; // [user_id][day] = status
 if ($employees) {

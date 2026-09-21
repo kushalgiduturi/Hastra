@@ -50,12 +50,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $email    = trim($_POST["email"]);
             $password = $_POST["password"];
+            $email_bindex = astra_blind_index($email);
 
-            $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ?");
-            mysqli_stmt_bind_param($stmt, "s", $email);
+            $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email_bindex = ?");
+            mysqli_stmt_bind_param($stmt, "s", $email_bindex);
             mysqli_stmt_execute($stmt);
             $result2 = mysqli_stmt_get_result($stmt);
             $user    = mysqli_fetch_assoc($result2);
+            astra_decrypt_user_row($user);
 
             if ($user) {
                 if ($user["locked_until"] && strtotime($user["locked_until"]) > time()) {
@@ -66,13 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } elseif (password_verify($password, $user["password"])) {
                     reset_ip_attempts($conn);
 
-                    $reset = mysqli_prepare($conn, "UPDATE users SET login_attempts = 0, locked_until = NULL WHERE email = ?");
-                    mysqli_stmt_bind_param($reset, "s", $email);
+                    $reset = mysqli_prepare($conn, "UPDATE users SET login_attempts = 0, locked_until = NULL WHERE email_bindex = ?");
+                    mysqli_stmt_bind_param($reset, "s", $email_bindex);
                     mysqli_stmt_execute($reset);
 
                     $otp    = rand(100000, 999999);
-                    $update = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email = ?");
-                    mysqli_stmt_bind_param($update, "ss", $otp, $email);
+                    $update = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email_bindex = ?");
+                    mysqli_stmt_bind_param($update, "ss", $otp, $email_bindex);
                     mysqli_stmt_execute($update);
 
                     $mail = new PHPMailer(true);
@@ -107,15 +109,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     if ($attempts >= 5) {
                         $lock_time = date("Y-m-d H:i:s", strtotime("+15 minutes"));
-                        $lock = mysqli_prepare($conn, "UPDATE users SET login_attempts = ?, locked_until = ? WHERE email = ?");
-                        mysqli_stmt_bind_param($lock, "iss", $attempts, $lock_time, $email);
+                        $lock = mysqli_prepare($conn, "UPDATE users SET login_attempts = ?, locked_until = ? WHERE email_bindex = ?");
+                        mysqli_stmt_bind_param($lock, "iss", $attempts, $lock_time, $email_bindex);
                         mysqli_stmt_execute($lock);
                         log_activity($conn, $user["id"], "account_locked",$user["name"]);
                         $msg = "Too many failed attempts. Account locked for 15 minutes.";
                     } else {
                         $remaining = 5 - $attempts;
-                        $update_attempts = mysqli_prepare($conn, "UPDATE users SET login_attempts = ? WHERE email = ?");
-                        mysqli_stmt_bind_param($update_attempts, "is", $attempts, $email);
+                        $update_attempts = mysqli_prepare($conn, "UPDATE users SET login_attempts = ? WHERE email_bindex = ?");
+                        mysqli_stmt_bind_param($update_attempts, "is", $attempts, $email_bindex);
                         mysqli_stmt_execute($update_attempts);
                         $msg = "Invalid email or password. $remaining attempt(s) remaining.";
                     }

@@ -36,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
         mysqli_stmt_bind_param($fetch, "i", $req_id);
         mysqli_stmt_execute($fetch);
         $req = mysqli_fetch_assoc(mysqli_stmt_get_result($fetch));
+        if ($req) { $req['client_name'] = astra_db_decrypt($req['client_name']); $req['client_email'] = astra_db_decrypt($req['client_email']); }
 
         if (!$req) {
             $msg      = "Requirement not found.";
@@ -108,6 +109,8 @@ $all_reqs = [];
 while ($r = mysqli_fetch_assoc($reqs_result)) {
     $r['description']       = astra_db_decrypt($r['description']);
     $r['expected_features'] = astra_db_decrypt($r['expected_features']);
+    $r['client_name']       = astra_db_decrypt($r['client_name']);
+    $r['client_email']      = astra_db_decrypt($r['client_email']);
     $all_reqs[] = $r;
 }
 

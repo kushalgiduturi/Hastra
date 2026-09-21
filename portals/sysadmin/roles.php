@@ -7,8 +7,9 @@ verify_session($conn, "sysadmin");
 $msg = "";
 $PRIMARY_SYSADMIN_EMAIL = PRIMARY_SYSADMIN_EMAIL;
 
-$primary_stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
-mysqli_stmt_bind_param($primary_stmt, "s", $PRIMARY_SYSADMIN_EMAIL);
+$primary_stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
+$primary_email_bindex = astra_blind_index($PRIMARY_SYSADMIN_EMAIL);
+mysqli_stmt_bind_param($primary_stmt, "s", $primary_email_bindex);
 mysqli_stmt_execute($primary_stmt);
 $primary_result = mysqli_stmt_get_result($primary_stmt);
 $primary_row    = mysqli_fetch_assoc($primary_result);
@@ -119,6 +120,7 @@ if ($schema_ready) {
     $client_role_col = db_column_exists($conn, 'users', 'client_role') ? 'client_role' : 'NULL AS client_role';
     $res = mysqli_query($conn, "SELECT id, name, email, role, company_id, $client_role_col FROM users ORDER BY $role_order");
     while ($u = mysqli_fetch_assoc($res)) {
+        astra_decrypt_user_row($u);
         $key = ($u['company_id'] && isset($company_sections['c' . $u['company_id']])) ? 'c' . $u['company_id'] : 'none';
         $company_sections[$key]['users'][] = $u;
     }
@@ -133,6 +135,7 @@ if ($schema_ready) {
     ];
     $res = mysqli_query($conn, "SELECT id, name, email, role FROM users ORDER BY $role_order");
     while ($u = mysqli_fetch_assoc($res)) {
+        astra_decrypt_user_row($u);
         $company_sections[in_array($u['role'], $STAFF_ROLES, true) ? 'staff' : 'none']['users'][] = $u;
     }
 }

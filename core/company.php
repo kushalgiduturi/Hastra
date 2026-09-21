@@ -364,7 +364,10 @@ function insert_user_in_company($conn, $company, array $u, &$error = null) {
     $ready      = company_schema_ready($conn);
     $company_id = $company['id'] ?? null;
     $range      = user_id_range_for($company, $u['role']);
-    $u['phone_number'] = astra_db_encrypt($u['phone_number'] ?? null);
+    $email_bindex       = astra_blind_index($u['email'] ?? null);
+    $u['phone_number']  = astra_db_encrypt($u['phone_number'] ?? null);
+    $u['name']          = astra_db_encrypt($u['name'] ?? null);
+    $u['email']         = astra_db_encrypt($u['email'] ?? null);
 
     for ($attempt = 0; $attempt < 5; $attempt++) {
         $id = null;
@@ -375,22 +378,22 @@ function insert_user_in_company($conn, $company, array $u, &$error = null) {
 
         if ($ready && isset($u['client_role'])) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, phone_number, password, role, company_id, client_role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "isssssis",
-                $id, $u['name'], $u['email'], $u['phone_number'], $u['password'], $u['role'], $company_id, $u['client_role']);
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, password, role, company_id, client_role, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "issssssis",
+                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role'], $company_id, $u['client_role']);
         } elseif ($ready) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, phone_number, password, role, company_id, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "isssssi",
-                $id, $u['name'], $u['email'], $u['phone_number'], $u['password'], $u['role'], $company_id);
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, password, role, company_id, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "issssssi",
+                $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role'], $company_id);
         } else {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (name, email, phone_number, password, role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, 0, NULL)");
-            mysqli_stmt_bind_param($stmt, "sssss",
-                $u['name'], $u['email'], $u['phone_number'], $u['password'], $u['role']);
+                "INSERT INTO users (name, email, email_bindex, phone_number, password, role, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, 0, NULL)");
+            mysqli_stmt_bind_param($stmt, "ssssss",
+                $u['name'], $u['email'], $email_bindex, $u['phone_number'], $u['password'], $u['role']);
         }
 
         $errno = 0; $errmsg = '';
@@ -455,9 +458,10 @@ function generate_company_email($conn, $full_name, $domain_with_at) {
     if ($base === '') $base = 'employee';
 
     $email = $base . $domain;
-    $check = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
+    $check = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
     for ($suffix = 2; ; $suffix++) {
-        mysqli_stmt_bind_param($check, "s", $email);
+        $bindex = astra_blind_index($email);
+        mysqli_stmt_bind_param($check, "s", $bindex);
         mysqli_stmt_execute($check);
         mysqli_stmt_store_result($check);
         if (mysqli_stmt_num_rows($check) === 0) return $email;

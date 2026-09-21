@@ -7,6 +7,7 @@ $stmt = mysqli_prepare($conn, 'SELECT role, name FROM users WHERE id = ?');
 mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
 mysqli_stmt_execute($stmt);
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: [];
+astra_decrypt_user_row($user);
 $role = $user['role'] ?? ($_SESSION['user_role'] ?? 'newuser');
 $name = $user['name'] ?? ($_SESSION['user_name'] ?? 'Member');
 

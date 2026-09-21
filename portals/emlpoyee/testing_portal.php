@@ -49,12 +49,15 @@ if (!empty($qa_project_ids)) {
         "SELECT pm.project_id, u.id, u.name
          FROM project_members pm
          JOIN users u ON pm.user_id = u.id
-         WHERE pm.project_role = 'developer' AND pm.project_id IN ($ids_csv)
-         ORDER BY u.name ASC"
+         WHERE pm.project_role = 'developer' AND pm.project_id IN ($ids_csv)"
     );
     while ($d = mysqli_fetch_assoc($dev_result)) {
-        $project_developers[(int)$d['project_id']][] = ['id' => (int)$d['id'], 'name' => $d['name']];
+        $project_developers[(int)$d['project_id']][] = ['id' => (int)$d['id'], 'name' => astra_db_decrypt($d['name'])];
     }
+    foreach ($project_developers as &$__devs) {
+        usort($__devs, fn($a, $b) => strcasecmp($a['name'], $b['name']));
+    }
+    unset($__devs);
 
     $task_result = mysqli_query($conn,
         "SELECT id, project_id, task_code, title FROM tasks WHERE project_id IN ($ids_csv) ORDER BY created_at DESC"
@@ -127,7 +130,10 @@ function fetch_bug_files($conn, $bug_id) {
     );
     mysqli_stmt_bind_param($fq, "i", $bug_id);
     mysqli_stmt_execute($fq);
-    return mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+    $files = mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+    foreach ($files as &$f) $f['uploader_name'] = astra_db_decrypt($f['uploader_name']);
+    unset($f);
+    return $files;
 }
 
 function format_bytes($bytes) {
@@ -530,6 +536,7 @@ $my_fix_result = mysqli_query($conn,
 );
 $my_fix_bugs = [];
 while ($b = mysqli_fetch_assoc($my_fix_result)) {
+    $b['reported_by_name'] = astra_db_decrypt($b['reported_by_name']);
     $b['files']    = fetch_bug_files($conn, $b['id']);
     $my_fix_bugs[] = $b;
 }
@@ -546,6 +553,7 @@ $my_reported_result = mysqli_query($conn,
 );
 $my_reported_bugs = [];
 while ($b = mysqli_fetch_assoc($my_reported_result)) {
+    $b['assigned_to_name'] = astra_db_decrypt($b['assigned_to_name']);
     $b['files']         = fetch_bug_files($conn, $b['id']);
     $my_reported_bugs[] = $b;
 }
@@ -567,6 +575,8 @@ if (!empty($lead_projects)) {
                   FIELD(b.severity,'critical','high','medium','low'), b.created_at DESC"
     );
     while ($b = mysqli_fetch_assoc($lead_bugs_result)) {
+        $b['reported_by_name'] = astra_db_decrypt($b['reported_by_name']);
+        $b['assigned_to_name'] = astra_db_decrypt($b['assigned_to_name']);
         $b['files']  = fetch_bug_files($conn, $b['id']);
         $lead_bugs[] = $b;
     }

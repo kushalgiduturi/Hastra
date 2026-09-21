@@ -57,6 +57,7 @@ function load_deletable_user($conn, $target_id, $actor_id) {
     mysqli_stmt_execute($stmt);
     $target = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     if (!$target) respond(false, "User not found.");
+    astra_decrypt_user_row($target);
 
     if (strcasecmp($target["email"], PRIMARY_SYSADMIN_EMAIL) === 0) {
         respond(false, "This account is protected and cannot be deleted.");
@@ -71,7 +72,9 @@ if ($action === "request_delete") {
     $sadmin = mysqli_prepare($conn, "SELECT email FROM users WHERE id = ?");
     mysqli_stmt_bind_param($sadmin, "i", $actor_id);
     mysqli_stmt_execute($sadmin);
-    $sadmin_email = mysqli_fetch_assoc(mysqli_stmt_get_result($sadmin))["email"] ?? null;
+    $sadmin_row   = mysqli_fetch_assoc(mysqli_stmt_get_result($sadmin));
+    astra_decrypt_user_row($sadmin_row);
+    $sadmin_email = $sadmin_row["email"] ?? null;
     if (!$sadmin_email) respond(false, "Could not find your email address.");
 
     $otp = (string)random_int(100000, 999999);
@@ -123,7 +126,9 @@ if ($action === "verify_otp") {
     $actor = mysqli_prepare($conn, "SELECT name FROM users WHERE id = ?");
     mysqli_stmt_bind_param($actor, "i", $actor_id);
     mysqli_stmt_execute($actor);
-    $actor_name = mysqli_fetch_assoc(mysqli_stmt_get_result($actor))["name"] ?? "Unknown";
+    $actor_row  = mysqli_fetch_assoc(mysqli_stmt_get_result($actor));
+    astra_decrypt_user_row($actor_row);
+    $actor_name = $actor_row["name"] ?? "Unknown";
 
     mysqli_begin_transaction($conn);
     try {

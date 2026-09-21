@@ -81,6 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
             mysqli_stmt_bind_param($client_q, "i", $project_id);
             mysqli_stmt_execute($client_q);
             $client_data = mysqli_fetch_assoc(mysqli_stmt_get_result($client_q));
+            astra_decrypt_user_row($client_data);
 
             if ($client_data) {
                 $mail = new PHPMailer(true);
@@ -141,7 +142,10 @@ $deliveries_result = mysqli_query($conn,
      ORDER BY d.delivered_at DESC"
 );
 $all_deliveries = [];
-while ($row = mysqli_fetch_assoc($deliveries_result)) $all_deliveries[] = $row;
+while ($row = mysqli_fetch_assoc($deliveries_result)) {
+    $row['delivered_by_name'] = astra_db_decrypt($row['delivered_by_name']);
+    $all_deliveries[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

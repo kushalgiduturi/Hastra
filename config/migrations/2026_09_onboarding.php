@@ -99,13 +99,26 @@ function astra_migrate_onboarding($conn, callable $out) {
     mysqli_query($conn, "UPDATE users SET client_role = 'pm' WHERE role = 'client' AND client_role IS NULL");
     $info(mysqli_affected_rows($conn) . " other client(s) set to Project Manager");
     // Repair: "schema_migrated" log entries written under a sysadmin ID that has since moved.
+    // Uses the email_bindex column when present (users.email is encrypted once
+    // 2026_09_user_pii has run); falls back to plain email otherwise, since
+    // that migration can run before or after this one.
     if (defined('PRIMARY_SYSADMIN_EMAIL')) {
-        $fix = mysqli_prepare($conn, "UPDATE logs l
-            LEFT JOIN users u ON u.id = l.user_id
-            JOIN users p ON p.email = ?
-            SET l.user_id = p.id
-            WHERE l.action = 'schema_migrated' AND u.id IS NULL");
-        $email = PRIMARY_SYSADMIN_EMAIL;
+        $has_bindex = db_column_exists($conn, 'users', 'email_bindex');
+        if ($has_bindex && function_exists('astra_blind_index')) {
+            $fix = mysqli_prepare($conn, "UPDATE logs l
+                LEFT JOIN users u ON u.id = l.user_id
+                JOIN users p ON p.email_bindex = ?
+                SET l.user_id = p.id
+                WHERE l.action = 'schema_migrated' AND u.id IS NULL");
+            $email = astra_blind_index(PRIMARY_SYSADMIN_EMAIL);
+        } else {
+            $fix = mysqli_prepare($conn, "UPDATE logs l
+                LEFT JOIN users u ON u.id = l.user_id
+                JOIN users p ON p.email = ?
+                SET l.user_id = p.id
+                WHERE l.action = 'schema_migrated' AND u.id IS NULL");
+            $email = PRIMARY_SYSADMIN_EMAIL;
+        }
         mysqli_stmt_bind_param($fix, "s", $email);
         mysqli_stmt_execute($fix);
         if (mysqli_stmt_affected_rows($fix) > 0) $info(mysqli_stmt_affected_rows($fix) . " migration log entr(y/ies) repaired");

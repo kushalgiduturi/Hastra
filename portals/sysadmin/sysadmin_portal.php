@@ -9,6 +9,7 @@ mysqli_stmt_bind_param($logged_in_user, "i", $_SESSION["user_id"]);
 mysqli_stmt_execute($logged_in_user);
 $logged_in_result = mysqli_stmt_get_result($logged_in_user);
 $logged_in_data   = mysqli_fetch_assoc($logged_in_result);
+astra_decrypt_user_row($logged_in_data);
 $logged_in_name   = $logged_in_data["name"] ?? $_SESSION["user_name"];
 ?>
 <!DOCTYPE html>

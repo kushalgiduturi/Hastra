@@ -15,6 +15,7 @@ if ($ready) {
     mysqli_stmt_bind_param($q, "i", $user_id);
     mysqli_stmt_execute($q);
     $me      = mysqli_fetch_assoc(mysqli_stmt_get_result($q));
+    astra_decrypt_user_row($me);
     $company = get_company($conn, $me["company_id"] ?? 0);
 }
 if (!$ready || !$me || $me["client_role"] !== "it_manager" || !$company || !empty($company["is_internal"])) {
@@ -91,7 +92,9 @@ function member_in_company($conn, $member_id, $company_id) {
     $q = mysqli_prepare($conn, "SELECT id, name, email, client_role FROM users WHERE id = ? AND company_id = ? AND role = 'client'");
     mysqli_stmt_bind_param($q, "ii", $member_id, $company_id);
     mysqli_stmt_execute($q);
-    return mysqli_fetch_assoc(mysqli_stmt_get_result($q)) ?: null;
+    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($q)) ?: null;
+    astra_decrypt_user_row($row);
+    return $row;
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
@@ -178,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 'name'         => $r["full_name"],
                 'email'        => strtolower(trim($r["email"])),
                 'phone_number' => $r["phone_number"],
-                'password'     => password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT),
+                'password'     => password_hash(bin2hex(random_bytes(16)), PASSWORD_ARGON2ID),
                 'role'         => 'client',
                 'client_role'  => $r["client_role"],
             ], $err);

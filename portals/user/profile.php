@@ -27,6 +27,7 @@ if (!$user) {
     exit();
 }
 $user['phone_number'] = astra_db_decrypt($user['phone_number']);
+astra_decrypt_user_row($user);
 
 // ── ACTION: update_profile (name, phone, github, linkedin) ───────────────────
 if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "update_profile") {
@@ -47,10 +48,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "updat
         $msg = "Please enter a valid LinkedIn URL.";
     } else {
         $phone_enc = astra_db_encrypt($phone);
+        $name_enc  = astra_db_encrypt($name);
         $upd = mysqli_prepare($conn,
             "UPDATE users SET name = ?, phone_number = ?, github_url = ?, linkedin_url = ? WHERE id = ?"
         );
-        mysqli_stmt_bind_param($upd, "ssssi", $name, $phone_enc, $github, $linkedin, $user_id);
+        mysqli_stmt_bind_param($upd, "ssssi", $name_enc, $phone_enc, $github, $linkedin, $user_id);
         if (mysqli_stmt_execute($upd)) {
             $_SESSION["user_name"] = $name;
             $msg      = "Profile updated successfully.";
@@ -61,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "updat
             mysqli_stmt_execute($fetch2);
             $user = mysqli_fetch_assoc(mysqli_stmt_get_result($fetch2));
             $user['phone_number'] = astra_db_decrypt($user['phone_number']);
+            astra_decrypt_user_row($user);
         } else {
             $msg = "Failed to update profile.";
         }
@@ -85,8 +88,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "reque
     }
 
     // Check if email already taken
-    $chk = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? AND id != ?");
-    mysqli_stmt_bind_param($chk, "si", $new_email, $user_id);
+    $chk = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ? AND id != ?");
+    $new_email_bindex = astra_blind_index($new_email);
+    mysqli_stmt_bind_param($chk, "si", $new_email_bindex, $user_id);
     mysqli_stmt_execute($chk);
     mysqli_stmt_store_result($chk);
     if (mysqli_stmt_num_rows($chk) > 0) {
@@ -170,9 +174,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "verif
     }
 
     $upd = mysqli_prepare($conn,
-        "UPDATE users SET email = ?, otp = NULL, otp_expiry = NULL WHERE id = ?"
+        "UPDATE users SET email = ?, email_bindex = ?, otp = NULL, otp_expiry = NULL WHERE id = ?"
     );
-    mysqli_stmt_bind_param($upd, "si", $new_email, $user_id);
+    $new_email_enc = astra_db_encrypt($new_email);
+    $new_email_bindex_confirm = astra_blind_index($new_email);
+    mysqli_stmt_bind_param($upd, "ssi", $new_email_enc, $new_email_bindex_confirm, $user_id);
     if (mysqli_stmt_execute($upd)) {
         unset($_SESSION["pending_email"], $_SESSION["email_otp_attempts"]);
         echo json_encode(['success' => true, 'new_email' => $new_email]);
@@ -277,7 +283,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "chang
         exit();
     }
 
-    $hashed = password_hash($password, PASSWORD_BCRYPT);
+    $hashed = password_hash($password, PASSWORD_ARGON2ID);
     $upd    = mysqli_prepare($conn,
         "UPDATE users SET password = ?, otp = NULL, otp_expiry = NULL WHERE id = ?"
     );

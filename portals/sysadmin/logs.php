@@ -54,6 +54,7 @@ $user_map_query = mysqli_query($conn, "SELECT id, name, email FROM users");
 $user_map = [];
 $email_map = [];
 while ($u = mysqli_fetch_assoc($user_map_query)) {
+    astra_decrypt_user_row($u);
     $user_map[$u['id']]  = $u['name'];
     $email_map[$u['id']] = $u['email'];
 }

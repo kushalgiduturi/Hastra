@@ -240,7 +240,7 @@ foreach ($lead_projects as $lp) {
     );
     mysqli_stmt_bind_param($mem_q, "i", $pid);
     mysqli_stmt_execute($mem_q);
-    $members = mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC);
+    $members = astra_decrypt_user_rows(mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC));
 
     $task_q = mysqli_prepare($conn,
         "SELECT t.*, u.name AS assignee_name
@@ -255,6 +255,7 @@ foreach ($lead_projects as $lp) {
 
     $tasks = [];
     foreach ($tasks_raw as $tr) {
+        $tr['assignee_name'] = astra_db_decrypt($tr['assignee_name']);
         $fq = mysqli_prepare($conn,
             "SELECT tf.*, u.name AS uploader_name FROM task_files tf
              JOIN users u ON tf.uploaded_by = u.id
@@ -262,7 +263,10 @@ foreach ($lead_projects as $lp) {
         );
         mysqli_stmt_bind_param($fq, "i", $tr['id']);
         mysqli_stmt_execute($fq);
-        $tr['files'] = mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+        $files = mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+        foreach ($files as &$__f) $__f['uploader_name'] = astra_db_decrypt($__f['uploader_name']);
+        unset($__f);
+        $tr['files'] = $files;
         $tasks[] = $tr;
     }
 

@@ -38,8 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (!$pending) {
                 // Check if already a verified user, to give a clearer message
-                $ucheck = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
-                mysqli_stmt_bind_param($ucheck, "s", $email);
+                $ucheck = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
+                $ucheck_bindex = astra_blind_index($email);
+                mysqli_stmt_bind_param($ucheck, "s", $ucheck_bindex);
                 mysqli_stmt_execute($ucheck);
                 mysqli_stmt_store_result($ucheck);
 

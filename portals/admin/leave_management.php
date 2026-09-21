@@ -66,6 +66,12 @@ $leave_result = mysqli_query($conn,
      ORDER BY FIELD(lr.status,'pending','approved','rejected'), lr.created_at DESC"
 );
 $all_leave = mysqli_fetch_all($leave_result, MYSQLI_ASSOC);
+foreach ($all_leave as &$__lr) {
+    $__lr['employee_name']  = astra_db_decrypt($__lr['employee_name']);
+    $__lr['employee_email'] = astra_db_decrypt($__lr['employee_email']);
+    $__lr['reviewer_name']  = astra_db_decrypt($__lr['reviewer_name']);
+}
+unset($__lr);
 
 $pending_count  = count(array_filter($all_leave, fn($l) => $l["status"] === "pending"));
 $approved_count = count(array_filter($all_leave, fn($l) => $l["status"] === "approved"));

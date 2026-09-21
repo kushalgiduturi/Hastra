@@ -57,6 +57,7 @@ $req_rows   = [];
 while ($r = mysqli_fetch_assoc($req_result)) {
     $r['description']       = astra_db_decrypt($r['description']);
     $r['expected_features'] = astra_db_decrypt($r['expected_features']);
+    $r['submitted_by']      = astra_db_decrypt($r['submitted_by']);
     $req_rows[] = $r;
 }
 

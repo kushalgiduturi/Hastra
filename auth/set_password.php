@@ -41,7 +41,7 @@ if (!$token_row) {
         } elseif ($password !== $confirm) {
             $msg = "Passwords do not match.";
         } else {
-            $hashed = password_hash($password, PASSWORD_BCRYPT);
+            $hashed = password_hash($password, PASSWORD_ARGON2ID);
             $update = mysqli_prepare($conn, "UPDATE users SET password = ? WHERE id = ?");
             mysqli_stmt_bind_param($update, "si", $hashed, $token_row["user_id"]);
             mysqli_stmt_execute($update);

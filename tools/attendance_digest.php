@@ -33,10 +33,11 @@ if (!$company) {
 }
 $company_id = (int)$company['id'];
 
-$emp_stmt = mysqli_prepare($conn, "SELECT id, name FROM users WHERE role = 'employee' AND company_id = ? ORDER BY name ASC");
+$emp_stmt = mysqli_prepare($conn, "SELECT id, name FROM users WHERE role = 'employee' AND company_id = ?");
 mysqli_stmt_bind_param($emp_stmt, "i", $company_id);
 mysqli_stmt_execute($emp_stmt);
-$employees = mysqli_fetch_all(mysqli_stmt_get_result($emp_stmt), MYSQLI_ASSOC);
+$employees = astra_decrypt_user_rows(mysqli_fetch_all(mysqli_stmt_get_result($emp_stmt), MYSQLI_ASSOC));
+usort($employees, fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
 $att_stmt = mysqli_prepare($conn, "SELECT user_id, status FROM attendance WHERE company_id = ? AND work_date = ?");
 mysqli_stmt_bind_param($att_stmt, "is", $company_id, $date);
@@ -68,7 +69,7 @@ $report = implode("\n", $lines);
 echo $report . "\n";
 
 if ($send_email) {
-    $admins = mysqli_fetch_all(mysqli_query($conn, "SELECT email FROM users WHERE role = 'admin'"), MYSQLI_ASSOC);
+    $admins = astra_decrypt_user_rows(mysqli_fetch_all(mysqli_query($conn, "SELECT email FROM users WHERE role = 'admin'"), MYSQLI_ASSOC));
     $sent = 0;
     foreach ($admins as $a) {
         try {

@@ -33,9 +33,10 @@ if (!in_array($gender, ['male', 'female', 'prefer_not_to_say'], true)) {
     exit();
 }
 
-$user_id = (int)$_SESSION['user_id'];
+$user_id    = (int)$_SESSION['user_id'];
+$gender_enc = astra_db_encrypt($gender);
 $upd = mysqli_prepare($conn, "UPDATE users SET gender = ?, profile_updated = 1 WHERE id = ?");
-mysqli_stmt_bind_param($upd, "si", $gender, $user_id);
+mysqli_stmt_bind_param($upd, "si", $gender_enc, $user_id);
 
 if (mysqli_stmt_execute($upd)) {
     echo json_encode(['ok' => true]);

@@ -101,15 +101,23 @@ function company_members_with_activation($conn, $company_id) {
          LEFT JOIN password_set_tokens t ON t.user_id = u.id
          WHERE u.company_id = ? AND u.role = 'client'
          GROUP BY u.id
-         ORDER BY FIELD(u.client_role, 'it_manager', 'pm', 'teammate'), u.name");
+         ORDER BY FIELD(u.client_role, 'it_manager', 'pm', 'teammate')");
     mysqli_stmt_bind_param($stmt, "i", $company_id);
     mysqli_stmt_execute($stmt);
     $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+    $rows = astra_decrypt_user_rows($rows);
     foreach ($rows as &$r) {
         // Resending retires older links, so at most one link is open per person.
         $r['state']        = activation_state((bool)$r['has_open'], (bool)$r['open_expired']);
         $r['phone_number'] = astra_db_decrypt($r['phone_number']);
     }
+    unset($r);
+    $role_order = ['it_manager' => 0, 'pm' => 1, 'teammate' => 2];
+    usort($rows, function ($a, $b) use ($role_order) {
+        $ra = $role_order[$a['client_role']] ?? 3;
+        $rb = $role_order[$b['client_role']] ?? 3;
+        return $ra <=> $rb ?: strcasecmp($a['name'], $b['name']);
+    });
     return $rows;
 }
 
@@ -333,7 +341,7 @@ function php_read_xlsx($path) {
 function validate_staging_rows($conn, array $rows, array $company) {
     $domain = company_email_domain($company);
     $seen   = [];
-    $check  = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
+    $check  = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
     foreach ($rows as &$r) {
         $r['problems'] = [];
         $r['notes']    = [];
@@ -343,7 +351,8 @@ function validate_staging_rows($conn, array $rows, array $company) {
         if ($email === '')                                 $r['problems'][] = 'Email is missing';
         elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $r['problems'][] = 'Email looks invalid';
         else {
-            mysqli_stmt_bind_param($check, "s", $email);
+            $email_bindex = astra_blind_index($email);
+            mysqli_stmt_bind_param($check, "s", $email_bindex);
             mysqli_stmt_execute($check);
             mysqli_stmt_store_result($check);
             if (mysqli_stmt_num_rows($check) > 0) $r['problems'][] = 'Already has an Astra account';

@@ -46,6 +46,7 @@ $deploy_result = mysqli_query($conn,
 $deploy_pending = [];
 $docs_ready = docs_schema_ready($conn);
 while ($row = mysqli_fetch_assoc($deploy_result)) {
+    $row['requester_name'] = astra_db_decrypt($row['requester_name']);
     if ($docs_ready) {
         $row['doc_approved'] = approved_doc($conn, (int)$row['id']);
         $row['doc_count']    = count(doc_versions($conn, (int)$row['id']));

@@ -46,7 +46,7 @@ if (!is_array($records)) {
 $allowed_status = ['present', 'absent', 'half_day', 'on_leave', 'wfh'];
 
 $find_user = mysqli_prepare($conn,
-    "SELECT id FROM users WHERE email = ? AND company_id = ? AND role = 'employee'"
+    "SELECT id FROM users WHERE email_bindex = ? AND company_id = ? AND role = 'employee'"
 );
 $check_override = mysqli_prepare($conn,
     "SELECT is_overridden FROM attendance WHERE user_id = ? AND work_date = ?"
@@ -86,7 +86,8 @@ foreach ($records as $i => $rec) {
         $errors[] = "Record $i: check_in must be HH:MM."; continue;
     }
 
-    mysqli_stmt_bind_param($find_user, "si", $email, $company_id);
+    $email_bindex = astra_blind_index($email);
+    mysqli_stmt_bind_param($find_user, "si", $email_bindex, $company_id);
     mysqli_stmt_execute($find_user);
     $user = mysqli_fetch_assoc(mysqli_stmt_get_result($find_user));
     if (!$user) { $skipped[] = "Record $i: no employee with email $email in this company."; continue; }

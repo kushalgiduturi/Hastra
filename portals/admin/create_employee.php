@@ -56,8 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
         $msg      = "Please enter a valid phone number.";
         $msg_type = "error";
     } else {
-        $check = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
-        mysqli_stmt_bind_param($check, "s", $email);
+        $check = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
+        $email_bindex_check = astra_blind_index($email);
+        mysqli_stmt_bind_param($check, "s", $email_bindex_check);
         mysqli_stmt_execute($check);
         mysqli_stmt_store_result($check);
 
@@ -65,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
             $msg      = "An account with that email already exists.";
             $msg_type = "error";
         } else {
-            $placeholder_hash = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT);
+            $placeholder_hash = password_hash(bin2hex(random_bytes(16)), PASSWORD_ARGON2ID);
 
             $create_error = null;
             $new_user_id  = insert_user_in_company($conn, $company ?? get_internal_company($conn), [

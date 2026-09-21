@@ -84,7 +84,7 @@ while ($p = mysqli_fetch_assoc($proj_result)) {
     );
     mysqli_stmt_bind_param($mem_q, "i", $p['id']);
     mysqli_stmt_execute($mem_q);
-    $p['members'] = mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC);
+    $p['members'] = astra_decrypt_user_rows(mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC));
 
     // Fetch comments
     $com_q = mysqli_prepare($conn,
@@ -97,6 +97,8 @@ while ($p = mysqli_fetch_assoc($proj_result)) {
     mysqli_stmt_bind_param($com_q, "i", $p['id']);
     mysqli_stmt_execute($com_q);
     $p['comments'] = mysqli_stmt_get_result($com_q)->fetch_all(MYSQLI_ASSOC);
+    foreach ($p['comments'] as &$__c) { $__c['name'] = astra_db_decrypt($__c['name']); }
+    unset($__c);
 
     $p['progress'] = $p['total_tasks'] > 0
         ? round(($p['completed_tasks'] / $p['total_tasks']) * 100)

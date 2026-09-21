@@ -87,8 +87,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!preg_match('/[^a-zA-Z0-9]/', $password)) {
         $msg = "Password must contain at least 1 special character.";
     } else {
-        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
-        mysqli_stmt_bind_param($stmt, "s", $email);
+        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email_bindex = ?");
+        $email_bindex_check = astra_blind_index($email);
+        mysqli_stmt_bind_param($stmt, "s", $email_bindex_check);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
 
@@ -102,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } elseif (mysqli_stmt_num_rows($stmt2) > 0) {
             $msg = "A verification is already pending for this email. <a href='verify_register'>Verify here</a>.";
         } else {
-            $hashed    = password_hash($password, PASSWORD_BCRYPT);
+            $hashed    = password_hash($password, PASSWORD_ARGON2ID);
             $otp       = rand(100000, 999999);
             $logo_data = trim($_POST["logo_data"] ?? "");
             if (mb_strlen($logo_data) > 900000) $logo_data = ""; // guard against an oversized payload

@@ -71,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
         mysqli_stmt_bind_param($req_check, "i", $req_id);
         mysqli_stmt_execute($req_check);
         $req = mysqli_fetch_assoc(mysqli_stmt_get_result($req_check));
+        if ($req) { $req['client_name'] = astra_db_decrypt($req['client_name']); $req['client_email'] = astra_db_decrypt($req['client_email']); }
 
         if (!$req) {
             $msg = "Requirement not found or not in approved status.";
@@ -118,6 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
                     mysqli_stmt_bind_param($lead_info, "i", $team_lead);
                     mysqli_stmt_execute($lead_info);
                     $lead_data = mysqli_fetch_assoc(mysqli_stmt_get_result($lead_info));
+                    astra_decrypt_user_row($lead_data);
                     if ($lead_data) {
                         send_assignment_email(
                             $lead_data["email"], $lead_data["name"],
@@ -145,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
                             mysqli_stmt_bind_param($name_q, "i", $uid);
                             mysqli_stmt_execute($name_q);
                             $name_row = mysqli_fetch_assoc(mysqli_stmt_get_result($name_q));
+                            astra_decrypt_user_row($name_row);
                             $duplicate_skips[] = $name_row['name'] ?? "User #$uid";
                             continue;
                         }
@@ -162,6 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
                         mysqli_stmt_bind_param($mem_info, "i", $uid);
                         mysqli_stmt_execute($mem_info);
                         $mem_data = mysqli_fetch_assoc(mysqli_stmt_get_result($mem_info));
+                        astra_decrypt_user_row($mem_data);
                         if ($mem_data) {
                             send_assignment_email(
                                 $mem_data["email"], $mem_data["name"],
@@ -218,6 +222,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "add_m
         mysqli_stmt_bind_param($existing_check, "ii", $project_id, $uid);
         mysqli_stmt_execute($existing_check);
         $existing_row = mysqli_fetch_assoc(mysqli_stmt_get_result($existing_check));
+        astra_decrypt_user_row($existing_row);
 
         if ($existing_row) {
             $role_labels_check = [
@@ -248,6 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "add_m
                 mysqli_stmt_bind_param($minfo, "i", $uid);
                 mysqli_stmt_execute($minfo);
                 $mdata = mysqli_fetch_assoc(mysqli_stmt_get_result($minfo));
+                astra_decrypt_user_row($mdata);
 
                 $role_labels = [
                     "developer"       => "Developer",
@@ -284,14 +290,19 @@ $open_reqs_result = mysqli_query($conn,
      ORDER BY r.created_at DESC"
 );
 $open_reqs = [];
-while ($r = mysqli_fetch_assoc($open_reqs_result)) $open_reqs[] = $r;
+while ($r = mysqli_fetch_assoc($open_reqs_result)) {
+    $r['client_name'] = astra_db_decrypt($r['client_name']); // u.name AS client_name — not caught by astra_decrypt_user_row()'s literal 'name' key
+    $open_reqs[] = $r;
+}
 
 // All employees (for dropdowns)
 $emp_result = mysqli_query($conn,
-    "SELECT id, name, email FROM users WHERE role = 'employee' ORDER BY name ASC"
+    "SELECT id, name, email FROM users WHERE role = 'employee'"
 );
 $employees = [];
 while ($e = mysqli_fetch_assoc($emp_result)) $employees[] = $e;
+$employees = astra_decrypt_user_rows($employees);
+usort($employees, fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
 // All existing projects with members
 $proj_result = mysqli_query($conn,
@@ -316,7 +327,8 @@ while ($p = mysqli_fetch_assoc($proj_result)) {
     );
     mysqli_stmt_bind_param($mem_q, "i", $p["id"]);
     mysqli_stmt_execute($mem_q);
-    $p["members"] = mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC);
+    $p["members"] = astra_decrypt_user_rows(mysqli_stmt_get_result($mem_q)->fetch_all(MYSQLI_ASSOC));
+    $p["created_by_name"] = astra_db_decrypt($p["created_by_name"]);
     $projects[] = $p;
 }
 

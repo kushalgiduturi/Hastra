@@ -28,11 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($new_password !== $confirm) {
         $msg = "Passwords do not match.";
     } else {
-        $hashed = password_hash($new_password, PASSWORD_BCRYPT);
-        $email  = $_SESSION["reset_email"];
+        $hashed       = password_hash($new_password, PASSWORD_ARGON2ID);
+        $email        = $_SESSION["reset_email"];
+        $email_bindex = astra_blind_index($email);
 
-        $update = mysqli_prepare($conn, "UPDATE users SET password = ? WHERE email = ?");
-        mysqli_stmt_bind_param($update, "ss", $hashed, $email);
+        $update = mysqli_prepare($conn, "UPDATE users SET password = ? WHERE email_bindex = ?");
+        mysqli_stmt_bind_param($update, "ss", $hashed, $email_bindex);
         mysqli_stmt_execute($update);
 
         unset($_SESSION["reset_email"]);

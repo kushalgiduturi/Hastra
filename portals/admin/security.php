@@ -49,11 +49,14 @@ if ($company_id) {
     mysqli_stmt_bind_param($eq, "i", $company_id);
     mysqli_stmt_execute($eq);
     $events = mysqli_fetch_all(mysqli_stmt_get_result($eq), MYSQLI_ASSOC);
+    foreach ($events as &$__ev) { $__ev['name'] = astra_db_decrypt($__ev['name']); }
+    unset($__ev);
 
     $la = mysqli_prepare($conn, "SELECT name, email, locked_until FROM users WHERE company_id = ? AND locked_until IS NOT NULL AND locked_until > NOW() ORDER BY locked_until DESC");
     mysqli_stmt_bind_param($la, "i", $company_id);
     mysqli_stmt_execute($la);
     $locked_accounts = mysqli_fetch_all(mysqli_stmt_get_result($la), MYSQLI_ASSOC);
+    $locked_accounts = astra_decrypt_user_rows($locked_accounts);
 }
 
 $action_labels = [

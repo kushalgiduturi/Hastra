@@ -118,8 +118,8 @@ function project_doc_context($conn, $project_id) {
             'expected_features' => (string)astra_db_decrypt($p['expected_features']),
             'deadline' => $p['deadline'],
         ],
-        'team'  => $all("SELECT u.name, pm.project_role AS role FROM project_members pm JOIN users u ON u.id = pm.user_id
-                         WHERE pm.project_id = $pid ORDER BY FIELD(pm.project_role,'team_lead','developer','tester','security_tester','debugger')"),
+        'team'  => astra_decrypt_user_rows($all("SELECT u.name, pm.project_role AS role FROM project_members pm JOIN users u ON u.id = pm.user_id
+                         WHERE pm.project_id = $pid ORDER BY FIELD(pm.project_role,'team_lead','developer','tester','security_tester','debugger')")),
         'tasks' => $all("SELECT t.task_code AS code, t.title, t.description, t.priority, t.status FROM tasks t
                          WHERE t.project_id = $pid ORDER BY t.id"),
         'bugs'  => $all("SELECT b.bug_code AS code, b.title, b.bug_type AS type, b.vuln_class, $cwe, b.severity, b.status
@@ -258,7 +258,10 @@ function doc_versions($conn, $project_id) {
          WHERE d.project_id = ? ORDER BY d.version DESC");
     mysqli_stmt_bind_param($q, "i", $project_id);
     mysqli_stmt_execute($q);
-    return mysqli_fetch_all(mysqli_stmt_get_result($q), MYSQLI_ASSOC);
+    $rows = mysqli_fetch_all(mysqli_stmt_get_result($q), MYSQLI_ASSOC);
+    foreach ($rows as &$r) { $r['author'] = astra_db_decrypt($r['author']); $r['approver'] = astra_db_decrypt($r['approver']); }
+    unset($r);
+    return $rows;
 }
 
 function doc_version($conn, $project_id, $version = null) {

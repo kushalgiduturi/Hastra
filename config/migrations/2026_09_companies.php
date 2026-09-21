@@ -198,7 +198,8 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
     // Read companies directly: company_schema_ready() may have cached "not ready" earlier in this request.
     foreach (mig_all($conn, "SELECT * FROM companies") as $c) $companies[(int)$c['id']] = $c;
 
-    $users    = mig_all($conn, "SELECT id, name, email, role, company_id FROM users ORDER BY id");
+    $users = mig_all($conn, "SELECT id, name, email, role, company_id FROM users ORDER BY id");
+    if (function_exists('astra_decrypt_user_rows')) $users = astra_decrypt_user_rows($users);
     $pending  = 0; $moved = 0; $failed = 0;
     $reserved = [];
     foreach ($users as $u) {

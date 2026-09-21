@@ -120,6 +120,7 @@ $projects_result = mysqli_query($conn,
 
 $projects = [];
 while ($p = mysqli_fetch_assoc($projects_result)) {
+    $p['requester_name'] = astra_db_decrypt($p['requester_name']);
     $projects[] = $p;
 }
 

@@ -14,20 +14,22 @@ $msg_type  = "error";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     verify_csrf_token();
 
-    $email = trim($_POST["email"]);
+    $email        = trim($_POST["email"]);
+    $email_bindex = astra_blind_index($email);
 
-    $stmt = mysqli_prepare($conn, "SELECT id, name FROM users WHERE email = ?");
-    mysqli_stmt_bind_param($stmt, "s", $email);
+    $stmt = mysqli_prepare($conn, "SELECT id, name FROM users WHERE email_bindex = ?");
+    mysqli_stmt_bind_param($stmt, "s", $email_bindex);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $user   = mysqli_fetch_assoc($result);
+    astra_decrypt_user_row($user);
 
     if (!$user) {
         $msg      = "Email does not exist.";
         $msg_type = "error";
     } else {
-        $rate_stmt = mysqli_prepare($conn, "SELECT otp_expiry > NOW() AS still_valid FROM users WHERE email = ?");
-        mysqli_stmt_bind_param($rate_stmt, "s", $email);
+        $rate_stmt = mysqli_prepare($conn, "SELECT otp_expiry > NOW() AS still_valid FROM users WHERE email_bindex = ?");
+        mysqli_stmt_bind_param($rate_stmt, "s", $email_bindex);
         mysqli_stmt_execute($rate_stmt);
         $rate_row = mysqli_fetch_assoc(mysqli_stmt_get_result($rate_stmt));
 
@@ -37,8 +39,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $otp = rand(100000, 999999);
 
-            $update = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email = ?");
-            mysqli_stmt_bind_param($update, "ss", $otp, $email);
+            $update = mysqli_prepare($conn, "UPDATE users SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email_bindex = ?");
+            mysqli_stmt_bind_param($update, "ss", $otp, $email_bindex);
             mysqli_stmt_execute($update);
 
             $mail = new PHPMailer(true);

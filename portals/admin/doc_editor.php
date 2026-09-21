@@ -17,6 +17,7 @@ $pq = mysqli_prepare($conn, "SELECT p.*, u.name AS requester_name FROM projects 
 mysqli_stmt_bind_param($pq, "i", $project_id);
 mysqli_stmt_execute($pq);
 $project = mysqli_fetch_assoc(mysqli_stmt_get_result($pq));
+if ($project) $project['requester_name'] = astra_db_decrypt($project['requester_name']);
 if (!$project) {
     http_response_code(404);
     exit("Project not found. <a href='admin_portal'>Back to the admin portal</a>");

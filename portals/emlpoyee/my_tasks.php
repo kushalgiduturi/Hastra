@@ -168,6 +168,7 @@ $my_tasks_result = mysqli_query($conn,
 );
 $my_tasks = [];
 while ($t = mysqli_fetch_assoc($my_tasks_result)) {
+    $t['assigned_by_name'] = astra_db_decrypt($t['assigned_by_name']);
     $fq = mysqli_prepare($conn,
         "SELECT tf.*, u.name AS uploader_name FROM task_files tf
          JOIN users u ON tf.uploaded_by = u.id
@@ -175,7 +176,10 @@ while ($t = mysqli_fetch_assoc($my_tasks_result)) {
     );
     mysqli_stmt_bind_param($fq, "i", $t['id']);
     mysqli_stmt_execute($fq);
-    $t['files'] = mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+    $files = mysqli_stmt_get_result($fq)->fetch_all(MYSQLI_ASSOC);
+    foreach ($files as &$__f) $__f['uploader_name'] = astra_db_decrypt($__f['uploader_name']);
+    unset($__f);
+    $t['files'] = $files;
     $my_tasks[] = $t;
 }
 
