@@ -97,6 +97,18 @@ if ($dcheck_row && ((int)$dcheck_row['inv_count'] > 0 || (int)$dcheck_row['del_c
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span>
       <span class="section-nav-label">My Projects</span>
     </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/projects/signoff">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+      <span class="section-nav-label">Milestone Sign-Off</span>
+    </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/deliveries/dossier">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></span>
+      <span class="section-nav-label">Ephemeral Dossiers</span>
+    </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/client/requirements_diff">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></span>
+      <span class="section-nav-label">Requirement Revisions</span>
+    </a>
   </div>
 
 </div>

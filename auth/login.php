@@ -50,6 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $email    = trim($_POST["email"]);
             $password = $_POST["password"];
+
+            // Honeytoken trap: a decoy email that no real account has ever
+            // used. Checked before the real lookup — a match terminates the
+            // request from inside astra_canary_check() and never falls
+            // through to a credential check at all.
+            astra_canary_check($conn, 'canary_user', $email);
+
             $email_bindex = astra_blind_index($email);
 
             $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email_bindex = ?");

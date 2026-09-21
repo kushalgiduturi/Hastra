@@ -75,6 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
 
         if (!$req) {
             $msg = "Requirement not found or not in approved status.";
+        } elseif (!empty($req['has_pending_revision'])) {
+            $msg = "The client has revised this requirement since it was approved. Review and acknowledge the revision before creating a project from it.";
         } else {
             $already = mysqli_prepare($conn, "SELECT id FROM projects WHERE requirement_id = ?");
             mysqli_stmt_bind_param($already, "i", $req_id);

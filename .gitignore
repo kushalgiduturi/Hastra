@@ -5,8 +5,10 @@ config/anthropic.key
 # DB backups / dumps
 config/backups/
 *.sql
-# schema_v2.sql is a reference schema, not a dump — keep it tracked
+# schema_v2.sql / v3_advanced_governance.sql are reference schemas, not
+# dumps — keep them tracked
 !schema_v2.sql
+!config/migrations/v3_advanced_governance.sql
 
 # User-uploaded content
 uploads/

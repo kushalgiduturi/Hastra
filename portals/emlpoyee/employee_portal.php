@@ -204,6 +204,12 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></span>
       <span class="section-nav-label">Request Leave</span>
     </a>
+    <?php if ($is_lead): ?>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/projects/signoff">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+      <span class="section-nav-label">Milestone Sign-Off</span>
+    </a>
+    <?php endif; ?>
   </div>
 
 </div>

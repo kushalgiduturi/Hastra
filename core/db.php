@@ -26,6 +26,7 @@ if (!$conn) {
     die("Connection failed.");
 }
 
+
 function secure_session_start() {
     if (session_status() === PHP_SESSION_NONE) {
         session_set_cookie_params([
@@ -251,5 +252,17 @@ require_once __DIR__ . '/audit.php';  // P17
 require_once __DIR__ . '/dock.php';
 require_once __DIR__ . '/tours.php';  // P18
 require_once __DIR__ . '/leave.php';
+require_once __DIR__ . '/canary.php';
+require_once __DIR__ . '/ephemeral_dossier.php';
+require_once __DIR__ . '/milestone_signoff.php';
+require_once __DIR__ . '/requirement_versions.php';
 require_once __DIR__ . '/auth_check.php';
+
+// Enforced on every single request, after every helper above has loaded but
+// before any page-specific logic runs: an IP still inside a honeytoken
+// lockdown window is rejected outright. astra_canary_check() (the trip
+// itself) is called explicitly by the specific entry points that accept a
+// user-supplied identifier — this call is what makes the resulting block
+// actually stick past the request that triggered it.
+astra_canary_guard($conn);
 ?>

@@ -19,6 +19,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     verify_csrf_token();
     $action = $_POST["action"] ?? "";
 
+    if ($action === "edit") {
+        $req_id            = (int)($_POST["req_id"] ?? 0);
+        $requirement_title = trim($_POST["requirement_title"] ?? "");
+        $description       = trim($_POST["description"] ?? "");
+        $expected_features = trim($_POST["expected_features"] ?? "");
+
+        $check = mysqli_prepare($conn, "SELECT id, status FROM requirements WHERE id = ? AND user_id IN ($scope_ids)");
+        mysqli_stmt_bind_param($check, "i", $req_id);
+        mysqli_stmt_execute($check);
+        $req_row = mysqli_fetch_assoc(mysqli_stmt_get_result($check));
+
+        if (!$can_delete) {
+            $msg = "Only your company's Project Manager can revise requirements.";
+        } elseif (!$req_row) {
+            $msg = "Requirement not found.";
+        } elseif ($req_row["status"] === "rejected") {
+            $msg = "A rejected requirement can't be revised — submit a new one instead.";
+        } elseif ($requirement_title === "" || $description === "") {
+            $msg = "Title and description are required.";
+        } else {
+            // Snapshot the state as it exists right now, BEFORE the edit lands —
+            // that's what turns a plain UPDATE into a diffable revision instead
+            // of silently overwriting what the PM originally reviewed.
+            $version = astra_reqver_snapshot($conn, $req_id, (int)$_SESSION["user_id"], $error);
+            if ($version === null) {
+                $msg = $error;
+            } else {
+                // requirement_title is a plaintext column everywhere else in the
+                // app (admin/requirements.php, project_portal.php, ...) — only
+                // description/expected_features are encrypted here, matching
+                // config/migrations/2026_09_crypto.php. requirement_versions'
+                // OWN encrypted_title column is separate and still gets the
+                // encrypted copy, via astra_reqver_snapshot() above.
+                $desc_enc = astra_db_encrypt($description);
+                $feat_enc = $expected_features !== "" ? astra_db_encrypt($expected_features) : null;
+                $upd = mysqli_prepare($conn,
+                    "UPDATE requirements SET requirement_title = ?, description = ?, expected_features = ?
+                     WHERE id = ? AND user_id IN ($scope_ids)");
+                mysqli_stmt_bind_param($upd, "sssi", $requirement_title, $desc_enc, $feat_enc, $req_id);
+                if (mysqli_stmt_execute($upd)) {
+                    header("Location: " . get_base_url() . "portals/client/requirements_diff?req_id=$req_id");
+                    exit();
+                }
+                $msg = "Failed to save the revision.";
+            }
+        }
+    }
+
     if ($action === "delete") {
         $req_id  = (int)($_POST["req_id"] ?? 0);
 
@@ -565,6 +613,9 @@ $status_order = ["pending_review", "under_review", "approved"];
               <?php else: ?>
                 <span class="btn-delete-req disabled" title="Can only delete pending requirements">Delete</span>
               <?php endif; ?>
+              <?php if (!empty($req['has_pending_revision'])): ?>
+                <a class="btn-expand" href="<?= get_base_url() ?>portals/client/requirements_diff?req_id=<?= $req['id'] ?>">Revision pending</a>
+              <?php endif; ?>
             </td>
           </tr>
           <tr class="detail-row" id="detail-<?= $req['id'] ?>">
@@ -583,6 +634,28 @@ $status_order = ["pending_review", "under_review", "approved"];
                   <strong>Admin Note</strong>
                   <?= nl2br(htmlspecialchars($req["admin_notes"])) ?>
                 </div>
+                <?php endif; ?>
+
+                <?php if ($can_delete && $req["status"] !== "rejected"): ?>
+                <details style="margin-top:14px;">
+                  <summary style="cursor:pointer;font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Revise this requirement</summary>
+                  <form method="POST" action="my_requirements" style="margin-top:10px;">
+                    <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
+                    <label style="display:block;font-size:11px;color:var(--text-dim);text-transform:uppercase;margin:8px 0 4px;">Title</label>
+                    <input type="text" name="requirement_title" value="<?= htmlspecialchars($req['requirement_title']) ?>" required
+                           style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text);border-radius:3px;padding:8px 10px;">
+                    <label style="display:block;font-size:11px;color:var(--text-dim);text-transform:uppercase;margin:8px 0 4px;">Description</label>
+                    <textarea name="description" required rows="4"
+                              style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text);border-radius:3px;padding:8px 10px;font-family:inherit;"><?= htmlspecialchars($req['description']) ?></textarea>
+                    <label style="display:block;font-size:11px;color:var(--text-dim);text-transform:uppercase;margin:8px 0 4px;">Expected Features</label>
+                    <textarea name="expected_features" rows="3"
+                              style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text);border-radius:3px;padding:8px 10px;font-family:inherit;"><?= htmlspecialchars($req['expected_features'] ?? '') ?></textarea>
+                    <p style="font-size:11px;color:var(--text-dim);margin-top:8px;">Saving this preserves the current version and requires your PM's acknowledgment before it's incorporated.</p>
+                    <button type="submit" class="btn-delete-req" style="background:var(--accent);margin-top:8px;">Save Revision</button>
+                  </form>
+                </details>
                 <?php endif; ?>
               </div>
             </td>

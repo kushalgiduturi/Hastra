@@ -28,6 +28,11 @@ if ($secret === '') {
     attendance_sync_fail(401, 'Missing X-Astra-Webhook-Secret header.');
 }
 
+// Honeytoken trap: a decoy API key planted for reconnaissance to find. A
+// match terminates the request from inside astra_canary_check() before the
+// real secret lookup ever runs.
+astra_canary_check($conn, 'canary_key', $secret);
+
 $stmt = mysqli_prepare($conn, "SELECT id FROM companies WHERE attendance_webhook_secret = ?");
 mysqli_stmt_bind_param($stmt, "s", $secret);
 mysqli_stmt_execute($stmt);

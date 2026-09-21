@@ -34,6 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
         if (!$proj || $proj['status'] !== 'completed') {
             $msg = "Project must be completed before generating an invoice.";
             $msg_type = "error";
+        } elseif (!astra_signoff_is_complete($conn, $project_id)) {
+            $msg = "This project needs a completed dual-key \"" . ASTRA_DELIVERY_MILESTONE . "\" milestone sign-off (both the project lead and the client) before an invoice can be generated.";
+            $msg_type = "error";
         } elseif (mysqli_stmt_num_rows($already) > 0) {
             $msg = "An invoice already exists for this project.";
             $msg_type = "error";
