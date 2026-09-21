@@ -398,13 +398,13 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
-    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+    background: rgba(var(--red-rgb),0.1); border: 1px solid rgba(var(--red-rgb),0.25);
     color: #fca5a5; font-family: var(--font-sans);
     font-size: 12px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;
     padding: 6px 12px; border-radius: 3px; text-decoration: none;
     transition: background 0.2s, border-color 0.2s;
   }
-  .btn-logout:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
+  .btn-logout:hover { background: rgba(var(--red-rgb),0.2); border-color: rgba(var(--red-rgb),0.5); }
   .btn-logout svg { width: 13px; height: 13px; fill: #fca5a5; }
 
   .btn-theme-toggle {
@@ -631,10 +631,10 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     font-size: 11px; font-family: 'Share Tech Mono', monospace;
     letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500;
   }
-  .badge-sysadmin  { background: rgba(167,139,250,0.12); color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-sysadmin  { background: rgba(var(--purple-rgb),0.12); color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-admin     { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .badge-employee  { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
-  .badge-client    { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-client    { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
 
   /* ── ACTIVITY TABLE ── */
   .tbl-wrap { overflow-x: auto; }
@@ -652,11 +652,11 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   td.muted { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
   .log-badge-success  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .log-badge-danger   { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .log-badge-danger   { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .log-badge-info     { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .log-badge-warning  { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
 
-  .priority-critical { background: rgba(239,68,68,0.12);   color: var(--red);         border: 1px solid rgba(239,68,68,0.3); }
+  .priority-critical { background: rgba(var(--red-rgb),0.12);   color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.3); }
   .priority-high     { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
   .priority-medium   { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .priority-low      { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
@@ -664,12 +664,12 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .status-completed  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .status-in_progress{ background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .status-pending    { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
-  .status-blocked    { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .status-blocked    { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .status-closed     { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .status-open       { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .status-fixed      { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
-  .status-retest     { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
-  .status-wont_fix   { background: rgba(239,68,68,0.08);   color: #fca5a5;            border: 1px solid rgba(239,68,68,0.2); }
+  .status-retest     { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
+  .status-wont_fix   { background: rgba(var(--red-rgb),0.08);   color: #fca5a5;            border: 1px solid rgba(var(--red-rgb),0.2); }
 
   .eye-btn {
     position: absolute; right: 10px; top: 50%; transform: translateY(-50%);

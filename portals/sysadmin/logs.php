@@ -98,7 +98,7 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
   .badge-success  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .badge-warning  { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-danger   { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-danger   { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .badge-info     { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
 
   .tbl-wrap { overflow-x: auto; }

@@ -315,10 +315,10 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
     font-size: 13px; font-weight: 600;
     padding: 10px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, filter 0.2s;
     text-transform: uppercase;
   }
-  .modal-btn-confirm:hover { background: #dc2626; }
+  .modal-btn-confirm:hover { filter: brightness(0.88); }
   .modal-btn-cancel {
     flex: 1;
     background: var(--input-bg);
@@ -329,7 +329,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
     font-size: 13px; font-weight: 500;
     padding: 10px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, filter 0.2s;
     text-transform: uppercase;
   }
   .modal-btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }

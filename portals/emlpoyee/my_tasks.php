@@ -269,7 +269,7 @@ function format_bytes($bytes) {
   .badge-pending     { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .badge-in_progress { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-completed   { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .badge-blocked     { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-blocked     { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
 
   .priority-badge {
     display: inline-block; padding: 2px 7px; border-radius: 2px;
@@ -279,7 +279,7 @@ function format_bytes($bytes) {
   .priority-low      { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .priority-medium   { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .priority-high     { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .priority-critical { background: rgba(239,68,68,0.12);   color: var(--red);         border: 1px solid rgba(239,68,68,0.3); }
+  .priority-critical { background: rgba(var(--red-rgb),0.12);   color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.3); }
 
   .task-code {
     font-family: 'Share Tech Mono', monospace; font-size: 11px; font-weight: 600;
@@ -319,7 +319,7 @@ function format_bytes($bytes) {
     font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
     padding: 5px 12px; cursor: pointer; transition: background 0.2s;
   }
-  .btn-update-status:hover { background: #2563eb; }
+  .btn-update-status:hover { background: var(--accent-bright); }
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 13px; }
   .empty-state svg { width: 32px; height: 32px; fill: var(--border-dim); margin: 0 auto 0.8rem; display: block; }

@@ -83,7 +83,7 @@ $users = mysqli_query($conn, company_schema_ready($conn)
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
   .badge-employee         { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-pending_employee { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-client           { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-client           { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
 </style>
 </head>
 <body>

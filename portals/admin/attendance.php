@@ -324,10 +324,10 @@ if ($employees) {
   }
   .cell-btn:hover { background: var(--hover-bg); }
   .cell-btn.present  { background: rgba(34,197,94,0.18);  color: var(--green); }
-  .cell-btn.absent   { background: rgba(239,68,68,0.18);  color: var(--red); }
+  .cell-btn.absent   { background: rgba(var(--red-rgb),0.18);  color: var(--red); }
   .cell-btn.half_day { background: rgba(245,158,11,0.18); color: var(--yellow); }
   .cell-btn.on_leave { background: rgba(59,130,246,0.18); color: var(--blue-bright); }
-  .cell-btn.wfh      { background: rgba(167,139,250,0.18); color: var(--purple); }
+  .cell-btn.wfh      { background: rgba(var(--purple-rgb),0.18); color: var(--purple); }
 
   .btn-save-attendance {
     background: var(--accent); color: #fff; border: none; border-radius: 3px;
@@ -366,7 +366,7 @@ if ($employees) {
   .import-results { margin-top: 1rem; display: flex; flex-direction: column; gap: 10px; }
   .import-list { font-size: 12px; line-height: 1.7; border-radius: 4px; padding: 10px 12px; max-height: 200px; overflow-y: auto; }
   .import-list strong { display: block; font-size: 10.5px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
-  .import-list.errors  { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+  .import-list.errors  { background: var(--red-bg); border: 1px solid rgba(var(--red-rgb),0.2); color: #fca5a5; }
   .import-list.skipped { background: var(--yellow-bg); border: 1px solid rgba(245,158,11,0.2); color: #fcd34d; }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
@@ -411,10 +411,10 @@ if ($employees) {
     </div>
     <div class="legend">
       <span><span class="dot" style="background:rgba(34,197,94,0.5);"></span>P — Present</span>
-      <span><span class="dot" style="background:rgba(239,68,68,0.5);"></span>A — Absent</span>
+      <span><span class="dot" style="background:rgba(var(--red-rgb),0.5);"></span>A — Absent</span>
       <span><span class="dot" style="background:rgba(245,158,11,0.5);"></span>H — Half-day</span>
       <span><span class="dot" style="background:rgba(59,130,246,0.5);"></span>L — On Leave</span>
-      <span><span class="dot" style="background:rgba(167,139,250,0.5);"></span>W — Work From Home</span>
+      <span><span class="dot" style="background:rgba(var(--purple-rgb),0.5);"></span>W — Work From Home</span>
       <span>Click a cell to cycle · click again to clear</span>
     </div>
 

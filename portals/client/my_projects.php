@@ -215,7 +215,7 @@ $project_status_labels = [
   .badge-team_assigned       { background: rgba(59,130,246,0.1);   color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
   .badge-development_started { background: rgba(34,211,238,0.1);   color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
   .badge-testing             { background: rgba(245,158,11,0.1);   color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-  .badge-deployment_pending  { background: rgba(167,139,250,0.1);  color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending  { background: rgba(var(--purple-rgb),0.1);  color: var(--purple); border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-completed           { background: rgba(34,197,94,0.1);    color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
 
   .progress-track {
@@ -247,10 +247,10 @@ $project_status_labels = [
     letter-spacing: 0.05em; text-transform: uppercase;
     padding: 1px 6px; border-radius: 2px;
   }
-  .role-team_lead       { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+  .role-team_lead       { background: rgba(var(--purple-rgb),0.12); color: var(--purple); border: 1px solid rgba(var(--purple-rgb),0.2); }
   .role-developer       { background: rgba(59,130,246,0.1);   color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
   .role-tester          { background: rgba(34,211,238,0.1);   color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
-  .role-security_tester { background: rgba(239,68,68,0.1);    color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+  .role-security_tester { background: rgba(var(--red-rgb),0.1);    color: #fca5a5; border: 1px solid rgba(var(--red-rgb),0.2); }
   .role-debugger        { background: rgba(245,158,11,0.1);   color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
 
   /* ── COMMENTS ── */
@@ -292,13 +292,13 @@ $project_status_labels = [
   .comment-input:focus { border-color: var(--accent-bright); }
   .comment-input::placeholder { color: var(--text-dim); }
   .btn-comment {
-    background: #1d4ed8; color: white; border: none; border-radius: 3px;
+    background: var(--accent); color: white; border: none; border-radius: 3px;
     font-family: var(--font-sans); font-size: 12px; font-weight: 600;
     letter-spacing: 0.04em; text-transform: uppercase;
     padding: 0 16px; cursor: pointer; transition: background 0.2s;
     align-self: flex-end; height: 36px;
   }
-  .btn-comment:hover { background: #2563eb; }
+  .btn-comment:hover { background: var(--accent-bright); }
 
   .chevron-icon {
     width: 16px; height: 16px; fill: var(--text-dim);
@@ -308,7 +308,7 @@ $project_status_labels = [
   .bug-warn {
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 11px; color: #fca5a5;
-    background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+    background: rgba(var(--red-rgb),0.08); border: 1px solid rgba(var(--red-rgb),0.2);
     border-radius: 2px; padding: 2px 7px;
     font-family: 'Share Tech Mono', monospace; letter-spacing: 0.04em;
   }

@@ -95,7 +95,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
   .alert.error   svg { fill: var(--red); }
 
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
-  .badge-deployment_pending { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending { background: rgba(var(--purple-rgb),0.1); color: var(--purple); border: 1px solid rgba(var(--purple-rgb),0.2); }
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 13px; }
   .empty-state svg { width: 32px; height: 32px; fill: var(--border-dim); margin: 0 auto 0.8rem; display: block; }
@@ -142,7 +142,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
       No deployment requests pending.
     </div>
     <?php else: foreach ($deploy_pending as $proj): ?>
-    <div style="background:var(--navy-deep);border:1px solid rgba(167,139,250,0.2);border-radius:3px;padding:1.2rem 1.4rem;margin:1rem 1.4rem;">
+    <div style="background:var(--navy-deep);border:1px solid rgba(var(--purple-rgb),0.2);border-radius:3px;padding:1.2rem 1.4rem;margin:1rem 1.4rem;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <span style="font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:600;color:var(--cyan);background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.2);padding:2px 7px;border-radius:2px;"><?= htmlspecialchars($proj['project_code']) ?></span>
         <span class="badge badge-deployment_pending">Deployment Pending</span>
@@ -153,7 +153,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
         · <?= $proj['deployment_requested_at'] ? date('d M Y, H:i', strtotime($proj['deployment_requested_at'])) : '—' ?>
       </div>
       <?php if ($proj['deployment_notes']): ?>
-      <div style="padding:8px 12px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-left:3px solid var(--purple);border-radius:3px;font-size:12px;color:#c4b5fd;margin-bottom:12px;line-height:1.5;">
+      <div style="padding:8px 12px;background:rgba(var(--purple-rgb),0.06);border:1px solid rgba(var(--purple-rgb),0.2);border-left:3px solid var(--purple);border-radius:3px;font-size:12px;color:var(--purple);margin-bottom:12px;line-height:1.5;">
         <strong style="display:block;font-size:10px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--purple);margin-bottom:3px;">Team Lead Notes</strong>
         <?= nl2br(htmlspecialchars($proj['deployment_notes'])) ?>
       </div>
@@ -187,7 +187,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
             ✓ Approve & Complete
           </button>
           <button type="submit" name="decision" value="reject"
-            style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
+            style="background:rgba(var(--red-rgb),0.08);border:1px solid rgba(var(--red-rgb),0.3);color:#fca5a5;font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
             onclick="return confirm('Reject deployment and move project back to Testing?')">
             ✗ Reject
           </button>

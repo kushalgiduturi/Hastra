@@ -83,14 +83,14 @@ $total_closed_bugs   = array_sum(array_column($bug_stats, 'closed_bugs'));
   .badge-team_assigned       { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-development_started { background: rgba(34,211,238,0.1);   color: #22d3ee;            border: 1px solid rgba(34,211,238,0.2); }
   .badge-testing              { background: rgba(245,158,11,0.1);  color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-deployment_pending  { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending  { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-completed           { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
 
   .bug-stat-num { font-family: 'Share Tech Mono', monospace; font-weight: 600; }
   .bug-stat-num.zero   { color: var(--text-dim); font-weight: 400; }
   .bug-stat-num.warn   { color: var(--yellow); }
   .bug-stat-num.danger { color: var(--red); }
-  tr.critical-row { background: rgba(239,68,68,0.05) !important; }
+  tr.critical-row { background: rgba(var(--red-rgb),0.05) !important; }
 
   .req-id-badge { font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent-bright); background: rgba(var(--accent-rgb),0.08); border: 1px solid rgba(var(--accent-rgb),0.2); padding: 2px 8px; border-radius: 2px; letter-spacing: 0.08em; }
 

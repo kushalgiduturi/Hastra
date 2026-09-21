@@ -184,7 +184,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .badge-pending_review       { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .badge-under_review         { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-approved             { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .badge-rejected             { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-rejected             { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .badge-clarification_needed { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
 
   .req-id-badge { font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent-bright); background: rgba(var(--accent-rgb),0.08); border: 1px solid rgba(var(--accent-rgb),0.2); padding: 2px 8px; border-radius: 2px; letter-spacing: 0.08em; }
@@ -225,8 +225,8 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .action-btn.approve:hover, .action-btn.approve.selected { background: rgba(34,197,94,0.2); box-shadow: 0 0 10px rgba(34,197,94,0.2); }
   .action-btn.clarify { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); color: var(--yellow); }
   .action-btn.clarify:hover, .action-btn.clarify.selected { background: rgba(245,158,11,0.18); box-shadow: 0 0 10px rgba(245,158,11,0.2); }
-  .action-btn.reject { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
-  .action-btn.reject:hover, .action-btn.reject.selected { background: rgba(239,68,68,0.18); box-shadow: 0 0 10px rgba(239,68,68,0.2); }
+  .action-btn.reject { background: rgba(var(--red-rgb),0.08); border-color: rgba(var(--red-rgb),0.3); color: #fca5a5; }
+  .action-btn.reject:hover, .action-btn.reject.selected { background: rgba(var(--red-rgb),0.18); box-shadow: 0 0 10px rgba(var(--red-rgb),0.2); }
   .action-btn.selected { outline: 2px solid currentColor; outline-offset: 1px; }
 
   .notes-field { margin-top: 8px; }
@@ -355,7 +355,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
             <td>
               <?= htmlspecialchars($req['requirement_title']) ?>
               <?php if (($req['request_type'] ?? '') === 'change_request'): ?>
-              <br><span class="badge" style="background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2);margin-top:3px;">Change Request</span>
+              <br><span class="badge" style="background:rgba(var(--purple-rgb),0.1);color:var(--purple);border:1px solid rgba(var(--purple-rgb),0.2);margin-top:3px;">Change Request</span>
               <?php endif; ?>
             </td>
             <td class="muted">

@@ -665,9 +665,9 @@ foreach ($qa_projects as $pid => $info) {
   .bugstatus-open        { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .bugstatus-in_progress { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .bugstatus-fixed       { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
-  .bugstatus-retest      { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .bugstatus-retest      { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .bugstatus-closed      { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .bugstatus-wont_fix    { background: rgba(239,68,68,0.08);   color: #fca5a5;            border: 1px solid rgba(239,68,68,0.2); }
+  .bugstatus-wont_fix    { background: rgba(var(--red-rgb),0.08);   color: #fca5a5;            border: 1px solid rgba(var(--red-rgb),0.2); }
 
   .sev-badge {
     display: inline-block; padding: 2px 7px; border-radius: 2px;
@@ -677,7 +677,7 @@ foreach ($qa_projects as $pid => $info) {
   .sev-low      { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .sev-medium   { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .sev-high     { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .sev-critical { background: rgba(239,68,68,0.12);   color: var(--red);         border: 1px solid rgba(239,68,68,0.3); }
+  .sev-critical { background: rgba(var(--red-rgb),0.12);   color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.3); }
 
   .type-badge {
     display: inline-block; padding: 2px 7px; border-radius: 2px;
@@ -685,7 +685,7 @@ foreach ($qa_projects as $pid => $info) {
     letter-spacing: 0.05em; text-transform: uppercase;
     background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim);
   }
-  .type-security { background: rgba(239,68,68,0.08); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+  .type-security { background: rgba(var(--red-rgb),0.08); color: #fca5a5; border: 1px solid rgba(var(--red-rgb),0.2); }
 
   .bug-code {
     font-family: 'Share Tech Mono', monospace; font-size: 11px; font-weight: 600;
@@ -724,7 +724,7 @@ foreach ($qa_projects as $pid => $info) {
     padding: 10px 22px; cursor: pointer; margin-top: 0.5rem;
     transition: background 0.2s, box-shadow 0.2s;
   }
-  .btn-report:hover { background: #dc2626; box-shadow: 0 0 16px rgba(239,68,68,0.3); }
+  .btn-report:hover { background: var(--red); filter: brightness(0.9); box-shadow: 0 0 16px rgba(var(--accent-rgb),0.3); }
 
   /* ── BUG CARDS ── */
   .bug-card {
@@ -753,14 +753,14 @@ foreach ($qa_projects as $pid => $info) {
   .action-btn.fix:hover      { background: rgba(34,211,238,0.2); }
   .action-btn.close     { background: rgba(34,197,94,0.1);  border-color: rgba(34,197,94,0.3);  color: var(--green); }
   .action-btn.close:hover    { background: rgba(34,197,94,0.2); }
-  .action-btn.reopen    { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3);  color: #fca5a5; }
-  .action-btn.reopen:hover   { background: rgba(239,68,68,0.18); }
-  .action-btn.retest    { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.3); color: var(--purple); }
-  .action-btn.retest:hover   { background: rgba(167,139,250,0.2); }
+  .action-btn.reopen    { background: rgba(var(--red-rgb),0.08); border-color: rgba(var(--red-rgb),0.3);  color: #fca5a5; }
+  .action-btn.reopen:hover   { background: rgba(var(--red-rgb),0.18); }
+  .action-btn.retest    { background: rgba(var(--purple-rgb),0.1); border-color: rgba(var(--purple-rgb),0.3); color: var(--purple); }
+  .action-btn.retest:hover   { background: rgba(var(--purple-rgb),0.2); }
   .action-btn.wontfix   { background: var(--input-bg); border-color: var(--border-dim); color: var(--text-dim); }
   .action-btn.wontfix:hover  { background: rgba(255,255,255,0.08); }
-  .action-btn.delete    { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3);  color: #fca5a5; }
-  .action-btn.delete:hover   { background: rgba(239,68,68,0.18); }
+  .action-btn.delete    { background: rgba(var(--red-rgb),0.08); border-color: rgba(var(--red-rgb),0.3);  color: #fca5a5; }
+  .action-btn.delete:hover   { background: rgba(var(--red-rgb),0.18); }
 
   .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--text-dim); font-size: 13px; }
   .empty-state svg { width: 32px; height: 32px; fill: var(--border-dim); margin: 0 auto 0.8rem; display: block; }

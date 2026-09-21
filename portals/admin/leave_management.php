@@ -136,14 +136,14 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
   .badge-pending  { background: rgba(234,179,8,0.1);  color: var(--yellow); border: 1px solid rgba(234,179,8,0.25); }
   .badge-approved { background: rgba(34,197,94,0.1);  color: var(--green);  border: 1px solid rgba(34,197,94,0.25); }
-  .badge-rejected { background: rgba(239,68,68,0.1);  color: var(--red);    border: 1px solid rgba(239,68,68,0.25); }
+  .badge-rejected { background: rgba(var(--red-rgb),0.1);  color: var(--red);    border: 1px solid rgba(var(--red-rgb),0.25); }
 
   .review-btns { display: flex; gap: 6px; }
   .action-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 3px; border: 1px solid; font-family: var(--font-sans); font-size: 11.5px; font-weight: 600; cursor: pointer; transition: background 0.15s; letter-spacing: 0.03em; text-transform: uppercase; background: none; }
   .action-btn.approve { border-color: rgba(34,197,94,0.3); color: var(--green); }
   .action-btn.approve:hover { background: rgba(34,197,94,0.15); }
-  .action-btn.reject { border-color: rgba(239,68,68,0.3); color: #fca5a5; }
-  .action-btn.reject:hover { background: rgba(239,68,68,0.15); }
+  .action-btn.reject { border-color: rgba(var(--red-rgb),0.3); color: #fca5a5; }
+  .action-btn.reject:hover { background: rgba(var(--red-rgb),0.15); }
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); font-size: 13px; }
 

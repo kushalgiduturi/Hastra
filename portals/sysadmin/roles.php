@@ -217,7 +217,7 @@ foreach ($company_sections as $sec) {
 
   .alert { display: flex; align-items: center; gap: 8px; border-radius: 3px; padding: 10px 14px; margin-bottom: 1.2rem; font-size: 13px; }
   .alert.success { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.25); border-left: 3px solid var(--green); color: #86efac; }
-  .alert.error { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.25); border-left: 3px solid var(--red); color: #fca5a5; }
+  .alert.error { background: var(--red-bg); border: 1px solid rgba(var(--red-rgb),0.25); border-left: 3px solid var(--red); color: #fca5a5; }
   .alert svg { width: 14px; height: 14px; flex-shrink: 0; }
   .alert.success svg { fill: var(--green); }
   .alert.error svg   { fill: var(--red); }
@@ -234,16 +234,16 @@ foreach ($company_sections as $sec) {
   tbody tr.changed { background: var(--yellow-bg) !important; }
 
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
-  .badge-sysadmin { background: rgba(167,139,250,0.15); color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-sysadmin { background: rgba(var(--purple-rgb),0.15); color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-admin    { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .badge-employee { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-user,
   .badge-newuser  { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
-  .badge-client { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+  .badge-client { background: rgba(var(--purple-rgb),0.1); color: var(--purple); border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-pending_employee { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
   .badge-success  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
   .badge-warning  { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-danger   { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-danger   { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .badge-info     { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
 
   .role-select { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 3px; color: var(--text); font-family: var(--font-sans); font-size: 12px; padding: 5px 8px; outline: none; cursor: pointer; transition: border-color 0.2s; appearance: auto; }
@@ -266,8 +266,8 @@ foreach ($company_sections as $sec) {
 
   .own-row td { color: var(--text-dim); font-size: 12px; font-style: italic; }
 
-  .btn-delete { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 3px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
-  .btn-delete:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
+  .btn-delete { background: rgba(var(--red-rgb),0.1); border: 1px solid rgba(var(--red-rgb),0.25); color: #fca5a5; font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 3px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+  .btn-delete:hover { background: rgba(var(--red-rgb),0.2); border-color: rgba(var(--red-rgb),0.5); }
 
   .modal-overlay { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
   .modal-overlay.open { opacity: 1; pointer-events: auto; }
@@ -276,19 +276,19 @@ foreach ($company_sections as $sec) {
   .modal h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
   .modal p { font-size: 13px; color: var(--text-dim); margin-bottom: 1.4rem; line-height: 1.5; }
   .modal-alert { font-size: 12px; padding: 8px 12px; border-radius: 3px; margin-bottom: 1.2rem; display: none; line-height: 1.4; }
-  .modal-alert.error   { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.3); border-left: 3px solid var(--red); color: #fca5a5; display: block; }
+  .modal-alert.error   { background: var(--red-bg); border: 1px solid rgba(var(--red-rgb),0.3); border-left: 3px solid var(--red); color: #fca5a5; display: block; }
   .modal-alert.success { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.3); border-left: 3px solid var(--green); color: #86efac; display: block; }
 
   .otp-boxes { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.4rem; }
   .otp-box { width: 48px; height: 54px; background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 4px; color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 22px; text-align: center; outline: none; transition: border-color 0.2s, box-shadow 0.2s; caret-color: var(--red); }
-  .otp-box:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
-  .otp-box.filled { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); }
+  .otp-box:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(var(--red-rgb),0.12); }
+  .otp-box.filled { border-color: rgba(var(--red-rgb),0.4); background: rgba(var(--red-rgb),0.05); }
 
   .modal-btns { display: flex; gap: 8px; }
-  .modal-btn-confirm { flex: 1; background: var(--red); color: white; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
-  .modal-btn-confirm:hover { background: #dc2626; }
+  .modal-btn-confirm { flex: 1; background: var(--red); color: white; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; transition: background 0.2s, filter 0.2s; text-transform: uppercase; }
+  .modal-btn-confirm:hover { filter: brightness(0.88); }
   .modal-btn-confirm:disabled { background: #4b1c1c; color: #6b2f2f; cursor: not-allowed; }
-  .modal-btn-cancel { flex: 1; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; padding: 10px; cursor: pointer; transition: background 0.2s; text-transform: uppercase; }
+  .modal-btn-cancel { flex: 1; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; padding: 10px; cursor: pointer; transition: background 0.2s, filter 0.2s; text-transform: uppercase; }
   .modal-btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
   .sending-spinner { text-align: center; padding: 1.5rem 0; color: var(--text-dim); font-size: 13px; }

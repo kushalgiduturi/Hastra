@@ -448,7 +448,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
   }
 
   .btn-send:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 
@@ -633,7 +633,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
   }
 
   .btn-login:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 

@@ -364,12 +364,12 @@ function format_bytes($bytes) {
   .badge-pending     { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .badge-in_progress { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-completed   { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .badge-blocked     { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-blocked     { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
 
   .badge-team_assigned       { background: rgba(59,130,246,0.1);  color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-development_started { background: rgba(34,211,238,0.1);  color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
   .badge-testing             { background: rgba(245,158,11,0.1);  color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-deployment_pending  { background: rgba(167,139,250,0.1); color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending  { background: rgba(var(--purple-rgb),0.1); color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-completed-proj      { background: rgba(34,197,94,0.1);   color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
 
   .priority-badge {
@@ -380,17 +380,17 @@ function format_bytes($bytes) {
   .priority-low      { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .priority-medium   { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .priority-high     { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .priority-critical { background: rgba(239,68,68,0.12);   color: var(--red);         border: 1px solid rgba(239,68,68,0.3); }
+  .priority-critical { background: rgba(var(--red-rgb),0.12);   color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.3); }
 
   .role-badge {
     display: inline-block; padding: 2px 7px; border-radius: 2px;
     font-size: 10px; font-family: 'Share Tech Mono', monospace;
     letter-spacing: 0.05em; text-transform: uppercase;
   }
-  .role-team_lead       { background: rgba(167,139,250,0.12); color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .role-team_lead       { background: rgba(var(--purple-rgb),0.12); color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .role-developer       { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .role-tester          { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
-  .role-security_tester { background: rgba(239,68,68,0.1);    color: #fca5a5;            border: 1px solid rgba(239,68,68,0.2); }
+  .role-security_tester { background: rgba(var(--red-rgb),0.1);    color: #fca5a5;            border: 1px solid rgba(var(--red-rgb),0.2); }
   .role-debugger        { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
 
   .task-code {
@@ -466,7 +466,7 @@ function format_bytes($bytes) {
     padding: 10px 22px; cursor: pointer; margin-top: 1rem;
     transition: background 0.2s, box-shadow 0.2s;
   }
-  .btn-create-task:hover { background: #2563eb; box-shadow: 0 0 16px rgba(var(--accent-rgb),0.3); }
+  .btn-create-task:hover { background: var(--accent-bright); box-shadow: 0 0 16px rgba(var(--accent-rgb),0.3); }
 
   .tasks-title {
     font-size: 11px; font-family: 'Share Tech Mono', monospace;
@@ -549,7 +549,7 @@ function format_bytes($bytes) {
     cursor: pointer; padding: 4px; border-radius: 3px;
     transition: color 0.2s, background 0.2s;
   }
-  .btn-delete-task:hover { color: var(--red); background: rgba(239,68,68,0.08); }
+  .btn-delete-task:hover { color: var(--red); background: rgba(var(--red-rgb),0.08); }
   .btn-delete-task svg { width: 14px; height: 14px; fill: currentColor; display: block; }
 
   .chevron { width: 16px; height: 16px; fill: var(--text-dim); transition: transform 0.25s; flex-shrink: 0; }

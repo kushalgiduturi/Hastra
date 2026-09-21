@@ -212,7 +212,7 @@ $status_labels = [
   .badge-team_assigned       { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-development_started { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
   .badge-testing             { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-deployment_pending  { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending  { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-completed           { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
 
   .project-code-badge {
@@ -229,9 +229,9 @@ $status_labels = [
   }
   .project-card:hover { border-color: rgba(var(--accent-rgb),0.2); }
   .project-card.deployable { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.03); }
-  .project-card.pending    { border-color: rgba(167,139,250,0.2); background: rgba(167,139,250,0.03); }
+  .project-card.pending    { border-color: rgba(var(--purple-rgb),0.2); background: rgba(var(--purple-rgb),0.03); }
   .project-card.completed  { border-color: rgba(34,197,94,0.15); }
-  .project-card.not-ready  { border-color: rgba(239,68,68,0.15); background: rgba(239,68,68,0.02); }
+  .project-card.not-ready  { border-color: rgba(var(--red-rgb),0.15); background: rgba(var(--red-rgb),0.02); }
 
   .project-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; gap: 12px; }
   .project-card-left { flex: 1; }
@@ -245,7 +245,7 @@ $status_labels = [
     font-size: 11px; font-family: 'Share Tech Mono', monospace;
     padding: 3px 8px; border-radius: 2px; letter-spacing: 0.04em;
   }
-  .bug-stat.open   { background: rgba(239,68,68,0.08);  color: #fca5a5;       border: 1px solid rgba(239,68,68,0.2); }
+  .bug-stat.open   { background: rgba(var(--red-rgb),0.08);  color: #fca5a5;       border: 1px solid rgba(var(--red-rgb),0.2); }
   .bug-stat.closed { background: rgba(34,197,94,0.08);  color: var(--green);  border: 1px solid rgba(34,197,94,0.2); }
   .bug-stat.total  { background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); }
 
@@ -283,9 +283,9 @@ $status_labels = [
 
   .pending-note {
     margin-top: 10px; padding: 8px 12px;
-    background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2);
+    background: rgba(var(--purple-rgb),0.08); border: 1px solid rgba(var(--purple-rgb),0.2);
     border-left: 3px solid var(--purple); border-radius: 3px;
-    font-size: 12px; color: #c4b5fd; line-height: 1.5;
+    font-size: 12px; color: var(--purple); line-height: 1.5;
   }
   .pending-note strong { color: var(--purple); font-size: 10px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.07em; text-transform: uppercase; display: block; margin-bottom: 3px; }
 
@@ -299,7 +299,7 @@ $status_labels = [
 
   .not-ready-note {
     margin-top: 10px; padding: 8px 12px;
-    background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+    background: rgba(var(--red-rgb),0.06); border: 1px solid rgba(var(--red-rgb),0.2);
     border-left: 3px solid var(--red); border-radius: 3px;
     font-size: 12px; color: #fca5a5; line-height: 1.5;
   }

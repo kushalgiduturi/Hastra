@@ -262,7 +262,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     align-items: flex-start;
     gap: 8px;
     background: var(--red-bg);
-    border: 1px solid rgba(239,68,68,0.3);
+    border: 1px solid rgba(var(--red-rgb),0.3);
     border-left: 3px solid var(--red);
     border-radius: 3px;
     padding: 10px 12px;
@@ -291,7 +291,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   .btn-verify:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 

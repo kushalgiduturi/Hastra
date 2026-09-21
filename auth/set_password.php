@@ -304,7 +304,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
   }
 
   .btn-submit:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 
@@ -402,7 +402,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
   }
 
   .btn-login:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 

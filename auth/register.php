@@ -433,7 +433,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   .btn-register:hover {
-    background: #2563eb;
+    background: var(--accent-bright);
     box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3);
   }
 

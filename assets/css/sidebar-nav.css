@@ -164,7 +164,7 @@
 }
 
 .sidebar-link.logout { color: #fca5a5; }
-.sidebar-link.logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+.sidebar-link.logout:hover { background: rgba(var(--red-rgb),0.12); color: #fca5a5; }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar-drawer, .sidebar-backdrop, .hamburger-btn span { transition: none; }

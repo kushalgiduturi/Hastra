@@ -137,14 +137,14 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
   button { font-family: var(--font-sans); font-size: 13px; font-weight: 600; border-radius: 3px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); }
   button:hover:not(:disabled) { border-color: var(--accent-bright); }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  button.danger  { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); color: var(--red); }
+  button.danger  { background: rgba(var(--red-rgb),0.12); border-color: rgba(var(--red-rgb),0.4); color: var(--red); }
   button:disabled { opacity: 0.45; cursor: not-allowed; }
   button:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
   label.confirm { font-size: 12px; color: var(--text-dim); display: flex; gap: 6px; align-items: center; }
   .result { margin-top: 1.6rem; }
   .result h3 { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 8px; font-weight: 400; }
   pre { margin: 0; background: var(--navy-deep); border: 1px solid var(--border-dim); border-radius: 4px; padding: 1rem; overflow-x: auto; font-family: 'Share Tech Mono', monospace; font-size: 12.5px; line-height: 1.6; color: var(--text); white-space: pre; }
-  pre.error { border-color: rgba(239,68,68,0.4); }
+  pre.error { border-color: rgba(var(--red-rgb),0.4); }
 
   /* ── TOPNAV ── */
 </style>

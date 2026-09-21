@@ -482,12 +482,12 @@ $status_labels = [
   .member-row select option { background: var(--navy-card); }
 
   .btn-remove-row {
-    width: 36px; height: 36px; background: rgba(239,68,68,0.08);
-    border: 1px solid rgba(239,68,68,0.2); border-radius: 3px;
+    width: 36px; height: 36px; background: rgba(var(--red-rgb),0.08);
+    border: 1px solid rgba(var(--red-rgb),0.2); border-radius: 3px;
     color: #fca5a5; cursor: pointer; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: background 0.2s;
   }
-  .btn-remove-row:hover { background: rgba(239,68,68,0.18); }
+  .btn-remove-row:hover { background: rgba(var(--red-rgb),0.18); }
   .btn-remove-row svg { width: 14px; height: 14px; fill: #fca5a5; }
 
   .btn-add-member {
@@ -540,7 +540,7 @@ $status_labels = [
   .badge-team_assigned       { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-development_started { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
   .badge-testing             { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
-  .badge-deployment_pending  { background: rgba(167,139,250,0.1);  color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .badge-deployment_pending  { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .badge-completed           { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
 
   .role-badge {
@@ -548,10 +548,10 @@ $status_labels = [
     font-size: 10px; font-family: 'Share Tech Mono', monospace;
     letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500;
   }
-  .role-team_lead       { background: rgba(167,139,250,0.12); color: var(--purple);      border: 1px solid rgba(167,139,250,0.2); }
+  .role-team_lead       { background: rgba(var(--purple-rgb),0.12); color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
   .role-developer       { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .role-tester          { background: rgba(34,211,238,0.1);   color: var(--cyan);        border: 1px solid rgba(34,211,238,0.2); }
-  .role-security_tester { background: rgba(239,68,68,0.1);    color: #fca5a5;            border: 1px solid rgba(239,68,68,0.2); }
+  .role-security_tester { background: rgba(var(--red-rgb),0.1);    color: #fca5a5;            border: 1px solid rgba(var(--red-rgb),0.2); }
   .role-debugger        { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
 
   /* ── TEAM TABLE ── */
@@ -582,7 +582,7 @@ $status_labels = [
     cursor: pointer; padding: 4px; border-radius: 3px;
     transition: color 0.2s, background 0.2s;
   }
-  .btn-remove-member:hover { color: var(--red); background: rgba(239,68,68,0.08); }
+  .btn-remove-member:hover { color: var(--red); background: rgba(var(--red-rgb),0.08); }
   .btn-remove-member svg { width: 14px; height: 14px; fill: currentColor; display: block; }
 
   /* ── ADD MEMBER INLINE ── */

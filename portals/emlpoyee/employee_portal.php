@@ -174,7 +174,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   .leave-badge { font-size: 10.5px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; }
   .leave-badge.pending  { color: var(--yellow); background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); }
   .leave-badge.approved { color: var(--green);  background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); }
-  .leave-badge.rejected { color: var(--red);    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); }
+  .leave-badge.rejected { color: var(--red);    background: rgba(var(--red-rgb),0.1); border: 1px solid rgba(var(--red-rgb),0.25); }
   .no-leave { font-size: 12.5px; color: var(--text-dim); }
 </style>
 </head>

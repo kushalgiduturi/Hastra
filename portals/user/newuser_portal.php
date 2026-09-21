@@ -80,8 +80,8 @@ verify_session($conn, ["client", "pending_employee"]);
 
   .btn-logout {
     display: flex; align-items: center; gap: 6px;
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.25);
+    background: rgba(var(--red-rgb),0.1);
+    border: 1px solid rgba(var(--red-rgb),0.25);
     color: #fca5a5;
     font-family: var(--font-sans);
     font-size: 12px; font-weight: 500;
@@ -91,7 +91,7 @@ verify_session($conn, ["client", "pending_employee"]);
     transition: background 0.2s, border-color 0.2s;
   }
 
-  .btn-logout:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
+  .btn-logout:hover { background: rgba(var(--red-rgb),0.2); border-color: rgba(var(--red-rgb),0.5); }
   .btn-logout svg { width: 13px; height: 13px; fill: #fca5a5; }
 
   .btn-theme-toggle {

@@ -202,8 +202,8 @@ $status_order = ["pending_review", "under_review", "approved"];
 
   .pipeline-step.rejected-step .step-circle {
     border-color: var(--red);
-    background: rgba(239,68,68,0.1);
-    box-shadow: 0 0 12px rgba(239,68,68,0.2);
+    background: rgba(var(--red-rgb),0.1);
+    box-shadow: 0 0 12px rgba(var(--red-rgb),0.2);
   }
   .pipeline-step.rejected-step .step-circle svg { stroke: var(--red); }
 
@@ -268,7 +268,7 @@ $status_order = ["pending_review", "under_review", "approved"];
   .badge-pending_review       { background: rgba(148,163,184,0.08); color: var(--text-dim);    border: 1px solid rgba(148,163,184,0.15); }
   .badge-under_review         { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
   .badge-approved             { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
-  .badge-rejected             { background: rgba(239,68,68,0.1);    color: var(--red);         border: 1px solid rgba(239,68,68,0.2); }
+  .badge-rejected             { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .badge-clarification_needed { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
 
   .req-id-badge {
@@ -381,9 +381,9 @@ $status_order = ["pending_review", "under_review", "approved"];
     font-family: var(--font-sans);
     font-size: 13px; font-weight: 600;
     padding: 10px; cursor: pointer;
-    transition: background 0.2s; text-transform: uppercase;
+    transition: background 0.2s, filter 0.2s; text-transform: uppercase;
   }
-  .modal-btn-confirm:hover { background: #dc2626; }
+  .modal-btn-confirm:hover { filter: brightness(0.88); }
 
   .modal-btn-cancel {
     flex: 1;
@@ -393,7 +393,7 @@ $status_order = ["pending_review", "under_review", "approved"];
     font-family: var(--font-sans);
     font-size: 13px; font-weight: 500;
     padding: 10px; cursor: pointer;
-    transition: background 0.2s; text-transform: uppercase;
+    transition: background 0.2s, filter 0.2s; text-transform: uppercase;
   }
   .modal-btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 </style>
