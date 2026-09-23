@@ -274,6 +274,8 @@ if ($employees) {
 <title>Attendance · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/calendar-authkit.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -299,6 +301,22 @@ if ($employees) {
   .month-nav a { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); text-decoration: none; }
   .month-nav a:hover { background: var(--hover-bg); }
   .month-nav a svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* Jump-to-day calendar popover */
+  .month-nav { position: relative; }
+  .cal-toggle {
+    display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px;
+    border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-dim);
+    color: var(--text); font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .cal-toggle:hover, .cal-toggle[aria-expanded="true"] { background: var(--hover-bg); }
+  .cal-toggle svg { width: 14px; height: 14px; fill: currentColor; }
+  .cal-popover { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50; }
+  .cal-popover[hidden] { display: none; }
+  .cal-popover .astra-calendar-root { box-shadow: var(--shadow-modal, 0 20px 50px rgba(0,0,0,0.5)); }
+  /* Column picked in the calendar */
+  table.grid .day-focus { background: rgba(102, 58, 243, 0.14); }
+  table.grid th.day-focus { color: #fff; background: var(--color-void-violet, #663af3); }
   .month-label { font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.05em; min-width: 110px; text-align: center; }
 
   .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
@@ -399,6 +417,13 @@ if ($employees) {
       <a href="?month=<?= $prev_month ?>" title="Previous month"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></a>
       <span class="month-label"><?= date("F Y", $month_ts) ?></span>
       <a href="?month=<?= $next_month ?>" title="Next month"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg></a>
+      <button type="button" class="cal-toggle" id="calToggle" aria-expanded="false" aria-controls="calPopover">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        Jump to day
+      </button>
+      <div class="cal-popover" id="calPopover" hidden>
+        <div class="astra-calendar-root" id="attendanceCalendar"></div>
+      </div>
     </div>
   </div>
 
@@ -533,7 +558,9 @@ if ($employees) {
   </div>
 </div>
 
+<script src="<?= get_base_url() ?>assets/js/calendar.js?v=<?= ASSET_VERSION ?>"></script>
 <script>
+  let gridDirty = false;
   const CYCLE = ['', 'present', 'absent', 'half_day', 'on_leave', 'wfh'];
   const LETTERS = { '': '', present: 'P', absent: 'A', half_day: 'H', on_leave: 'L', wfh: 'W' };
   document.querySelectorAll('.cell-btn').forEach(function (btn) {
@@ -544,6 +571,7 @@ if ($employees) {
       btn.textContent = LETTERS[next];
       btn.className = 'cell-btn' + (next ? ' ' + next : '');
       btn.nextElementSibling.value = next;
+      gridDirty = true;
     });
   });
 
@@ -556,6 +584,61 @@ if ($employees) {
       document.getElementById('webhookSecretForm').submit();
     });
   }
+  // ── Jump-to-day calendar ──
+  // A day in the loaded month is highlighted and scrolled into view with no
+  // reload. Any other month's records live on the server, so that jump loads
+  // ?month=…&day=…, which highlights the day on arrival.
+  (function () {
+    const LOADED_MONTH = <?= json_encode($month) ?>;
+    const toggle  = document.getElementById('calToggle');
+    const popover = document.getElementById('calPopover');
+    const params  = new URLSearchParams(location.search);
+    const dayParam = parseInt(params.get('day') || '', 10);
+
+    function focusDay(day) {
+      document.querySelectorAll('table.grid .day-focus').forEach(el => el.classList.remove('day-focus'));
+      const th = document.querySelector('table.grid thead th:nth-child(' + (day + 1) + ')');
+      if (!th) return;
+      th.classList.add('day-focus');
+      document.querySelectorAll('table.grid .cell-btn[data-day="' + day + '"]').forEach(b => b.parentElement.classList.add('day-focus'));
+      // Scroll horizontally only, keeping the column clear of the sticky name column.
+      const wrap = th.closest('.tbl-wrap');
+      const nameW = wrap.querySelector('th.emp-col').offsetWidth;
+      wrap.scrollTo({ left: Math.max(0, th.offsetLeft - nameW - 80), behavior: 'smooth' });
+    }
+
+    const cal = AstraCalendar.mount('#attendanceCalendar', {
+      mode: 'single',
+      month: LOADED_MONTH,
+      onSelect(detail) {
+        const [y, m, d] = detail.date.split('-');
+        const picked = y + '-' + m;
+        if (picked === LOADED_MONTH) {
+          focusDay(parseInt(d, 10));
+          closePopover();
+          return;
+        }
+        if (gridDirty && !confirm('You have unsaved attendance changes for this month. Leave without saving?')) return;
+        location.href = '?month=' + picked + '&day=' + parseInt(d, 10);
+      },
+    });
+
+    function openPopover()  { popover.hidden = false; toggle.setAttribute('aria-expanded', 'true');
+                              const b = popover.querySelector('.astra-cal-day[tabindex="0"]'); if (b) b.focus(); }
+    function closePopover() { popover.hidden = true;  toggle.setAttribute('aria-expanded', 'false'); }
+    toggle.addEventListener('click', () => popover.hidden ? openPopover() : closePopover());
+    document.addEventListener('click', (e) => {
+      if (!popover.hidden && !popover.contains(e.target) && !toggle.contains(e.target)) closePopover();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !popover.hidden) { closePopover(); toggle.focus(); }
+    });
+
+    if (dayParam >= 1 && dayParam <= 31) {
+      if (cal) cal.pick(new Date(+LOADED_MONTH.slice(0, 4), +LOADED_MONTH.slice(5) - 1, dayParam));
+    }
+  })();
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') document.getElementById('regenModal').classList.remove('open');
   });

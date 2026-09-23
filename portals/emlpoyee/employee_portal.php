@@ -105,6 +105,8 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/tour.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/calendar-authkit.css?v=<?= ASSET_VERSION ?>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -145,6 +147,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent-bright); }
   .field-hint { margin-top: 6px; font-size: 11.5px; color: var(--text-dim); }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .leave-cal-wrap { display: flex; justify-content: center; margin-bottom: 1rem; }
   .modal-btns { display: flex; gap: 10px; margin-top: 1.4rem; }
   .modal-btn-confirm {
     flex: 1; background: var(--accent); color: #fff; border: none; border-radius: 3px;
@@ -245,6 +248,13 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
         <?php endif; ?>
       </div>
 
+      <!-- Range picker: fills start_date / end_date below and fires their
+           change events, so updateLeaveSpan() runs as if they were typed. -->
+      <div class="leave-cal-wrap">
+        <div class="astra-calendar-root" id="leaveCalendar" data-mode="range"
+             data-bind-start="#start_date" data-bind-end="#end_date"></div>
+      </div>
+
       <div class="form-row-2">
         <div class="field">
           <label for="start_date">Start Date</label>
@@ -292,6 +302,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 </script>
 <script src="<?= get_base_url() ?>assets/js/tour-config.js?v=<?= ASSET_VERSION ?>"></script>
 <script src="<?= get_base_url() ?>assets/js/tour.js?v=<?= ASSET_VERSION ?>"></script>
+<script src="<?= get_base_url() ?>assets/js/calendar.js?v=<?= ASSET_VERSION ?>"></script>
 <script>
   function openLeaveModal()  { document.getElementById('leaveModal').classList.add('open'); }
   function closeLeaveModal() { document.getElementById('leaveModal').classList.remove('open'); }
