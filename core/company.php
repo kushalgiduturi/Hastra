@@ -171,11 +171,11 @@ function user_id_range_for($company, $role) {
 }
 
 function company_range_label($company) {
-    if (!$company) return INDEPENDENT_RANGE[0] . '–' . INDEPENDENT_RANGE[1];
-    if (!empty($company['is_internal'])) return INTERNAL_ADMIN_RANGE[0] . '–' . INTERNAL_EMPLOYEE_RANGE[1];
+    if (!$company) return INDEPENDENT_RANGE[0] . '-' . INDEPENDENT_RANGE[1];
+    if (!empty($company['is_internal'])) return INTERNAL_ADMIN_RANGE[0] . '-' . INTERNAL_EMPLOYEE_RANGE[1];
     if ($company['id_block_start'] === null) return 'unassigned';
     $start = (int)$company['id_block_start'];
-    return $start . '–' . ($start + ID_BLOCK_SIZE - 1);
+    return $start . '-' . ($start + ID_BLOCK_SIZE - 1);
 }
 
 function id_in_range($id, $range) {

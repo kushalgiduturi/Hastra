@@ -26,7 +26,7 @@ function audit_security_controls($conn) {
     $checks[] = [
         'label' => 'Prepared statements on every query',
         'on'    => true,
-        'detail'=> 'mysqli prepared statements throughout — no raw SQL is built from request input.',
+        'detail'=> 'mysqli prepared statements throughout, so SQL is never built from raw request input.',
     ];
 
     $checks[] = [
@@ -95,13 +95,13 @@ function audit_security_controls($conn) {
         'on'    => $crypto_ok && $key_exists,
         'detail'=> $key_exists
             ? "AES-256-GCM, key file present · $enc_count encrypted, $plain_count still plain text."
-            : 'Key file not created yet — run the database migration to switch this on.',
+            : 'Key file not created yet. Run the database migration to switch this on.',
     ];
 
     $checks[] = [
         'label' => 'Race-free, non-reusable record codes',
         'on'    => sequences_ready($conn),
-        'detail'=> sequences_ready($conn) ? 'id_sequences table live — requirement, project, task, bug and invoice codes can never collide.' : 'Not migrated yet.',
+        'detail'=> sequences_ready($conn) ? 'id_sequences table live. Requirement, project, task, bug and invoice codes can never collide.' : 'Not migrated yet.',
     ];
 
     $checks[] = [

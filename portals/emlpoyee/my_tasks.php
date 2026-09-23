@@ -501,7 +501,7 @@ function format_bytes($bytes) {
               <div style="font-size:12px;color:var(--text-dim);margin-top:3px;"><?= htmlspecialchars($task['project_title']) ?></div>
             </td>
             <td><span class="priority-badge priority-<?= $task['priority'] ?>"><?= $priority_labels[$task['priority']] ?></span></td>
-            <td class="muted"><?= $task['deadline'] ? date('d M Y', strtotime($task['deadline'])) : '—' ?></td>
+            <td class="muted"><?= $task['deadline'] ? date('d M Y', strtotime($task['deadline'])) : '-' ?></td>
             <td class="muted"><?= htmlspecialchars($task['assigned_by_name']) ?></td>
             <td><span class="badge badge-<?= $task['status'] ?>"><?= $task_status_labels[$task['status']] ?></span></td>
             <td>

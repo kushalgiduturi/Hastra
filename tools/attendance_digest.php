@@ -28,7 +28,7 @@ foreach ($argv as $arg) {
 
 $company = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id, company_name FROM companies WHERE is_internal = 1 LIMIT 1"));
 if (!$company) {
-    fwrite(STDERR, "No internal company found — nothing to summarize.\n");
+    fwrite(STDERR, "No internal company found, so there is nothing to summarize.\n");
     exit(1);
 }
 $company_id = (int)$company['id'];
@@ -56,11 +56,11 @@ foreach ($employees as $emp) {
 }
 
 $lines = [];
-$lines[] = "Attendance digest — {$company['company_name']} — $date";
+$lines[] = "Attendance digest: {$company['company_name']}, $date";
 $lines[] = str_repeat('-', 40);
 foreach ($labels as $key => $label) {
     $names = $buckets[$key];
-    $lines[] = sprintf("%-10s (%d): %s", $label, count($names), $names ? implode(', ', $names) : '—');
+    $lines[] = sprintf("%-10s (%d): %s", $label, count($names), $names ? implode(', ', $names) : '-');
 }
 $lines[] = str_repeat('-', 40);
 $lines[] = sprintf("Total employees: %d", count($employees));
@@ -73,7 +73,7 @@ if ($send_email) {
     $sent = 0;
     foreach ($admins as $a) {
         try {
-            astra_send_mail($a['email'], "Attendance digest — $date", nl2br(htmlspecialchars($report)));
+            astra_send_mail($a['email'], "Attendance digest: $date", nl2br(htmlspecialchars($report)));
             $sent++;
         } catch (Throwable $e) {
             fwrite(STDERR, "Failed to email {$a['email']}: " . $e->getMessage() . "\n");

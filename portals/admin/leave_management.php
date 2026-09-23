@@ -275,11 +275,11 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
               <span class="muted"><?= htmlspecialchars($lr["employee_email"]) ?></span>
             </td>
             <td class="muted"><?= htmlspecialchars($leave_type_labels[$lr["leave_type"]] ?? $lr["leave_type"]) ?></td>
-            <td class="muted"><?= htmlspecialchars(date("d M Y", strtotime($lr["start_date"]))) ?> – <?= htmlspecialchars(date("d M Y", strtotime($lr["end_date"]))) ?></td>
+            <td class="muted"><?= htmlspecialchars(date("d M Y", strtotime($lr["start_date"]))) ?> to <?= htmlspecialchars(date("d M Y", strtotime($lr["end_date"]))) ?></td>
             <td class="muted"><?= (float)$lr["total_days"] ?></td>
-            <td class="muted"><?= $lr["reason"] ? htmlspecialchars($lr["reason"]) : '—' ?></td>
+            <td class="muted"><?= $lr["reason"] ? htmlspecialchars($lr["reason"]) : '-' ?></td>
             <td><span class="badge badge-<?= htmlspecialchars($lr["status"]) ?>"><?= htmlspecialchars(ucfirst($lr["status"])) ?></span></td>
-            <td class="muted"><?= $lr["reviewer_name"] ? htmlspecialchars($lr["reviewer_name"]) : '—' ?></td>
+            <td class="muted"><?= $lr["reviewer_name"] ? htmlspecialchars($lr["reviewer_name"]) : '-' ?></td>
             <td>
               <?php if ($lr["status"] === "pending"): ?>
               <div class="review-btns">
@@ -299,7 +299,7 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
                 </form>
               </div>
               <?php else: ?>
-              <span class="muted">—</span>
+              <span class="muted">-</span>
               <?php endif; ?>
             </td>
           </tr>

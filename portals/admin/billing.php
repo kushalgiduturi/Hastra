@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
             );
 
             if (mysqli_stmt_execute($ins)) {
-                $msg      = "Invoice <strong>$invoice_code</strong> generated — total <strong>₹" . number_format($total, 2) . "</strong>.";
+                $msg      = "Invoice <strong>$invoice_code</strong> generated. Total: <strong>₹" . number_format($total, 2) . "</strong>.";
                 $msg_type = "success";
             } else {
                 $msg = "Failed to generate invoice.";
@@ -227,9 +227,9 @@ while ($row = mysqli_fetch_assoc($invoices_result)) {
             <div class="field">
               <label>Project</label>
               <select name="project_id" required>
-                <option value="">— Select Completed Project —</option>
+                <option value="">Select a completed project</option>
                 <?php foreach ($billable_projects as $bp): ?>
-                <option value="<?= $bp['id'] ?>"><?= htmlspecialchars($bp['project_code'] . ' — ' . $bp['title']) ?></option>
+                <option value="<?= $bp['id'] ?>"><?= htmlspecialchars($bp['project_code'] . ': ' . $bp['title']) ?></option>
                 <?php endforeach; ?>
               </select>
             </div>

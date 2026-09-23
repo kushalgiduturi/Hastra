@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $ip  = astra_get_client_ip();
             $row = astra_signoff_client_sign($conn, $project_id, $milestone_name, $user_id, $ip, $error);
             if ($row) {
-                $msg = "Milestone \"" . htmlspecialchars($milestone_name) . "\" is now sealed — both signatures are on record.";
+                $msg = "Milestone \"" . htmlspecialchars($milestone_name) . "\" is now sealed with both signatures on record.";
                 $msg_type = "success";
                 try { log_activity($conn, $user_id, "milestone_signoff_completed", $milestone_name); } catch (Throwable $e) {}
             } else {
@@ -200,8 +200,8 @@ foreach ($rows as &$row) {
         }
     }
     $row['_project'] = $project_cache[$pid];
-    $row['_pm_name']     = $user_cache[(int)$row['pm_user_id']] ?? '—';
-    $row['_client_name'] = $user_cache[(int)$row['client_user_id']] ?? '—';
+    $row['_pm_name']     = $user_cache[(int)$row['pm_user_id']] ?? '-';
+    $row['_client_name'] = $user_cache[(int)$row['client_user_id']] ?? '-';
     $row['_verify'] = astra_signoff_verify($conn, $row);
 }
 unset($row);
@@ -282,9 +282,9 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
       <input type="hidden" name="action" value="initiate">
       <label>Project</label>
       <select name="project_id" required>
-        <option value="">— Select project —</option>
+        <option value="">Select project</option>
         <?php foreach ($initiable_projects as $p): ?>
-        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ' — ' . $p['title']) ?></option>
+        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ': ' . $p['title']) ?></option>
         <?php endforeach; ?>
       </select>
       <label>Milestone name</label>
@@ -321,18 +321,18 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
       <div class="card-top">
         <div>
           <strong><?= htmlspecialchars($row['milestone_name']) ?></strong>
-          <div style="font-size:12px;color:var(--text-dim);"><?= htmlspecialchars($row['_project']['project_code'] . ' — ' . $row['_project']['title']) ?></div>
+          <div style="font-size:12px;color:var(--text-dim);"><?= htmlspecialchars($row['_project']['project_code'] . ': ' . $row['_project']['title']) ?></div>
         </div>
         <span class="badge <?= $row['status'] ?>"><?= $status_labels[$row['status']] ?? $row['status'] ?></span>
       </div>
 
       <div style="font-size:12px;margin-top:10px;color:var(--text-dim);">
         Lead: <strong style="color:var(--text);"><?= htmlspecialchars($row['_pm_name']) ?></strong>
-        signed <?= $row['pm_signed_at'] ? htmlspecialchars(date('d M Y, H:i', strtotime($row['pm_signed_at']))) : '—' ?>
+        signed <?= $row['pm_signed_at'] ? htmlspecialchars(date('d M Y, H:i', strtotime($row['pm_signed_at']))) : '-' ?>
         <?php if ($row['_verify']['pm_valid'] !== null): ?>
           <span class="<?= $row['_verify']['pm_valid'] ? 'verify-ok' : 'verify-bad' ?>"><?= $row['_verify']['pm_valid'] ? '✓ verified' : '✗ signature mismatch' ?></span>
         <?php endif; ?>
-        <div class="hashline">pm_signature_hash: <?= htmlspecialchars($row['pm_signature_hash'] ?? '—') ?></div>
+        <div class="hashline">pm_signature_hash: <?= htmlspecialchars($row['pm_signature_hash'] ?? '-') ?></div>
       </div>
 
       <div style="font-size:12px;margin-top:8px;color:var(--text-dim);">

@@ -167,7 +167,7 @@ function build_template_doc(array $ctx) {
     $out .= '<h2>Security</h2><ul>' . implode('', array_map(fn($m) => '<li>' . $h($m) . '</li>', SECURITY_MEASURES)) . '</ul>';
     if ($p['deployment_notes']) $out .= '<h2>Deployment notes</h2><p>' . nl2br($h($p['deployment_notes'])) . '</p>';
     if ($ctx['team']) {
-        $out .= '<h2>Team</h2><ul>' . implode('', array_map(fn($m) => '<li>' . $h($m['name']) . ' — ' . $h(str_replace('_', ' ', $m['role'])) . '</li>', $ctx['team'])) . '</ul>';
+        $out .= '<h2>Team</h2><ul>' . implode('', array_map(fn($m) => '<li>' . $h($m['name']) . ': ' . $h(str_replace('_', ' ', $m['role'])) . '</li>', $ctx['team'])) . '</ul>';
     }
     $out .= '<h2>Maintenance &amp; support</h2><p>Raise change requests from the Astra client portal against this project (' . $h($p['code']) . ').</p>';
     return $out;

@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($action === "save") {
         $html = (string)($_POST["body_html"] ?? "");
-        if (trim(strip_tags($html)) === "") doc_redirect($project_id, 'error', "The document is empty — nothing was saved.");
+        if (trim(strip_tags($html)) === "") doc_redirect($project_id, 'error', "The document is empty, so nothing was saved.");
         $v = save_doc_version($conn, $project_id, $admin_id, $html, 'admin');
         doc_redirect($project_id, 'success', "Saved as version $v. Approve it when it's ready.", $v);
     }
@@ -135,7 +135,7 @@ $has_key  = anthropic_api_key() !== '';
 <div class="main">
   <div class="page-header">
     <a class="back" href="<?= get_base_url() ?>portals/admin/admin_portal">← Back to the admin portal</a>
-    <h1 style="margin-top:8px;"><span class="code-chip"><?= htmlspecialchars($project['project_code']) ?></span><?= htmlspecialchars($project['title']) ?> — documentation</h1>
+    <h1 style="margin-top:8px;"><span class="code-chip"><?= htmlspecialchars($project['project_code']) ?></span><?= htmlspecialchars($project['title']) ?>: documentation</h1>
     <p>Generate a draft, edit it, and approve the version that ships with the delivery. A deployment can't be approved until one version is approved.</p>
   </div>
 
@@ -209,8 +209,8 @@ $has_key  = anthropic_api_key() !== '';
     <aside class="side">
       <div class="<?= $approved ? 'gate ok' : 'gate no' ?>">
         <?= $approved
-            ? 'Version ' . (int)$approved['version'] . ' is approved' . ($project['status'] === 'deployment_pending' ? ' — the deployment can be approved.' : '.')
-            : 'No approved version yet' . ($project['status'] === 'deployment_pending' ? ' — the deployment is waiting on this.' : '.') ?>
+            ? 'Version ' . (int)$approved['version'] . ' is approved' . ($project['status'] === 'deployment_pending' ? '. The deployment can be approved.' : '.')
+            : 'No approved version yet' . ($project['status'] === 'deployment_pending' ? '. The deployment is waiting on this.' : '.') ?>
       </div>
 
       <section class="section">
@@ -223,7 +223,7 @@ $has_key  = anthropic_api_key() !== '';
           <li class="<?= $current && (int)$current['version'] === (int)$v['version'] ? 'current' : '' ?>">
             <div>
               <a href="doc_editor.php?project=<?= $project_id ?>&amp;v=<?= (int)$v['version'] ?>">Version <?= (int)$v['version'] ?></a>
-              <div class="meta"><?= htmlspecialchars(DOC_ENGINE_LABELS[$v['source']] ?? $v['source']) ?> · <?= htmlspecialchars($v['author'] ?? '—') ?> · <?= htmlspecialchars(date('d M, H:i', strtotime($v['created_at']))) ?></div>
+              <div class="meta"><?= htmlspecialchars(DOC_ENGINE_LABELS[$v['source']] ?? $v['source']) ?> · <?= htmlspecialchars($v['author'] ?? '-') ?> · <?= htmlspecialchars(date('d M, H:i', strtotime($v['created_at']))) ?></div>
             </div>
             <?php if ($v['approved_at']): ?><span class="pill active">Approved</span><?php endif; ?>
           </li>
@@ -315,7 +315,7 @@ $has_key  = anthropic_api_key() !== '';
     dirty = false;
   };
   window.confirmApprove = function () {
-    if (dirty) { alert('Save your changes first — approval applies to the saved version.'); return false; }
+    if (dirty) { alert('Save your changes first. Approval applies to the saved version.'); return false; }
     return confirm('Approve this version as the project documentation?');
   };
 })();

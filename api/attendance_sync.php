@@ -102,7 +102,7 @@ foreach ($records as $i => $rec) {
     mysqli_stmt_execute($check_override);
     $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($check_override));
     if ($existing && (int)$existing['is_overridden'] === 1) {
-        $skipped[] = "Record $i: $email on $work_date was manually overridden — left as-is.";
+        $skipped[] = "Record $i: $email on $work_date was manually overridden, so it was left as-is.";
         continue;
     }
 

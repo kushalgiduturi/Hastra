@@ -602,7 +602,7 @@ function format_bytes($bytes) {
     <div class="section-header">
       <div class="section-title">
         <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-        My Projects — Team Lead
+        My Projects (Team Lead)
         <span style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-left:6px;"><?= count($lead_full) ?> project<?= count($lead_full) !== 1 ? 's' : '' ?></span>
       </div>
     </div>
@@ -668,10 +668,10 @@ function format_bytes($bytes) {
                 <div class="field">
                   <label>Assign To</label>
                   <select name="assigned_to" required>
-                    <option value="">— Select Member —</option>
+                    <option value="">Select Member</option>
                     <?php foreach ($proj['members'] as $m): ?>
                     <?php if ($m['user_id'] !== $user_id): ?>
-                    <option value="<?= $m['user_id'] ?>"><?= htmlspecialchars($m['name']) ?> — <?= $role_labels[$m['project_role']] ?? $m['project_role'] ?></option>
+                    <option value="<?= $m['user_id'] ?>"><?= htmlspecialchars($m['name']) ?>: <?= $role_labels[$m['project_role']] ?? $m['project_role'] ?></option>
                     <?php endif; ?>
                     <?php endforeach; ?>
                   </select>

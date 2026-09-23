@@ -229,7 +229,7 @@ unset($dr);
   <div class="section">
     <div class="section-header">
       <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
-      Completed Projects — Delivery &amp; Billing
+      Completed Projects: Delivery &amp; Billing
     </div>
     <div class="section-body">
       <?php if (empty($my_delivery_rows) && empty($my_invoice_rows)): ?>
@@ -255,9 +255,9 @@ unset($dr);
         <?php if (access_schema_ready($conn)): ?>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-dim);font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
           <?php if (!empty($d['security_viewed_at'])): ?>
-            Security summary viewed on <?= htmlspecialchars(date('d M Y, H:i', strtotime($d['security_viewed_at']))) ?> — it can't be opened again.
+            Security summary viewed on <?= htmlspecialchars(date('d M Y, H:i', strtotime($d['security_viewed_at']))) ?>. It can't be opened again.
           <?php elseif ($can_security): ?>
-            <span>Security summary and handover credentials — <b style="color:var(--yellow);">can be opened only once</b>.</span>
+            <span>Security summary and handover credentials: <b style="color:var(--yellow);">can be opened only once</b>.</span>
             <form method="POST" action="<?= get_base_url() ?>portals/client/security_view.php" style="display:inline;"
                   onsubmit="return confirm('The security summary can be opened only once. Open it now?')">
               <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
@@ -278,7 +278,7 @@ unset($dr);
         ?>
         <?php if ($matched_invoice): ?>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-dim);font-size:13px;color:var(--text-dim);">
-          Invoice <strong style="color:var(--text);"><?= htmlspecialchars($matched_invoice['invoice_code']) ?></strong> —
+          Invoice <strong style="color:var(--text);"><?= htmlspecialchars($matched_invoice['invoice_code']) ?></strong>:
           ₹<?= number_format($matched_invoice['total_amount'], 2) ?>
           <span class="badge badge-<?= $matched_invoice['status'] === 'paid' ? 'approved' : 'clarification_needed' ?>" style="margin-left:6px;"><?= htmlspecialchars($matched_invoice['status']) ?></span>
           <?php if ($matched_invoice['status'] !== 'paid' && $can_pay): ?>
@@ -367,7 +367,7 @@ unset($dr);
         <div>
           <label style="display:block;font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Select Bank</label>
           <select id="bank_select" style="width:100%;background:var(--input-bg);border:1px solid var(--border-dim);border-radius:3px;color:var(--text);font-family:var(--font-sans);font-size:13px;padding:9px 12px;outline:none;">
-            <option value="">— Select Bank —</option>
+            <option value="">Select a bank</option>
             <option value="sbi">State Bank of India</option>
             <option value="hdfc">HDFC Bank</option>
             <option value="icici">ICICI Bank</option>

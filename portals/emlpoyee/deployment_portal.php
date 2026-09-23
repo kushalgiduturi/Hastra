@@ -451,7 +451,7 @@ $status_labels = [
             </div>
             <div class="project-card-title"><?= htmlspecialchars($proj['title']) ?></div>
             <div class="project-card-meta">
-              Requested <?= $proj['deployment_requested_at'] ? date('d M Y, H:i', strtotime($proj['deployment_requested_at'])) : '—' ?>
+              Requested <?= $proj['deployment_requested_at'] ? date('d M Y, H:i', strtotime($proj['deployment_requested_at'])) : '-' ?>
             </div>
           </div>
         </div>

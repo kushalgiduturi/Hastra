@@ -52,7 +52,7 @@ function astra_canary_seed_defaults($conn, callable $out = null): int {
     $say = $out ?? function ($x) {};
 
     $defaults = [
-        ['canary_user', 'root-legacy@cycops.com',                 'Decoy sysadmin mailbox — never assigned to a real account'],
+        ['canary_user', 'root-legacy@cycops.com',                 'Decoy sysadmin mailbox, never assigned to a real account'],
         ['canary_user', 'db-admin@cycops-internal.local',          'Decoy internal-looking admin address'],
         ['canary_key',  'astra_live_sk_4f8e2c9b7a1d3f6082b4c9e1a7', 'Decoy API key, formatted to look production-issued'],
         ['canary_doc',  'DOSSIER-DECOY-0000-PLANTED',               'Decoy dossier token embedded in seeded documentation'],

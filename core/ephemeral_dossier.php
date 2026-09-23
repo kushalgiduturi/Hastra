@@ -31,8 +31,8 @@ function astra_dossier_schema_ready($conn) {
 // $expires_in_minutes defaults to 24 hours, matching the requirement's example.
 function astra_dossier_create($conn, int $project_id, int $created_by, string $payload,
                                int $max_views = 1, int $expires_in_minutes = 1440, &$error = null): ?string {
-    if (!astra_dossier_schema_ready($conn)) { $error = "Ephemeral dossiers aren't set up yet — run the database migration."; return null; }
-    if (trim($payload) === '')  { $error = "Nothing to store — the payload is empty."; return null; }
+    if (!astra_dossier_schema_ready($conn)) { $error = "Ephemeral dossiers aren't set up yet. Run the database migration."; return null; }
+    if (trim($payload) === '')  { $error = "Nothing to store: the payload is empty."; return null; }
     if ($max_views < 1)          { $error = "A dossier must allow at least one view."; return null; }
     if ($expires_in_minutes < 1) { $error = "The expiry window must be at least a minute."; return null; }
 

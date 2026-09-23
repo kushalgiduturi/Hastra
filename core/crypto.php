@@ -158,7 +158,7 @@ function astra_decrypt(?string $payload): ?string {
 // genuine tampering or the wrong key file deployed. Both need a human, and
 // neither should quietly reach a template — so it is logged and nulled.
 function astra_tamper_alert(string $reason): ?string {
-    error_log("[astra-crypto] decrypt failed — $reason");
+    error_log("[astra-crypto] decrypt failed: $reason");
     return null;
 }
 

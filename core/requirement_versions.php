@@ -61,7 +61,7 @@ function astra_reqver_scope_drift_percent(string $old_desc, string $new_desc): f
 // project creation is gated until a PM acknowledges it. Call this BEFORE
 // writing the new title/description to the requirements row itself.
 function astra_reqver_snapshot($conn, int $requirement_id, int $created_by, &$error = null): ?int {
-    if (!astra_reqver_schema_ready($conn)) { $error = "Requirement versioning isn't set up yet — run the database migration."; return null; }
+    if (!astra_reqver_schema_ready($conn)) { $error = "Requirement versioning isn't set up yet. Run the database migration."; return null; }
 
     $cur = mysqli_prepare($conn, "SELECT requirement_title, description FROM requirements WHERE id = ?");
     mysqli_stmt_bind_param($cur, "i", $requirement_id);

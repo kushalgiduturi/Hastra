@@ -38,7 +38,7 @@
       {
         selector: '#tour-requirements',
         title: 'Requirement reviews',
-        text: 'New client requirements start here. Approve, reject or ask for clarification — the client is emailed automatically either way.'
+        text: 'New client requirements start here. Approve, reject or ask for clarification. The client is emailed automatically either way.'
       },
       {
         selector: '#tour-projects-link',
@@ -48,7 +48,7 @@
       {
         selector: '#tour-delivery',
         title: 'Delivery & AI docs',
-        text: 'Once a project is complete, hand it over here with source, docs and deployment links — and generate an AI-drafted documentation page for the client.'
+        text: 'Once a project is complete, hand it over here with source, docs and deployment links, and generate an AI-drafted documentation page for the client.'
       },
       {
         selector: '#tour-billing',
@@ -61,7 +61,7 @@
       {
         selector: '#tour-my-tasks-card',
         title: 'My tasks',
-        text: 'Everything assigned to you across every project lives here — update status and attach evidence files as you go.'
+        text: 'Everything assigned to you across every project lives here. Update status and attach evidence files as you go.'
       },
       {
         selector: '#tour-team-lead-card',
@@ -79,12 +79,12 @@
       {
         selector: '.status-select',
         title: 'Task status dropdown',
-        text: 'Move a task through Pending → In Progress → Completed (or flag it Blocked) right from the table — no separate page needed.'
+        text: 'Move a task through Pending → In Progress → Completed (or flag it Blocked) right from the table.'
       },
       {
         selector: '.drop-zone',
         title: 'Evidence drag & drop',
-        text: 'Click or drag a file onto a task to attach evidence — screenshots, docs, anything up to 10MB. Your team lead can see it too.'
+        text: 'Click or drag a file onto a task to attach evidence: screenshots, docs, anything up to 10MB. Your team lead can see it too.'
       }
     ],
 
@@ -97,12 +97,12 @@
       {
         selector: '#vulnClassSelect',
         title: 'Vulnerability class dropdown',
-        text: 'For security bugs, classify the finding (SQLi, XSS, CSRF, auth bypass…) — Astra suggests the matching CWE ID for you.'
+        text: 'For security bugs, classify the finding (SQLi, XSS, CSRF, auth bypass…) and Astra suggests the matching CWE ID for you.'
       },
       {
         selector: '#sec-bugs-reported',
         title: 'Retest workflow',
-        text: 'When a developer marks a bug Fixed, it lands here for you to retest — confirm and close it, or reopen it if the fix didn’t hold.'
+        text: 'When a developer marks a bug Fixed, it lands here for you to retest. Confirm and close it, or reopen it if the fix didn’t hold.'
       }
     ],
 
@@ -110,17 +110,17 @@
       {
         selector: '#sec-ready-deploy',
         title: 'Ready to deploy list',
-        text: 'Projects show up here once every task is completed and every bug is closed or accepted — nothing else to check before you request release.'
+        text: 'Projects show up here once every task is completed and every bug is closed or accepted, so it is ready for you to request release.'
       },
       {
         selector: 'input[name="repo_url"]',
         title: 'GitHub repo link',
-        text: 'Paste the project’s public GitHub repository — it’s what the AI documentation generator reads to write the handover docs.'
+        text: 'Paste the project’s public GitHub repository. The AI documentation generator reads it to write the handover docs.'
       },
       {
         selector: 'textarea[name="notes"]',
         title: 'Deployment notes',
-        text: 'Summarise what was built and tested for the admin reviewing the request — this note travels with the approval.'
+        text: 'Summarise what was built and tested for the admin reviewing the request. This note travels with the approval.'
       }
     ]
 

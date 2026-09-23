@@ -199,7 +199,7 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
               $ip     = htmlspecialchars($log["ip_address"] ?? "");
               $ts     = htmlspecialchars($log["timestamp"] ?? "");
               $name   = htmlspecialchars($log["username"] ?? $user_map[$uid] ?? "Unknown");
-              $email  = htmlspecialchars($email_map[$uid] ?? "—");
+              $email  = htmlspecialchars($email_map[$uid] ?? "-");
               $hidden = $index >= $initial_limit ? 'display:none;' : '';
 
               if ($act === 'login_success')                                  $badge_class = 'badge-success';

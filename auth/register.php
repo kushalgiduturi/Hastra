@@ -924,7 +924,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="number" name="annual_leave_allowance" id="annual_leave_allowance" min="0" max="90" value="18">
           </div>
         </div>
-        <p class="logo-status" data-flows="enterprise_full" style="margin-top:-0.6rem;">A biometric attendance webhook secret is generated automatically — find it under Attendance once you're signed in.</p>
+        <p class="logo-status" data-flows="enterprise_full" style="margin-top:-0.6rem;">A biometric attendance webhook secret is generated automatically. Find it under Attendance once you're signed in.</p>
 
         <div class="step-actions">
           <button type="button" class="btn-register" id="toStep2">Continue</button>
@@ -1120,19 +1120,19 @@ const FLOW_COPY = {
   },
   client_individual: {
     heading: 'Register as a client', intro: "You're joining as an individual client. You'll be able to submit requirements, track delivery, and settle invoices directly.",
-    stepLabel: 'Your details', step1Heading: 'Where are you based?', step1Subtitle: 'Just enough to set up your workspace — no company required.',
+    stepLabel: 'Your details', step1Heading: 'Where are you based?', step1Subtitle: 'Just enough to set up a personal workspace.',
     step2Heading: 'Your account', step2Subtitle: "You'll sign in with this email once you're verified.",
     orgLabel: 'Company Name',
   },
   enterprise_full: {
-    heading: 'Set up your organization', intro: "You'll be the admin of your own Astra workspace — no waiting on anyone. Invite your team, configure leave policy, and start tracking delivery today.",
+    heading: 'Set up your organization', intro: "You'll be the admin of your own Astra workspace, ready immediately. Invite your team, configure leave policy, and start tracking delivery today.",
     stepLabel: 'Organization & brand logo', step1Heading: 'Tell us about your organization', step1Subtitle: "We'll try to find your brand logo automatically, and set up your leave policy.",
     step2Heading: 'Your admin account', step2Subtitle: "You'll sign in as the admin of this workspace.",
     orgLabel: 'Organization Name',
   },
   enterprise_solo: {
-    heading: 'Set up your solo workspace', intro: "A lightweight workspace built for a solo developer or studio — just the SDLC pipeline, delivery tracking, and invoicing. No team overhead.",
-    stepLabel: 'Your studio', step1Heading: 'Tell us about you', step1Subtitle: 'A lean setup — just the essentials.',
+    heading: 'Set up your solo workspace', intro: "A lightweight workspace built for a solo developer or studio, with the SDLC pipeline, delivery tracking, and invoicing.",
+    stepLabel: 'Your studio', step1Heading: 'Tell us about you', step1Subtitle: 'A lean setup with just the essentials.',
     step2Heading: 'Your admin account', step2Subtitle: "You'll sign in as the admin of this workspace.",
     orgLabel: 'Studio / Developer Name',
   },
@@ -1285,7 +1285,7 @@ function finishSearch(seq, found) {
   logoFinderLbl.classList.remove('searching');
   logoStatus.textContent = found > 0
     ? 'Pick the one that matches your brand, or upload your own below.'
-    : "Couldn't find a logo automatically — upload your own below.";
+    : "Couldn't find a logo automatically. Upload your own below.";
 }
 
 let domainDebounce = null;
@@ -1323,7 +1323,7 @@ function handleLogoFile(file) {
     return;
   }
   if (file.size > 700 * 1024) {
-    logoStatus.textContent = 'That image is too large — please use one under 700KB.';
+    logoStatus.textContent = 'That image is too large. Please use one under 700KB.';
     return;
   }
   const reader = new FileReader();

@@ -115,7 +115,7 @@ if ($schema_ready) {
     }
     $company_sections['none'] = [
         'key' => 'none', 'name' => 'No company', 'internal' => false,
-        'domain' => '—', 'range' => company_range_label(null), 'users' => [],
+        'domain' => '-', 'range' => company_range_label(null), 'users' => [],
     ];
     $client_role_col = db_column_exists($conn, 'users', 'client_role') ? 'client_role' : 'NULL AS client_role';
     $res = mysqli_query($conn, "SELECT id, name, email, role, company_id, $client_role_col FROM users ORDER BY $role_order");
@@ -127,11 +127,11 @@ if ($schema_ready) {
 } else {
     $company_sections['staff'] = [
         'key' => 'staff', 'name' => INTERNAL_COMPANY_NAME, 'internal' => true,
-        'domain' => EMPLOYEE_EMAIL_DOMAIN, 'range' => '1000–2999', 'users' => [],
+        'domain' => EMPLOYEE_EMAIL_DOMAIN, 'range' => '1000-2999', 'users' => [],
     ];
     $company_sections['none'] = [
         'key' => 'none', 'name' => 'Clients', 'internal' => false,
-        'domain' => '—', 'range' => '—', 'users' => [],
+        'domain' => '-', 'range' => '-', 'users' => [],
     ];
     $res = mysqli_query($conn, "SELECT id, name, email, role FROM users ORDER BY $role_order");
     while ($u = mysqli_fetch_assoc($res)) {
@@ -477,15 +477,15 @@ foreach ($company_sections as $sec) {
                   </td>
                   <td>
                     <?php if ($is_own): ?>
-                      <span class="cell-note">— Your account</span>
+                      <span class="cell-note">(your account)</span>
                     <?php elseif ($is_primary): ?>
                       <span class="cell-note">&#128274; Protected</span>
                     <?php elseif ($is_staff && $row['role'] === 'pending_employee'): ?>
                       <div style="display:flex; flex-direction:column; gap:6px;">
                         <select class="role-select assign-toggle"
                           onchange="toggleAssignRole(this, <?= $row['id'] ?>)">
-                          <option value="no" selected>No — Leave Pending</option>
-                          <option value="yes">Yes — Assign Role</option>
+                          <option value="no" selected>No: leave pending</option>
+                          <option value="yes">Yes: assign role</option>
                         </select>
                         <select class="role-select" id="roleSelect-<?= $row['id'] ?>"
                           name="roles[<?= $row['id'] ?>]"
@@ -508,7 +508,7 @@ foreach ($company_sections as $sec) {
                         <option value="employee" <?= $row['role'] === 'employee' ? 'selected' : '' ?>>Employee</option>
                       </select>
                     <?php else: ?>
-                      <span class="cell-note">—</span>
+                      <span class="cell-note">-</span>
                     <?php endif; ?>
                   </td>
                   <td>

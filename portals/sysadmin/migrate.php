@@ -168,7 +168,7 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
   <div class="status">
     <span>Database <b><?= htmlspecialchars(DB_NAME) ?></b></span>
     <span>Company schema <b class="<?= $schema_ready ? 'ok' : 'warn' ?>"><?= $schema_ready ? 'installed' : 'not installed' ?></b></span>
-    <span>P13–P16 schema <b class="<?= $onboard_ready ? 'ok' : 'warn' ?>"><?= $onboard_ready ? 'installed' : 'not installed' ?></b></span>
+    <span>P13-P16 schema <b class="<?= $onboard_ready ? 'ok' : 'warn' ?>"><?= $onboard_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Onboarding tours (P18) <b class="<?= $tours_ready ? 'ok' : 'warn' ?>"><?= $tours_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Column encryption <b class="<?= $crypto_ready ? 'ok' : 'warn' ?>"><?= $crypto_ready ? 'installed' : 'not installed' ?></b></span>
     <span>Attendance & leave <b class="<?= $attendance_ready ? 'ok' : 'warn' ?>"><?= $attendance_ready ? 'installed' : 'not installed' ?></b></span>
@@ -214,7 +214,7 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
 
   <?php if ($log): ?>
   <div class="result">
-    <h3><?= htmlspecialchars($ran ?: 'Result') ?> — <?= $result === 'ok' ? 'finished' : 'stopped with an error' ?></h3>
+    <h3><?= htmlspecialchars($ran ?: 'Result') ?>: <?= $result === 'ok' ? 'finished' : 'stopped with an error' ?></h3>
     <pre id="migrationLog" class="<?= $result === 'error' ? 'error' : '' ?>"><?= htmlspecialchars(implode("\n", $log)) ?></pre>
   </div>
   <?php endif; ?>

@@ -355,8 +355,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "retes
         mysqli_stmt_bind_param($upd, "i", $bug_id);
 
         if (mysqli_stmt_execute($upd)) {
-            $labels   = ['closed' => 'Confirmed fixed and closed.', 'open' => 'Reopened — sent back to developer.', 'retest' => 'Marked as retesting.'];
-            $msg      = $labels[$new_status] . ($override ? " (Team Lead override — recorded in the activity log.)" : "");
+            $labels   = ['closed' => 'Confirmed fixed and closed.', 'open' => 'Reopened and sent back to the developer.', 'retest' => 'Marked as retesting.'];
+            $msg      = $labels[$new_status] . ($override ? " (Team Lead override, recorded in the activity log.)" : "");
             $msg_type = "success";
             if ($override) {
                 try { log_activity($conn, $user_id, "bug_override_" . $new_status . " " . $brow['bug_code'], $_SESSION["user_name"] ?? null); } catch (Throwable $e) {}
@@ -866,7 +866,7 @@ foreach ($qa_projects as $pid => $info) {
     <?php if (!empty($lead_projects)): ?>
     <a class="section-nav-card" href="#sec-lead-bugs">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>
-      <span class="section-nav-label">All Bugs — Team Lead</span>
+      <span class="section-nav-label">All Bugs (Team Lead)</span>
     </a>
     <?php endif; ?>
   </div>
@@ -941,16 +941,16 @@ foreach ($qa_projects as $pid => $info) {
           <div class="field">
             <label>Project</label>
             <select name="project_id" id="projectSelect" required onchange="onProjectChange()">
-              <option value="">— Select Project —</option>
+              <option value="">Select Project</option>
               <?php foreach ($qa_projects as $pid => $info): ?>
-              <option value="<?= $pid ?>"><?= htmlspecialchars($info['code'] . ' — ' . $info['title']) ?></option>
+              <option value="<?= $pid ?>"><?= htmlspecialchars($info['code'] . ': ' . $info['title']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>
           <div class="field">
             <label>Related Task <span style="text-transform:none;color:#475569;font-weight:400;">(optional)</span></label>
             <select name="task_id" id="taskSelect" disabled>
-              <option value="">— Select project first —</option>
+              <option value="">Select project first</option>
             </select>
           </div>
         </div>
@@ -987,7 +987,7 @@ foreach ($qa_projects as $pid => $info) {
           <div class="field">
             <label>Assign To Developer</label>
             <select name="assigned_to" id="developerSelect" disabled>
-              <option value="">— Select project first —</option>
+              <option value="">Select project first</option>
             </select>
           </div>
         </div>
@@ -995,14 +995,14 @@ foreach ($qa_projects as $pid => $info) {
         <div class="field vuln-row" id="vulnRow">
           <label>Vulnerability Class</label>
           <select name="vuln_class" id="vulnClassSelect" onchange="onVulnClassChange()">
-            <option value="">— Select —</option>
+            <option value="">Select</option>
             <?php foreach (VULN_CLASSES as $vc_value => [$vc_label, $vc_cwe]): ?>
             <option value="<?= htmlspecialchars($vc_value) ?>" data-cwe="<?= $vc_cwe ?>"><?= htmlspecialchars($vc_label) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
         <div class="field vuln-row" id="cweRow">
-          <label>CWE ID <span style="text-transform:none;color:#475569;font-weight:400;">(filled in from the class — change it if a more specific CWE fits)</span></label>
+          <label>CWE ID <span style="text-transform:none;color:#475569;font-weight:400;">(filled in from the class; change it if a more specific CWE fits)</span></label>
           <input type="text" name="cwe_id" id="cweInput" maxlength="12" placeholder="CWE-89" pattern="^\s*([Cc][Ww][Ee][\s\-_]*)?\d{1,4}\s*$">
         </div>
         <div class="field vuln-other-row" id="vulnOtherRow">
@@ -1055,7 +1055,7 @@ foreach ($qa_projects as $pid => $info) {
         <div class="bug-desc"><?= htmlspecialchars($bug['description']) ?></div>
         <div class="bug-meta">
           Reported by <strong><?= htmlspecialchars($bug['reported_by_name']) ?></strong>
-          <?= $bug['task_title'] ? ' · Task: ' . htmlspecialchars($bug['task_code'] . ' — ' . $bug['task_title']) : '' ?>
+          <?= $bug['task_title'] ? ' · Task: ' . htmlspecialchars($bug['task_code'] . ': ' . $bug['task_title']) : '' ?>
           · <?= date('d M Y', strtotime($bug['created_at'])) ?>
         </div>
 
@@ -1223,7 +1223,7 @@ foreach ($qa_projects as $pid => $info) {
     <div class="section-header">
       <div class="section-title">
         <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-        All Bugs — My Projects (Team Lead)
+        All Bugs: My Projects (Team Lead)
         <span style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-left:6px;"><?= count($lead_bugs) ?> total</span>
       </div>
     </div>
@@ -1330,23 +1330,23 @@ function onProjectChange() {
   const developerSelect = document.getElementById('developerSelect');
 
   if (!pid || !qaProjectsData[pid]) {
-    taskSelect.innerHTML = '<option value="">— Select project first —</option>';
+    taskSelect.innerHTML = '<option value="">Select project first</option>';
     taskSelect.disabled = true;
-    developerSelect.innerHTML = '<option value="">— Select project first —</option>';
+    developerSelect.innerHTML = '<option value="">Select project first</option>';
     developerSelect.disabled = true;
     return;
   }
 
   const data = qaProjectsData[pid];
 
-  taskSelect.innerHTML = '<option value="">— No specific task —</option>' +
-    data.tasks.map(t => `<option value="${t.id}">${t.task_code} — ${t.title}</option>`).join('');
+  taskSelect.innerHTML = '<option value="">No specific task</option>' +
+    data.tasks.map(t => `<option value="${t.id}">${t.task_code}: ${t.title}</option>`).join('');
   taskSelect.disabled = false;
 
   if (data.developers.length === 0) {
-    developerSelect.innerHTML = '<option value="">— No developers on this project —</option>';
+    developerSelect.innerHTML = '<option value="">No developers on this project</option>';
   } else {
-    developerSelect.innerHTML = '<option value="">— Select Developer —</option>' +
+    developerSelect.innerHTML = '<option value="">Select Developer</option>' +
       data.developers.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
   }
   developerSelect.disabled = false;

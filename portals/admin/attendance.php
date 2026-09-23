@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "gener
     mysqli_stmt_bind_param($upd, "si", $secret, $company_id);
     mysqli_stmt_execute($upd);
     $company["attendance_webhook_secret"] = $secret;
-    $msg      = "New webhook secret generated. Copy it now — it won't be shown again in full.";
+    $msg      = "New webhook secret generated. Copy it now. It won't be shown again in full.";
     $msg_type = "success";
 }
 
@@ -217,7 +217,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "impor
                             mysqli_stmt_execute($check_ov);
                             $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($check_ov));
                             if ($existing && (int)$existing['is_overridden'] === 1) {
-                                $skipped[] = "Row $line: $email on $work_date was manually overridden — left as-is.";
+                                $skipped[] = "Row $line: $email on $work_date was manually overridden, so it was left as-is.";
                                 continue;
                             }
 
@@ -415,11 +415,11 @@ if ($employees) {
       <button type="submit" form="attendanceForm" class="btn-save-attendance">Save Attendance</button>
     </div>
     <div class="legend">
-      <span><span class="dot" style="background:rgba(34,197,94,0.5);"></span>P — Present</span>
-      <span><span class="dot" style="background:rgba(var(--red-rgb),0.5);"></span>A — Absent</span>
-      <span><span class="dot" style="background:rgba(245,158,11,0.5);"></span>H — Half-day</span>
-      <span><span class="dot" style="background:rgba(59,130,246,0.5);"></span>L — On Leave</span>
-      <span><span class="dot" style="background:rgba(var(--purple-rgb),0.5);"></span>W — Work From Home</span>
+      <span><span class="dot" style="background:rgba(34,197,94,0.5);"></span>P: Present</span>
+      <span><span class="dot" style="background:rgba(var(--red-rgb),0.5);"></span>A: Absent</span>
+      <span><span class="dot" style="background:rgba(245,158,11,0.5);"></span>H: Half-day</span>
+      <span><span class="dot" style="background:rgba(59,130,246,0.5);"></span>L: On Leave</span>
+      <span><span class="dot" style="background:rgba(var(--purple-rgb),0.5);"></span>W: Work From Home</span>
       <span>Click a cell to cycle · click again to clear</span>
     </div>
 
@@ -479,7 +479,7 @@ if ($employees) {
         </div>
       </form>
       <p class="webhook-hint">
-        One row per employee per day. Columns can be named loosely — e.g. <code>Email</code>, <code>Work Date</code>, <code>Check In</code>, <code>Status</code>.
+        One row per employee per day. Columns can be named loosely, e.g. <code>Email</code>, <code>Work Date</code>, <code>Check In</code>, <code>Status</code>.
         Status accepts <code>Present/P</code>, <code>Absent/A</code>, <code>Half-day/H</code>, <code>On Leave/L</code>. Days already manually overridden are left untouched.
       </p>
 

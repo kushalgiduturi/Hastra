@@ -49,7 +49,7 @@ try {
     astra_migrate_account_type($conn, $out);
     astra_migrate_user_pii($conn, $out);
     astra_migrate_advanced_governance($conn, $out);
-    echo "\nDone." . ($reindex ? "" : " (companies ran in list-only mode — pass --reindex to move users)") . "\n";
+    echo "\nDone." . ($reindex ? "" : " (companies ran in list-only mode; pass --reindex to move users)") . "\n";
 } catch (Throwable $e) {
     fwrite(STDERR, "\n!! " . $e->getMessage() . "\n");
     exit(1);

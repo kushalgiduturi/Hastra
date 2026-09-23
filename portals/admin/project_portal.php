@@ -25,7 +25,7 @@ function send_assignment_email($to_email, $to_name, $project_code, $project_titl
         $mail->SMTPAutoTLS = false;
         $mail->setFrom(MAIL_FROM, MAIL_NAME);
         $mail->addAddress($to_email);
-        $mail->Subject = "Project Assignment — $project_code";
+        $mail->Subject = "Project Assignment: $project_code";
         $mail->Body    =
             "Hi $to_name,\n\n" .
             "You have been assigned to a project.\n\n" .
@@ -181,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "creat
 
                     $msg = "Project <strong>$project_code</strong> created successfully with team assigned.";
                     if (!empty($duplicate_skips)) {
-                        $msg .= " Skipped duplicate role for: <strong>" . htmlspecialchars(implode(', ', $duplicate_skips)) . "</strong> — one person can only hold one role per project.";
+                        $msg .= " Skipped duplicate role for: <strong>" . htmlspecialchars(implode(', ', $duplicate_skips)) . "</strong>. One person can hold only one role per project.";
                     }
                     $msg_type = "success";
                 }
@@ -743,7 +743,7 @@ $status_labels = [
             <div class="field">
               <label>Team Lead</label>
               <select name="team_lead" required>
-                <option value="">— Select Team Lead —</option>
+                <option value="">Select a team lead</option>
                 <?php foreach ($employees as $emp): ?>
                 <option value="<?= $emp['id'] ?>"><?= htmlspecialchars($emp['name']) ?> &lt;<?= htmlspecialchars($emp['email']) ?>&gt;</option>
                 <?php endforeach; ?>
@@ -799,8 +799,8 @@ $status_labels = [
             <div class="project-code"><?= htmlspecialchars($proj['project_code']) ?></div>
             <div class="project-title"><?= htmlspecialchars($proj['title']) ?></div>
             <div class="project-req-ref">
-              Based on requirement <strong><?= htmlspecialchars($proj['req_code']) ?></strong>
-              — <?= htmlspecialchars($proj['req_project']) ?>
+              Based on requirement <strong><?= htmlspecialchars($proj['req_code']) ?></strong>:
+              <?= htmlspecialchars($proj['req_project']) ?>
             </div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
@@ -858,7 +858,7 @@ $status_labels = [
               <input type="hidden" name="action"      value="add_member">
               <input type="hidden" name="project_id"  value="<?= $proj['id'] ?>">
               <select name="user_id" required>
-                <option value="">— Select Employee —</option>
+                <option value="">Select an employee</option>
                 <?php
                 $already_in_project = array_column($proj['members'], 'user_id');
                 foreach ($employees as $emp):
@@ -868,7 +868,7 @@ $status_labels = [
                 <?php endforeach; ?>
               </select>
               <select name="project_role" required>
-                <option value="">— Role —</option>
+                <option value="">Select a role</option>
                 <option value="developer">Developer</option>
                 <option value="tester">Tester</option>
                 <option value="security_tester">Security Tester</option>
@@ -930,11 +930,11 @@ function addMemberRow() {
   row.id = 'mrow_' + idx;
   row.innerHTML = `
     <select name="member_ids[]" required>
-      <option value="">— Select Employee —</option>
+      <option value="">Select an employee</option>
       ${empOptions}
     </select>
     <select name="member_roles[]" required>
-      <option value="">— Role —</option>
+      <option value="">Select a role</option>
       <option value="developer">Developer</option>
       <option value="tester">Tester</option>
       <option value="security_tester">Security Tester</option>

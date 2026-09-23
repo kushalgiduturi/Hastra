@@ -20,7 +20,7 @@ if (isset($_SESSION["user_id"])) {
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/feature-showcase.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/resizable-navbar.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<meta name="description" content="Astra — encrypted, audited, governed software delivery for teams that can't afford to guess.">
+<meta name="description" content="Astra: encrypted, audited, governed software delivery for teams that can't afford to guess.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -314,9 +314,7 @@ if (isset($_SESSION["user_id"])) {
   <span class="hero-badge">Enterprise software delivery, governed end-to-end</span>
   <h1>Ship client work with a <span>paper trail</span> that survives an audit.</h1>
   <p class="lede">
-    Astra is the delivery backbone for teams building software for other companies —
-    requirements, projects, testing, deployment, billing, and every credential in
-    between, encrypted at rest and logged the moment it changes hands.
+    Astra is the delivery backbone for teams building software for other companies. It unifies requirements, projects, testing, deployment, billing, and credentials, encrypted at rest and logged the moment they change hands.
   </p>
   <div class="hero-ctas">
     <a href="<?= get_base_url() ?>auth/register" class="btn-hero-primary">Register your company</a>
@@ -342,7 +340,7 @@ if (isset($_SESSION["user_id"])) {
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
         <h3>Requirements &amp; Approvals</h3>
-        <p>Clients submit new requirements or change requests; project managers review, request clarification, or approve them into a project — every decision timestamped.</p>
+        <p>Clients submit new requirements or change requests; project managers review, request clarification, or approve them into a project. Every decision is timestamped.</p>
       </div>
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg></div>
@@ -362,7 +360,7 @@ if (isset($_SESSION["user_id"])) {
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
         <h3>Delivery &amp; Billing</h3>
-        <p>Source, docs, and deployment links are handed over with encrypted credentials the client can view exactly once — plus invoices tied to the delivery.</p>
+        <p>Source, docs, and deployment links are handed over with encrypted credentials the client can view exactly once, plus invoices tied to the delivery.</p>
       </div>
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 9H7v-2h5v2zm3-4H7v-2h7v2z"/></svg></div>
@@ -372,12 +370,12 @@ if (isset($_SESSION["user_id"])) {
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/></svg></div>
         <h3>Attendance &amp; Leave</h3>
-        <p>Managers mark attendance manually, import it from a spreadsheet, or feed it automatically from a biometric device — leave requests route to a one-click approval.</p>
+        <p>Managers mark attendance manually, import it from a spreadsheet, or feed it automatically from a biometric device. Leave requests route to one-click approval.</p>
       </div>
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></div>
         <h3>Audit &amp; Activity Logs</h3>
-        <p>Every login, approval, and schema change is written to a log with IP and geolocation — reviewable by sysadmins, never editable from the app itself.</p>
+        <p>Every login, approval, and schema change is written to a log with IP and geolocation. Sysadmins can review it, and it is locked against edits from the app itself.</p>
       </div>
     </div>
   </div>
@@ -509,14 +507,14 @@ if (isset($_SESSION["user_id"])) {
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
         <h3>AES-256-GCM Column Encryption</h3>
         <p class="sec-summary">Sensitive fields are encrypted before they ever reach disk.</p>
-        <div class="sec-detail">Phone numbers, delivery credentials, and requirement text are encrypted individually with AES-256-GCM — random IV and auth tag per value, master key held outside the web-servable path. A stolen database dump alone can't be read.</div>
+        <div class="sec-detail">Phone numbers, delivery credentials, and requirement text are encrypted individually with AES-256-GCM, with a random IV and auth tag per value and the master key held outside the web-servable path. A stolen database dump alone can't be read.</div>
         <div class="sec-toggle-hint">Tap to expand</div>
       </div>
       <div class="sec-card" data-card>
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 00-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 1113.5 2.5l1.66 1.66A9 9 0 0013 3zm-1 6v5l4.28 2.54.72-1.21-3.5-2.08V9H12z"/></svg></div>
         <h3>Anti-VPN / Proxy Gating</h3>
         <p class="sec-summary">Suspicious IPs are stopped before a password is even checked.</p>
-        <div class="sec-detail">Every login resolves the real client IP and checks it against a 24-hour-cached reputation lookup for VPN, proxy, and datacenter-hosting signals — before any credential query runs. A flagged connection never learns whether the account exists.</div>
+        <div class="sec-detail">Every login resolves the real client IP and checks it against a 24-hour-cached reputation lookup for VPN, proxy, and datacenter-hosting signals before any credential query runs. A flagged connection never learns whether the account exists.</div>
         <div class="sec-toggle-hint">Tap to expand</div>
       </div>
       <div class="sec-card" data-card>
@@ -530,21 +528,21 @@ if (isset($_SESSION["user_id"])) {
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg></div>
         <h3>Path-Traversal Immunity</h3>
         <p class="sec-summary">Every file download is resolved and re-verified, not trusted.</p>
-        <div class="sec-detail">File downloads resolve to a canonical real path and are rejected with 403 unless that path is strictly inside the authorized uploads directory — closing off crafted paths, symlink tricks, and stale database references alike. Access is re-checked per request against project membership.</div>
+        <div class="sec-detail">File downloads resolve to a canonical real path and are rejected with 403 unless that path is strictly inside the authorized uploads directory. This closes off crafted paths, symlink tricks, and stale database references alike. Access is re-checked per request against project membership.</div>
         <div class="sec-toggle-hint">Tap to expand</div>
       </div>
       <div class="sec-card" data-card>
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></div>
         <h3>Tamper-Resistant Logging</h3>
         <p class="sec-summary">Who did what, from where, is never a guess.</p>
-        <div class="sec-detail">Every login, permission change, and schema migration is written to an append-style audit log with IP, geolocation, and encrypted context — reviewable in the sysadmin portal, never editable from the application layer.</div>
+        <div class="sec-detail">Every login, permission change, and schema migration is written to an append-style audit log with IP, geolocation, and encrypted context. Sysadmins review it in the sysadmin portal, and the application layer has no way to edit it.</div>
         <div class="sec-toggle-hint">Tap to expand</div>
       </div>
       <div class="sec-card" data-card>
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
         <h3>Least-Privilege Access</h3>
         <p class="sec-summary">Every page checks role, project membership, and company boundary.</p>
-        <div class="sec-detail">Client, employee, admin, and sysadmin roles are enforced server-side on every request — a client can only see their own company's work, an employee only their assigned projects, and schema-level changes are gated to a single named sysadmin account.</div>
+        <div class="sec-detail">Client, employee, admin, and sysadmin roles are enforced server-side on every request. A client can only see their own company's work, an employee only their assigned projects, and schema-level changes are gated to a single named sysadmin account.</div>
         <div class="sec-toggle-hint">Tap to expand</div>
       </div>
     </div>
@@ -581,7 +579,7 @@ if (isset($_SESSION["user_id"])) {
       <div class="hflow-node">
         <div class="hflow-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-8 8c0-2.67 5.33-4 8-4s8 1.33 8 4v1H4v-1z"/></svg></div>
         <h4>Client Company</h4>
-        <p>Sees exactly what Astra shows their IT Manager — nothing from any other client, ever.</p>
+        <p>Sees exactly what Astra shows their IT Manager, scoped strictly to their own company.</p>
       </div>
     </div>
   </div>

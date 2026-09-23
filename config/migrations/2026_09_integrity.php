@@ -51,13 +51,13 @@ function astra_migrate_integrity($conn, callable $out) {
     $out("");
     $out("== integrity: encrypted credentials");
     if (!crypto_available()) {
-        $out("   !! Neither OpenSSL nor sodium is enabled in PHP — credentials stay unencrypted.");
+        $out("   !! Neither OpenSSL nor sodium is enabled in PHP, so credentials stay unencrypted.");
         $out("      Enable extension=openssl in C:\\xampp\\php\\php.ini, restart Apache, and run this again.");
         return;
     }
     $had_key = is_file(secret_key_path());
     secret_key(true);
-    $out($had_key ? "   key file already present" : "   created key file config/astra.key — back it up; encrypted credentials can't be read without it");
+    $out($had_key ? "   key file already present" : "   created key file config/astra.key. Back it up; encrypted credentials can't be read without it");
     $rows = mysqli_query($conn, "SELECT id, credentials_note FROM deliveries WHERE credentials_note IS NOT NULL AND credentials_note <> '' AND credentials_note NOT LIKE 'enc:v1:%'");
     $upd  = mysqli_prepare($conn, "UPDATE deliveries SET credentials_note = ? WHERE id = ?");
     $n = 0;

@@ -86,7 +86,7 @@ if ($action === "request_delete") {
     ];
 
     try {
-        send_mail_to($sadmin_email, "Confirm Account Deletion — OTP",
+        send_mail_to($sadmin_email, "Confirm Account Deletion: OTP",
             "You requested to delete the account of: {$target['name']} ({$target['email']})\n\n" .
             "Your confirmation OTP is: $otp\n\n" .
             "This OTP expires in 10 minutes. The account is deleted as soon as the OTP is entered.\n\n" .

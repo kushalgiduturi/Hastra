@@ -256,12 +256,12 @@
           if (!state.els) return; // tour may have been closed during the scroll
           positionFor(el);
         } catch (e) {
-          console.warn('Astra tour: could not position a step — closing the tour instead of getting stuck.', e);
+          console.warn('Astra tour: could not position a step, so the tour is closing to avoid getting stuck.', e);
           finish('skipped');
         }
       }, SCROLL_SETTLE_DELAY);
     } catch (e) {
-      console.warn('Astra tour: a step failed to render — closing the tour instead of getting stuck.', e);
+      console.warn('Astra tour: a step failed to render, so the tour is closing to avoid getting stuck.', e);
       finish('skipped');
     }
   }
@@ -321,7 +321,7 @@
 
       renderStep();
     } catch (e) {
-      console.warn('Astra tour: failed to start — cleaning up so the page stays usable.', e);
+      console.warn('Astra tour: failed to start. Cleaning up so the page stays usable.', e);
       teardownScaffold();
     }
   }
@@ -379,7 +379,7 @@
         });
       });
     } catch (e) {
-      console.warn('Astra tour: init failed — the page will work normally, just without the guided tour.', e);
+      console.warn('Astra tour: init failed. The page works normally without the guided tour.', e);
     }
   }
 

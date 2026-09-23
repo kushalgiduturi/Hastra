@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                     $mail->SMTPAutoTLS = false;
                     $mail->setFrom(MAIL_FROM, MAIL_NAME);
                     $mail->addAddress($client_data["email"]);
-                    $mail->Subject = "Project Delivered — {$client_data['project_code']}";
+                    $mail->Subject = "Project Delivered: {$client_data['project_code']}";
 
                     $links_section = "";
                     if ($source_link) $links_section .= "Source Code: $source_link\n";
@@ -106,8 +106,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
 
                     $mail->Body =
                         "Hi {$client_data['name']},\n\n" .
-                        "Great news — your project has been delivered!\n\n" .
-                        "Project: {$client_data['project_code']} — {$client_data['title']}\n\n" .
+                        "Great news: your project has been delivered!\n\n" .
+                        "Project: {$client_data['project_code']}: {$client_data['title']}\n\n" .
                         $links_section .
                         "\nPlease log in to your portal for full delivery details.\n\nRegards,\nAstra Team";
                     $mail->send();
@@ -268,9 +268,9 @@ while ($row = mysqli_fetch_assoc($deliveries_result)) {
           <div class="field">
             <label>Project</label>
             <select name="project_id" required>
-              <option value="">— Select Completed Project —</option>
+              <option value="">Select a completed project</option>
               <?php foreach ($deliverable_projects as $dp): ?>
-              <option value="<?= $dp['id'] ?>"><?= htmlspecialchars($dp['project_code'] . ' — ' . $dp['title']) ?></option>
+              <option value="<?= $dp['id'] ?>"><?= htmlspecialchars($dp['project_code'] . ': ' . $dp['title']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -313,9 +313,9 @@ while ($row = mysqli_fetch_assoc($deliveries_result)) {
                 <span class="req-id-badge"><?= htmlspecialchars($d['project_code']) ?></span>
                 <div style="font-size:12px;color:var(--text-dim);margin-top:3px;"><?= htmlspecialchars($d['project_title']) ?></div>
               </td>
-              <td><?= safe_url($d['source_code_link']) ? '<a href="'.htmlspecialchars(safe_url($d['source_code_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">—</span>' ?></td>
-              <td><?= safe_url($d['documentation_link']) ? '<a href="'.htmlspecialchars(safe_url($d['documentation_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">—</span>' ?></td>
-              <td><?= safe_url($d['deployment_link']) ? '<a href="'.htmlspecialchars(safe_url($d['deployment_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">—</span>' ?></td>
+              <td><?= safe_url($d['source_code_link']) ? '<a href="'.htmlspecialchars(safe_url($d['source_code_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">-</span>' ?></td>
+              <td><?= safe_url($d['documentation_link']) ? '<a href="'.htmlspecialchars(safe_url($d['documentation_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">-</span>' ?></td>
+              <td><?= safe_url($d['deployment_link']) ? '<a href="'.htmlspecialchars(safe_url($d['deployment_link'])).'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Link</a>' : '<span class="muted">-</span>' ?></td>
               <td class="muted"><?= htmlspecialchars($d['delivered_by_name']) ?></td>
               <td class="muted"><?= date('d M Y', strtotime($d['delivered_at'])) ?></td>
               <td>
@@ -330,7 +330,7 @@ while ($row = mysqli_fetch_assoc($deliveries_result)) {
                 <?php elseif (access_schema_ready($conn)): ?>
                 <span class="muted">Not viewed yet</span>
                 <?php else: ?>
-                <span class="muted">—</span>
+                <span class="muted">-</span>
                 <?php endif; ?>
               </td>
             </tr>

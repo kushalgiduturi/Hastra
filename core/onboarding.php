@@ -10,10 +10,10 @@ const CLIENT_ROLES = [
     'teammate'   => 'Teammate',
 ];
 const COMPANY_SIZES = [
-    '1-10'     => '1–10 people',
-    '11-50'    => '11–50 people',
-    '51-200'   => '51–200 people',
-    '201-1000' => '201–1,000 people',
+    '1-10'     => '1-10 people',
+    '11-50'    => '11-50 people',
+    '51-200'   => '51-200 people',
+    '201-1000' => '201-1,000 people',
     '1000+'    => 'More than 1,000 people',
 ];
 const ROSTER_MAX_BYTES   = 2 * 1024 * 1024;
@@ -192,7 +192,7 @@ function php_parse_roster($path, $ext) {
     }
 
     $warnings = [];
-    if (!isset($map['name']) && !isset($map['first_name'])) $warnings[] = "No name column found — names will need to be filled in.";
+    if (!isset($map['name']) && !isset($map['first_name'])) $warnings[] = "No name column found. Names will need to be filled in.";
 
     $out = [];
     foreach (array_slice($numbered, $h + 1) as [$line, $r]) {
@@ -278,7 +278,7 @@ function php_read_csv($path) {
 
 // Minimal .xlsx reader: first worksheet, shared + inline strings.
 function php_read_xlsx($path) {
-    if (!class_exists('ZipArchive')) throw new RuntimeException("PHP's zip extension is off — upload a CSV instead.");
+    if (!class_exists('ZipArchive')) throw new RuntimeException("PHP's zip extension is off. Upload a CSV.");
     $zip = new ZipArchive();
     if ($zip->open($path) !== true) throw new RuntimeException("not a valid .xlsx file");
 
@@ -369,7 +369,7 @@ function validate_staging_rows($conn, array $rows, array $company) {
         }
         if (!isset(CLIENT_ROLES[$r['client_role']])) $r['problems'][] = 'Unknown role';
         if ($r['confidence'] !== null && (float)$r['confidence'] < 0.8 && !$r['problems']) {
-            $r['notes'][] = 'Check this row — the parser was unsure';
+            $r['notes'][] = 'Check this row: the parser was unsure';
         }
     }
     return $rows;

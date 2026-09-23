@@ -79,7 +79,7 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
   <p><a class="btn" href="<?= get_base_url() ?>portals/client/client_portal">Back to Projects</a></p>
 <?php else: ?>
   <div class="page-header">
-    <h1><span class="code-chip"><?= htmlspecialchars($view['project_code']) ?></span><?= htmlspecialchars($view['project_title']) ?> — security summary</h1>
+    <h1><span class="code-chip"><?= htmlspecialchars($view['project_code']) ?></span><?= htmlspecialchars($view['project_title']) ?>: security summary</h1>
     <p>What Astra did to secure this project, and every security finding raised during testing.</p>
   </div>
 
@@ -107,11 +107,11 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
           <?php foreach ($bugs as $b): ?>
           <tr>
             <td><span class="code-chip"><?= htmlspecialchars($b['bug_code']) ?></span><?= htmlspecialchars($b['title']) ?></td>
-            <td><?= htmlspecialchars($b['vuln_class'] ?? '—') ?></td>
+            <td><?= htmlspecialchars($b['vuln_class'] ?? '-') ?></td>
             <td><span class="sev <?= htmlspecialchars($b['severity']) ?>"><?= htmlspecialchars($b['severity']) ?></span></td>
             <td><?= htmlspecialchars($status_words[$b['status']] ?? $b['status']) ?></td>
             <td class="num"><?= htmlspecialchars(date('d M Y', strtotime($b['created_at']))) ?></td>
-            <td class="num"><?= $b['closed_at'] ? htmlspecialchars(date('d M Y', strtotime($b['closed_at']))) : '—' ?></td>
+            <td class="num"><?= $b['closed_at'] ? htmlspecialchars(date('d M Y', strtotime($b['closed_at']))) : '-' ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>

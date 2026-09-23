@@ -150,8 +150,8 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
       </div>
       <div style="font-size:15px;font-weight:600;margin-bottom:4px;"><?= htmlspecialchars($proj['title']) ?></div>
       <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">
-        Requested by <strong style="color:var(--text);"><?= htmlspecialchars($proj['requester_name'] ?? '—') ?></strong>
-        · <?= $proj['deployment_requested_at'] ? date('d M Y, H:i', strtotime($proj['deployment_requested_at'])) : '—' ?>
+        Requested by <strong style="color:var(--text);"><?= htmlspecialchars($proj['requester_name'] ?? '-') ?></strong>
+        · <?= $proj['deployment_requested_at'] ? date('d M Y, H:i', strtotime($proj['deployment_requested_at'])) : '-' ?>
       </div>
       <?php if ($proj['deployment_notes']): ?>
       <div style="padding:8px 12px;background:rgba(var(--purple-rgb),0.06);border:1px solid rgba(var(--purple-rgb),0.2);border-left:3px solid var(--purple);border-radius:3px;font-size:12px;color:var(--purple);margin-bottom:12px;line-height:1.5;">

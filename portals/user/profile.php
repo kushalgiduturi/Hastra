@@ -167,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "verif
             $inv = mysqli_prepare($conn, "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE id = ?");
             mysqli_stmt_bind_param($inv, "i", $user_id);
             mysqli_stmt_execute($inv);
-            echo json_encode(['success' => false, 'message' => 'Too many failed attempts. OTP invalidated — please request a new one.']);
+            echo json_encode(['success' => false, 'message' => 'Too many failed attempts. OTP invalidated. Please request a new one.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid or expired OTP.']);
         }
@@ -277,7 +277,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "chang
             $inv = mysqli_prepare($conn, "UPDATE users SET otp = NULL, otp_expiry = NULL WHERE id = ?");
             mysqli_stmt_bind_param($inv, "i", $user_id);
             mysqli_stmt_execute($inv);
-            echo json_encode(['success' => false, 'message' => 'Too many failed attempts. OTP invalidated — please request a new one.']);
+            echo json_encode(['success' => false, 'message' => 'Too many failed attempts. OTP invalidated. Please request a new one.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid or expired OTP.']);
         }

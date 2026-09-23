@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
                 $new_token = $token_out;
                 $link      = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
                            . get_base_url() . 'portals/deliveries/dossier?token=' . $token_out;
-                $msg       = "Dossier created for {$proj['project_code']}. This link works {$max_views} time(s) and expires in " . round($expires_min / 60, 1) . "h — it will not be shown again:";
+                $msg       = "Dossier created for {$proj['project_code']}. This link works {$max_views} time(s) and expires in " . round($expires_min / 60, 1) . "h. It will not be shown again:";
                 $msg_type  = 'success';
                 try { log_activity($conn, $user_id, "dossier_created", $proj['project_code']); } catch (Throwable $e) {}
             } else {
@@ -142,7 +142,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
 <div class="main">
   <a class="back" href="<?= get_base_url() ?>portals/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : ($nav_path === 'client' ? 'client_portal' : 'employee_portal') ?>">&larr; Back</a>
   <h1>Ephemeral Dossier</h1>
-  <p class="lede">Single-view (or few-view), time-boxed handover of sensitive material. Once its view limit or expiry is reached, the stored ciphertext is overwritten with random noise — there is nothing left to decrypt afterward.</p>
+  <p class="lede">Single-view (or few-view), time-boxed handover of sensitive material. Once its view limit or expiry is reached, the stored ciphertext is overwritten with random noise, leaving nothing to decrypt afterward.</p>
 
   <?php if ($msg): ?>
   <div class="alert <?= $msg_type ?>"><?= htmlspecialchars($msg) ?>
@@ -153,24 +153,24 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   <?php if ($revealed): ?>
   <div class="section">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">
-      <?= htmlspecialchars($revealed['project_code']) ?> — <?= htmlspecialchars($revealed['project_title']) ?>
+      <?= htmlspecialchars($revealed['project_code']) ?>: <?= htmlspecialchars($revealed['project_title']) ?>
     </div>
     <div class="payload-box"><?= htmlspecialchars($revealed['payload']) ?></div>
     <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">
       View <?= $revealed['view_count'] ?> of <?= $revealed['max_views'] ?>.
     </div>
     <?php if ($revealed['shredded_now']): ?>
-    <div class="shred-note">This was the last permitted view. The dossier's cryptographic data has now been permanently shredded from storage — this link will not work again.</div>
+    <div class="shred-note">This was the last permitted view. The dossier's cryptographic data has now been permanently shredded from storage. This link will not work again.</div>
     <?php endif; ?>
   </div>
 
   <?php elseif ($peek): ?>
   <div class="section">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">
-      <?= htmlspecialchars($peek['project_code']) ?> — <?= htmlspecialchars($peek['project_title']) ?>
+      <?= htmlspecialchars($peek['project_code']) ?>: <?= htmlspecialchars($peek['project_title']) ?>
     </div>
     <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">
-      This dossier allows <?= (int)$peek['max_views'] ?> view(s) total — <?= (int)$peek['view_count'] ?> already used —
+      This dossier allows <?= (int)$peek['max_views'] ?> view(s) total, with <?= (int)$peek['view_count'] ?> already used,
       and expires <?= htmlspecialchars(date('d M Y, H:i', strtotime($peek['expires_at']))) ?>.
       Opening it counts as one view.
     </p>
@@ -194,9 +194,9 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
       <input type="hidden" name="action" value="create_dossier">
       <label>Project</label>
       <select name="project_id" required>
-        <option value="">— Select completed project —</option>
+        <option value="">Select completed project</option>
         <?php foreach ($completed_projects as $p): ?>
-        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ' — ' . $p['title']) ?></option>
+        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ': ' . $p['title']) ?></option>
         <?php endforeach; ?>
       </select>
       <label>Payload <span style="text-transform:none;color:#475569;">(credentials, security report text, ...)</span></label>

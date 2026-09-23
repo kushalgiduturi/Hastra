@@ -161,6 +161,6 @@ function decrypt_secret($stored) {
     } else {
         $plain = false;
     }
-    if ($plain === false) throw new RuntimeException("Couldn't decrypt the value — wrong key or damaged data.");
+    if ($plain === false) throw new RuntimeException("Couldn't decrypt the value: wrong key or damaged data.");
     return $plain;
 }

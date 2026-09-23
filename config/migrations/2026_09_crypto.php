@@ -31,7 +31,7 @@ function astra_crypto_column_type($conn, $table, $column) {
 
 function astra_crypto_widen_to_text($conn, callable $out, $table, $column, $null_ok = true) {
     $type = astra_crypto_column_type($conn, $table, $column);
-    if ($type === null) { $out("   !! $table.$column does not exist — skipped"); return; }
+    if ($type === null) { $out("   !! $table.$column does not exist, skipped"); return; }
     if ($type === 'text' || $type === 'mediumtext' || $type === 'longtext') {
         $out("   $table.$column already $type");
         return;
@@ -83,7 +83,7 @@ function astra_migrate_crypto($conn, callable $out) {
     $out("");
     $out("== column encryption: existing data");
     if (!function_exists('astra_db_encrypt')) {
-        $out("   !! core/crypto.php isn't loaded — cannot encrypt existing rows.");
+        $out("   !! core/crypto.php isn't loaded, so existing rows cannot be encrypted.");
         return;
     }
     try {
@@ -99,7 +99,7 @@ function astra_migrate_crypto($conn, callable $out) {
 
     $out("");
     $out("== column encryption: deliveries.credentials_note");
-    $out("   already covered by the integrity migration (core/integrity.php, config/astra.key) — not touched here");
+    $out("   already covered by the integrity migration (core/integrity.php, config/astra.key), left untouched here");
 }
 
 if ($__astra_crypto_cli) {

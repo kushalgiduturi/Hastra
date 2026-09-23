@@ -564,7 +564,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
       <?php if ($msg === 'success'): ?>
         Your account is active. You can sign in now.
       <?php else: ?>
-        Your password has been saved. Your account is pending sysadmin approval — you'll be able to sign in once it's approved.
+        Your password has been saved. Your account is pending sysadmin approval. You'll be able to sign in once it's approved.
       <?php endif; ?>
     </p>
     <a href="login.php" class="btn-login">

@@ -206,9 +206,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         try { log_activity($conn, $user_id, "roster_confirmed", $me["name"]); } catch (Throwable $e) {}
 
         $text = "$created account" . ($created === 1 ? "" : "s") . " created and invited.";
-        if ($unsent)  $text .= " $unsent invite email" . ($unsent === 1 ? "" : "s") . " couldn't be sent — use Resend below.";
+        if ($unsent)  $text .= " $unsent invite email" . ($unsent === 1 ? "" : "s") . " couldn't be sent. Use Resend below.";
         if ($full)    $text .= " Your company's ID range is full; contact Astra support.";
-        if ($blocked) team_redirect('error', $text . " $blocked row" . ($blocked === 1 ? " still needs" : "s still need") . " fixing — they're highlighted below.");
+        if ($blocked) team_redirect('error', $text . " $blocked row" . ($blocked === 1 ? " still needs" : "s still need") . " fixing. They're highlighted below.");
         team_redirect('success', $text);
     }
 
@@ -250,7 +250,7 @@ if ($company["onboarding_status"] === 'roster_confirmed' && $counts['pending'] =
 }
 
 $status_labels = [
-    'registered'       => 'Registered — upload your roster',
+    'registered'       => 'Registered: upload your roster',
     'roster_staged'    => 'Roster in review',
     'roster_confirmed' => 'Invites sent',
     'active'           => 'Active',
@@ -385,7 +385,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
         <button type="submit" class="primary" id="btnUpload">Upload and read</button>
       </form>
       <p class="hint">
-        Put one person per row with columns for name (or first and last name), email, phone and role — for example
+        Put one person per row with columns for name (or first and last name), email, phone and role, for example
         <code>Name · Email · Phone · Role</code>. Header names don't need to match exactly.
         Roles containing "project manager" or "PM" become <b>Project Manager</b>, "IT manager" or "IT admin" become
         <b>IT Manager</b>, and everyone else becomes <b>Teammate</b>. Nothing is created until you confirm.
@@ -441,7 +441,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
                 </ul>
               </td>
               <?php else: ?>
-              <td>—</td>
+              <td>-</td>
               <td><?= htmlspecialchars($r['full_name']) ?></td>
               <td><?= htmlspecialchars($r['email']) ?></td>
               <td><?= htmlspecialchars($r['phone_number']) ?></td>
@@ -491,7 +491,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
       <div><div class="section-title">Team &amp; activation</div><div class="section-sub">Invite links last <?= INVITE_VALID_HOURS ?> hours. Resend one if it expires.</div></div>
     </div>
     <?php if (!$members): ?>
-      <p class="empty">No one yet — upload a roster to add your team.</p>
+      <p class="empty">Upload a roster to add your team.</p>
     <?php else: ?>
     <div class="tbl-wrap">
       <table>
@@ -520,7 +520,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
               <?php endif; ?>
             </td>
             <td><span class="pill <?= $m['state'] ?>"><?= $state_labels[$m['state']] ?></span></td>
-            <td class="num"><?= $m['invited_at'] ? htmlspecialchars(date('d M, H:i', strtotime($m['invited_at']))) : '—' ?></td>
+            <td class="num"><?= $m['invited_at'] ? htmlspecialchars(date('d M, H:i', strtotime($m['invited_at']))) : '-' ?></td>
             <td>
               <?php if (!$is_me && $m['state'] !== 'active'): ?>
               <form method="POST">

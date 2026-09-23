@@ -137,7 +137,7 @@ function astra_migrate_advanced_governance($conn, callable $out) {
         $n = astra_canary_seed_defaults($conn, $out);
         $out("   $n honeytoken(s) present");
     } else {
-        $out("   !! core/canary.php not loaded — seeding skipped");
+        $out("   !! core/canary.php not loaded, seeding skipped");
     }
 
     $out("");
@@ -171,7 +171,7 @@ function astra_migrate_advanced_governance($conn, callable $out) {
         $n++;
     }
     $out("   $n baseline version(s) created");
-    if ($skipped) $out("   !! $skipped requirement(s) skipped — submitted by a user that no longer exists");
+    if ($skipped) $out("   !! $skipped requirement(s) skipped (submitted by a user that no longer exists)");
 }
 
 if ($__astra_gov_cli) {

@@ -132,7 +132,7 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
         $new_id = mysqli_insert_id($conn);
         mig_domain_reindex($conn, $new_id, $domain);
         $internal = mig_one($conn, "SELECT * FROM companies WHERE id = " . $new_id);
-        $info("created {$internal['company_name']} (@" . mig_domain_read($internal['email_domain']) . ", IDs 1000–2999)");
+        $info("created {$internal['company_name']} (@" . mig_domain_read($internal['email_domain']) . ", IDs 1000-2999)");
     } else {
         $info("{$internal['company_name']} (@" . mig_domain_read($internal['email_domain']) . ") already exists");
     }
@@ -200,7 +200,7 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
             $b = next_company_block($conn, $ignore);
             if ($b === null) { $info("!! no free ID block left for {$c['company_name']}"); continue; }
             mysqli_query($conn, "UPDATE companies SET id_block_start = $b WHERE id = {$c['id']}");
-            $sets[] = "IDs {$b}–" . ($b + ID_BLOCK_SIZE - 1);
+            $sets[] = "IDs {$b}-" . ($b + ID_BLOCK_SIZE - 1);
         }
         if ($sets) $info("{$c['company_name']}: " . implode(', ', $sets));
     }
@@ -228,7 +228,7 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
     }
 
     // ── 8. ID blocks for existing users ──────────────────────────────────────────
-    $step($reindex ? "moving users into their ID blocks" : "users outside their ID block (dry run — run with reindex to move them)");
+    $step($reindex ? "moving users into their ID blocks" : "users outside their ID block (dry run; run with reindex to move them)");
     $companies = [];
     // Read companies directly: company_schema_ready() may have cached "not ready" earlier in this request.
     foreach (mig_all($conn, "SELECT * FROM companies") as $c) $companies[(int)$c['id']] = $c;
@@ -246,7 +246,7 @@ function astra_migrate_companies($conn, bool $reindex, callable $out) {
         $pending++;
         $label = $company ? $company['company_name'] : 'no company';
         $new   = first_free_id($conn, $range, $reserved);
-        if ($new === null) { $info("!! {$u['email']}: range {$range[0]}–{$range[1]} is full"); $failed++; continue; }
+        if ($new === null) { $info("!! {$u['email']}: range {$range[0]}-{$range[1]} is full"); $failed++; continue; }
         $reserved[] = $new;
 
         if (!$reindex) { $info("#{$u['id']} → #$new  {$u['email']} ({$u['role']}, $label)"); continue; }

@@ -262,7 +262,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
           <select name="related_project_id" id="related_project_id">
             <option value="">New Project (unrelated to existing work)</option>
             <?php foreach ($my_completed_projects as $cp): ?>
-            <option value="<?= $cp['id'] ?>">Change Request — <?= htmlspecialchars($cp['project_code'] . ': ' . $cp['title']) ?></option>
+            <option value="<?= $cp['id'] ?>">Change Request / <?= htmlspecialchars($cp['project_code'] . ': ' . $cp['title']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>

@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } elseif (!$req_row) {
             $msg = "Requirement not found.";
         } elseif ($req_row["status"] === "rejected") {
-            $msg = "A rejected requirement can't be revised — submit a new one instead.";
+            $msg = "A rejected requirement can't be revised. Submit a new one.";
         } elseif ($requirement_title === "" || $description === "") {
             $msg = "Title and description are required.";
         } else {
@@ -523,7 +523,7 @@ $status_order = ["pending_review", "under_review", "approved"];
 
     <!-- Pipeline for this requirement -->
     <div class="pipeline-wrap">
-      <div class="pipeline-title"><?= htmlspecialchars($req["requirement_id"] ?? "") ?> — <?= htmlspecialchars($req["project_title"]) ?> / <?= htmlspecialchars($req["requirement_title"]) ?></div>
+      <div class="pipeline-title"><?= htmlspecialchars($req["requirement_id"] ?? "") ?>: <?= htmlspecialchars($req["project_title"]) ?> / <?= htmlspecialchars($req["requirement_title"]) ?></div>
       <div class="pipeline">
 
         <!-- Step 1: Submitted -->
@@ -581,21 +581,21 @@ $status_order = ["pending_review", "under_review", "approved"];
         <tbody>
           <?php foreach ($req_rows as $req): ?>
           <tr>
-            <td><span class="req-id-badge"><?= htmlspecialchars($req["requirement_id"] ?? "—") ?></span></td>
+            <td><span class="req-id-badge"><?= htmlspecialchars($req["requirement_id"] ?? "-") ?></span></td>
             <td><?= htmlspecialchars($req["project_title"]) ?></td>
             <td><?= htmlspecialchars($req["requirement_title"]) ?></td>
             <td class="muted">
               <?php
                 if ($req["budget_min"] !== null && $req["budget_max"] !== null) {
-                    echo "₹" . number_format($req["budget_min"]) . " – ₹" . number_format($req["budget_max"]);
+                    echo "₹" . number_format($req["budget_min"]) . " to ₹" . number_format($req["budget_max"]);
                 } elseif ($req["budget_min"] !== null) {
                     echo "From ₹" . number_format($req["budget_min"]);
                 } elseif ($req["budget_max"] !== null) {
                     echo "Up to ₹" . number_format($req["budget_max"]);
-                } else { echo "—"; }
+                } else { echo "-"; }
               ?>
             </td>
-            <td class="muted"><?= $req["deadline"] ? date("d M Y", strtotime($req["deadline"])) : "—" ?></td>
+            <td class="muted"><?= $req["deadline"] ? date("d M Y", strtotime($req["deadline"])) : "-" ?></td>
             <td>
               <span class="badge badge-<?= htmlspecialchars($req["status"]) ?>">
                 <?= str_replace("_", " ", htmlspecialchars($req["status"])) ?>

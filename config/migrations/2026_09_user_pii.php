@@ -44,7 +44,7 @@ function astra_migrate_user_pii($conn, callable $out) {
     }
 
     if (!function_exists('astra_blind_index') || !function_exists('astra_db_decrypt')) {
-        $out("   !! core/crypto.php isn't loaded — cannot backfill or encrypt.");
+        $out("   !! core/crypto.php isn't loaded, so nothing can be backfilled or encrypted.");
         return;
     }
     try {
@@ -75,7 +75,7 @@ function astra_migrate_user_pii($conn, callable $out) {
         $dupe = mysqli_fetch_row(mysqli_query($conn,
             "SELECT email_bindex FROM users WHERE email_bindex IS NOT NULL GROUP BY email_bindex HAVING COUNT(*) > 1 LIMIT 1"));
         if ($dupe) {
-            $out("   !! duplicate email(s) found — skipping the UNIQUE index on email_bindex until resolved manually.");
+            $out("   !! duplicate email(s) found. Skipping the UNIQUE index on email_bindex until resolved manually.");
         } else {
             mysqli_query($conn, "ALTER TABLE users ADD UNIQUE INDEX uq_users_email_bindex (email_bindex)");
             $out("   added UNIQUE index on users.email_bindex");

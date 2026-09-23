@@ -65,7 +65,7 @@ function astra_signoff_is_complete($conn, int $project_id, string $milestone_nam
 // to countersign — not just "anyone with role=client".
 function astra_signoff_initiate($conn, int $project_id, string $milestone_name, int $pm_user_id,
                                  int $client_user_id, string $ip, &$error = null): ?array {
-    if (!astra_signoff_schema_ready($conn)) { $error = "Milestone sign-off isn't set up yet — run the database migration."; return null; }
+    if (!astra_signoff_schema_ready($conn)) { $error = "Milestone sign-off isn't set up yet. Run the database migration."; return null; }
     $milestone_name = trim($milestone_name);
     if ($milestone_name === '') { $error = "Name this milestone before initiating sign-off."; return null; }
 

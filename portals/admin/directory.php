@@ -124,8 +124,8 @@ $users = mysqli_query($conn, company_schema_ready($conn)
             <td class="muted"><?= htmlspecialchars($row['id']) ?></td>
             <td><?= htmlspecialchars($row['name']) ?></td>
             <td class="muted"><?= htmlspecialchars($row['email']) ?></td>
-            <td><?= htmlspecialchars($row['company_name'] ?? '—') ?></td>
-            <td class="muted"><?= htmlspecialchars(astra_db_decrypt($row['phone_number']) ?? '—') ?></td>
+            <td><?= htmlspecialchars($row['company_name'] ?? '-') ?></td>
+            <td class="muted"><?= htmlspecialchars(astra_db_decrypt($row['phone_number']) ?? '-') ?></td>
             <td><span class="badge badge-<?= htmlspecialchars($row['role']) ?>"><?= htmlspecialchars($row['role']) ?></span></td>
             <td>
               <?php if ($row['role'] === 'employee' && $row['gender'] === 'female'): ?>
@@ -139,7 +139,7 @@ $users = mysqli_query($conn, company_schema_ready($conn)
                 </button>
               </form>
               <?php else: ?>
-              <span class="muted">—</span>
+              <span class="muted">-</span>
               <?php endif; ?>
             </td>
           </tr>

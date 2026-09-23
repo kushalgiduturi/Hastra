@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "reque
             );
             mysqli_stmt_bind_param($ins, "iisssds", $user_id, $me["company_id"], $leave_type, $start, $end, $total_days, $reason);
             if (mysqli_stmt_execute($ins)) {
-                $leave_msg      = "Leave request submitted — pending approval.";
+                $leave_msg      = "Leave request submitted and pending approval.";
                 $leave_msg_type = "success";
             } else {
                 $leave_msg = "Failed to submit leave request. Please try again.";
@@ -186,7 +186,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 
   <div class="page-header">
     <h1>Employee Portal</h1>
-    <p><?= $is_lead ? 'You are a Team Lead — manage tasks and view your assignments.' : 'View and update your assigned tasks.' ?></p>
+    <p><?= $is_lead ? 'You are a Team Lead. Manage tasks and view your assignments.' : 'View and update your assigned tasks.' ?></p>
   </div>
 
   <div class="section-nav">
@@ -197,7 +197,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
     <?php if ($is_lead): ?>
     <a class="section-nav-card" id="tour-team-lead-card" href="<?= get_base_url() ?>portals/emlpoyee/team_lead">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>
-      <span class="section-nav-label">My Projects — Team Lead</span>
+      <span class="section-nav-label">My Projects (Team Lead)</span>
     </a>
     <?php endif; ?>
     <a class="section-nav-card" href="javascript:void(0)" onclick="openLeaveModal()">
@@ -277,7 +277,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
       <div class="leave-row">
         <div>
           <span class="lt"><?= htmlspecialchars($leave_type_labels[$lr["leave_type"]] ?? $lr["leave_type"]) ?></span>
-          <span class="ld"> · <?= htmlspecialchars(date("d M", strtotime($lr["start_date"]))) ?>–<?= htmlspecialchars(date("d M Y", strtotime($lr["end_date"]))) ?> · <?= (float)$lr["total_days"] ?>d</span>
+          <span class="ld"> · <?= htmlspecialchars(date("d M", strtotime($lr["start_date"]))) ?> to <?= htmlspecialchars(date("d M Y", strtotime($lr["end_date"]))) ?> · <?= (float)$lr["total_days"] ?>d</span>
         </div>
         <span class="leave-badge <?= htmlspecialchars($lr["status"]) ?>"><?= htmlspecialchars(ucfirst($lr["status"])) ?></span>
       </div>

@@ -68,7 +68,7 @@ $company_name = $ctx['company']['company_name'] ?? 'Your company';
           <?php if ($d['has_doc']): ?><a class="btn primary" href="<?= get_base_url() ?>portals/client/doc_view.php?project=<?= (int)$d['id'] ?>">Open documentation</a><?php endif; ?>
           <?php if ($doc): ?><a class="btn<?= $d['has_doc'] ? '' : ' primary' ?>" href="<?= htmlspecialchars($doc) ?>" target="_blank" rel="noopener noreferrer"><?= $d['has_doc'] ? 'External docs' : 'Open documentation' ?></a><?php endif; ?>
           <?php if ($live): ?><a class="btn" href="<?= htmlspecialchars($live) ?>" target="_blank" rel="noopener noreferrer">Live app</a><?php endif; ?>
-          <?php if (!$doc && !$live && !$d['has_doc']): ?><span class="you">No link was provided — ask your Project Manager.</span><?php endif; ?>
+          <?php if (!$doc && !$live && !$d['has_doc']): ?><span class="you">No link was provided. Ask your Project Manager.</span><?php endif; ?>
         </div>
       </div>
       <?php endforeach; ?>

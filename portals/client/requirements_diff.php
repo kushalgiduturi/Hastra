@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'ackno
     if (!$can_ack) {
         $msg = "Only your company's Project Manager (or an Astra admin) can acknowledge a revision.";
     } elseif (astra_reqver_acknowledge($conn, $req_id, $user_id, $error)) {
-        $msg = "Revision acknowledged — it's now the active version feeding project creation.";
+        $msg = "Revision acknowledged. It's now the active version feeding project creation.";
         $msg_type = "success";
         try { log_activity($conn, $user_id, "requirement_revision_acknowledged", $req['requirement_id']); } catch (Throwable $e) {}
         // refresh
@@ -145,7 +145,7 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
 <div class="main">
   <a class="back" href="<?= get_base_url() ?>portals/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : 'my_requirements' ?>">&larr; Back</a>
   <h1>Requirement Revisions</h1>
-  <p class="lede"><?= htmlspecialchars($req['requirement_id']) ?> — <?= htmlspecialchars($req['requirement_title']) ?></p>
+  <p class="lede"><?= htmlspecialchars($req['requirement_id']) ?>: <?= htmlspecialchars($req['requirement_title']) ?></p>
 
   <?php if ($msg): ?>
   <div class="alert <?= $msg_type ?>"><?= htmlspecialchars($msg) ?></div>
@@ -213,7 +213,7 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
   <?php if ($can_acknowledge): ?>
   <div class="section">
     <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">
-      This revision hasn't been acknowledged yet — <?= htmlspecialchars($req['requirement_id']) ?> cannot be turned into a project until a PM signs off on it.
+      This revision hasn't been acknowledged yet, so <?= htmlspecialchars($req['requirement_id']) ?> cannot be turned into a project until a PM signs off on it.
     </p>
     <form method="POST" action="requirements_diff">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">

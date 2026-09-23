@@ -104,7 +104,7 @@ function index_exists($conn, string $table, string $index): bool {
 // column has to be TEXT before a single row is written to it.
 function widen_to_text($conn, string $table, string $column, bool $dry): void {
     $type = column_data_type($conn, $table, $column);
-    if ($type === null) { say("   !! $table.$column missing — skipped"); return; }
+    if ($type === null) { say("   !! $table.$column missing, skipped"); return; }
     if (in_array($type, ['text', 'mediumtext', 'longtext'], true)) return;
     if ($dry) { say("   [dry-run] would widen $table.$column ($type -> TEXT)"); return; }
 
@@ -139,12 +139,12 @@ function prepare_schema($conn, array $specs, bool $dry): void {
             say("   [dry-run] would drop UNIQUE uq_companies_domain (moves to domain_bindex)");
         } else {
             mysqli_query($conn, "ALTER TABLE companies DROP INDEX uq_companies_domain");
-            say("   dropped UNIQUE companies.uq_companies_domain — uniqueness moves to domain_bindex");
+            say("   dropped UNIQUE companies.uq_companies_domain; uniqueness moves to domain_bindex");
         }
     }
 
     foreach ($specs as $s) {
-        if (!table_exists($conn, $s['table'])) { say("   !! table {$s['table']} missing — skipped"); continue; }
+        if (!table_exists($conn, $s['table'])) { say("   !! table {$s['table']} missing, skipped"); continue; }
         widen_to_text($conn, $s['table'], $s['column'], $dry);
         if (isset($s['bindex'])) add_bindex_column($conn, $s['table'], $s['bindex'], $dry);
     }
@@ -238,7 +238,7 @@ function migrate_column($conn, array $spec, int $chunk, bool $dry): array {
                 // computed from the real value in every one of those cases.
                 $plain = astra_decrypt($r['val']);
                 if ($plain === null) {
-                    throw new RuntimeException("$key #{$r['id']}: stored value failed authentication — refusing to rewrite it.");
+                    throw new RuntimeException("$key #{$r['id']}: stored value failed authentication. Refusing to rewrite it.");
                 }
 
                 $enc = astra_encrypt($plain);
@@ -264,7 +264,7 @@ function migrate_column($conn, array $spec, int $chunk, bool $dry): array {
             mysqli_commit($conn);
         } catch (Throwable $e) {
             mysqli_rollback($conn);
-            throw new RuntimeException("chunk starting after id $last_id failed — rolled back. " . $e->getMessage(), 0, $e);
+            throw new RuntimeException("chunk starting after id $last_id failed and was rolled back. " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -294,7 +294,7 @@ function finalize_indexes($conn, array $specs, bool $dry): void {
 
         $dupe = mysqli_fetch_row(mysqli_query($conn,
             "SELECT `$column` FROM `$table` WHERE `$column` IS NOT NULL GROUP BY `$column` HAVING COUNT(*) > 1 LIMIT 1"));
-        if ($dupe) { say("   !! $table.$column has duplicates — UNIQUE $index skipped, resolve by hand"); continue; }
+        if ($dupe) { say("   !! $table.$column has duplicates. UNIQUE $index skipped; resolve by hand"); continue; }
 
         mysqli_query($conn, "ALTER TABLE `$table` ADD UNIQUE INDEX `$index` (`$column`)");
         say("   added UNIQUE $index");
@@ -307,7 +307,7 @@ function finalize_indexes($conn, array $specs, bool $dry): void {
 if ($status) {
     say("Encryption migration status");
     say(str_repeat('-', 58));
-    if (!table_exists($conn, 'migration_progress')) { say("ledger not created yet — nothing has run."); exit(0); }
+    if (!table_exists($conn, 'migration_progress')) { say("ledger not created yet, so nothing has run."); exit(0); }
     $res = mysqli_query($conn, "SELECT spec_key, last_id, rows_done, completed_at FROM migration_progress ORDER BY spec_key");
     foreach (mysqli_fetch_all($res, MYSQLI_ASSOC) as $r) {
         say(sprintf("%-38s %7d row(s)  %s", $r['spec_key'], $r['rows_done'],
@@ -323,7 +323,7 @@ if ($reset) {
     exit(0);
 }
 
-say("Astra encryption migration" . ($dry_run ? "  [DRY RUN — no writes]" : ""));
+say("Astra encryption migration" . ($dry_run ? "  [DRY RUN: no writes]" : ""));
 say("chunk size: $chunk rows per transaction");
 
 try {
@@ -345,12 +345,12 @@ try {
 
     say();
     say($dry_run
-        ? "Dry run complete — $total row(s) would be converted. Re-run without --dry-run to apply."
-        : "Done — $total row(s) converted.");
+        ? "Dry run complete: $total row(s) would be converted. Re-run without --dry-run to apply."
+        : "Done: $total row(s) converted.");
 } catch (Throwable $e) {
     say();
     fwrite(STDERR, "!! " . $e->getMessage() . "\n");
-    fwrite(STDERR, "   Nothing past the last committed chunk was written. Fix the cause and re-run —\n");
+    fwrite(STDERR, "   Nothing past the last committed chunk was written. Fix the cause and re-run:\n");
     fwrite(STDERR, "   the ledger resumes from where it stopped (php cli/migrate_encryption.php --status).\n");
     exit(1);
 }

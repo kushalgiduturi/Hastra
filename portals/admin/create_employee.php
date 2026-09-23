@@ -242,7 +242,7 @@ $internal_company    = get_internal_company($conn);
             <?php foreach ($employee_companies as $co): ?>
             <option value="<?= (int)$co['id'] ?>" data-domain="@<?= htmlspecialchars($co['email_domain']) ?>"
               <?= !empty($co['is_internal']) ? 'selected' : '' ?>>
-              <?= htmlspecialchars($co['company_name']) ?> (@<?= htmlspecialchars($co['email_domain']) ?>)<?= !empty($co['is_internal']) ? ' — internal' : '' ?>
+              <?= htmlspecialchars($co['company_name']) ?> (@<?= htmlspecialchars($co['email_domain']) ?>)<?= !empty($co['is_internal']) ? ' · internal' : '' ?>
             </option>
             <?php endforeach; ?>
           </select>
@@ -251,7 +251,7 @@ $internal_company    = get_internal_company($conn);
           <label for="employee_email">Employee Email</label>
           <input type="email" name="employee_email" id="employee_email" maxlength="100" required
                  placeholder="Auto-suggested as you type the name">
-          <div class="email-hint">Must end with <span id="emailDomainHint"><?= htmlspecialchars(company_email_domain($internal_company)) ?></span> — auto-suggested from the company, editable before saving.</div>
+          <div class="email-hint">Must end with <span id="emailDomainHint"><?= htmlspecialchars(company_email_domain($internal_company)) ?></span>. It is auto-suggested from the company and editable before saving.</div>
         </div>
         <button type="submit" class="btn-create">Create Employee</button>
       </form>

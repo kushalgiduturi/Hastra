@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                     $mail->SMTPAutoTLS = false;
                     $mail->setFrom(MAIL_FROM, MAIL_NAME);
                     $mail->addAddress($req["client_email"]);
-                    $mail->Subject = "Requirement Update — {$req['requirement_id']} Status: $label";
+                    $mail->Subject = "Requirement Update: {$req['requirement_id']} Status: $label";
 
                     $notes_section = $admin_notes
                         ? "\n\nAdmin Note:\n$admin_notes"
@@ -351,7 +351,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
           <tr class="req-row"
               data-status="<?= htmlspecialchars($req['status']) ?>"
               data-search="<?= strtolower(htmlspecialchars($req['project_title'] . ' ' . $req['client_name'] . ' ' . $req['requirement_title'])) ?>">
-            <td><span class="req-id-badge"><?= htmlspecialchars($req['requirement_id'] ?? '—') ?></span></td>
+            <td><span class="req-id-badge"><?= htmlspecialchars($req['requirement_id'] ?? '-') ?></span></td>
             <td>
               <?= htmlspecialchars($req['client_name']) ?>
               <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:2px;"><?= htmlspecialchars($req['client_email']) ?></div>
@@ -366,15 +366,15 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
             <td class="muted">
               <?php
                 if ($req['budget_min'] !== null && $req['budget_max'] !== null)
-                    echo '₹' . number_format($req['budget_min']) . '–₹' . number_format($req['budget_max']);
+                    echo '₹' . number_format($req['budget_min']) . ' to ₹' . number_format($req['budget_max']);
                 elseif ($req['budget_min'] !== null)
                     echo 'From ₹' . number_format($req['budget_min']);
                 elseif ($req['budget_max'] !== null)
                     echo 'Up to ₹' . number_format($req['budget_max']);
-                else echo '—';
+                else echo '-';
               ?>
             </td>
-            <td class="muted"><?= $req['deadline'] ? date('d M Y', strtotime($req['deadline'])) : '—' ?></td>
+            <td class="muted"><?= $req['deadline'] ? date('d M Y', strtotime($req['deadline'])) : '-' ?></td>
             <td>
               <span class="badge badge-<?= htmlspecialchars($req['status']) ?>">
                 <?= str_replace('_', ' ', $req['status']) ?>
@@ -446,7 +446,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
                     </div>
 
                     <div class="notes-field">
-                      <label for="notes_<?= $req['id'] ?>">Admin Note <span style="text-transform:none;color:#475569;font-weight:400;">(optional — sent to client)</span></label>
+                      <label for="notes_<?= $req['id'] ?>">Admin Note <span style="text-transform:none;color:#475569;font-weight:400;">(optional, sent to client)</span></label>
                       <textarea name="admin_notes" id="notes_<?= $req['id'] ?>"
                         placeholder="Explain your decision, ask a question, or leave feedback for the client…"><?= htmlspecialchars($req['admin_notes'] ?? '') ?></textarea>
                     </div>

@@ -61,7 +61,7 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
 <?php $nav_current = 'security'; include __DIR__ . '/_nav.php'; ?>
 <div class="wrap">
   <h1>Security dashboard</h1>
-  <p class="lede">What Astra's own security controls are actually doing right now, read live from the config and the database — the same measures shown once to a client's Project Manager in the delivery handover, but always on for the sysadmin.</p>
+  <p class="lede">What Astra's own security controls are actually doing right now, read live from the config and the database. These are the same measures a client's Project Manager sees once in the delivery handover, kept always on for the sysadmin.</p>
 
   <div class="snap">
     <div class="snap-card"><div class="n"><?= $on_count ?>/<?= count($controls) ?></div><div class="l">Controls active</div></div>
@@ -73,7 +73,7 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
   <h2 class="section">Schema readiness</h2>
   <div class="schema-row">
     <?php foreach ($schema as $s): ?>
-    <span class="chip <?= $s['ready'] ? 'on' : 'off' ?>"><?= $s['ready'] ? '✓' : '—' ?> <?= htmlspecialchars($s['label']) ?></span>
+    <span class="chip <?= $s['ready'] ? 'on' : 'off' ?>"><?= $s['ready'] ? '✓' : '-' ?> <?= htmlspecialchars($s['label']) ?></span>
     <?php endforeach; ?>
   </div>
 

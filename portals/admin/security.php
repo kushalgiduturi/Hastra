@@ -163,8 +163,8 @@ $action_labels = [
       ?>
       <tr>
         <td><span class="action-badge <?= $cls ?>"><?= htmlspecialchars($label) ?></span></td>
-        <td><?= htmlspecialchars($e['name'] ?? '—') ?></td>
-        <td class="mono"><?= htmlspecialchars($e['ip_address'] ?? '—') ?></td>
+        <td><?= htmlspecialchars($e['name'] ?? '-') ?></td>
+        <td class="mono"><?= htmlspecialchars($e['ip_address'] ?? '-') ?></td>
         <td class="mono"><?= htmlspecialchars($e['timestamp']) ?></td>
       </tr>
       <?php endforeach; ?>
