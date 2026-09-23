@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verify this invoice belongs to this client
         $inv_check = mysqli_prepare($conn,
-            "SELECT inv.id, inv.status FROM invoices inv
+            "SELECT inv.* FROM invoices inv
              JOIN projects p ON inv.project_id = p.id
              JOIN requirements r ON p.requirement_id = r.id
              WHERE inv.id = ? AND r.user_id IN ($scope_ids)"
@@ -53,8 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
 
-        if ($inv_row['status'] === 'paid') {
+        if (in_array($inv_row['status'], ['paid', 'waived'], true)) {
             echo json_encode(['success' => false, 'message' => 'Invoice is already paid.']);
+            exit();
+        }
+        // Milestone escrow invoices release deliverables, so they settle only
+        // when Astra confirms the money arrived (admin clearance or the signed
+        // payment webhook), never from this button (core/escrow.php).
+        if (!empty($inv_row['milestone_id'])) {
+            echo json_encode(['success' => false, 'message' => "This invoice is held in milestone escrow. It's marked paid once your payment is confirmed, and your handover unlocks automatically."]);
             exit();
         }
 

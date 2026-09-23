@@ -1,0 +1,133 @@
+/* Astra — live handover terminal (portals/deliveries/terminal.php).
+   AuthKit deep glass; stays dark in both themes, like a real console. */
+
+.ht-body {
+  margin: 0;
+  min-height: 100vh;
+  background: #05060f;
+  color: #e2ecf8;
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+.ht-main { max-width: 860px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+.ht-back { display: inline-block; margin-bottom: 1rem; font-size: 12px; color: #9fb2cc; text-decoration: none; }
+.ht-back:hover { color: #e2ecf8; }
+
+.ht-terminal {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(5, 6, 15, 0.97);
+  box-shadow:
+    inset 0 0 0 1px rgba(186, 215, 247, 0.12),
+    var(--shadow-modal, 0 30px 80px rgba(0, 0, 0, 0.6));
+}
+/* Top conic spotlight wash */
+.ht-wash {
+  position: absolute; inset: 0 0 auto 0; height: 320px; pointer-events: none;
+  background: conic-gradient(from 180deg at 50% 0%,
+    transparent 160deg, rgba(186, 215, 247, 0.07) 172deg, rgba(216, 236, 248, 0.16) 180deg,
+    rgba(186, 215, 247, 0.07) 188deg, transparent 200deg);
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+          mask-image: linear-gradient(to bottom, #000, transparent);
+}
+.ht-terminal > :not(.ht-wash) { position: relative; }
+
+.ht-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(186, 215, 247, 0.10);
+}
+.ht-dots { display: flex; gap: 6px; }
+.ht-dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(186, 215, 247, 0.18); }
+.ht-head h1 { margin: 0; font-size: 13px; font-weight: 600; color: #e2ecf8; letter-spacing: 0.01em; }
+.ht-state {
+  margin-left: auto;
+  font-family: 'Share Tech Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.10em;
+  color: #9fb2cc; padding: 3px 10px; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.16);
+}
+.ht-state.run  { color: #d1e4fa; box-shadow: inset 0 0 0 1px rgba(209, 228, 250, 0.4); }
+.ht-state.ok   { color: #6fe3a3; box-shadow: inset 0 0 0 1px rgba(111, 227, 163, 0.45); }
+.ht-state.fail { color: #f87171; box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.5); }
+
+.ht-form { padding: 22px 20px 6px; }
+.ht-form label {
+  display: block; margin-bottom: 8px;
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: #c7d3ea;
+}
+.ht-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.ht-row input {
+  flex: 1 1 280px; min-width: 0;
+  padding: 11px 14px; border-radius: 6px; border: 0;
+  background: rgba(199, 211, 234, 0.06); box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
+  color: #e2ecf8; font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.04em;
+}
+.ht-row input:focus { outline: none; box-shadow: inset 0 0 0 1px #663af3, 0 0 0 3px rgba(102, 58, 243, 0.2); }
+.ht-hint { margin: 10px 0 0; font-size: 12px; color: #9fb2cc; }
+
+.ht-btn {
+  padding: 10px 20px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #663af3; color: #fff; font: inherit; font-size: 13px; font-weight: 600;
+  transition: background 0.15s ease;
+}
+.ht-btn:hover { background: #7548f5; }
+.ht-btn:disabled { opacity: 0.5; cursor: progress; }
+.ht-btn:focus-visible { outline: 2px solid #d1e4fa; outline-offset: 3px; }
+.ht-btn-ghost { background: transparent; color: #e2ecf8; box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.2); padding: 7px 14px; font-size: 12px; }
+.ht-btn-ghost:hover { background: rgba(186, 214, 247, 0.08); }
+.ht-btn-danger { background: rgba(220, 38, 38, 0.18); color: #fecaca; box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.5); padding: 7px 14px; font-size: 12px; }
+.ht-btn-danger:hover { background: rgba(220, 38, 38, 0.3); }
+
+/* ── Console stream ── */
+.ht-console {
+  margin: 16px 20px 20px;
+  padding: 14px 16px;
+  min-height: 150px;
+  border-radius: 10px;
+  background: #02030a;
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.08);
+  font-family: 'Share Tech Mono', ui-monospace, monospace;
+  font-size: 12.5px; line-height: 1.75;
+  color: #c7d3ea;
+  overflow-wrap: anywhere;
+}
+.ht-line .t { color: #6f82a0; }
+.ht-line .ok { color: #6fe3a3; }
+.ht-line .bad { color: #f87171; }
+.ht-line .warn { color: #f2c46d; }
+.ht-line.detail { color: #9fb2cc; padding-left: 5.2em; }
+.ht-caret::after { content: '▋'; color: #d1e4fa; animation: htBlink 1s steps(1) infinite; }
+@keyframes htBlink { 50% { opacity: 0; } }
+
+/* ── Revealed payload ── */
+.ht-payload { margin: 0 20px 20px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(102, 58, 243, 0.45); background: rgba(102, 58, 243, 0.05); }
+.ht-payload-bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border-bottom: 1px solid rgba(186, 215, 247, 0.10);
+  font-size: 12px; color: #cbd5e1;
+}
+.ht-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ht-payload pre {
+  margin: 0; padding: 16px; max-height: 420px; overflow: auto;
+  font-family: 'Share Tech Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-word; color: #f1f5fb;
+}
+.ht-payload pre.shredding { color: #f87171; }
+.ht-warn { margin: 0; padding: 0 16px 14px; font-size: 12px; color: #f2c46d; }
+
+/* ── Destruction receipt ── */
+.ht-receipt {
+  margin: 0 20px 22px; padding: 18px 20px; border-radius: 10px;
+  background: rgba(209, 228, 250, 0.04); box-shadow: inset 0 0 0 1px rgba(209, 228, 250, 0.22);
+}
+.ht-receipt-title {
+  font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 0.12em; color: #d1e4fa; margin-bottom: 12px;
+}
+.ht-receipt dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 12px; font-size: 12.5px; }
+.ht-receipt dt { color: #9fb2cc; }
+.ht-receipt dd { margin: 0; color: #e2ecf8; font-family: 'Share Tech Mono', monospace; overflow-wrap: anywhere; }
+.ht-receipt p { margin: 0; font-size: 12.5px; color: #cbd5e1; line-height: 1.6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ht-caret::after { animation: none; }
+}

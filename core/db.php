@@ -54,6 +54,11 @@ function secure_session_start() {
             }
         }
         $_SESSION["last_activity"] = time();
+
+        // Fingerprint anchor + hijack killswitch (core/session_guard.php).
+        // Exits the request if this session no longer belongs to its owner.
+        global $conn;
+        astra_session_guard($conn);
     }
 }
 
@@ -224,15 +229,14 @@ function log_activity($conn, $user_id, $action, $username = null, $ip_override =
              . ' | ' . $geo_data['isp'];
     }
 
-    $geo_enc = astra_db_encrypt($geo);
-
-    $stmt = mysqli_prepare($conn, "INSERT INTO logs (user_id, username, action, ip_address, geo) VALUES (?, ?, ?, ?, ?)");
-    if (!$stmt) {
-       error_log("Log prepare failed: " . mysqli_error($conn));
-       return;
-    }
-    mysqli_stmt_bind_param($stmt, "issss", $user_id, $username, $action, $ip_address, $geo_enc);
-    mysqli_stmt_execute($stmt);
+    // Appended to the tamper-evident ledger (core/audit_chain.php).
+    astra_chain_append($conn, [
+        'user_id'    => $user_id,
+        'username'   => $username,
+        'action'     => $action,
+        'ip_address' => $ip_address,
+        'geo'        => astra_db_encrypt($geo),
+    ]);
 }
 // ── Generate unique employee email from name ─────────────────────────────────
 // $domain defaults to the internal domain; pass a company's domain for clients.
@@ -241,6 +245,9 @@ function generate_employee_email($conn, $full_name, $domain = null) {
 }
 
 require_once __DIR__ . '/crypto.php';
+require_once __DIR__ . '/audit_chain.php';
+require_once __DIR__ . '/session_guard.php';
+require_once __DIR__ . '/escrow.php';
 require_once __DIR__ . '/network.php';
 require_once __DIR__ . '/geo_security.php';
 require_once __DIR__ . '/company.php';

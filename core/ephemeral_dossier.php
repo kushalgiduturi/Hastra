@@ -29,8 +29,12 @@ function astra_dossier_schema_ready($conn) {
 // Creates a dossier and returns the raw token — the only time it ever exists
 // outside the requester's clipboard. $max_views defaults to single-view;
 // $expires_in_minutes defaults to 24 hours, matching the requirement's example.
+// $milestone_id links the dossier to an escrow milestone (core/escrow.php).
+// Until that milestone is released the dossier is dormant: expires_at stays
+// NULL and the expiry window starts only when payment clears.
 function astra_dossier_create($conn, int $project_id, int $created_by, string $payload,
-                               int $max_views = 1, int $expires_in_minutes = 1440, &$error = null): ?string {
+                               int $max_views = 1, int $expires_in_minutes = 1440, &$error = null,
+                               ?int $milestone_id = null): ?string {
     if (!astra_dossier_schema_ready($conn)) { $error = "Ephemeral dossiers aren't set up yet. Run the database migration."; return null; }
     if (trim($payload) === '')  { $error = "Nothing to store: the payload is empty."; return null; }
     if ($max_views < 1)          { $error = "A dossier must allow at least one view."; return null; }
@@ -40,10 +44,23 @@ function astra_dossier_create($conn, int $project_id, int $created_by, string $p
     $bindex  = astra_blind_index($token);
     $enc     = astra_db_encrypt($payload);
 
-    $ins = mysqli_prepare($conn,
-        "INSERT INTO ephemeral_dossiers (project_id, created_by, token_bindex, encrypted_payload, max_views, expires_at)
-         VALUES (?, ?, ?, ?, ?, NOW() + INTERVAL ? MINUTE)");
-    mysqli_stmt_bind_param($ins, "iissii", $project_id, $created_by, $bindex, $enc, $max_views, $expires_in_minutes);
+    if ($milestone_id !== null && astra_escrow_ready($conn)) {
+        [$ms] = astra_escrow_for_milestone($conn, $milestone_id);
+        if (!$ms || (int)$ms['project_id'] !== $project_id) { $error = "That milestone doesn't belong to this project."; return null; }
+        if ($ms['escrow_status'] === 'disputed')             { $error = "That milestone is disputed."; return null; }
+        $rel = $ms['escrow_status'] === 'released' ? 1 : 0;
+        $ins = mysqli_prepare($conn,
+            "INSERT INTO ephemeral_dossiers (project_id, created_by, token_bindex, encrypted_payload, max_views,
+                                             milestone_id, ttl_minutes, expires_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, IF(?, NOW() + INTERVAL ? MINUTE, NULL))");
+        mysqli_stmt_bind_param($ins, "iissiiiii", $project_id, $created_by, $bindex, $enc, $max_views,
+            $milestone_id, $expires_in_minutes, $rel, $expires_in_minutes);
+    } else {
+        $ins = mysqli_prepare($conn,
+            "INSERT INTO ephemeral_dossiers (project_id, created_by, token_bindex, encrypted_payload, max_views, expires_at)
+             VALUES (?, ?, ?, ?, ?, NOW() + INTERVAL ? MINUTE)");
+        mysqli_stmt_bind_param($ins, "iissii", $project_id, $created_by, $bindex, $enc, $max_views, $expires_in_minutes);
+    }
     if (!mysqli_stmt_execute($ins)) { $error = "Failed to create the dossier."; return null; }
 
     return $token;
@@ -68,8 +85,7 @@ function astra_dossier_peek($conn, string $token, &$error = null): ?array {
 
     $bindex = astra_blind_index($token);
     $stmt = mysqli_prepare($conn,
-        "SELECT d.id, d.project_id, d.max_views, d.view_count, d.expires_at, d.is_shredded,
-                p.project_code, p.title AS project_title
+        "SELECT d.*, p.project_code, p.title AS project_title
          FROM ephemeral_dossiers d JOIN projects p ON p.id = d.project_id
          WHERE d.token_bindex = ?");
     mysqli_stmt_bind_param($stmt, "s", $bindex);
@@ -90,7 +106,8 @@ function astra_dossier_consume($conn, string $token, &$error = null): ?array {
 
     mysqli_begin_transaction($conn);
     $q = mysqli_prepare($conn,
-        "SELECT d.*, p.project_code, p.title AS project_title
+        "SELECT d.*, p.project_code, p.title AS project_title,
+                (d.expires_at IS NOT NULL AND d.expires_at <= NOW()) AS is_expired
          FROM ephemeral_dossiers d JOIN projects p ON p.id = d.project_id
          WHERE d.token_bindex = ? FOR UPDATE");
     mysqli_stmt_bind_param($q, "s", $bindex);
@@ -103,7 +120,19 @@ function astra_dossier_consume($conn, string $token, &$error = null): ?array {
         return null;
     }
 
-    $expired = strtotime($row['expires_at']) <= time();
+    // Escrow gate: a milestone-linked dossier opens only once the milestone
+    // is released. Checked before anything is counted or decrypted.
+    if (!empty($row['milestone_id']) && astra_escrow_ready($conn)) {
+        $gate = astra_escrow_gate($conn, $row);
+        if (!$gate['ok'] && !$row['is_shredded']) {
+            mysqli_rollback($conn);
+            $error = "This handover is locked. " . $gate['reason'];
+            return null;
+        }
+    }
+
+    // Compared in SQL: PHP and MySQL don't share a timezone here.
+    $expired = (int)$row['is_expired'] === 1;
 
     if ($row['is_shredded'] || $expired) {
         // Already gone, or its window closed since the last check — shred it
@@ -128,6 +157,7 @@ function astra_dossier_consume($conn, string $token, &$error = null): ?array {
     mysqli_commit($conn);
 
     return [
+        'id'            => (int)$row['id'],
         'payload'       => $payload,
         'project_code'  => $row['project_code'],
         'project_title' => $row['project_title'],

@@ -62,6 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($action === "initiate") {
         $project_id     = (int)($_POST["project_id"] ?? 0);
         $milestone_name = trim($_POST["milestone_name"] ?? "");
+        $escrow_raw     = trim(str_replace(',', '', $_POST["escrow_amount"] ?? "0"));
+        $escrow_amount  = is_numeric($escrow_raw) ? (float)$escrow_raw : -1;
 
         if (!signoff_is_project_lead($conn, $project_id, $user_id, $user_role)) {
             $msg = "Only an admin or this project's team lead can initiate a milestone sign-off.";
@@ -76,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $msg = "Couldn't resolve the client for this project.";
             } else {
                 $ip  = astra_get_client_ip();
-                $row = astra_signoff_initiate($conn, $project_id, $milestone_name, $user_id, $client_user_id, $ip, $error);
+                $row = astra_signoff_initiate($conn, $project_id, $milestone_name, $user_id, $client_user_id, $ip, $error, $escrow_amount);
                 if ($row) {
                     $msg = "Sign-off initiated for \"" . htmlspecialchars($milestone_name) . "\". Awaiting the client's countersignature.";
                     $msg_type = "success";
@@ -138,6 +140,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $row = astra_signoff_client_sign($conn, $project_id, $milestone_name, $user_id, $ip, $error);
             if ($row) {
                 $msg = "Milestone \"" . htmlspecialchars($milestone_name) . "\" is now sealed with both signatures on record.";
+                if (($row['escrow_status'] ?? '') === 'payment_pending') {
+                    $msg .= " Its invoice has been issued; the handover unlocks once payment is confirmed.";
+                } elseif (($row['escrow_status'] ?? '') === 'released') {
+                    $msg .= " No payment is due, so the handover is unlocked.";
+                }
                 $msg_type = "success";
                 try { log_activity($conn, $user_id, "milestone_signoff_completed", $milestone_name); } catch (Throwable $e) {}
             } else {
@@ -203,8 +210,14 @@ foreach ($rows as &$row) {
     $row['_pm_name']     = $user_cache[(int)$row['pm_user_id']] ?? '-';
     $row['_client_name'] = $user_cache[(int)$row['client_user_id']] ?? '-';
     $row['_verify'] = astra_signoff_verify($conn, $row);
+    $row['_invoice'] = null;
+    if (!empty($row['invoice_id'])) {
+        [, $row['_invoice']] = astra_escrow_for_milestone($conn, (int)$row['id']);
+    }
 }
 unset($row);
+$escrow_labels = ['engineering_review' => 'Engineering review', 'payment_pending' => 'Payment pending',
+                  'released' => 'Released', 'disputed' => 'Disputed'];
 
 // projects the current lead can initiate a milestone for
 $initiable_projects = [];
@@ -289,6 +302,8 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
       </select>
       <label>Milestone name</label>
       <input type="text" name="milestone_name" value="Final Delivery" maxlength="128" required>
+      <label>Milestone value (₹) <span style="text-transform:none;letter-spacing:0;">held in escrow until paid; 0 releases on signature</span></label>
+      <input type="text" name="escrow_amount" inputmode="decimal" pattern="[0-9,]+(\.[0-9]{1,2})?" value="0" required>
       <button type="submit" class="btn">Sign as Project Lead</button>
     </form>
   </div>
@@ -325,6 +340,16 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
         </div>
         <span class="badge <?= $row['status'] ?>"><?= $status_labels[$row['status']] ?? $row['status'] ?></span>
       </div>
+
+      <?php if (isset($row['escrow_status'])): ?>
+      <div style="font-size:12px;margin-top:8px;color:var(--text-dim);">
+        Escrow: <strong style="color:var(--text);"><?= htmlspecialchars($escrow_labels[$row['escrow_status']] ?? $row['escrow_status']) ?></strong>
+        · ₹<?= number_format((float)$row['escrow_amount'], 2) ?>
+        <?php if ($row['_invoice']): ?>
+          · invoice <?= htmlspecialchars($row['_invoice']['invoice_code']) ?> (<?= htmlspecialchars($row['_invoice']['status'] === 'generated' ? 'unpaid' : $row['_invoice']['status']) ?>)
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
 
       <div style="font-size:12px;margin-top:10px;color:var(--text-dim);">
         Lead: <strong style="color:var(--text);"><?= htmlspecialchars($row['_pm_name']) ?></strong>

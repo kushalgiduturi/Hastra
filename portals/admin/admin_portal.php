@@ -3,6 +3,19 @@
 include __DIR__ . '/../../core/db.php';
 secure_session_start();
 verify_session($conn, "admin");
+require_once __DIR__ . '/../../core/verify_audit.php';
+
+// On-demand ledger verification (walking every block on each page load would
+// get slower as the ledger grows).
+$ledger = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'verify_ledger') {
+    verify_csrf_token();
+    $ledger = astra_verify_audit_ledger($conn);
+    if (!$ledger['ok'] && $ledger['broken_at'] !== null) {
+        astra_log_chained('AUDIT_LEDGER_BREACH', $ledger['reason'], (int)$_SESSION['user_id'], $conn, 'critical', 'LEDGER_TAMPER');
+    }
+}
+$ledger_anchor = astra_audit_anchor_read();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,6 +46,36 @@ verify_session($conn, "admin");
   .page-header { margin-bottom: 2rem; }
   .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
   .page-header p { font-size: 13px; color: var(--text-dim); }
+
+  /* ── Audit ledger panel (AuthKit deep glass) ── */
+  .ledger {
+    margin-top: 2rem; padding: 1.2rem 1.4rem; border-radius: 16px;
+    background: rgba(5, 6, 15, 0.97); box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.4rem;
+  }
+  .ledger-copy { flex: 1 1 320px; min-width: 0; }
+  .ledger-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: #c7d3ea; margin-bottom: 4px; }
+  .ledger-desc { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+  .ledger-meta { font-size: 11.5px; color: #9fb2cc; margin-top: 6px; font-family: 'Share Tech Mono', monospace; }
+  .ledger-btn {
+    background: #663af3; color: #fff; border: 0; border-radius: 999px; padding: 10px 20px;
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .ledger-btn:hover { background: #7548f5; }
+  .ledger-btn:focus-visible { outline: 2px solid #d1e4fa; outline-offset: 3px; }
+  .ledger-ok {
+    flex-basis: 100%; display: inline-flex; align-items: center; gap: 10px; width: fit-content;
+    padding: 8px 14px; border-radius: 999px; background: rgba(209, 228, 250, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(209, 228, 250, 0.28);
+    font-family: 'Share Tech Mono', monospace; font-size: 12.5px; letter-spacing: 0.08em; color: #d1e4fa;
+  }
+  .ledger-ok::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #d1e4fa; box-shadow: 0 0 10px #d1e4fa; }
+  .ledger-breach {
+    flex-basis: 100%; padding: 14px 16px; border-radius: 10px; background: rgba(220, 38, 38, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.55); color: #fecaca; font-size: 13px; line-height: 1.55;
+  }
+  .ledger-breach strong { display: block; color: #f87171; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; font-size: 12.5px; margin-bottom: 4px; }
+  .ledger-breach code { font-family: 'Share Tech Mono', monospace; color: #fff; }
 </style>
 </head>
 <body data-tour-page="admin/admin_portal">
@@ -84,6 +127,32 @@ verify_session($conn, "admin");
       <span class="section-nav-label">Ephemeral Dossiers</span>
     </a>
   </div>
+
+  <section class="ledger" aria-labelledby="ledgerTitle">
+    <div class="ledger-copy">
+      <div class="ledger-title" id="ledgerTitle">Tamper-evident audit ledger</div>
+      <div class="ledger-desc">Every log entry is chained to the one before it with an HMAC-SHA256 hash. Verification recomputes every block and confirms nothing was edited, deleted, or reordered.</div>
+      <?php if ($ledger_anchor): ?>
+      <div class="ledger-meta">Last verified: block <?= (int)$ledger_anchor['chain_index'] ?> · <?= htmlspecialchars(date('d M Y, H:i', strtotime($ledger_anchor['verified_at'] ?? 'now'))) ?></div>
+      <?php endif; ?>
+    </div>
+    <form method="POST" action="admin_portal">
+      <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
+      <input type="hidden" name="action" value="verify_ledger">
+      <button type="submit" class="ledger-btn">Verify Audit Ledger</button>
+    </form>
+
+    <?php if ($ledger && $ledger['ok']): ?>
+    <div class="ledger-ok" role="status">LEDGER INTEGRITY VERIFIED (<?= number_format($ledger['blocks']) ?> BLOCKS)</div>
+    <?php elseif ($ledger): ?>
+    <div class="ledger-breach" role="alert">
+      <strong>LEDGER INTEGRITY FAILURE<?= $ledger['broken_at'] !== null ? ' AT BLOCK ' . (int)$ledger['broken_at'] : '' ?></strong>
+      <?= htmlspecialchars($ledger['reason']) ?>
+      <?php if ($ledger['log_id']): ?> Affected row: <code>logs.id <?= (int)$ledger['log_id'] ?></code>.<?php endif; ?>
+      <?php if ($ledger['broken_at'] !== null): ?> Blocks after this point can't be trusted until the cause is found. This failure has been recorded in the ledger.<?php endif; ?>
+    </div>
+    <?php endif; ?>
+  </section>
 
 </div>
 

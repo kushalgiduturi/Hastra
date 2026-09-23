@@ -46,6 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset($_SESSION["otp_attempts"]);
 
         session_regenerate_id(true);
+        // Bind this session to the device and network that just passed
+        // password + OTP (core/session_guard.php).
+        astra_session_anchor($conn, (int)$user["id"]);
         log_activity($conn, $user["id"], "login_success",$user["name"]);
 
         // Accurate geo for this session — astra_inspect_ip() reads from

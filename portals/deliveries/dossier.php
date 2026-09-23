@@ -46,25 +46,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
     if ($user_role !== 'admin') {
         $msg = "Only an admin can create a dossier.";
     } else {
-        $project_id  = (int)($_POST['project_id'] ?? 0);
-        $payload     = trim($_POST['payload'] ?? '');
-        $max_views   = max(1, (int)($_POST['max_views'] ?? 1));
-        $expires_min = max(1, (int)($_POST['expires_minutes'] ?? 1440));
+        // Every dossier is bound to an escrow milestone: it stays locked until
+        // that milestone's invoice is settled (core/escrow.php).
+        $milestone_id = (int)($_POST['milestone_id'] ?? 0);
+        $payload      = trim($_POST['payload'] ?? '');
+        $max_views    = 1; // the handover terminal is single-use
+        $expires_min  = max(1, (int)($_POST['expires_minutes'] ?? 1440));
 
-        $pcheck = mysqli_prepare($conn, "SELECT id, project_code, title FROM projects WHERE id = ? AND status = 'completed'");
-        mysqli_stmt_bind_param($pcheck, "i", $project_id);
-        mysqli_stmt_execute($pcheck);
-        $proj = mysqli_fetch_assoc(mysqli_stmt_get_result($pcheck));
+        $mcheck = mysqli_prepare($conn,
+            "SELECT ms.id, ms.project_id, ms.milestone_name, ms.escrow_status, p.project_code
+             FROM milestone_signoffs ms JOIN projects p ON p.id = ms.project_id WHERE ms.id = ?");
+        mysqli_stmt_bind_param($mcheck, "i", $milestone_id);
+        mysqli_stmt_execute($mcheck);
+        $proj = mysqli_fetch_assoc(mysqli_stmt_get_result($mcheck));
 
         if (!$proj) {
-            $msg = "Project not found, or not yet completed.";
+            $msg = "Choose the milestone this handover belongs to.";
         } else {
-            $token_out = astra_dossier_create($conn, $project_id, $user_id, $payload, $max_views, $expires_min, $error);
+            $token_out = astra_dossier_create($conn, (int)$proj['project_id'], $user_id, $payload, $max_views, $expires_min, $error, $milestone_id);
             if ($token_out) {
                 $new_token = $token_out;
+                // The token rides in the URL fragment, which browsers never
+                // send to the server, so it stays out of access logs.
                 $link      = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
-                           . get_base_url() . 'portals/deliveries/dossier?token=' . $token_out;
-                $msg       = "Dossier created for {$proj['project_code']}. This link works {$max_views} time(s) and expires in " . round($expires_min / 60, 1) . "h. It will not be shown again:";
+                           . get_base_url() . 'portals/deliveries/terminal#t=' . $token_out;
+                $window    = round($expires_min / 60, 1) . "h";
+                $msg       = $proj['escrow_status'] === 'released'
+                           ? "Dossier created for {$proj['project_code']} ({$proj['milestone_name']}). It opens {$max_views} time(s) and expires in $window. The link won't be shown again:"
+                           : "Dossier created for {$proj['project_code']} ({$proj['milestone_name']}). It stays locked until the milestone's invoice is settled; its $window window starts then. The link won't be shown again:";
                 $msg_type  = 'success';
                 try { log_activity($conn, $user_id, "dossier_created", $proj['project_code']); } catch (Throwable $e) {}
             } else {
@@ -78,12 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
 $completed_projects = [];
 $existing_dossiers   = [];
 if ($user_role === 'admin' && $token === '') {
-    $pr = mysqli_query($conn, "SELECT id, project_code, title FROM projects WHERE status = 'completed' ORDER BY updated_at DESC");
+    $pr = mysqli_query($conn,
+        "SELECT ms.id, ms.milestone_name, ms.escrow_status, p.project_code, p.title
+         FROM milestone_signoffs ms JOIN projects p ON p.id = ms.project_id
+         WHERE ms.escrow_status <> 'disputed' ORDER BY ms.created_at DESC LIMIT 100");
     $completed_projects = $pr ? mysqli_fetch_all($pr, MYSQLI_ASSOC) : [];
 
     if (astra_dossier_schema_ready($conn)) {
         $dr = mysqli_query($conn,
-            "SELECT d.id, d.max_views, d.view_count, d.expires_at, d.is_shredded, d.created_at,
+            "SELECT d.id, d.max_views, d.view_count, d.expires_at, d.is_shredded, d.created_at, d.milestone_id,
                     p.project_code, p.title AS project_title
              FROM ephemeral_dossiers d JOIN projects p ON p.id = d.project_id
              ORDER BY d.created_at DESC LIMIT 50");
@@ -169,17 +181,18 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">
       <?= htmlspecialchars($peek['project_code']) ?>: <?= htmlspecialchars($peek['project_title']) ?>
     </div>
+    <?php if ($peek['expires_at'] === null): ?>
+    <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">
+      This handover is locked until its milestone's invoice is settled. Nothing has been used, and its expiry window hasn't started.
+    </p>
+    <?php else: ?>
     <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">
       This dossier allows <?= (int)$peek['max_views'] ?> view(s) total, with <?= (int)$peek['view_count'] ?> already used,
       and expires <?= htmlspecialchars(date('d M Y, H:i', strtotime($peek['expires_at']))) ?>.
       Opening it counts as one view.
     </p>
-    <form method="POST" action="dossier">
-      <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
-      <input type="hidden" name="action" value="reveal">
-      <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
-      <button type="submit" class="btn danger">Reveal now (uses one view)</button>
-    </form>
+    <?php endif; ?>
+    <a class="btn" style="display:inline-block;text-decoration:none;" href="<?= get_base_url() ?>portals/deliveries/terminal#t=<?= htmlspecialchars($token) ?>">Open in the handover terminal</a>
   </div>
   <?php endif; ?>
 
@@ -187,30 +200,23 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   <div class="section">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">Create a dossier</div>
     <?php if (empty($completed_projects)): ?>
-      <p style="color:var(--text-dim);font-size:13px;">No completed projects yet.</p>
+      <p style="color:var(--text-dim);font-size:13px;">No milestones yet. Start a milestone sign-off first; every handover is released through its milestone's escrow.</p>
     <?php else: ?>
     <form method="POST" action="dossier">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="action" value="create_dossier">
-      <label>Project</label>
-      <select name="project_id" required>
-        <option value="">Select completed project</option>
+      <label>Milestone <span style="text-transform:none;color:#475569;">(the dossier unlocks when its invoice is settled)</span></label>
+      <select name="milestone_id" required>
+        <option value="">Select a milestone</option>
         <?php foreach ($completed_projects as $p): ?>
-        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ': ' . $p['title']) ?></option>
+        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['project_code'] . ': ' . $p['milestone_name'] . ' (' . str_replace('_', ' ', $p['escrow_status']) . ')') ?></option>
         <?php endforeach; ?>
       </select>
       <label>Payload <span style="text-transform:none;color:#475569;">(credentials, security report text, ...)</span></label>
       <textarea name="payload" required></textarea>
-      <div class="grid2">
-        <div>
-          <label>Max views</label>
-          <input type="number" name="max_views" value="1" min="1" max="20">
-        </div>
-        <div>
-          <label>Expires in (minutes)</label>
-          <input type="number" name="expires_minutes" value="1440" min="1" max="43200">
-        </div>
-      </div>
+      <input type="hidden" name="max_views" value="1">
+      <label>Expires in (minutes, from release) <span style="text-transform:none;color:#475569;">(single use: shredded the moment it's opened)</span></label>
+      <input type="number" name="expires_minutes" value="1440" min="1" max="43200">
       <button type="submit" class="btn">Create dossier link</button>
     </form>
     <?php endif; ?>
@@ -226,8 +232,8 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
         <tr>
           <td><?= htmlspecialchars($d['project_code']) ?><div style="color:var(--text-dim);font-size:11px;"><?= htmlspecialchars($d['project_title']) ?></div></td>
           <td><?= (int)$d['view_count'] ?> / <?= (int)$d['max_views'] ?></td>
-          <td><?= htmlspecialchars(date('d M, H:i', strtotime($d['expires_at']))) ?></td>
-          <td><span class="badge <?= $d['is_shredded'] ? 'shredded' : 'live' ?>"><?= $d['is_shredded'] ? 'Shredded' : 'Live' ?></span></td>
+          <td><?= $d['expires_at'] ? htmlspecialchars(date('d M, H:i', strtotime($d['expires_at']))) : 'After release' ?></td>
+          <td><span class="badge <?= $d['is_shredded'] ? 'shredded' : 'live' ?>"><?= $d['is_shredded'] ? 'Shredded' : ($d['expires_at'] ? 'Live' : 'Locked') ?></span></td>
         </tr>
         <?php endforeach; ?>
       </tbody>

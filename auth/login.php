@@ -23,6 +23,16 @@ if (isset($_SESSION["user_id"])) {
 $msg = "";
 $active_portal = ($_POST["portal"] ?? "") === "client" ? "client" : "enterprise";
 
+// Why the previous session ended (core/session_guard.php redirects here).
+// Shown on both panels, since we don't know which one the user signs in on.
+$session_notices = [
+    'session_breach'  => "Your session was ended because it was used from a different device or network. Sign in again with your password and email code.",
+    'session_revoked' => "That session was signed out. Sign in again to continue.",
+    'reauth'          => "For your security, please sign in again.",
+];
+$session_notice = $_SERVER["REQUEST_METHOD"] === "GET" ? ($session_notices[$_GET["error"] ?? ""] ?? "") : "";
+if ($session_notice) $msg = $session_notice;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     verify_csrf_token();
 
@@ -809,7 +819,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p class="subtitle">Enter your workspace credentials to access Astra.</p>
         <div class="divider"></div>
 
-        <?php if ($msg && $active_portal === 'enterprise'): ?>
+        <?php if ($msg && ($active_portal === 'enterprise' || $session_notice)): ?>
         <div class="alert">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
           <?= htmlspecialchars($msg) ?>
@@ -870,7 +880,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p class="subtitle">Access the project workspace your company was onboarded into.</p>
         <div class="divider"></div>
 
-        <?php if ($msg && $active_portal === 'client'): ?>
+        <?php if ($msg && ($active_portal === 'client' || $session_notice)): ?>
         <div class="alert">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
           <?= htmlspecialchars($msg) ?>

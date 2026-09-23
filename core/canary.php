@@ -91,12 +91,14 @@ function astra_canary_is_tripped($conn, string $token_type, ?string $value): ?ar
 function astra_canary_record_breach($conn, array $honeytoken, string $ip, ?int $user_id = null): void {
     mysqli_query($conn, "UPDATE honeytokens SET trigger_count = trigger_count + 1 WHERE id = " . (int)$honeytoken['id']);
 
-    $stmt = mysqli_prepare($conn,
-        "INSERT INTO logs (user_id, username, action, ip_address, severity, incident_type)
-         VALUES (?, ?, 'honeytoken_breach', ?, 'critical', 'HONEYTOKEN_BREACH')");
-    $desc = $honeytoken['description'] ?? $honeytoken['token_type'];
-    mysqli_stmt_bind_param($stmt, "iss", $user_id, $desc, $ip);
-    mysqli_stmt_execute($stmt);
+    astra_chain_append($conn, [
+        'user_id'       => $user_id,
+        'username'      => $honeytoken['description'] ?? $honeytoken['token_type'],
+        'action'        => 'honeytoken_breach',
+        'ip_address'    => $ip,
+        'severity'      => 'critical',
+        'incident_type' => 'HONEYTOKEN_BREACH',
+    ]);
 
     $reason = 'honeytoken:' . $honeytoken['token_type'];
     $block  = mysqli_prepare($conn,

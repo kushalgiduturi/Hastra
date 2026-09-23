@@ -69,12 +69,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["action"] === "mark_invoice_paid") {
     verify_csrf_token();
     $invoice_id = (int)($_POST["invoice_id"] ?? 0);
-    $upd = mysqli_prepare($conn, "UPDATE invoices SET status = 'paid', paid_at = NOW() WHERE id = ? AND status != 'paid'");
-    mysqli_stmt_bind_param($upd, "i", $invoice_id);
-    if (mysqli_stmt_execute($upd) && mysqli_affected_rows($conn) > 0) {
-        $msg = "Invoice marked as paid."; $msg_type = "success";
+    $reference  = trim($_POST["paid_reference"] ?? "");
+    // Manual clearance. For a milestone escrow invoice this also releases the
+    // milestone and activates its handover dossiers (core/escrow.php).
+    $inv = astra_escrow_ready($conn)
+        ? astra_escrow_settle($conn, $invoice_id, $reference, 'admin', (int)$_SESSION["user_id"], $error)
+        : null;
+    if ($inv) {
+        $msg = !empty($inv['milestone_id'])
+            ? "Invoice marked as paid. The milestone is released and its handover is unlocked."
+            : "Invoice marked as paid.";
+        $msg_type = "success";
+    } elseif (!astra_escrow_ready($conn)) {
+        $upd = mysqli_prepare($conn, "UPDATE invoices SET status = 'paid', paid_at = NOW() WHERE id = ? AND status != 'paid'");
+        mysqli_stmt_bind_param($upd, "i", $invoice_id);
+        $ok = mysqli_stmt_execute($upd) && mysqli_affected_rows($conn) > 0;
+        $msg = $ok ? "Invoice marked as paid." : "Could not update invoice.";
+        $msg_type = $ok ? "success" : "error";
     } else {
-        $msg = "Could not update invoice."; $msg_type = "error";
+        $msg = $error ?: "Could not update invoice."; $msg_type = "error";
     }
 }
 
@@ -283,19 +296,24 @@ while ($row = mysqli_fetch_assoc($invoices_result)) {
               <td class="muted">₹<?= number_format($inv['infra_cost'], 2) ?></td>
               <td><strong>₹<?= number_format($inv['total_amount'], 2) ?></strong></td>
               <td>
-                <span class="badge badge-<?= $inv['status'] === 'paid' ? 'success' : 'warning' ?>"><?= htmlspecialchars($inv['status']) ?></span>
+                <span class="badge badge-<?= in_array($inv['status'], ['paid', 'waived'], true) ? 'success' : 'warning' ?>"><?= htmlspecialchars($inv['status']) ?></span>
+                <?php if (!empty($inv['milestone_id'])): ?><div class="muted" style="font-size:11px;margin-top:3px;">Milestone escrow</div><?php endif; ?>
               </td>
               <td class="muted"><?= date('d M Y', strtotime($inv['created_at'])) ?></td>
               <td>
-                <?php if ($inv['status'] !== 'paid'): ?>
-                <form method="POST" action="billing">
+                <?php if (!in_array($inv['status'], ['paid', 'waived'], true)): ?>
+                <form method="POST" action="billing" style="display:flex;gap:6px;align-items:center;">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action" value="mark_invoice_paid">
                   <input type="hidden" name="invoice_id" value="<?= $inv['id'] ?>">
+                  <input type="text" name="paid_reference" maxlength="128" placeholder="Payment ref (optional)" aria-label="Payment reference"
+                         style="width:150px;padding:5px 8px;font-size:12px;background:var(--input-bg);border:1px solid var(--border-dim);color:var(--text);border-radius:3px;">
                   <button type="submit" class="btn-expand">Mark Paid</button>
                 </form>
+                <?php elseif ($inv['status'] === 'waived'): ?>
+                <span class="muted">Waived (no charge)</span>
                 <?php else: ?>
-                <span class="muted">Paid <?= $inv['paid_at'] ? date('d M Y', strtotime($inv['paid_at'])) : '' ?></span>
+                <span class="muted">Paid <?= $inv['paid_at'] ? date('d M Y', strtotime($inv['paid_at'])) : '' ?><?= !empty($inv['paid_reference']) ? ' · ' . htmlspecialchars($inv['paid_reference']) : '' ?></span>
                 <?php endif; ?>
               </td>
             </tr>

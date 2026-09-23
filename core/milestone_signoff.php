@@ -63,14 +63,17 @@ function astra_signoff_is_complete($conn, int $project_id, string $milestone_nam
 // initiates. $client_user_id is resolved by the caller (the requirement's
 // owning client) and recorded now so step 2 knows exactly who is authorized
 // to countersign — not just "anyone with role=client".
+// $escrow_amount is what the client owes for this milestone (core/escrow.php).
+// Zero means the milestone releases as soon as both parties have signed.
 function astra_signoff_initiate($conn, int $project_id, string $milestone_name, int $pm_user_id,
-                                 int $client_user_id, string $ip, &$error = null): ?array {
+                                 int $client_user_id, string $ip, &$error = null, float $escrow_amount = 0.0): ?array {
     if (!astra_signoff_schema_ready($conn)) { $error = "Milestone sign-off isn't set up yet. Run the database migration."; return null; }
     $milestone_name = trim($milestone_name);
     if ($milestone_name === '') { $error = "Name this milestone before initiating sign-off."; return null; }
 
     $existing = astra_signoff_get($conn, $project_id, $milestone_name);
     if ($existing) { $error = "This milestone already has a sign-off in progress or completed."; return null; }
+    if ($escrow_amount < 0 || $escrow_amount > 9999999999.99) { $error = "Enter a milestone value between 0 and 9,999,999,999.99."; return null; }
 
     $now = date('Y-m-d H:i:s');
     $sig = astra_signoff_signature($project_id, $milestone_name, $pm_user_id, $now, $ip);
@@ -80,6 +83,14 @@ function astra_signoff_initiate($conn, int $project_id, string $milestone_name, 
          VALUES (?, ?, ?, ?, ?, ?, ?, 'pending_client')");
     mysqli_stmt_bind_param($ins, "isisssi", $project_id, $milestone_name, $pm_user_id, $now, $sig, $ip, $client_user_id);
     if (!mysqli_stmt_execute($ins)) { $error = "Failed to start the sign-off."; return null; }
+    // Read the id before any other query runs: every query resets insert_id.
+    $id = (int)mysqli_insert_id($conn);
+    if (astra_escrow_ready($conn)) {
+        $amt = round($escrow_amount, 2);
+        $e = mysqli_prepare($conn, "UPDATE milestone_signoffs SET escrow_amount = ?, escrow_status = 'engineering_review' WHERE id = ?");
+        mysqli_stmt_bind_param($e, "di", $amt, $id);
+        mysqli_stmt_execute($e);
+    }
 
     return astra_signoff_get($conn, $project_id, $milestone_name);
 }
@@ -103,12 +114,27 @@ function astra_signoff_client_sign($conn, int $project_id, string $milestone_nam
     $now = date('Y-m-d H:i:s');
     $sig = astra_signoff_signature($project_id, $milestone_name, $client_user_id, $now, $ip);
 
-    $upd = mysqli_prepare($conn,
-        "UPDATE milestone_signoffs SET client_signed_at = ?, client_signature_hash = ?, client_ip = ?, status = 'completed'
-         WHERE project_id = ? AND milestone_name = ? AND status = 'pending_client'");
-    mysqli_stmt_bind_param($upd, "sssis", $now, $sig, $ip, $project_id, $milestone_name);
-    mysqli_stmt_execute($upd);
-    if (mysqli_stmt_affected_rows($upd) !== 1) { $error = "This milestone was already resolved."; return null; }
+    // The countersignature and the escrow invoice commit together, so a
+    // milestone can never end up signed with no invoice (core/escrow.php).
+    mysqli_begin_transaction($conn);
+    try {
+        $upd = mysqli_prepare($conn,
+            "UPDATE milestone_signoffs SET client_signed_at = ?, client_signature_hash = ?, client_ip = ?, status = 'completed'
+             WHERE project_id = ? AND milestone_name = ? AND status = 'pending_client'");
+        mysqli_stmt_bind_param($upd, "sssis", $now, $sig, $ip, $project_id, $milestone_name);
+        mysqli_stmt_execute($upd);
+        if (mysqli_stmt_affected_rows($upd) !== 1) { mysqli_rollback($conn); $error = "This milestone was already resolved."; return null; }
+
+        if (astra_escrow_ready($conn)) {
+            astra_escrow_open_invoice($conn, astra_signoff_get($conn, $project_id, $milestone_name));
+        }
+        mysqli_commit($conn);
+    } catch (Throwable $e) {
+        mysqli_rollback($conn);
+        error_log('[astra-signoff] countersign failed: ' . $e->getMessage());
+        $error = "Couldn't record your signature. Nothing was changed; try again.";
+        return null;
+    }
 
     return astra_signoff_get($conn, $project_id, $milestone_name);
 }
@@ -119,7 +145,9 @@ function astra_signoff_client_sign($conn, int $project_id, string $milestone_nam
 // human has to resolve it rather than the pipeline silently retrying.
 function astra_signoff_dispute($conn, int $project_id, string $milestone_name, &$error = null): bool {
     if (!astra_signoff_schema_ready($conn)) { $error = "Milestone sign-off isn't set up yet."; return false; }
-    $upd = mysqli_prepare($conn, "UPDATE milestone_signoffs SET status = 'disputed' WHERE project_id = ? AND milestone_name = ?");
+    $upd = mysqli_prepare($conn, astra_escrow_ready($conn)
+        ? "UPDATE milestone_signoffs SET status = 'disputed', escrow_status = 'disputed' WHERE project_id = ? AND milestone_name = ?"
+        : "UPDATE milestone_signoffs SET status = 'disputed' WHERE project_id = ? AND milestone_name = ?");
     mysqli_stmt_bind_param($upd, "is", $project_id, $milestone_name);
     mysqli_stmt_execute($upd);
     if (mysqli_stmt_affected_rows($upd) !== 1) { $error = "Sign-off record not found."; return false; }

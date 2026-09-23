@@ -362,6 +362,8 @@ $project_status_labels = [
           <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
               <span class="proj-code"><?= htmlspecialchars($proj['project_code']) ?></span>
+              <a href="<?= get_base_url() ?>portals/client/project_view?id=<?= (int)$proj['id'] ?>" onclick="event.stopPropagation()"
+                 style="font-size:11px;color:var(--accent-bright);text-decoration:none;">Handover status</a>
               <span class="badge badge-<?= $proj['status'] ?>">
                 <?= htmlspecialchars($project_status_labels[$proj['status']] ?? $proj['status']) ?>
               </span>
