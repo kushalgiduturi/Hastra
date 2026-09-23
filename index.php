@@ -19,6 +19,7 @@ if (isset($_SESSION["user_id"])) {
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/authkit-typography.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/feature-showcase.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/resizable-navbar.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/hero-authkit.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <meta name="description" content="Astra: encrypted, audited, governed software delivery for teams that can't afford to guess.">
 <style>
@@ -42,44 +43,17 @@ if (isset($_SESSION["user_id"])) {
   section { padding: 5rem 1.5rem; }
   .wrap { max-width: 1100px; margin: 0 auto; }
 
-  /* Top nav is now .astra-resizable-nav (assets/css/resizable-navbar.css) —
-     position:fixed, so .hero's own top padding below is what keeps content
-     clear of it rather than the old sticky-bar's normal-flow height. */
+  /* Top nav is .astra-resizable-nav (assets/css/resizable-navbar.css), which
+     is position:fixed; the hero's own top padding keeps content clear of it. */
 
-  /* ── Hero ── */
-  .hero { padding: 5.5rem 1.5rem 4rem; text-align: center; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--accent-bright); background: rgba(var(--accent-rgb),0.1);
-    border: 1px solid var(--border); padding: 5px 12px; border-radius: 999px; margin-bottom: 1.4rem;
-  }
-  .hero h1 {
-    font-family: var(--font-sans); font-weight: 800; letter-spacing: -0.02em;
-    font-size: clamp(32px, 5.5vw, 56px); line-height: 1.08; max-width: 820px; margin: 0 auto 1.2rem;
-  }
-  .hero h1 span { color: var(--accent-bright); }
-  .hero p.lede {
-    font-size: 16px; color: var(--text-dim); line-height: 1.7; max-width: 620px; margin: 0 auto 2.2rem;
-  }
-  .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
+  /* ── Hero: see assets/css/hero-authkit.css ── */
+  /* Still used by the CTA band at the bottom of the page. */
   .btn-hero-primary {
     font-size: 14px; font-weight: 700; color: #fff; text-decoration: none;
     background: var(--accent); padding: 13px 26px; border-radius: 4px;
     transition: background 0.2s, box-shadow 0.2s;
   }
   .btn-hero-primary:hover { background: var(--accent-dim); box-shadow: 0 0 22px rgba(var(--accent-rgb),0.4); }
-  .btn-hero-secondary {
-    font-size: 14px; font-weight: 600; color: var(--text); text-decoration: none;
-    background: var(--input-bg); border: 1px solid var(--border-dim); padding: 13px 26px; border-radius: 4px;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .btn-hero-secondary:hover { background: var(--hover-bg); border-color: var(--border); }
-
-  .hero-stats { display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; }
-  .hero-stat { text-align: center; }
-  .hero-stat .num { font-family: 'Share Tech Mono', monospace; font-size: 26px; font-weight: 700; color: var(--accent-bright); }
-  .hero-stat .lbl { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
 
   /* ── Section heading ── */
   .section-head { text-align: center; max-width: 640px; margin: 0 auto 3rem; }
@@ -209,7 +183,6 @@ if (isset($_SESSION["user_id"])) {
   }
 
   /* Primary descriptions & subheadings */
-  :root:not([data-theme="light"]) .hero p.lede,
   :root:not([data-theme="light"]) .authkit-subtitle,
   :root:not([data-theme="light"]) .section-head p,
   :root:not([data-theme="light"]) .showcase-card-desc,
@@ -234,34 +207,23 @@ if (isset($_SESSION["user_id"])) {
 
   /* Eyebrow labels & section markers */
   :root:not([data-theme="light"]) .authkit-eyebrow-label,
-  :root:not([data-theme="light"]) .section-eyebrow,
-  :root:not([data-theme="light"]) .hero-badge {
+  :root:not([data-theme="light"]) .section-eyebrow {
     color: #d1e4fa !important;
-  }
-  :root:not([data-theme="light"]) .hero-badge {
-    background: rgba(216, 236, 248, 0.06);
-    border-color: rgba(216, 236, 248, 0.35);
   }
   :root:not([data-theme="light"]) .authkit-eyebrow-line {
     background: linear-gradient(90deg, transparent, rgba(216, 236, 248, 0.35), transparent);
   }
 
-  /* Metric sub-labels (under AES-256 / 2FA / 100%) */
-  :root:not([data-theme="light"]) .hero-stat .lbl {
-    color: #cbd5e1 !important;
-  }
-
   /* Helper text */
   :root:not([data-theme="light"]) .sec-toggle-hint { opacity: 1; }
 
-  /* Secondary CTAs (hero "Sign in", navbar "Sign In") */
-  :root:not([data-theme="light"]) .btn-hero-secondary,
+  /* Secondary CTA (navbar "Sign In"). The hero's ghost button is styled in
+     hero-authkit.css. */
   :root:not([data-theme="light"]) .arn-btn-ghost {
     color: #ffffff !important;
     background: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(216, 236, 248, 0.3) !important;
   }
-  :root:not([data-theme="light"]) .btn-hero-secondary:hover,
   :root:not([data-theme="light"]) .arn-btn-ghost:hover {
     background: rgba(255, 255, 255, 0.14) !important;
   }
@@ -310,22 +272,60 @@ if (isset($_SESSION["user_id"])) {
 </div>
 
 <!-- ── HERO ── -->
-<div class="hero">
-  <span class="hero-badge">Enterprise software delivery, governed end-to-end</span>
-  <h1>Ship client work with a <span>paper trail</span> that survives an audit.</h1>
-  <p class="lede">
-    Astra is the delivery backbone for teams building software for other companies. It unifies requirements, projects, testing, deployment, billing, and credentials, encrypted at rest and logged the moment they change hands.
-  </p>
-  <div class="hero-ctas">
-    <a href="<?= get_base_url() ?>auth/register" class="btn-hero-primary">Register your company</a>
-    <a href="<?= get_base_url() ?>auth/login" class="btn-hero-secondary">Sign in</a>
+<section class="h10" aria-labelledby="h10Title">
+  <div class="h10-beam" aria-hidden="true"></div>
+
+  <span class="h10-badge"><span class="h10-badge-dot" aria-hidden="true"></span>Enterprise software delivery, governed end-to-end</span>
+  <h1 class="h10-title" id="h10Title">Ship client work with a paper trail that survives an audit.</h1>
+  <p class="h10-sub">Astra runs requirements, projects, testing, deployment, billing, and credentials in one workspace. Every record is encrypted at rest, and every change is logged the moment it happens.</p>
+
+  <div class="h10-actions">
+    <a href="<?= get_base_url() ?>auth/register" class="h10-btn h10-btn-primary">Register your company
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></a>
+    <a href="<?= get_base_url() ?>auth/login" class="h10-btn h10-btn-ghost">Sign in</a>
   </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num">AES-256</div><div class="lbl">Column Encryption</div></div>
-    <div class="hero-stat"><div class="num">2FA</div><div class="lbl">OTP On Every Login</div></div>
-    <div class="hero-stat"><div class="num">100%</div><div class="lbl">Actions Logged</div></div>
+
+  <ul class="h10-stats">
+    <li><span class="h10-stat-num">AES-256</span><span class="h10-stat-lbl">Column encryption</span></li>
+    <li><span class="h10-stat-num">2FA</span><span class="h10-stat-lbl">OTP on every login</span></li>
+    <li><span class="h10-stat-num">100%</span><span class="h10-stat-lbl">Actions logged</span></li>
+  </ul>
+
+  <!-- Product mockup: illustrative data only, rendered as a static window. -->
+  <div class="h10-stage" role="img" aria-label="Astra delivery console showing a project pipeline, a pending dual sign-off, and a live audit log">
+    <div class="h10-chrome">
+      <span class="h10-chrome-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="h10-chrome-title"><b>PRJ-1042</b> · Northwind Freight client portal</span>
+      <span class="h10-chrome-lock">AES-256-GCM · TLS</span>
+    </div>
+    <div class="h10-body">
+      <div class="h10-pane">
+        <p class="h10-pane-label">Delivery pipeline</p>
+        <ul class="h10-pipe">
+          <li class="done"><span class="st">✓</span>Requirement approved<span class="meta">REQ-2291 · 12 Sep</span></li>
+          <li class="done"><span class="st">✓</span>Project kicked off<span class="meta">14 Sep</span></li>
+          <li class="active"><span class="st">3</span>Testing: 3 bugs open<span class="meta">In progress</span></li>
+          <li><span class="st">4</span>Deployment<span class="meta">Awaiting sign-off</span></li>
+        </ul>
+        <div class="h10-sign">
+          Milestone: Release 1.0 needs both signatures
+          <div class="h10-sign-row"><span>Project lead · Priya Nair</span><span class="ok">SIGNED</span></div>
+          <div class="h10-sign-row"><span>Client · Northwind Freight</span><span class="wait">PENDING</span></div>
+        </div>
+      </div>
+      <div class="h10-pane">
+        <p class="h10-pane-label">Audit log</p>
+        <ul class="h10-feed">
+          <li><time>14:02:11</time><span class="what">Handover credentials viewed once <small>· 203.0.113.24</small></span><span class="h10-tag enc">Encrypted</span></li>
+          <li><time>13:58:40</time><span class="what">BUG-318 closed after retest <small>· QA</small></span><span class="h10-tag">Verified</span></li>
+          <li><time>13:51:02</time><span class="what">REQ-2291 v3 acknowledged by PM</span><span class="h10-tag">Signed</span></li>
+          <li><time>13:44:17</time><span class="what">Login passed OTP check <small>· Hyderabad</small></span><span class="h10-tag">2FA</span></li>
+          <li><time>13:40:05</time><span class="what">Deployment request raised</span><span class="h10-tag">Queued</span></li>
+        </ul>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 
 <!-- ── SECURITY ARCHITECTURE ── -->
 <!-- ── WHAT ASTRA DOES ── -->
