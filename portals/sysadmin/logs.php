@@ -69,6 +69,8 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/gooey-search.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>assets/js/gooey-search.js?v=<?= ASSET_VERSION ?>" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -157,8 +159,8 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
           <option value="<?= $sec['key'] ?>"><?= htmlspecialchars($sec['name']) ?></option>
           <?php endforeach; ?>
         </select>
-        <input type="text" id="f_uid" placeholder="Filter by User ID" oninput="applyFilters()">
-        <input type="text" id="f_ip"  placeholder="Filter by IP"      oninput="applyFilters()">
+        <?php render_gooey_search('f_uid', 'Filter by User ID', 'applyFilters()'); ?>
+        <?php render_gooey_search('f_ip', 'Filter by IP', 'applyFilters()'); ?>
         <select id="f_action" onchange="applyFilters()">
           <option value="">All Actions</option>
           <option value="login_success">login_success</option>

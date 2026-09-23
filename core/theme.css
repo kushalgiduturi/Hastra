@@ -1299,13 +1299,20 @@ input, select, textarea, button { font-family: var(--font-sans); }
 }
 
 
-/* ── PAGE TRANSITIONS ── */
+/* ── PAGE TRANSITIONS ──
+   Opacity-only on purpose: a `transform` here (even a `translateY(0)` that
+   the animation settles on and holds via fill-mode `both`) makes `body`
+   establish a new containing block for every `position:fixed` descendant
+   on the page — nav bars, floating docks, modals — silently turning them
+   into elements that scroll away with body's own box instead of staying
+   pinned to the viewport. Confirmed by direct reproduction: removing just
+   this transform is what fixes it, everything else about the fade stays. */
 body {
   animation: pageFadeIn 0.35s ease both;
 }
 @keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 a, button, .nav-link, .btn-logout, .btn-profile, .btn-theme-toggle {
   transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
@@ -1313,8 +1320,10 @@ a, button, .nav-link, .btn-logout, .btn-profile, .btn-theme-toggle {
 .fade-out {
   animation: pageFadeOut 0.18s ease forwards;
 }
+/* Same reasoning as pageFadeIn above — no transform, so a mid-navigation
+   fade-out doesn't also trap position:fixed elements for its 180ms. */
 @keyframes pageFadeOut {
-  to { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 0; }
 }
 /* ═══════════════════════════════════════════════════════════════
    PORTAL REVEAL — same animated-entrance language as the auth

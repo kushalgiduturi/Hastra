@@ -1,0 +1,146 @@
+/* Astra — Gooey Search component (vanilla CSS, no build step).
+   Ported from a React/Framer-Motion spec to plain markup so it drops into
+   Astra's procedural PHP views.
+
+   Simplified from the first pass: the decorative floating "bubble" (welded
+   to the pill via an SVG blur filter) made the control taller and rounder
+   than every input/select next to it, so it read as a separate floating
+   element sitting in its own whitespace band rather than part of the filter
+   bar. Dropped the bubble and the filter entirely — what's left is the part
+   that actually matters, a compact field that springs open to a wider one on
+   click/focus, sized and radiused to match the surrounding controls exactly.
+
+   Colors are pulled from Astra's existing theme variables (core/theme.css),
+   so this automatically follows the dark/light toggle — no separate
+   light-mode block needed. */
+
+.gooey-search-root {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.gooey-button-row {
+  position: relative;
+}
+
+/* Collapsed: a compact 115px chip, same height/radius/border as this app's
+   ordinary filter inputs (see e.g. `.filters input` on roles.php/logs.php —
+   32px tall, 3px corners) so it sits flush in the row instead of standing
+   out. Expanded: widens to a full 240px field. The spring-flavored
+   cubic-bezier (overshoots slightly past 1 before settling) is what makes
+   the width change read as "springy" rather than a flat linear resize. */
+.gooey-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 115px;
+  height: 32px;
+  background: var(--navy-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 3px;
+  padding: 0 10px;
+  cursor: text;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              border-color 0.2s ease;
+}
+
+.gooey-trigger.expanded {
+  width: 240px;
+}
+
+.gooey-icon-btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.gooey-trigger.expanded .gooey-icon-btn,
+.gooey-trigger:hover .gooey-icon-btn {
+  color: var(--text);
+}
+
+/* This component drops into pages that already style their own filter bars
+   with plain-element selectors like `.filter-bar input` or `.filters input`
+   (width/border/padding/background) — those rules match the real <input>
+   nested in here too, by tag, and a 2-class host selector like
+   `.filters.user-search input` can even out-specificity a bare `.gooey-input`
+   class selector. The 3-class chain below (.gooey-search-root .gooey-trigger
+   .gooey-input) keeps this component's own look, wherever it's placed,
+   without needing !important. */
+.gooey-search-root .gooey-trigger .gooey-input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 0;
+  /* Collapsed: the field is present (so it can still hold a value and fire
+     real input events) but visually and interactively out of the way —
+     truncated text peeks through the 115px chip as a hint of "there's a
+     search here", never a fully-usable control until expanded. */
+  cursor: inherit;
+}
+.gooey-trigger.expanded .gooey-input {
+  cursor: text;
+}
+
+.gooey-search-root .gooey-trigger .gooey-input::placeholder {
+  color: var(--text-dim);
+}
+
+.search-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+/* Multiple gooey inputs side by side (e.g. audit-log filters) shouldn't
+   collide — each instance keeps its own spacing. */
+.gooey-search-root + .gooey-search-root {
+  margin-left: 8px;
+}
+
+@media (max-width: 480px) {
+  .gooey-trigger { width: 100%; max-width: 115px; }
+  .gooey-trigger.expanded { max-width: 100%; width: 100%; }
+}
+
+/* ── AuthKit token restyle ────────────────────────────────────────────────
+   Scoped under .authkit-content so pages that haven't adopted AuthKit
+   (assets/css/theme-authkit.css) — the roles/logs/requirements pages this
+   component already ships on — keep their existing --navy-card look
+   unchanged. A page that wraps its body in <div class="authkit-content">
+   and loads theme-authkit.css after core/theme.css picks these up for free;
+   no separate gooey-search-root modifier class needed. */
+.authkit-content .gooey-trigger {
+  background: var(--surface-steel-plate);
+  border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-control);
+}
+.authkit-content .gooey-icon-btn,
+.authkit-content .gooey-trigger.expanded .gooey-icon-btn,
+.authkit-content .gooey-trigger:hover .gooey-icon-btn {
+  color: var(--color-frost-glow);
+}
+.authkit-content .gooey-search-root .gooey-trigger .gooey-input {
+  color: var(--color-ice-highlight);
+}
+.authkit-content .gooey-search-root .gooey-trigger .gooey-input::placeholder {
+  color: var(--color-fog-veil);
+}

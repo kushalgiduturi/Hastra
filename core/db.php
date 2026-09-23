@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '17');
+    define('ASSET_VERSION', '21');
 }
 
 header("X-Frame-Options: DENY");
@@ -252,6 +252,8 @@ require_once __DIR__ . '/audit.php';  // P17
 require_once __DIR__ . '/dock.php';
 require_once __DIR__ . '/tours.php';  // P18
 require_once __DIR__ . '/leave.php';
+require_once __DIR__ . '/gooey_search.php';
+require_once __DIR__ . '/authkit.php';
 require_once __DIR__ . '/canary.php';
 require_once __DIR__ . '/ephemeral_dossier.php';
 require_once __DIR__ . '/milestone_signoff.php';

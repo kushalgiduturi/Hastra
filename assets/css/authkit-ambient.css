@@ -1,0 +1,70 @@
+/* Astra — AuthKit ambient background: a clean obsidian canvas plus a
+   spotlight beam that travels down the full length of the page. Rendered
+   once per page via render_authkit_ambient() (core/authkit.php).
+
+   Two layers, because they need different containing blocks:
+   - .authkit-ambient is position:fixed, so the canvas colour always fills
+     the viewport however far the page scrolls.
+   - .authkit-beam is position:absolute against <body>, so its height is the
+     whole document rather than one viewport — a fixed layer would cut the
+     beam off at the first screen. */
+
+body:has(> .authkit-beam) {
+  position: relative;
+  height: auto;
+  min-height: 100vh;
+}
+
+.authkit-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--color-midnight-canvas);
+}
+
+.authkit-beam {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  /* The ellipse is 100% of the element's height tall, so the wash flares
+     at the top and fades out only at the very bottom of the document. */
+  background: radial-gradient(
+    ellipse 45% 100% at 50% 0%,
+    rgba(186, 215, 247, 0.22) 0%,
+    rgba(102, 58, 243, 0.12) 35%,
+    rgba(186, 215, 247, 0.05) 70%,
+    transparent 100%
+  );
+  /* Opacity-only pulse: opacity is composited on the GPU, whereas animating
+     filter:blur() on a layer thousands of pixels tall would re-rasterise it
+     every frame. The gradient is already soft, so a blur adds nothing
+     visible anyway. */
+  animation: beamPulse 8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@keyframes beamPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .authkit-beam { animation: none; opacity: 0.92; }
+}
+
+/* Pages using the ambient layers need their real content explicitly stacked
+   above them — this is the one rule callers must apply to their outermost
+   wrapper. It shares the beam's z-index but comes later in the DOM, so it
+   paints on top. */
+.authkit-content {
+  position: relative;
+  z-index: 1;
+}

@@ -129,6 +129,8 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/gooey-search.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>assets/js/gooey-search.js?v=<?= ASSET_VERSION ?>" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -311,7 +313,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
     </div>
 
     <div class="filter-bar">
-      <input type="text" id="f_search" placeholder="Search project / client…" oninput="filterReqs()">
+      <?php render_gooey_search('f_search', 'Search project / client…', 'filterReqs()'); ?>
       <select id="f_status" onchange="filterReqs()">
         <option value="">All Statuses</option>
         <option value="pending_review">Pending Review</option>

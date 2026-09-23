@@ -145,13 +145,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Login · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaApiLoad&render=explicit" async defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html { height: auto; }
   body {
     min-height: 100vh;
+    height: auto;
     background-color: var(--navy);
     background-image:
       radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%),
@@ -164,7 +167,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: var(--font-sans);
     padding: 1.5rem;
     position: relative;
-    overflow: hidden;
+    /* Was `overflow: hidden` — on a short viewport (small window, a phone in
+       landscape, a maximized-but-short browser) the centered .card can be
+       taller than the viewport, and `hidden` clipped it top and bottom with
+       no way to reach the Sign In button. Horizontal stays clipped (the
+       full-bleed background video/gradient shouldn't ever cause a horizontal
+       scrollbar); vertical now scrolls instead of clipping. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transition: var(--transition);
   }
 
@@ -220,7 +231,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     border-radius: 4px;
     width: 100%;
     max-width: 420px;
-    padding: 2.5rem 2.5rem 2rem;
+    /* Fixed + centered-via-transform means this box never moves when the
+       page scrolls — body's own overflow setting can't help it. On a short
+       viewport (a phone in landscape, a small/split window) the card can be
+       taller than the screen, and without a cap here its top (logo/header)
+       and bottom (Sign In button) render off-screen with literally no way
+       to reach them. Capping the height and scrolling internally — the
+       standard centered-dialog pattern — keeps every field reachable while
+       leaving the look identical on any viewport tall enough to fit it.
+       overscroll-behavior:contain stops that internal scroll from bubbling
+       into a page-level bounce/scroll on touch devices. */
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.3rem 2rem 1.1rem;
     box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow);
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.05);
@@ -354,16 +379,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .subtitle {
     font-size: 13px;
     color: var(--text-dim);
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.1rem;
   }
 
   .divider {
     height: 1px;
     background: var(--border-dim);
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.1rem;
   }
 
-  .field { margin-bottom: 1.2rem; }
+  .field { margin-bottom: 0.55rem; }
 
   label {
     display: block;
@@ -427,7 +452,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.4rem;
+    margin-bottom: 0.6rem;
   }
 
   .checkbox-wrap {
@@ -459,7 +484,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   /* reCAPTCHA wrapper */
   .recaptcha-wrap {
-    margin-bottom: 1.4rem;
+    margin-bottom: 0.6rem;
     transform-origin: left top;
   }
 
@@ -509,8 +534,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .alert svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; fill: var(--red); }
 
   .footer-links {
-    margin-top: 1.6rem;
-    padding-top: 1.2rem;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
     border-top: 1px solid var(--border-dim);
     display: flex;
     justify-content: center;
@@ -576,40 +601,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* ═══ Defense-grade surface: solid charcoal card, system type, bare icon, flat authoritative button ═══ */
+  /* ═══ AuthKit "Frosted Glass Cathedral at Midnight": deep-glass card,
+     void-violet submit, pill ghost tabs ═══
+     Uses AuthKit's own fixed tokens (assets/css/theme-authkit.css) rather
+     than the app's --navy-card/--accent pair, which flips with the
+     light/dark toggle — AuthKit is one deliberate dark aesthetic, so the
+     card looks the same regardless of the visitor's theme preference. The
+     `[data-theme="light"] .card` block re-asserts the same values for
+     exactly the reason the comment it replaces already explained: that
+     selector is more specific than a bare `.card` and would otherwise win. */
   .card {
-    background: var(--navy-card) !important;
-    border: 1px solid var(--border-dim) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
+    background: var(--surface-deep-glass) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--color-glass-edge) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-modal) !important;
   }
-  /* A `[data-theme="light"] .card` selector, if one existed, would be more
-     specific than the plain `.card` above and win even with !important on
-     both sides — this explicit light-theme block re-asserts the same
-     solid-surface proportions regardless. */
   [data-theme="light"] .card {
-    background: var(--navy-card) !important;
-    border: 1px solid var(--border-dim) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 30px 80px -20px rgba(15,23,42,.25), 0 0 40px var(--accent-glow) !important;
+    background: var(--surface-deep-glass) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--color-glass-edge) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-modal) !important;
   }
   .card::before { display: none !important; }
 
   .brand {
     display: flex; flex-direction: column; align-items: center;
-    text-align: center; gap: 8px; margin-bottom: 1.6rem !important;
+    text-align: center; gap: 6px; margin-bottom: 1rem !important;
   }
   .brand-icon {
     width: 34px !important; height: 34px !important;
     background: none !important; border-radius: 0 !important;
   }
-  .brand-icon svg { width: 34px !important; height: 34px !important; fill: var(--accent) !important; }
+  .brand-icon svg { width: 34px !important; height: 34px !important; fill: var(--color-frost-glow) !important; }
   .brand-text { display: flex; flex-direction: column; align-items: center; }
   .brand-text .title {
     font-family: var(--font-sans) !important;
     font-size: 21px !important; font-weight: 700 !important;
     letter-spacing: .01em !important; text-transform: none !important;
-    color: var(--text) !important;
+    background: var(--gradient-skywash) !important;
+    -webkit-background-clip: text !important; background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
   }
   .brand-text .sub { display: none !important; }
 
@@ -617,57 +652,101 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: var(--font-sans) !important;
     font-size: 19px !important; font-weight: 600 !important;
     letter-spacing: .005em !important; margin: 0 0 4px !important;
+    color: var(--color-ice-highlight) !important;
   }
   .card .subtitle, .card p.sub {
     font-size: 13.5px !important; margin: 0 0 1.8rem !important;
+    color: var(--color-moon-mist) !important;
   }
 
   .card label {
     font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
+    color: var(--color-moon-mist) !important;
   }
 
+  /* core/theme.css carries app-wide [data-theme="light"] overrides for
+     bare `input[type=...]` and `.btn-login.btn-login` (a doubled-class
+     specificity trick) so every OTHER page's buttons/fields stay legible in
+     light mode. Those rules tie or beat a plain `.card input[...]`/
+     `.card .btn-login` selector on specificity, so every declaration below
+     is duplicated under an explicit `[data-theme="light"]` prefix to
+     guarantee AuthKit's own look wins regardless of the visitor's theme
+     toggle — this card is deliberately theme-invariant. */
   .card input[type="email"], .card input[type="password"], .card input[type="text"],
-  .card input[type="tel"], .card select, .card textarea {
-    background: rgba(127,127,127,.06) !important;
-    border-radius: 7px !important;
+  .card input[type="tel"], .card select, .card textarea,
+  [data-theme="light"] .card input[type="email"], [data-theme="light"] .card input[type="password"],
+  [data-theme="light"] .card input[type="text"], [data-theme="light"] .card input[type="tel"],
+  [data-theme="light"] .card select, [data-theme="light"] .card textarea {
+    background: rgba(199, 211, 234, 0.06) !important;
+    border: 1px solid var(--color-glass-edge) !important;
+    border-radius: var(--radius-control) !important;
+    color: #ffffff !important;
     padding: 11px 13px !important;
+  }
+  .card input[type="email"]::placeholder, .card input[type="password"]::placeholder,
+  .card input[type="text"]::placeholder, .card input[type="tel"]::placeholder,
+  [data-theme="light"] .card input[type="email"]::placeholder, [data-theme="light"] .card input[type="password"]::placeholder,
+  [data-theme="light"] .card input[type="text"]::placeholder, [data-theme="light"] .card input[type="tel"]::placeholder {
+    color: rgba(199, 211, 234, 0.6) !important;
+  }
+  .card input[type="email"]:focus, .card input[type="password"]:focus,
+  .card input[type="text"]:focus, .card input[type="tel"]:focus,
+  [data-theme="light"] .card input[type="email"]:focus, [data-theme="light"] .card input[type="password"]:focus,
+  [data-theme="light"] .card input[type="text"]:focus, [data-theme="light"] .card input[type="tel"]:focus {
+    border-color: var(--color-void-violet) !important;
+    background: rgba(199, 211, 234, 0.06) !important;
+    box-shadow: 0 0 0 3px rgba(102, 58, 243, 0.18) !important;
   }
 
   .card button[type="submit"], .card .btn-login, .card .btn-send,
-  .card .btn-submit, .card .btn-primary, .card a.btn-primary {
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
-    border-radius: 7px !important;
+  .card .btn-submit, .card .btn-primary, .card a.btn-primary,
+  [data-theme="light"] .card button[type="submit"], [data-theme="light"] .card .btn-login,
+  [data-theme="light"] .card .btn-send, [data-theme="light"] .card .btn-submit,
+  [data-theme="light"] .card .btn-primary, [data-theme="light"] .card a.btn-primary {
+    background: var(--color-void-violet) !important;
+    color: #ffffff !important;
+    border-color: var(--color-void-violet) !important;
+    border-radius: var(--radius-control) !important;
     font-family: var(--font-sans) !important;
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
-    box-shadow: 0 8px 24px -8px var(--accent-glow) !important;
-    transition: transform .15s, box-shadow .15s !important;
+    box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.5) !important;
+    transition: transform .15s, box-shadow .15s, background .15s !important;
   }
   .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
-  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
+  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover,
+  [data-theme="light"] .card button[type="submit"]:hover, [data-theme="light"] .card .btn-login:hover,
+  [data-theme="light"] .card .btn-send:hover, [data-theme="light"] .card .btn-submit:hover,
+  [data-theme="light"] .card .btn-primary:hover, [data-theme="light"] .card a.btn-primary:hover {
+    background: #7548f5 !important;
+    box-shadow: 0 8px 28px -6px rgba(102, 58, 243, 0.7) !important;
     transform: translateY(-1px);
   }
 
-  .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
+  .card .footer-links a, .card .forgot-link { color: var(--color-frost-glow) !important; }
 
-  /* ── Two-portal sliding gate ── */
+  /* ── Two-portal sliding gate: ghost pill tabs, per AuthKit's "Ghost
+     Buttons & Social Providers" treatment (999px radius, translucent
+     moon-mist fill, glass-edge inset border) — the active tab gets the
+     same void-violet fill as the primary submit button, since it's
+     functionally this form's other "which action am I taking" choice. ── */
   .portal-toggle {
-    display: flex; gap: 4px; background: rgba(127,127,127,.08);
-    border: 1px solid var(--border-dim); border-radius: 8px; padding: 4px;
-    margin-bottom: 1.6rem;
+    display: flex; gap: 4px; background: rgba(199, 211, 234, 0.06);
+    border: 1px solid var(--color-glass-edge); border-radius: var(--radius-pill); padding: 4px;
+    margin-bottom: 0.8rem;
   }
   .portal-toggle button {
-    flex: 1 1 0; border: none; background: transparent; color: var(--text-dim);
+    flex: 1 1 0; border: none; background: transparent; color: var(--color-moon-mist);
     font-family: var(--font-sans); font-size: 12.5px; font-weight: 600;
-    letter-spacing: .01em; padding: 9px 8px; border-radius: 6px; cursor: pointer;
+    letter-spacing: .01em; padding: 9px 8px; border-radius: var(--radius-pill); cursor: pointer;
     transition: background .2s, color .2s;
   }
   .portal-toggle button.active {
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
-    color: #fff; box-shadow: 0 6px 16px -6px var(--accent-glow);
+    background: var(--color-void-violet);
+    color: #fff; box-shadow: 0 6px 16px -6px rgba(102, 58, 243, 0.6);
   }
-  .portal-toggle button:not(.active):hover { color: var(--text); }
+  .portal-toggle button:not(.active):hover { color: #ffffff; }
 
   .login-viewport { overflow: hidden; position: relative; }
   .login-track {
@@ -850,7 +929,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 
   <!-- System status -->
-  <div class="sys-row" style="display:flex; align-items:center; justify-content:space-between; margin-top:1.2rem;">
+  <div class="sys-row" style="display:flex; align-items:center; justify-content:space-between; margin-top:0.7rem;">
   <div class="sys-status" style="margin-top:0;">
     <span class="status-dot"></span>All systems operational
   </div>

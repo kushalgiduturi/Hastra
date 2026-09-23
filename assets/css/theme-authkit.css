@@ -1,0 +1,80 @@
+/* Astra — AuthKit "Frosted Glass Cathedral at Midnight" design tokens.
+   Additive, not a replacement: core/theme.css's existing --navy/--accent/
+   --text variable system (and its dark/light [data-theme] toggle) stays in
+   place and keeps driving every page that hasn't been migrated yet. This
+   file defines the new token set as its own namespace (--color-*,
+   --surface-*, --shadow-*) so it can be adopted page by page — auth/login.php
+   and the gooey search component first — without a flag-day rewrite of
+   every portal's inline styles at once.
+
+   Load this AFTER core/theme.css on any page that uses these tokens. */
+
+:root {
+  /* ── Canvas & Plates ──────────────────────────────────────────────── */
+  --color-midnight-canvas: #05060f;
+  --color-steel-plate:     #2f343e;
+  --surface-frosted-glass: rgba(186, 214, 247, 0.03);
+  --surface-deep-glass:    rgba(5, 6, 15, 0.97);
+  --surface-steel-plate:   #2f343e;
+
+  /* ── Type progression ─────────────────────────────────────────────── */
+  --color-ice-highlight: #d8ecf8; /* headings */
+  --color-frost-glow:    #d1e4fa; /* body / icons */
+  --color-moon-mist:     #c7d3ea; /* secondary labels */
+  --color-fog-veil:      #9da7ba; /* muted helper text */
+
+  /* ── Skywash gradient — display headers & brand marks ────────────── */
+  --gradient-skywash: linear-gradient(0deg, #d8ecf8 0%, #98c0ef 100%);
+
+  /* ── Accent — primary submit action on authentication cards only ─── */
+  --color-void-violet: #663af3;
+
+  /* ── Hairline borders ─────────────────────────────────────────────── */
+  --color-glass-edge: rgba(186, 215, 247, 0.12);
+
+  /* ── Elevation shadows ─────────────────────────────────────────────── */
+  --shadow-modal:   inset 0 1px 1px rgba(216, 236, 248, 0.2),
+                     inset 0 24px 48px rgba(168, 216, 245, 0.06),
+                     0 16px 32px rgba(0, 0, 0, 0.3);
+  --shadow-feature: inset 0 1px 1px rgba(199, 211, 234, 0.12),
+                     inset 0 24px 48px rgba(199, 211, 234, 0.05),
+                     0 24px 32px rgba(6, 6, 14, 0.7);
+
+  /* ── Border-radius semantics ──────────────────────────────────────── */
+  --radius-pill:    999px;  /* buttons, pills, social triggers */
+  --radius-card:    16px;   /* cards, modals, sheets */
+  --radius-control: 6px;    /* text inputs, badges, tag chips */
+  --radius-tile:    9999px; /* circular icon tiles */
+}
+
+/* ── Light theme: "Frosted Glass Cathedral at Noon" ──────────────────────
+   Same structure, inverted luminance — every dark-canvas/pale-text pairing
+   above becomes a light-canvas/deep-text pairing here, so anything built on
+   these tokens (section headings, the feature showcase, gooey search where
+   it opts in) follows the site's existing light/dark toggle instead of
+   staying permanently dark. auth/login.php's card is a deliberate exception
+   — it doesn't use --color-midnight-canvas at all, it hardcodes
+   --surface-deep-glass, so it stays dark regardless of this block. */
+[data-theme="light"] {
+  --color-midnight-canvas: #f8fafc;
+  --color-steel-plate:     #e2e8f0;
+  --surface-frosted-glass: rgba(15, 23, 42, 0.035);
+  --surface-deep-glass:    rgba(255, 255, 255, 0.97);
+  --surface-steel-plate:   #e8edf3;
+
+  --color-ice-highlight: #0f1b2e; /* headings */
+  --color-frost-glow:    #33475b; /* body / icons */
+  --color-moon-mist:     #4b5b73; /* secondary labels */
+  --color-fog-veil:      #7c8aa0; /* muted helper text */
+
+  --gradient-skywash: linear-gradient(0deg, #0f2a4a 0%, #1a56a0 100%);
+
+  --color-glass-edge: rgba(15, 27, 46, 0.10);
+
+  --shadow-modal:   inset 0 1px 1px rgba(15, 23, 42, 0.06),
+                     inset 0 24px 48px rgba(15, 23, 42, 0.02),
+                     0 16px 32px rgba(15, 23, 42, 0.10);
+  --shadow-feature: inset 0 1px 1px rgba(15, 23, 42, 0.05),
+                     inset 0 24px 48px rgba(15, 23, 42, 0.02),
+                     0 24px 32px rgba(15, 23, 42, 0.12);
+}

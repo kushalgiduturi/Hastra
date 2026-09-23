@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Reset Password · Astra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -458,14 +459,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .card { opacity: 1; transform: none; filter: none; animation: none; }
   }
 
-  /* ═══ Defense-grade surface: solid charcoal card, system type, bare icon, flat authoritative button ═══ */
+  /* ═══ AuthKit Frosted Glass Cathedral: deep-glass card, void-violet
+     submit ═══ — token-based (var(--surface-deep-glass) etc.), so unlike
+     auth/login.php's card this one follows the light/dark toggle rather
+     than staying permanently dark; theme-authkit.css defines both sides. */
   .card {
-    background: var(--navy-card) !important;
-    border: 1px solid var(--border-dim) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 30px 80px -20px rgba(0,0,0,.55), 0 0 40px var(--accent-glow) !important;
+    background: var(--surface-deep-glass) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--color-glass-edge) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-modal) !important;
   }
-  [data-theme="light"] .card { background: rgba(255,255,255,.72) !important; }
   .card::before { display: none !important; }
 
   .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.6rem !important; }
@@ -473,13 +478,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     width: 26px !important; height: 26px !important;
     background: none !important; border-radius: 0 !important;
   }
-  .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--accent) !important; }
+  .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--color-frost-glow) !important; }
   .brand-text { display: flex; align-items: center; }
   .brand-text .title {
     font-family: var(--font-sans) !important;
     font-size: 21px !important; font-weight: 700 !important;
     letter-spacing: .01em !important; text-transform: none !important;
-    color: var(--text) !important;
+    background: var(--gradient-skywash) !important;
+    -webkit-background-clip: text !important; background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
   }
   .brand-text .sub { display: none !important; }
 
@@ -487,39 +494,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: var(--font-sans) !important;
     font-size: 19px !important; font-weight: 600 !important;
     letter-spacing: .005em !important; margin: 0 0 4px !important;
+    color: var(--color-ice-highlight) !important;
   }
   .card .subtitle, .card p.sub {
     font-size: 13.5px !important; margin: 0 0 1.8rem !important;
+    color: var(--color-moon-mist) !important;
   }
 
   .card label {
     font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
+    color: var(--color-moon-mist) !important;
   }
 
   .card input[type="email"], .card input[type="password"], .card input[type="text"],
   .card input[type="tel"], .card select, .card textarea {
-    background: rgba(127,127,127,.06) !important;
-    border-radius: 7px !important;
+    background: rgba(199, 211, 234, 0.06) !important;
+    border: 1px solid var(--color-glass-edge) !important;
+    border-radius: var(--radius-control) !important;
+    color: var(--color-ice-highlight) !important;
     padding: 11px 13px !important;
+  }
+  .card input[type="email"]::placeholder, .card input[type="password"]::placeholder,
+  .card input[type="text"]::placeholder, .card input[type="tel"]::placeholder {
+    color: rgba(199, 211, 234, 0.6) !important;
+  }
+  .card input[type="email"]:focus, .card input[type="password"]:focus,
+  .card input[type="text"]:focus, .card input[type="tel"]:focus {
+    border-color: var(--color-void-violet) !important;
+    box-shadow: 0 0 0 3px rgba(102, 58, 243, 0.18) !important;
   }
 
   .card button[type="submit"], .card .btn-login, .card .btn-send,
   .card .btn-submit, .card .btn-primary, .card a.btn-primary {
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent)) !important;
-    border-radius: 7px !important;
+    background: var(--color-void-violet) !important;
+    color: #ffffff !important;
+    border-radius: var(--radius-control) !important;
     font-family: var(--font-sans) !important;
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
-    box-shadow: 0 8px 24px -8px var(--accent-glow) !important;
-    transition: transform .15s, box-shadow .15s !important;
+    box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.5) !important;
+    transition: transform .15s, box-shadow .15s, background .15s !important;
   }
   .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
   .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
+    background: #7548f5 !important;
     transform: translateY(-1px);
   }
 
-  .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
+  .card .footer-links a, .card .forgot-link { color: var(--color-frost-glow) !important; }
 </style>
 </head>
 <body>
