@@ -1,0 +1,283 @@
+/* Astra — AuthKit Feature Showcase: 4-panel grid (Aceternity-style bento
+   layout, adapted to vanilla CSS/JS — no React/Framer Motion). Card 4 hosts
+   a `cobe` WebGL globe; the other three are CSS-only mockups of real Astra
+   modules. Tokens come from assets/css/theme-authkit.css. */
+
+#showcase {
+  position: relative;
+  background: var(--color-midnight-canvas);
+  overflow: hidden;
+}
+
+/* Top/bottom edge masks — fade the section seam into the midnight canvas
+   rather than a hard cut, matching the ambient background's own soft edges. */
+#showcase::before,
+#showcase::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 2;
+}
+#showcase::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-midnight-canvas), transparent);
+}
+#showcase::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-midnight-canvas), transparent);
+}
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  /* Matches .feat-grid / .sec-grid's own 14px gap elsewhere on this page —
+     kept identical rather than picking a nearby-but-different value, so
+     the rhythm between card grids doesn't shift section to section. */
+  gap: 14px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .showcase-grid { grid-template-columns: 1fr; }
+}
+
+.showcase-card {
+  position: relative;
+  grid-column: span 6;
+  background: var(--surface-frosted-glass, rgba(186, 214, 247, 0.03));
+  border: 1px solid var(--color-glass-edge, rgba(186, 215, 247, 0.12));
+  border-radius: var(--radius-card, 16px);
+  box-shadow: inset 0 1px 1px rgba(199, 211, 234, 0.12);
+  padding: 1.4rem; /* matches .feat-card / .sec-card elsewhere on this page */
+  overflow: hidden;
+  max-width: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 901px) {
+  .showcase-card.span-4 { grid-column: span 4; }
+  .showcase-card.span-3 { grid-column: span 3; }
+  .showcase-card.span-2 { grid-column: span 2; }
+}
+
+.showcase-card-title {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  background: var(--gradient-skywash, linear-gradient(0deg, #d8ecf8 0%, #98c0ef 100%));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.showcase-card-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-moon-mist, #c7d3ea);
+  margin: 0 0 1rem;
+  max-width: 46ch;
+}
+
+.showcase-card-visual {
+  flex: 1 1 auto;
+  position: relative;
+  border-radius: var(--radius-control, 6px);
+  overflow: hidden;
+  min-height: 160px;
+}
+
+/* ── Card 1: Kanban deliverable tracking mockup ─────────────────────────── */
+.sc-kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  height: 100%;
+}
+.sc-kanban-col {
+  background: rgba(199, 211, 234, 0.04);
+  border: 1px solid var(--color-glass-edge, rgba(186, 215, 247, 0.12));
+  border-radius: 10px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sc-kanban-col-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fog-veil, #9da7ba);
+  margin-bottom: 2px;
+}
+.sc-chip {
+  background: rgba(209, 228, 250, 0.06);
+  border: 1px solid var(--color-glass-edge, rgba(186, 215, 247, 0.12));
+  border-radius: 6px;
+  padding: 8px 9px;
+  font-size: 11.5px;
+  color: var(--color-frost-glow, #d1e4fa);
+  transition: transform 6s ease-in-out, border-color 0.3s ease;
+  animation: scChipFloat 7s ease-in-out infinite;
+}
+.sc-chip.violet { border-color: rgba(102, 58, 243, 0.4); }
+.sc-chip .sc-chip-tag {
+  display: block;
+  margin-top: 5px;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-fog-veil, #9da7ba);
+}
+@keyframes scChipFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.sc-kanban-col:nth-child(2) .sc-chip { animation-delay: .4s; }
+.sc-kanban-col:nth-child(3) .sc-chip { animation-delay: .8s; }
+
+/* ── Card 2: floating identity/credential cards ─────────────────────────── */
+.sc-id-stack {
+  position: relative;
+  height: 100%;
+  min-height: 280px;
+}
+.sc-id-card {
+  position: absolute;
+  width: 74%;
+  max-width: 230px;
+  background: rgba(199, 211, 234, 0.05);
+  border: 1px solid var(--color-glass-edge, rgba(186, 215, 247, 0.12));
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.55);
+  animation: scIdFloat 6s ease-in-out infinite;
+}
+.sc-id-card .sc-id-row { display: flex; align-items: center; gap: 9px; }
+.sc-id-avatar {
+  width: 30px; height: 30px; border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-void-violet, #663af3), var(--color-frost-glow, #d1e4fa));
+  flex: none;
+}
+.sc-id-name { font-size: 12.5px; font-weight: 600; color: var(--color-ice-highlight, #fff); }
+.sc-id-role { font-size: 10.5px; color: var(--color-fog-veil, #9da7ba); }
+.sc-id-verified {
+  margin-top: 10px; display: flex; align-items: center; gap: 5px;
+  font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: #6fe3a3;
+}
+.sc-id-verified::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #6fe3a3; }
+.sc-id-time {
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-fog-veil, #9da7ba);
+  font-weight: 400;
+}
+
+.sc-id-card.c1 { top: 0;     left: 2%;  z-index: 2; animation-delay: 0s; }
+.sc-id-card.c2 { top: 95px;  left: 24%; z-index: 1; opacity: 0.85; animation-delay: 1.2s; }
+.sc-id-card.c3 { top: 190px; left: 6%;  z-index: 3; animation-delay: 2.1s; }
+
+@keyframes scIdFloat {
+  0%, 100% { transform: translateY(0) rotate(var(--sc-tilt, 0deg)); }
+  50% { transform: translateY(-8px) rotate(var(--sc-tilt, 0deg)); }
+}
+.sc-id-card.c1 { --sc-tilt: -2deg; }
+.sc-id-card.c2 { --sc-tilt: 1.5deg; }
+.sc-id-card.c3 { --sc-tilt: -1deg; }
+
+/* ── Card 3: dual-key sign-off hand-off ─────────────────────────────────── */
+.sc-signoff {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+}
+.sc-signoff-party {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 120px;
+  text-align: center;
+}
+.sc-signoff-avatar {
+  width: 48px; height: 48px; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(199, 211, 234, 0.06);
+  border: 1px solid var(--color-glass-edge, rgba(186, 215, 247, 0.12));
+}
+.sc-signoff-avatar svg { width: 22px; height: 22px; fill: var(--color-frost-glow, #d1e4fa); }
+.sc-signoff-label { font-size: 11.5px; font-weight: 600; color: var(--color-ice-highlight, #fff); }
+.sc-signoff-sub { font-size: 10px; color: var(--color-fog-veil, #9da7ba); }
+
+.sc-signoff-link {
+  flex: 1 1 auto;
+  height: 2px;
+  min-width: 40px;
+  position: relative;
+  background: linear-gradient(90deg, rgba(102, 58, 243, 0.15), rgba(102, 58, 243, 0.6), rgba(102, 58, 243, 0.15));
+  margin: 0 -4px;
+  top: -18px;
+}
+.sc-signoff-link::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 8px; height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-void-violet, #663af3);
+  box-shadow: 0 0 12px 3px rgba(102, 58, 243, 0.7);
+  animation: scPulseAcross 2.6s ease-in-out infinite;
+}
+@keyframes scPulseAcross {
+  0%   { left: 6%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { left: 94%; opacity: 0; }
+}
+.sc-signoff-hash {
+  position: absolute;
+  bottom: 8px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--color-fog-veil, #9da7ba);
+  word-break: break-all;
+  padding: 0 6px;
+}
+
+/* ── Card 4: cobe globe ──────────────────────────────────────────────────── */
+.sc-globe-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+.sc-globe-wrap canvas {
+  width: 100%;
+  height: 100%;
+  max-width: 420px;
+  max-height: 420px;
+  cursor: grab;
+}
+.sc-globe-wrap canvas:active { cursor: grabbing; }
+.sc-globe-fallback {
+  font-size: 12px;
+  color: var(--color-fog-veil, #9da7ba);
+  text-align: center;
+}

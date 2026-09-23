@@ -14,18 +14,25 @@ if (isset($_SESSION["user_id"])) {
 <title>Astra · Enterprise Software Delivery Platform</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/authkit-ambient.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/authkit-typography.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/feature-showcase.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/resizable-navbar.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <meta name="description" content="Astra — encrypted, audited, governed software delivery for teams that can't afford to guess.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* No grid texture — the canvas is plain obsidian, with the spotlight beam
+     (authkit-ambient.css) as the only ambient layer. position:relative is
+     what the full-height beam is measured against. */
   body {
+    position: relative;
+    height: auto;
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
+    background-image: none;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
@@ -35,38 +42,9 @@ if (isset($_SESSION["user_id"])) {
   section { padding: 5rem 1.5rem; }
   .wrap { max-width: 1100px; margin: 0 auto; }
 
-  /* ── Top bar ── */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--topnav-bg);
-    border-bottom: 1px solid var(--border);
-    padding: 0 1.5rem; height: 60px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; justify-content: center; }
-  .brand-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .brand-title { font-family: 'Share Tech Mono', monospace; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
-  .topbar-right { display: flex; align-items: center; gap: 10px; }
-  .btn-theme-toggle {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--input-bg); border: 1px solid var(--border-dim);
-    color: var(--text-dim); font-family: var(--font-sans);
-    font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
-    padding: 8px 12px; border-radius: 3px; cursor: pointer; transition: var(--transition);
-  }
-  .btn-theme-toggle:hover { background: var(--hover-bg); color: var(--text); border-color: var(--border); }
-  .btn-theme-toggle .theme-icon svg { width: 13px; height: 13px; vertical-align: middle; fill: currentColor; }
-  .btn-login {
-    font-size: 13px; font-weight: 600; color: var(--text-dim); text-decoration: none;
-    padding: 8px 14px; border-radius: 3px; transition: color 0.2s, background 0.2s;
-  }
-  .btn-login:hover { color: var(--text); background: var(--hover-bg); }
-  .btn-register {
-    font-size: 13px; font-weight: 600; color: #fff; text-decoration: none;
-    background: var(--accent); padding: 9px 16px; border-radius: 3px;
-    transition: background 0.2s, box-shadow 0.2s;
-  }
-  .btn-register:hover { background: var(--accent-dim); box-shadow: 0 0 16px rgba(var(--accent-rgb),0.35); }
+  /* Top nav is now .astra-resizable-nav (assets/css/resizable-navbar.css) —
+     position:fixed, so .hero's own top padding below is what keeps content
+     clear of it rather than the old sticky-bar's normal-flow height. */
 
   /* ── Hero ── */
   .hero { padding: 5.5rem 1.5rem 4rem; text-align: center; }
@@ -105,6 +83,30 @@ if (isset($_SESSION["user_id"])) {
 
   /* ── Section heading ── */
   .section-head { text-align: center; max-width: 640px; margin: 0 auto 3rem; }
+
+  /* Transparent so the full-page spotlight beam shows through every
+     section. The canvas colour comes from the fixed .authkit-ambient layer
+     (which follows the light/dark tokens); !important beats the inline
+     background:var(--navy-deep) on #features and #hierarchy. */
+  #features, #security, #hierarchy, #terms {
+    background: transparent !important;
+  }
+  #features .feat-card p, #security .sec-summary,
+  #hierarchy .hflow-node p, #terms p:not(.authkit-subtitle) {
+    color: var(--color-fog-veil);
+  }
+  /* h3 card titles inherit body's --text, which is a dark color in light
+     theme — invisible against the now-permanently-dark section background
+     above without this. */
+  #features h3, #security h3, #hierarchy h3, #terms h3 {
+    color: var(--color-ice-highlight);
+  }
+  /* .feat-card/.sec-card/.hflow-node also flip white via --navy-card —
+     matching frosted-glass surfaces instead of stray white boxes. */
+  #features .feat-card, #security .sec-card, #hierarchy .hflow-node {
+    background: var(--surface-frosted-glass) !important;
+    border-color: var(--color-glass-edge) !important;
+  }
   .section-eyebrow {
     font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--accent-bright); margin-bottom: 10px; display: block;
@@ -191,24 +193,121 @@ if (isset($_SESSION["user_id"])) {
   footer { padding: 2.5rem 1.5rem; text-align: center; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--border-dim); }
 
   @media (prefers-reduced-motion: reduce) { .sec-detail { transition: none; } }
+
+  /* ═══ High-contrast text (dark theme) ═══
+     Lifts every text tier off the muddy greys (#9da7ba fog-veil, #8b93a3
+     --text-dim) so copy reads cleanly over the obsidian canvas and beam.
+     Scoped to the dark theme: these near-white values would vanish on the
+     light theme's #f8fafc canvas, which keeps its own dark-ink tokens.
+     Re-pointing the tokens catches everything built on them (showcase
+     labels, chip tags, timestamps, the footer); the explicit rules below set
+     the key tiers to their exact values. */
+  :root:not([data-theme="light"]) {
+    --text-dim: #cbd5e1;
+    --color-moon-mist: #e2ecf8;
+    --color-fog-veil: #cbd5e1;
+  }
+
+  /* Primary descriptions & subheadings */
+  :root:not([data-theme="light"]) .hero p.lede,
+  :root:not([data-theme="light"]) .authkit-subtitle,
+  :root:not([data-theme="light"]) .section-head p,
+  :root:not([data-theme="light"]) .showcase-card-desc,
+  :root:not([data-theme="light"]) .feat-card p,
+  :root:not([data-theme="light"]) .sec-card .sec-summary,
+  :root:not([data-theme="light"]) .sec-detail,
+  :root:not([data-theme="light"]) .hflow-node p,
+  :root:not([data-theme="light"]) .terms-card p,
+  :root:not([data-theme="light"]) .cta-band p {
+    color: #e2ecf8 !important;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  /* Card titles go to pure white so they stay a step above the now-brighter
+     body copy beneath them. */
+  :root:not([data-theme="light"]) #features h3,
+  :root:not([data-theme="light"]) #security h3,
+  :root:not([data-theme="light"]) #hierarchy h4,
+  :root:not([data-theme="light"]) #terms h4 {
+    color: #ffffff;
+  }
+
+  /* Eyebrow labels & section markers */
+  :root:not([data-theme="light"]) .authkit-eyebrow-label,
+  :root:not([data-theme="light"]) .section-eyebrow,
+  :root:not([data-theme="light"]) .hero-badge {
+    color: #d1e4fa !important;
+  }
+  :root:not([data-theme="light"]) .hero-badge {
+    background: rgba(216, 236, 248, 0.06);
+    border-color: rgba(216, 236, 248, 0.35);
+  }
+  :root:not([data-theme="light"]) .authkit-eyebrow-line {
+    background: linear-gradient(90deg, transparent, rgba(216, 236, 248, 0.35), transparent);
+  }
+
+  /* Metric sub-labels (under AES-256 / 2FA / 100%) */
+  :root:not([data-theme="light"]) .hero-stat .lbl {
+    color: #cbd5e1 !important;
+  }
+
+  /* Helper text */
+  :root:not([data-theme="light"]) .sec-toggle-hint { opacity: 1; }
+
+  /* Secondary CTAs (hero "Sign in", navbar "Sign In") */
+  :root:not([data-theme="light"]) .btn-hero-secondary,
+  :root:not([data-theme="light"]) .arn-btn-ghost {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(216, 236, 248, 0.3) !important;
+  }
+  :root:not([data-theme="light"]) .btn-hero-secondary:hover,
+  :root:not([data-theme="light"]) .arn-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.14) !important;
+  }
 </style>
 </head>
 <body>
+<?php render_authkit_ambient(); ?>
+<div class="authkit-content">
 
-<nav class="topbar">
-  <a href="<?= get_base_url() ?>" class="brand">
-    <div class="brand-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
-    <span class="brand-title">Astra</span>
-  </a>
-  <div class="topbar-right">
-    <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
-      <span class="theme-icon"></span>
-      <span class="theme-label"></span>
-    </button>
-    <a href="<?= get_base_url() ?>auth/login" class="btn-login">Sign In</a>
-    <a href="<?= get_base_url() ?>auth/register" class="btn-register">Get Started</a>
+<nav class="astra-resizable-nav" id="astraNav">
+  <div class="arn-inner">
+    <a href="<?= get_base_url() ?>" class="arn-brand">
+      <div class="arn-brand-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
+      <span class="arn-brand-title">Astra</span>
+    </a>
+    <div class="arn-links">
+      <a href="#features" class="arn-link">Features</a>
+      <a href="#security" class="arn-link">Security</a>
+      <a href="#hierarchy" class="arn-link">Governance</a>
+    </div>
+    <div class="arn-actions">
+      <button id="themeToggleBtn" onclick="toggleTheme()" class="arn-theme-toggle">
+        <span class="theme-icon"></span>
+        <span class="theme-label"></span>
+      </button>
+      <a href="<?= get_base_url() ?>auth/login" class="arn-btn-ghost">Sign In</a>
+      <a href="<?= get_base_url() ?>auth/register" class="arn-btn-primary">Get Started</a>
+      <button type="button" class="arn-mobile-toggle" id="arnMobileOpen" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
   </div>
 </nav>
+
+<div class="arn-mobile-drawer" id="arnMobileDrawer">
+  <button type="button" class="arn-mobile-close" id="arnMobileClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <a href="#features" class="arn-link">Features</a>
+  <a href="#security" class="arn-link">Security</a>
+  <a href="#hierarchy" class="arn-link">Governance</a>
+  <div class="arn-mobile-actions">
+    <a href="<?= get_base_url() ?>auth/login" class="arn-btn-ghost">Sign In</a>
+    <a href="<?= get_base_url() ?>auth/register" class="arn-btn-primary">Get Started</a>
+  </div>
+</div>
 
 <!-- ── HERO ── -->
 <div class="hero">
@@ -234,11 +333,11 @@ if (isset($_SESSION["user_id"])) {
 <!-- ── WHAT ASTRA DOES ── -->
 <section id="features" style="background:var(--navy-deep);">
   <div class="wrap">
-    <div class="section-head">
-      <span class="section-eyebrow">What Astra Does</span>
-      <h2>One platform, the whole delivery lifecycle</h2>
-      <p>From the moment a client submits a requirement to the day their deployment goes live, every step happens in Astra — not scattered across email, spreadsheets, and chat.</p>
-    </div>
+    <?php render_authkit_heading(
+        'One platform, the whole delivery lifecycle',
+        'From client requirement submission to live deployment, every milestone happens directly in Astra instead of scattered emails, spreadsheets, and chat logs.',
+        'What Astra Does'
+    ); ?>
     <div class="feat-grid">
       <div class="feat-card">
         <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
@@ -284,13 +383,127 @@ if (isset($_SESSION["user_id"])) {
   </div>
 </section>
 
+<!-- ── FEATURE SHOWCASE (4-panel bento grid + cobe globe) ── -->
+<section id="showcase">
+  <div class="wrap">
+    <?php render_authkit_heading(
+        'Governance you can see, not just trust',
+        'Four pieces of Astra that turn "we have a process" into something an auditor can actually watch happen.',
+        'Platform In Motion'
+    ); ?>
+
+    <div class="showcase-grid">
+
+      <!-- Card 1 — span 4, top left -->
+      <div class="showcase-card span-4">
+        <h3 class="showcase-card-title">Deterministic SDLC Issue Governance</h3>
+        <p class="showcase-card-desc">Real-time Kanban deliverable tracking and defect audits. Every task and bug moves through one reviewable pipeline.</p>
+        <div class="showcase-card-visual">
+          <div class="sc-kanban">
+            <div class="sc-kanban-col">
+              <span class="sc-kanban-col-label">Pending</span>
+              <div class="sc-chip">Fix OTP resend cooldown<span class="sc-chip-tag">26T0041</span></div>
+              <div class="sc-chip">Client portal empty state<span class="sc-chip-tag">26T0044</span></div>
+            </div>
+            <div class="sc-kanban-col">
+              <span class="sc-kanban-col-label">In Progress</span>
+              <div class="sc-chip violet">Audit log IP export<span class="sc-chip-tag">26T0038</span></div>
+              <div class="sc-chip">Bug: XSS in comment field<span class="sc-chip-tag">26B0012</span></div>
+            </div>
+            <div class="sc-kanban-col">
+              <span class="sc-kanban-col-label">Verified</span>
+              <div class="sc-chip">Deploy pipeline gate<span class="sc-chip-tag">26T0035</span></div>
+              <div class="sc-chip">CWE-89 regression test<span class="sc-chip-tag">26B0009</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 — span 2, top right -->
+      <div class="showcase-card span-2">
+        <h3 class="showcase-card-title">Verified Identity &amp; Biometric Ingestion</h3>
+        <p class="showcase-card-desc">Floating employee and device credential cards, verified before attendance or access ever gets recorded.</p>
+        <div class="showcase-card-visual">
+          <div class="sc-id-stack">
+            <div class="sc-id-card c1">
+              <div class="sc-id-row">
+                <span class="sc-id-avatar"></span>
+                <span>
+                  <span class="sc-id-name" style="display:block;">Rachel Kim</span>
+                  <span class="sc-id-role">Terminal A-204 · Biometric</span>
+                </span>
+              </div>
+              <div class="sc-id-verified">Verified <span class="sc-id-time">2s ago</span></div>
+            </div>
+            <div class="sc-id-card c2">
+              <div class="sc-id-row">
+                <span class="sc-id-avatar"></span>
+                <span>
+                  <span class="sc-id-name" style="display:block;">Marcus Alvarez</span>
+                  <span class="sc-id-role">Badge #7731 · Manual entry</span>
+                </span>
+              </div>
+              <div class="sc-id-verified">Verified <span class="sc-id-time">19s ago</span></div>
+            </div>
+            <div class="sc-id-card c3">
+              <div class="sc-id-row">
+                <span class="sc-id-avatar"></span>
+                <span>
+                  <span class="sc-id-name" style="display:block;">Priya Nair</span>
+                  <span class="sc-id-role">Terminal B-112 · Biometric</span>
+                </span>
+              </div>
+              <div class="sc-id-verified">Verified <span class="sc-id-time">47s ago</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 — span 3, bottom left -->
+      <div class="showcase-card span-3">
+        <h3 class="showcase-card-title">Cryptographic Milestone Sign-Off</h3>
+        <p class="showcase-card-desc">A milestone reads as complete only after both the project lead and the client cryptographically sign it.</p>
+        <div class="showcase-card-visual">
+          <div class="sc-signoff">
+            <div class="sc-signoff-party">
+              <span class="sc-signoff-avatar"><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-3.9 0-9.5 1.96-9.5 5.5V21h19v-1.5c0-3.54-5.6-5.5-9.5-5.5z"/></svg></span>
+              <span class="sc-signoff-label">Project Lead</span>
+              <span class="sc-signoff-sub">HMAC-signed</span>
+            </div>
+            <div class="sc-signoff-link"></div>
+            <div class="sc-signoff-party">
+              <span class="sc-signoff-avatar"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+              <span class="sc-signoff-label">Client</span>
+              <span class="sc-signoff-sub">HMAC-signed</span>
+            </div>
+            <div class="sc-signoff-hash">pm_sig: 7f3a…e91c · client_sig: 2b8d…a04f</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 — span 3, bottom right -->
+      <div class="showcase-card span-3">
+        <h3 class="showcase-card-title">Global Anti-VPN &amp; Geo-Fencing Shield</h3>
+        <p class="showcase-card-desc">Every login is checked against live IP reputation before credentials are looked up. Secure gateway nodes are shown below.</p>
+        <div class="showcase-card-visual">
+          <div class="sc-globe-wrap">
+            <canvas id="showcaseGlobe" aria-label="Globe showing Astra's secure gateway regions" role="img"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<script type="module" src="<?= get_base_url() ?>assets/js/feature-showcase.js?v=<?= ASSET_VERSION ?>"></script>
+
 <section id="security">
   <div class="wrap">
-    <div class="section-head">
-      <span class="section-eyebrow">Security Architecture</span>
-      <h2>Built to be audited, not just used</h2>
-      <p>Every layer below is live in the platform, not a roadmap item. Click a card for how it actually works.</p>
-    </div>
+    <?php render_authkit_heading(
+        'Built to be audited, not just used',
+        'Every layer below is live in the platform, not a roadmap item. Click a card for how it actually works.',
+        'Security Architecture'
+    ); ?>
     <div class="sec-grid" id="secGrid">
       <div class="sec-card" data-card>
         <div class="sec-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
@@ -341,11 +554,11 @@ if (isset($_SESSION["user_id"])) {
 <!-- ── CORPORATE HIERARCHY ── -->
 <section id="hierarchy" style="background:var(--navy-deep);">
   <div class="wrap">
-    <div class="section-head">
-      <span class="section-eyebrow">Governance Model</span>
-      <h2>A chain of accountability, not a flat inbox</h2>
-      <p>Every account sits at exactly one level, and every level has exactly the access its job requires.</p>
-    </div>
+    <?php render_authkit_heading(
+        'A chain of accountability, not a flat inbox',
+        'Every account sits at exactly one level, and every level has exactly the access its job requires.',
+        'Governance Model'
+    ); ?>
     <div class="hierarchy-flow">
       <div class="hflow-node">
         <div class="hflow-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div>
@@ -377,11 +590,11 @@ if (isset($_SESSION["user_id"])) {
 <!-- ── TERMS & OPERATIONAL CONDITIONS ── -->
 <section id="terms">
   <div class="wrap">
-    <div class="section-head">
-      <span class="section-eyebrow">Terms & Operational Conditions</span>
-      <h2>What using Astra actually commits you to</h2>
-      <p>The short version of the agreement every registered company operates under.</p>
-    </div>
+    <?php render_authkit_heading(
+        'What using Astra actually commits you to',
+        'The short version of the agreement every registered company operates under.',
+        'Terms & Operational Conditions'
+    ); ?>
     <div class="terms-grid">
       <div class="terms-card">
         <div class="terms-num">1</div>
@@ -424,6 +637,8 @@ if (isset($_SESSION["user_id"])) {
     });
   });
 </script>
+<script src="<?= get_base_url() ?>assets/js/resizable-navbar.js?v=<?= ASSET_VERSION ?>" defer></script>
 
+</div>
 </body>
 </html>
