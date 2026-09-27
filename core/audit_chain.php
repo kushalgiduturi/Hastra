@@ -70,7 +70,7 @@ function astra_chain_append($conn, array $fields): ?array {
         $stmt = mysqli_prepare($conn,
             "INSERT INTO logs (user_id, username, action, ip_address, geo, severity, incident_type)
              VALUES (?, ?, ?, ?, ?, ?, ?)");
-        if (!$stmt) { error_log('[astra-chain] prepare failed: ' . mysqli_error($conn)); return null; }
+        if (!$stmt) { error_log('[hastra-chain] prepare failed: ' . mysqli_error($conn)); return null; }
         $sev = $fields['severity'] ?? 'info';
         mysqli_stmt_bind_param($stmt, "issssss", $fields['user_id'], $fields['username'], $fields['action'],
             $fields['ip_address'], $fields['geo'], $sev, $fields['incident_type']);
@@ -82,7 +82,7 @@ function astra_chain_append($conn, array $fields): ?array {
     if (!$lock || (int)$lock[0] !== 1) {
         // Never write an unchained row. Keep the event in the PHP error log
         // so it isn't lost silently.
-        error_log('[astra-chain] lock timeout, event not written: ' . json_encode(array_intersect_key($fields, array_flip(['user_id', 'action', 'ip_address']))));
+        error_log('[hastra-chain] lock timeout, event not written: ' . json_encode(array_intersect_key($fields, array_flip(['user_id', 'action', 'ip_address']))));
         return null;
     }
     try {
@@ -105,12 +105,12 @@ function astra_chain_append($conn, array $fields): ?array {
             "INSERT INTO logs (chain_index, previous_hash, current_hash, user_id, username, action, ip_address,
                                `timestamp`, geo, severity, incident_type, details)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        if (!$stmt) { error_log('[astra-chain] prepare failed: ' . mysqli_error($conn)); return null; }
+        if (!$stmt) { error_log('[hastra-chain] prepare failed: ' . mysqli_error($conn)); return null; }
         mysqli_stmt_bind_param($stmt, "ississssssss",
             $row['chain_index'], $row['previous_hash'], $row['current_hash'], $row['user_id'], $row['username'],
             $row['action'], $row['ip_address'], $row['timestamp'], $row['geo'], $row['severity'],
             $row['incident_type'], $row['details']);
-        if (!mysqli_stmt_execute($stmt)) { error_log('[astra-chain] insert failed: ' . mysqli_stmt_error($stmt)); return null; }
+        if (!mysqli_stmt_execute($stmt)) { error_log('[hastra-chain] insert failed: ' . mysqli_stmt_error($stmt)); return null; }
 
         return ['chain_index' => $row['chain_index'], 'current_hash' => $row['current_hash']];
     } finally {

@@ -15,12 +15,12 @@
    pointer: coarse) get no trail at all. Under prefers-reduced-motion
    nothing is emitted.
 
-   Public: window.AstraHand.burst(x, y, opts) for other scripts (the
+   Public: window.HastraHand.burst(x, y, opts) for other scripts (the
    handover seal's wake), in CSS pixels.
    ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  if (window.AstraHand) return;
+  if (window.HastraHand) return;
   const mq = q => matchMedia(q).matches;
   const TOUCH = mq('(hover: none)') || mq('(pointer: coarse)');
   const REDUCE = mq('(prefers-reduced-motion: reduce)');
@@ -28,7 +28,7 @@
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
-  const API = window.AstraHand = { burst() {}, touch: TOUCH, reduce: REDUCE };
+  const API = window.HastraHand = { burst() {}, touch: TOUCH, reduce: REDUCE };
 
   /* ------------------------------------------------------------ budget */
   const MOTES = 190;
@@ -154,7 +154,7 @@
   }
   function flexState(el) {
     let f = FLEX.get(el);
-    if (!f) { f = { rx: 0, ry: 0, vx: 0, vy: 0, s: 0, vs: 0, tx: 0, ty: 0, on: false }; FLEX.set(el, f); el.classList.add('astra-flex'); }
+    if (!f) { f = { rx: 0, ry: 0, vx: 0, vy: 0, s: 0, vs: 0, tx: 0, ty: 0, on: false }; FLEX.set(el, f); el.classList.add('hastra-flex'); }
     return f;
   }
   function flexTick(now) {
@@ -167,7 +167,7 @@
       f.vy += ((f.on ? f.ty : 0) - f.ry) * k * dt - f.vy * c * dt; f.ry += f.vy * dt;
       f.vs += (0 - f.s) * 260 * dt - f.vs * 13 * dt; f.s += f.vs * dt;
       const settled = !f.on && Math.abs(f.rx) + Math.abs(f.ry) + Math.abs(f.vx) + Math.abs(f.vy) + Math.abs(f.s) + Math.abs(f.vs) < .004;
-      if (settled) { el.style.transform = ''; el.classList.remove('astra-flex'); FLEX.delete(el); return; }
+      if (settled) { el.style.transform = ''; el.classList.remove('hastra-flex'); FLEX.delete(el); return; }
       busy = true;
       /* the portals' own hover lift is kept inside the flex */
       const lift = f.on && el.matches(':hover') ? -2 : 0;
@@ -227,7 +227,7 @@
     wireCards();
     if (TOUCH) return;                          /* no trail on touch screens */
     cv = document.createElement('canvas');
-    cv.id = 'astra-hand'; cv.setAttribute('aria-hidden', 'true');
+    cv.id = 'hastra-hand'; cv.setAttribute('aria-hidden', 'true');
     cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:2147483000;pointer-events:none;display:block;';
     document.body.appendChild(cv);
     cx = cv.getContext('2d');

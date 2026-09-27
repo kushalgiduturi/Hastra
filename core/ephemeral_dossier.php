@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — ephemeral, self-destructing deliverable dossiers.
+// Hastra — ephemeral, self-destructing deliverable dossiers.
 //
 // A dossier is a one-shot (or few-shot) encrypted payload — handover
 // credentials, a security report — reachable only via a random token that is

@@ -90,8 +90,9 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leave Management · Astra</title>
+<title>Leave Management · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -219,7 +220,7 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
       </div>
     </div>
     <div class="section-body">
-      <form method="POST" action="leave_management" class="policy-form">
+      <form method="POST" action="leave-management" class="policy-form">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="save_leave_policy">
         <div class="policy-row">
@@ -290,14 +291,14 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
             <td>
               <?php if ($lr["status"] === "pending"): ?>
               <div class="review-btns">
-                <form method="POST" action="leave_management" style="display:inline;">
+                <form method="POST" action="leave-management" style="display:inline;">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action" value="review_leave">
                   <input type="hidden" name="leave_id" value="<?= (int)$lr["id"] ?>">
                   <input type="hidden" name="new_status" value="approved">
                   <button type="submit" class="action-btn approve">Approve</button>
                 </form>
-                <form method="POST" action="leave_management" style="display:inline;">
+                <form method="POST" action="leave-management" style="display:inline;">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action" value="review_leave">
                   <input type="hidden" name="leave_id" value="<?= (int)$lr["id"] ?>">

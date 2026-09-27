@@ -23,7 +23,7 @@ $user = mysqli_fetch_assoc(mysqli_stmt_get_result($fetch));
 
 if (!$user) {
     session_unset(); session_destroy();
-    header("Location: " . get_base_url() . "auth/login");
+    header("Location: " . get_base_url() . "signin");
     exit();
 }
 $user['phone_number'] = astra_db_decrypt($user['phone_number']);
@@ -337,13 +337,13 @@ if ($role === 'employee') {
 
 // ── Portal back link per role ─────────────────────────────────────────────────
 $back_links = [
-    'sysadmin'         => ['url' => 'portals/sysadmin/sysadmin_portal', 'label' => '← Sysadmin Portal'],
-    'admin'            => ['url' => 'portals/admin/admin_portal',        'label' => '← Admin Portal'],
-    'employee'         => ['url' => 'portals/emlpoyee/employee_portal',  'label' => '← Employee Portal'],
-    'client'           => ['url' => 'portals/client/client_portal',      'label' => '← Client Portal'],
-    'pending_employee' => ['url' => 'portals/user/newuser_portal',       'label' => '← Portal'],
+    'sysadmin'         => ['url' => 'workspace/sysadmin/', 'label' => '← Sysadmin Portal'],
+    'admin'            => ['url' => 'workspace/admin/',        'label' => '← Admin Portal'],
+    'employee'         => ['url' => 'workspace/employee/',  'label' => '← Employee Portal'],
+    'client'           => ['url' => 'workspace/client/',      'label' => '← Client Portal'],
+    'pending_employee' => ['url' => 'workspace/user/newuser-portal',       'label' => '← Portal'],
 ];
-$back = $back_links[$role] ?? ['url' => 'auth/login', 'label' => '← Back'];
+$back = $back_links[$role] ?? ['url' => 'signin', 'label' => '← Back'];
 
 $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 ?>
@@ -351,8 +351,9 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile · Astra</title>
+<title>My Profile · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -539,7 +540,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .field input::placeholder { color: var(--text-dim); }
   .field .hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
 
-  /* intl-tel-input theming to match Astra's dark inputs */
+  /* intl-tel-input theming to match Hastra's dark inputs */
   .iti { width: 100%; display: block; }
   #phone_number { padding-left: 88px !important; }
   .iti__flag-container { border-radius: 3px 0 0 3px; }
@@ -721,11 +722,11 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 
 <nav class="topnav">
   <div class="nav-left">
-    <a href="<?= get_base_url() ?>portals/index" class="nav-brand-link" title="All pages for your role">
+    <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
     <div class="nav-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
-    <span class="nav-title">Astra</span>
+    <span class="nav-title">Hastra</span>
     </a>
     <div class="nav-divider"></div>
     <a class="nav-badge" href="<?= get_base_url() . $back['url'] ?>">Profile</a>
@@ -737,7 +738,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
       <span class="theme-label"></span>
     </button>
     <a href="<?= get_base_url() . $back['url'] ?>" class="nav-link"><?= $back['label'] ?></a>
-    <a href="<?= get_base_url() ?>auth/logout" class="btn-logout">
+    <a href="<?= get_base_url() ?>signout" class="btn-logout">
       <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
       Logout
     </a>

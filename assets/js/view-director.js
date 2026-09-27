@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   View director: ties the atmosphere's camera to where you are in Astra.
+   View director: ties the atmosphere's camera to where you are in Hastra.
 
    Every page belongs to one waypoint on the shared scene's rig
    (assets/js/kage-scene.js, the landing world's own camera curve):
@@ -19,18 +19,20 @@
    ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  if (window.__astraDirector) return;
-  window.__astraDirector = true;
+  if (window.__hastraDirector) return;
+  window.__hastraDirector = true;
   const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const KEY = 'astra_cam_u';
 
   /* page → waypoint, matched on the final path segment */
   const MAP = [
-    [/^(login|otp|forgot|forgot_otp|reset|register|verify_register|set_password)$/, 0],   /* the hall, face on: the hand rises out of it */
-    [/security|scan_center|logs$/, 3],
-    [/profile|roles|migrate|docs?$|doc_|settings/, 4],
+    [/^(login|otp|forgot|forgot_otp|reset|register|verify_register|set_password|signin|signup|verify|verify-email|forgot-password|reset-code|reset-password|set-password)$/, 0],
+    /* role homes (/workspace/admin/ …) and the workspace index sit at the gate */
+    [/^(workspace|admin|client|sysadmin|employee|user)$/, 0],   /* the hall, face on: the hand rises out of it */
+    [/security|scan[_-]center|logs$/, 3],
+    [/profile|roles|migrate|docs?$|doc[_-]|settings/, 4],
     [/billing|delivery|dossier|terminal|signoff|ledger|audit/, 2],
-    [/task|team|requirement|project|testing|deploy|directory|employee$|create_employee|attendance|leave/, 1],
+    [/task|team|requirement|project|testing|deploy|directory|employee$|create[_-]employee|attendance|leave/, 1],
     [/portal|^index$|^$/, 0]
   ];
   function pageWaypoint() {
@@ -42,7 +44,7 @@
 
   /* ------------------------------------------------------------ the flight */
   function fly() {
-    const A = window.AstraAtmosphere; if (!A) return;
+    const A = window.HastraAtmosphere; if (!A) return;
     const to = pageWaypoint();
     let from = NaN;
     try { from = parseFloat(sessionStorage.getItem(KEY)); } catch (e) { /* private mode */ }
@@ -108,13 +110,13 @@
       setTimeout(() => e.target.classList.add('rv-in'), +e.target.dataset.rvd || 0);
     }), { rootMargin: '0px 0px -8% 0px', threshold: .04 });
     items.forEach(el => io.observe(el));
-    document.documentElement.classList.add('astra-rv');
+    document.documentElement.classList.add('hastra-rv');
   }
 
   function init() {
     reveals();
-    if (window.AstraAtmosphere) fly();                 /* the scene queues the flight until it is up */
-    else document.addEventListener('astra:atmosphere-ready', fly, { once: true });
+    if (window.HastraAtmosphere) fly();                 /* the scene queues the flight until it is up */
+    else document.addEventListener('hastra:atmosphere-ready', fly, { once: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

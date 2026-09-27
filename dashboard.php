@@ -3,7 +3,7 @@ include __DIR__ . '/core/db.php';
 secure_session_start();
 
 if (!isset($_SESSION["user_id"])) {
-    header("Location: " . get_base_url() . "auth/login");
+    header("Location: " . get_base_url() . "signin");
     exit();
 }
 ?>
@@ -11,8 +11,9 @@ if (!isset($_SESSION["user_id"])) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard · Astra</title>
+<title>Dashboard · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -289,17 +290,17 @@ if (!isset($_SESSION["user_id"])) {
     <div class="brand-icon">
       <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
+          <linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="var(--accent-bright)"/>
             <stop offset="1" stop-color="var(--purple, var(--accent-bright))"/>
           </linearGradient>
         </defs>
-        <path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/>
-        <path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/>
+        <path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/>
+        <path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/>
       </svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Secure Access Portal</div>
     </div>
   </div>
@@ -308,10 +309,10 @@ if (!isset($_SESSION["user_id"])) {
   <p class="subtitle">You're signed in. Head to your workspace to get started.</p>
   <div class="divider"></div>
 
-  <a href="<?= get_base_url() ?>portals/index" class="btn-primary">Go to Workspace</a>
+  <a href="<?= get_base_url() ?>workspace/" class="btn-primary">Go to Workspace</a>
 
   <div class="footer-links">
-    <a href="<?= get_base_url() ?>auth/logout">Logout</a>
+    <a href="<?= get_base_url() ?>signout">Logout</a>
   </div>
 
   <div class="sys-status">

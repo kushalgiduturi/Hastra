@@ -152,8 +152,9 @@ foreach ($company_sections as $sec) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Role Management · Astra</title>
+<title>Role Management · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -359,7 +360,7 @@ foreach ($company_sections as $sec) {
     <?php if (!$schema_ready): ?>
     <div class="migration-note">
       Companies aren't set up in the database yet, so users are split into staff and clients only.
-      <a href="<?= get_base_url() ?>portals/sysadmin/migrate">Run the database migration</a> once to enable company sections, domains and ID ranges.
+      <a href="<?= get_base_url() ?>workspace/sysadmin/migrate">Run the database migration</a> once to enable company sections, domains and ID ranges.
     </div>
     <?php endif; ?>
 
@@ -653,7 +654,7 @@ function requestDelete(targetId, targetName) {
   document.getElementById('stepDone').style.display      = 'none';
   document.getElementById('deleteModal').classList.add('open');
 
-  fetch('delete_user.php', {
+  fetch('delete-user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ csrf_token: CSRF_TOKEN, action: 'request_delete', target_id: targetId })
@@ -681,7 +682,7 @@ function verifyOtp() {
   btn.disabled = true;
   btn.textContent = 'Verifying...';
 
-  fetch('delete_user.php', {
+  fetch('delete-user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ csrf_token: CSRF_TOKEN, action: 'verify_otp', target_id: currentDeletionId, otp: otp })

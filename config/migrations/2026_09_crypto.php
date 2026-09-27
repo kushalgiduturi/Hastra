@@ -1,5 +1,5 @@
 <?php
-// Astra — column encryption migration (Sep 2026). Run after 2026_09_integrity.
+// Hastra — column encryption migration (Sep 2026). Run after 2026_09_integrity.
 //
 // Widens users.phone_number and logs.geo to TEXT (requirements.description
 // and requirements.expected_features are already TEXT) and encrypts any
@@ -14,7 +14,7 @@
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_crypto.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_crypto.php
 
 $__astra_crypto_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;
 if (!$__astra_crypto_cli && !defined('ASTRA_MIGRATION_INCLUDE')) { http_response_code(404); exit(); }
@@ -44,7 +44,7 @@ function astra_crypto_widen_to_text($conn, callable $out, $table, $column, $null
 // Encrypts every not-yet-encrypted, non-empty value in $table.$column with
 // astra_db_encrypt(), verifying each one round-trips before moving on.
 // Both envelope prefixes count as "already encrypted" — a row carrying the
-// current astra:v1: format must not be handed back to astra_db_encrypt() as if
+// current hastra:v1: format must not be handed back to astra_db_encrypt() as if
 // it were plaintext, or the round-trip self-check below compares a plaintext
 // against its own ciphertext and fails.
 //
@@ -99,7 +99,7 @@ function astra_migrate_crypto($conn, callable $out) {
 
     $out("");
     $out("== column encryption: deliveries.credentials_note");
-    $out("   already covered by the integrity migration (core/integrity.php, config/astra.key), left untouched here");
+    $out("   already covered by the integrity migration (core/integrity.php, config/hastra.key), left untouched here");
 }
 
 if ($__astra_crypto_cli) {

@@ -1,5 +1,5 @@
 <?php
-// Astra — user PII encryption migration (Sep 2026). Run after 2026_09_crypto.
+// Hastra — user PII encryption migration (Sep 2026). Run after 2026_09_crypto.
 //
 // Encrypts users.name, users.email, and users.gender (AES-256-GCM under
 // ASTRA_DB_KEY, same as users.phone_number already is — see
@@ -24,7 +24,7 @@
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_user_pii.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_user_pii.php
 
 $__astra_pii_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;
 if (!$__astra_pii_cli && !defined('ASTRA_MIGRATION_INCLUDE')) { http_response_code(404); exit(); }

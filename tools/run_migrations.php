@@ -1,5 +1,5 @@
 <?php
-// Astra — run every migration from the CLI in one shot.
+// Hastra — run every migration from the CLI in one shot.
 //
 // Mirrors the sysadmin "Database migration" page (portals/sysadmin/migrate.php)
 // but without needing a browser session. All migrations are idempotent and

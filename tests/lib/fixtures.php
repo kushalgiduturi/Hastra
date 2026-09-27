@@ -14,7 +14,7 @@ final class F {
 }
 
 function fix_make_user(string $key, string $role, ?int $company_id, array $extra = []): array {
-    $email = "astra.test.$key." . F::$suffix . '@example.test';
+    $email = "hastra.test.$key." . F::$suffix . '@example.test';
     $name  = 'Test ' . ucfirst($key);
     $gender = array_key_exists('gender', $extra) ? $extra['gender'] : 'male';
     q("INSERT INTO users (name, email, email_bindex, password, reset_token, token_expiry, role, company_id, client_role,
@@ -33,7 +33,7 @@ function fix_make_user(string $key, string $role, ?int $company_id, array $extra
 function fix_adopt_user(string $key, int $id): array {
     $row = q1("SELECT role FROM users WHERE id = ?", [$id]);
     if (!$row) throw new RuntimeException("fixture: user $id missing from clone");
-    $email = "astra.test.$key." . F::$suffix . '@example.test';
+    $email = "hastra.test.$key." . F::$suffix . '@example.test';
     $name  = 'Test ' . ucfirst($key);
     q("UPDATE users SET name = ?, email = ?, email_bindex = ?, password = ?, gender = ?, profile_updated = 1,
                         login_attempts = 0, locked_until = NULL

@@ -30,7 +30,7 @@ t('no html/body rule clips content or locks the viewport', function () {
     $bad = []; $noted = [];
     foreach (ui_css_sources() as $file => $css) {
         foreach (ui_root_rules($css) as [$sel, $body]) {
-            $where = preg_replace('~^.*/login/~', '', str_replace('\\', '/', $file)) . " `$sel`";
+            $where = preg_replace('~^.*/Hastra/~', '', str_replace('\\', '/', $file)) . " `$sel`";
             // A state class that locks scrolling while a modal overlay is open
             // (onboarding tour, mobile drawer) is intended, not a layout bug.
             if (preg_match('~^body\.[\w-]*(open|locked|modal)\b~', $sel)) { $noted[] = "$where (overlay scroll lock)"; continue; }

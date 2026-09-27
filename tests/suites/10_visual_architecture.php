@@ -1,6 +1,6 @@
 <?php
 // The unified visual architecture: the landing engine's runtime and cut-out
-// assets stay byte-exact, the landing page hosts Astra's own document
+// assets stay byte-exact, the landing page hosts Hastra's own document
 // same-origin, and every page gets the atmosphere stack. Rendering and motion
 // are verified in a real browser separately; this pins what can drift silently.
 T::group('Visual architecture');
@@ -19,7 +19,7 @@ const ENGINE_HASHES = [
     'secret-pathways-assets/foreground/png/ruins.webp'         => '77006e58f2066e6fa9bfc504df396db49b1c7977858fa52d34dd2dad5feced77',
 ];
 
-function va_doc(): string { return file_get_contents(ASTRA_ROOT . '/landing-pages/astra.html'); }
+function va_doc(): string { return file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html'); }
 
 t('landing engine runtime and cut-outs are byte-exact (11 files, SHA-256)', function () {
     foreach (ENGINE_HASHES as $rel => $want) {
@@ -29,22 +29,22 @@ t('landing engine runtime and cut-outs are byte-exact (11 files, SHA-256)', func
     }
     // and every asset the document references is there
     preg_match_all('~(?:src|href)="(secret-pathways-assets/[^"]+)"~', va_doc(), $m);
-    foreach (array_unique($m[1]) as $rel) expect(is_file(ASTRA_ROOT . '/landing-pages/' . $rel), "astra.html references missing $rel");
+    foreach (array_unique($m[1]) as $rel) expect(is_file(ASTRA_ROOT . '/landing-pages/' . $rel), "hastra.html references missing $rel");
     return count(ENGINE_HASHES) . ' files verified';
 });
 
-t('landing content is Astra: no retired narrative, glyphs or fonts', function () {
+t('landing content is Hastra: no retired narrative, glyphs or fonts', function () {
     $doc = va_doc();
-    expect(str_contains($doc, '<title>Astra — Enterprise Software Delivery &amp; Governance</title>'), 'document title');
+    expect(str_contains($doc, '<title>Hastra — Enterprise Software Delivery &amp; Governance</title>'), 'document title');
     foreach (['kage', 'kyoto', 'temple', 'sanmon', 'shrine', 'cypress', 'torii', 'japanese', 'notojp', 'wordmark,'] as $w)
-        expect(!preg_match('~\b' . $w . '~i', $doc), "astra.html still says '$w'");
-    expect(!preg_match('~[\x{3040}-\x{30FF}\x{4E00}-\x{9FFF}]~u', $doc), 'astra.html still carries kana or kanji');
+        expect(!preg_match('~\b' . $w . '~i', $doc), "hastra.html still says '$w'");
+    expect(!preg_match('~[\x{3040}-\x{30FF}\x{4E00}-\x{9FFF}]~u', $doc), 'hastra.html still carries kana or kanji');
     expect(!preg_match('~class="[^"]*\bjp\b~', $doc), 'a .jp element survived');
-    foreach (["const word = 'ASTRA'", 'Initializing cryptographic workspace...', '<div class="word-fb" aria-hidden="true">ASTRA</div>',
-              'href="#architecture"', 'href="#security"', 'href="#governance"', 'href="#ledger"', '<b>ASTRA</b><i>ENTERPRISE GOVERNANCE</i>',
+    foreach (["const word = 'HASTRA'", 'Initializing cryptographic workspace...', '<div class="word-fb" aria-hidden="true">HASTRA</div>',
+              'href="#architecture"', 'href="#security"', 'href="#governance"', 'href="#ledger"', '<b>HASTRA</b><i>ENTERPRISE GOVERNANCE</i>',
               'id="architecture" data-cam="1"', 'id="security" data-cam="2"', 'id="governance" data-cam="3"', 'id="ledger" data-cam="4"',
-              '© 2026 Astra Delivery Network. All rights reserved.', "addColorStop(0, '#98c0ef')", "addColorStop(1, '#d8ecf8')"] as $needle)
-        expect(str_contains($doc, $needle), "astra.html lost: $needle");
+              '© 2026 Hastra Delivery Network. All rights reserved.', "addColorStop(0, '#98c0ef')", "addColorStop(1, '#d8ecf8')"] as $needle)
+        expect(str_contains($doc, $needle), "hastra.html lost: $needle");
     expect(preg_match('~<p class="hero-sub body"[^>]*>([^<]+)</p>~', $doc, $hm) === 1 && !str_contains($hm[1], '—'), 'hero subtitle carries an em dash');
     expect(!is_file(ASTRA_ROOT . '/landing-pages/kage.html') && !is_file(ASTRA_ROOT . '/assets/js/kage-host.js'), 'retired files are back');
 });
@@ -57,9 +57,9 @@ function va_head(string $path): array {
     return [(string)$body, $http_response_header ?? []];
 }
 
-t('landing hosts Astra same-origin; framing is SAMEORIGIN, never cross-site', function () {
-    [$body, $h] = va_head('index.php');
-    expect(str_contains($body, 'landing-pages/astra.html'), 'index.php no longer frames astra.html');
+t('landing hosts Hastra same-origin; framing is SAMEORIGIN, never cross-site', function () {
+    [$body, $h] = va_head('');
+    expect(str_contains($body, 'landing-pages/hastra.html'), 'the landing page no longer frames hastra.html');
     expect(str_contains($body, 'allow-same-origin allow-scripts'), 'frame lost its sandbox permissions');
     expect(str_contains($body, 'allow-top-navigation-by-user-activation'), 'Sign In / Get Started cannot leave the frame');
     $hdr = implode("\n", $h);
@@ -76,22 +76,22 @@ t('landing hosts Astra same-origin; framing is SAMEORIGIN, never cross-site', fu
 
 t('every page mounts the shared scene and pointer stack through core/theme.js', function () {
     $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
-    foreach (['landing-host', 'kage-scene', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director', 'astra-atmosphere.css'] as $n) {
+    foreach (['landing-host', 'kage-scene', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director', 'hastra-atmosphere.css'] as $n) {
         expect(str_contains($js, $n), "theme.js does not mount $n");
         $file = ASTRA_ROOT . (str_ends_with($n, '.css') ? "/assets/css/$n" : "/assets/js/$n.js");
         expect(is_file($file), "missing $file");
     }
-    foreach (['assets/js/astra-atmosphere.js', 'assets/js/cursor-wisps.js'] as $gone)
+    foreach (['assets/js/hastra-atmosphere.js', 'assets/js/cursor-wisps.js'] as $gone)
         expect(!is_file(ASTRA_ROOT . "/$gone"), "retired $gone is back");
     expect(str_contains(file_get_contents(ASTRA_ROOT . '/index.php'), 'data-atmosphere-off'), 'the landing host must opt out');
     // the scene is the landing document itself, in background mode
     $k = file_get_contents(ASTRA_ROOT . '/assets/js/kage-scene.js');
-    expect(str_contains($k, "landing-pages/astra.html?scene=bg") && str_contains($k, "frame.id = 'astra-kage-scene'"), 'scene host lost its frame');
-    expect(str_contains(va_doc(), "qs('scene', '') === 'bg'") && str_contains(va_doc(), 'window.__astraBg'), 'astra.html lost background mode');
+    expect(str_contains($k, "landing-pages/hastra.html?scene=bg") && str_contains($k, "frame.id = 'hastra-kage-scene'"), 'scene host lost its frame');
+    expect(str_contains(va_doc(), "qs('scene', '') === 'bg'") && str_contains(va_doc(), 'window.__hastraBg'), 'hastra.html lost background mode');
     // layering: the scene at 0 outside <body>, <body> lifted to 1 above it
-    $css = file_get_contents(ASTRA_ROOT . '/assets/css/astra-atmosphere.css');
-    expect(preg_match('~#astra-kage-scene\s*\{[^}]*position:\s*fixed;\s*inset:\s*0;\s*width:\s*100%;\s*height:\s*100%;\s*z-index:\s*0;\s*pointer-events:\s*none;~', $css) === 1, 'scene canvas placement drifted');
-    expect(str_contains($css, 'html.astra-kage body { position: relative; z-index: 1; }'), 'body is no longer above the scene');
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/hastra-atmosphere.css');
+    expect(preg_match('~#hastra-kage-scene\s*\{[^}]*position:\s*fixed;\s*inset:\s*0;\s*width:\s*100%;\s*height:\s*100%;\s*z-index:\s*0;\s*pointer-events:\s*none;~', $css) === 1, 'scene canvas placement drifted');
+    expect(str_contains($css, 'html.hastra-kage body { position: relative; z-index: 1; }'), 'body is no longer above the scene');
     expect(str_contains($k, 'root.insertBefore(frame, b)'), 'the scene must hang outside <body>');
 });
 
@@ -102,7 +102,7 @@ t('dashboards wear the plate; deliverables carry cloth and the handover seal', f
         expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), "data-cloth=\"$kind\""), "$p lost data-cloth=\"$kind\"");
     foreach (['portals/deliveries/dossier.php', 'portals/projects/signoff.php'] as $p)
         expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), 'data-handover-seal'), "$p lost its handover seal");
-    $css = file_get_contents(ASTRA_ROOT . '/assets/css/astra-atmosphere.css');
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/hastra-atmosphere.css');
     foreach (['rgba(10, 14, 18, 0.88)', 'rgba(255, 255, 255, 0.92)', 'blur(16px)', 'rgba(223, 231, 224, 0.15)', '#cbd5e1', 'linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 55%, var(--accent-dim) 100%)'] as $v)
         expect(str_contains($css, $v), "plate spec drifted: $v");
     expect(!preg_match('~#663af3|102,\s*58,\s*243~i', $css), 'violet crept back into the plate');

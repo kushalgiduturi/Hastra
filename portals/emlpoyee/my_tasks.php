@@ -201,8 +201,9 @@ function format_bytes($bytes) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Tasks · Astra</title>
+<title>My Tasks · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -468,7 +469,7 @@ function format_bytes($bytes) {
                     <a class="file-chip-name" href="<?= get_base_url() ?>download?file_id=<?= $f['id'] ?>" title="<?= htmlspecialchars($f['file_name']) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($f['file_name']) ?></a>
                     <span class="file-chip-size"><?= format_bytes($f['file_size']) ?></span>
                     <?php if ($f['uploaded_by'] == $user_id): ?>
-                    <form method="POST" action="my_tasks" style="display:inline;">
+                    <form method="POST" action="my-tasks" style="display:inline;">
                       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                       <input type="hidden" name="action"  value="delete_file">
                       <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
@@ -482,7 +483,7 @@ function format_bytes($bytes) {
                 </div>
                 <?php endif; ?>
 
-                <form method="POST" action="my_tasks" enctype="multipart/form-data">
+                <form method="POST" action="my-tasks" enctype="multipart/form-data">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action"  value="upload_file">
                   <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
@@ -505,7 +506,7 @@ function format_bytes($bytes) {
             <td class="muted"><?= htmlspecialchars($task['assigned_by_name']) ?></td>
             <td><span class="badge badge-<?= $task['status'] ?>"><?= $task_status_labels[$task['status']] ?></span></td>
             <td>
-              <form method="POST" action="my_tasks" style="display:flex;gap:6px;align-items:center;">
+              <form method="POST" action="my-tasks" style="display:flex;gap:6px;align-items:center;">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="update_task_status">
                 <input type="hidden" name="task_id" value="<?= $task['id'] ?>">

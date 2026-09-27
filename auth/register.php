@@ -14,11 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") $msg = htmlspecialchars(astra_google_e
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
-        case "sysadmin":         header("Location: " . get_base_url() . "portals/sysadmin/sysadmin_portal"); break;
-        case "admin":            header("Location: " . get_base_url() . "portals/admin/admin_portal");       break;
-        case "employee":         header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal"); break;
-        case "pending_employee": header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
-        default:                 header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
+        case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/"); break;
+        case "admin":            header("Location: " . get_base_url() . "workspace/admin/");       break;
+        case "employee":         header("Location: " . get_base_url() . "workspace/employee/"); break;
+        case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
+        default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
     }
     exit();
 }
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (mb_strlen($contract_ref) > 60) {
         $msg = "The contract reference can be at most 60 characters.";
     } elseif ($existing_co) {
-        $msg = htmlspecialchars($existing_co["company_name"]) . " is already registered on Astra. Ask its admin or IT Manager to add you to the team.";
+        $msg = htmlspecialchars($existing_co["company_name"]) . " is already registered on Hastra. Ask its admin or IT Manager to add you to the team.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $msg = "Please enter a valid email address.";
     } elseif (!preg_match('/^\+[1-9]\d{6,14}$/', $phone)) {
@@ -173,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->send();
 
                     $_SESSION["verify_email"] = $email;
-                    header("Location: " . get_base_url() . "auth/verify_register");
+                    header("Location: " . get_base_url() . "verify-email");
                     exit();
 
                 } catch (Exception $e) {
@@ -193,10 +193,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register · Astra</title>
+<title>Register · Hastra</title>
 <?php astra_compliance_css(); ?>
-<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/astra-select.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/hastra-select.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -371,7 +372,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .eye-btn:hover { color: var(--accent-bright); }
   .eye-btn svg { width: 16px; height: 16px; }
 
-  /* intl-tel-input theming to match Astra's dark inputs */
+  /* intl-tel-input theming to match Hastra's dark inputs */
   .iti { width: 100%; display: block; }
   /* .card input[...] sets padding-left:13px !important above, which would
      otherwise swallow the space intl-tel-input reserves for the flag/dial
@@ -715,7 +716,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     background: rgba(127,127,127,0.08); border: 1px solid var(--border-dim); border-radius: 8px;
     padding: 10px 14px;
   }
-  .navbar-preview .np-bar .np-astra { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
+  .navbar-preview .np-bar .np-hastra { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; }
   .navbar-preview .np-logo {
     width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
     border: 1px solid var(--border-dim); background: #fff;
@@ -804,15 +805,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="sheet-side">
     <div class="brand">
       <div class="brand-icon">
-        <svg viewBox="0 0 48 48" role="img" aria-label="Astra star brandmark logo"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+        <svg viewBox="0 0 48 48" role="img" aria-label="Hastra star brandmark logo"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
       </div>
       <div class="brand-text">
-        <div class="title">Astra</div>
+        <div class="title">Hastra</div>
       </div>
     </div>
 
     <h1 id="sheetHeading">Register your company</h1>
-    <p id="sheetIntro">You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
+    <p id="sheetIntro">You'll be your company's IT Manager on Hastra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
 
     <ul class="sheet-steps" id="sheetSteps">
       <li class="current" data-step="1"><span class="step-num">1</span> <span id="step1Label">Workspace details</span></li>
@@ -822,7 +823,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="navbar-preview">
       <div class="np-label">Top bar preview</div>
       <div class="np-bar">
-        <span class="np-astra">ASTRA</span>
+        <span class="np-hastra">HASTRA</span>
         <img id="navPreviewLogo" class="np-logo" style="display:none;" alt="Company logo preview">
         <span id="navPreviewPlaceholder" class="np-logo-placeholder">?</span>
       </div>
@@ -839,7 +840,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <?php endif; ?>
 
-    <form method="POST" action="register" id="registerForm">
+    <form method="POST" action="signup" id="registerForm">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="logo_data" id="logoData" value="">
       <input type="hidden" name="flow" id="flowInput" value="client_company">
@@ -1020,7 +1021,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="footer-links">
       <span>Already have an account?</span>
-      <a href="login">Sign in</a>
+      <a href="signin">Sign in</a>
     </div>
     <?php astra_legal_footer('card'); ?>
   </div>
@@ -1130,7 +1131,7 @@ const orgNameLabel = document.getElementById('orgNameLabel');
 
 const FLOW_COPY = {
   client_company: {
-    heading: 'Register your company', intro: "You'll be your company's IT Manager on Astra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.",
+    heading: 'Register your company', intro: "You'll be your company's IT Manager on Hastra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.",
     stepLabel: 'Company & brand logo', step1Heading: 'Tell us about your company', step1Subtitle: "We'll try to find your brand logo automatically.",
     step2Heading: 'Your account', step2Subtitle: "You'll sign in with this email once your company is set up.",
     orgLabel: 'Company Name',
@@ -1142,7 +1143,7 @@ const FLOW_COPY = {
     orgLabel: 'Company Name',
   },
   enterprise_full: {
-    heading: 'Set up your organization', intro: "You'll be the admin of your own Astra workspace, ready immediately. Invite your team, configure leave policy, and start tracking delivery today.",
+    heading: 'Set up your organization', intro: "You'll be the admin of your own Hastra workspace, ready immediately. Invite your team, configure leave policy, and start tracking delivery today.",
     stepLabel: 'Organization & brand logo', step1Heading: 'Tell us about your organization', step1Subtitle: "We'll try to find your brand logo automatically, and set up your leave policy.",
     step2Heading: 'Your admin account', step2Subtitle: "You'll sign in as the admin of this workspace.",
     orgLabel: 'Organization Name',
@@ -1263,7 +1264,7 @@ function searchLogos(domain) {
   logoTiles.innerHTML = '';
   logoStatus.textContent = '';
   if (!domain) { logoFinderLbl.classList.remove('searching'); return; }
-  if (!logoLookupOnce && !(window.AstraConsent && AstraConsent.allows('thirdparty'))) {
+  if (!logoLookupOnce && !(window.HastraConsent && HastraConsent.allows('thirdparty'))) {
     const ph = document.createElement('button');
     ph.type = 'button';
     ph.className = 'consent-ph';
@@ -1367,7 +1368,7 @@ function handleLogoFile(file) {
 }
 </script>
 
-<script src="<?= get_base_url() ?>assets/js/astra-select.js?v=<?= ASSET_VERSION ?>"></script>
+<script src="<?= get_base_url() ?>assets/js/hastra-select.js?v=<?= ASSET_VERSION ?>"></script>
 <?php astra_consent_banner(); ?>
 </body>
 </html>

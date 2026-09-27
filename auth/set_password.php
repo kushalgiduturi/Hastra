@@ -7,7 +7,7 @@ $token = $_GET["token"] ?? "";
 $msg = "";
 
 if ($token === "") {
-    header("Location: " . get_base_url() . "auth/login.php");
+    header("Location: " . get_base_url() . "signin");
     exit();
 }
 
@@ -68,8 +68,9 @@ $is_success = ($msg === "success" || $msg === "success_pending");
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Set Your Password · Astra</title>
+<title>Set Your Password · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -545,10 +546,10 @@ $is_success = ($msg === "success" || $msg === "success_pending");
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Account Activation</div>
     </div>
   </div>
@@ -567,7 +568,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
         Your password has been saved. Your account is pending sysadmin approval. You'll be able to sign in once it's approved.
       <?php endif; ?>
     </p>
-    <a href="login.php" class="btn-login">
+    <a href="signin" class="btn-login">
       <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5z"/></svg>
       Go to Login
     </a>
@@ -576,7 +577,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
   <?php else: ?>
 
   <h2>Set Your Password</h2>
-  <p class="subtitle">Choose a password to activate your Astra account.</p>
+  <p class="subtitle">Choose a password to activate your Hastra account.</p>
   <div class="divider"></div>
 
   <?php if ($msg): ?>
@@ -640,7 +641,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
       <span class="theme-label"></span>
     </button>
   </div>
-  <div class="footer-links"><a href="login.php">Back to login</a></div>
+  <div class="footer-links"><a href="signin">Back to login</a></div>
 
   <?php endif; ?>
 

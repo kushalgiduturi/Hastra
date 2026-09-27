@@ -42,7 +42,7 @@ set_error_handler(function (int $no, string $str, string $file, int $line): bool
         'type' => [E_WARNING => 'Warning', E_NOTICE => 'Notice', E_DEPRECATED => 'Deprecated',
                    E_USER_WARNING => 'Warning', E_USER_NOTICE => 'Notice', E_USER_DEPRECATED => 'Deprecated',
                    E_STRICT => 'Strict'][$no] ?? "E$no",
-        'message' => $str, 'file' => preg_replace('~^.*/login/~', '', $f), 'line' => $line,
+        'message' => $str, 'file' => preg_replace('~^.*/Hastra/~', '', $f), 'line' => $line,
     ];
     return true; // handled: keep it out of the response body
 });
@@ -51,7 +51,7 @@ register_shutdown_function(function () {
     $e = error_get_last();
     if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR], true)) {
         $GLOBALS['__astra_test_issues'][] = ['type' => 'Fatal', 'message' => $e['message'],
-            'file' => preg_replace('~^.*/login/~', '', str_replace('\\', '/', $e['file'])), 'line' => $e['line']];
+            'file' => preg_replace('~^.*/Hastra/~', '', str_replace('\\', '/', $e['file'])), 'line' => $e['line']];
     }
     if ($out = getenv('ASTRA_TEST_ISSUES_FILE')) {
         file_put_contents($out, json_encode($GLOBALS['__astra_test_issues']));

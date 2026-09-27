@@ -73,8 +73,9 @@ $action_labels = [
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System Security · Astra</title>
+<title>System Security · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -123,7 +124,7 @@ $action_labels = [
 <?php $nav_current = 'security'; include __DIR__ . '/_nav.php'; ?>
 <div class="wrap">
   <h1>System security</h1>
-  <p class="lede">What Astra's security controls are actually doing right now, read live from the config and the database, plus <?= $company ? htmlspecialchars($company['company_name']) : 'your workspace' ?>'s own login activity.</p>
+  <p class="lede">What Hastra's security controls are actually doing right now, read live from the config and the database, plus <?= $company ? htmlspecialchars($company['company_name']) : 'your workspace' ?>'s own login activity.</p>
 
   <div class="snap">
     <div class="snap-card"><div class="n"><?= $on_count ?>/<?= count($controls) ?></div><div class="l">Controls active</div></div>

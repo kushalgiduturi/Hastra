@@ -14,8 +14,9 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= htmlspecialchars($title) ?> · Astra</title>
+<title><?= htmlspecialchars($title) ?> · Hastra</title>
 <meta name="description" content="<?= htmlspecialchars($summary) ?>">
 <script src="<?= $b ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>">
@@ -26,8 +27,8 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <a class="sr-only" href="#legal-main">Skip to content</a>
 <header class="legal-top">
   <a class="legal-brand" href="<?= $b ?>">
-    <svg viewBox="0 0 48 48" role="img" aria-label="Astra star brandmark logo"><path fill="currentColor" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="var(--accent)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
-    <span>Astra</span>
+    <svg viewBox="0 0 48 48" role="img" aria-label="Hastra star brandmark logo"><path fill="currentColor" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="var(--accent)" d="M24 15L30 24L24 33L18 24Z"/></svg>
+    <span>Hastra</span>
   </a>
   <nav aria-label="Legal documents">
     <?php foreach (ASTRA_LEGAL_DOCS as $s => $t): ?>

@@ -59,16 +59,16 @@ t('non-ZIP input is refused with a clear error', function () {
     try { astra_sast_scan_archive($p); } catch (RuntimeException $e) { @unlink($p); return $e->getMessage(); }
     @unlink($p); throw new TestFailure('accepted a non-ZIP file');
 });
-t('scanner finds the known patterns in Astra itself without errors', function () {
+t('scanner finds the known patterns in Hastra itself without errors', function () {
     // Sanity: run over the real core/ folder zipped in memory; must not throw
-    // or raise warnings, and must recognise Astra's own guard pattern.
+    // or raise warnings, and must recognise Hastra's own guard pattern.
     $path = tempnam(sys_get_temp_dir(), 'self') . '.zip';
     $z = new ZipArchive(); $z->open($path, ZipArchive::CREATE);
     foreach (glob(ASTRA_ROOT . '/core/*.php') as $f) $z->addFile($f, 'core/' . basename($f));
     $z->close();
     $r = astra_sast_scan_archive($path); @unlink($path);
     $guard = array_filter($r['findings'], fn($f) => $f['rule_id'] === 'SAST-GUARD');
-    expect(!$guard, 'Astra core files flagged as unguarded: ' . implode(', ', array_column($guard, 'file_path')));
+    expect(!$guard, 'Hastra core files flagged as unguarded: ' . implode(', ', array_column($guard, 'file_path')));
     return $r['scanned'] . ' core files, ' . count($r['findings']) . ' findings to review';
 });
 
@@ -88,7 +88,7 @@ t('SARIF, API alert list and bare API array give the same findings as Traditiona
     }
 });
 t('real ZAP 2.17 outputs parse, when present (tests/.results/zap)', function () {
-    $files = glob(ASTRA_ROOT . '/tests/.results/zap/{astra-zap-report.json,astra-zap-report.xml,fmt-sarif.json,fmt-traditional-json-plus.json}', GLOB_BRACE);
+    $files = glob(ASTRA_ROOT . '/tests/.results/zap/{hastra-zap-report.json,hastra-zap-report.xml,fmt-sarif.json,fmt-traditional-json-plus.json}', GLOB_BRACE);
     if (!$files) return 'no real reports on this machine; skipped';
     $counts = [];
     foreach ($files as $f) $counts[basename($f)] = count(astra_zap_cluster(astra_zap_parse(file_get_contents($f))));

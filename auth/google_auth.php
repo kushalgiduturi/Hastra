@@ -9,7 +9,7 @@ include __DIR__ . '/../core/db.php';
 secure_session_start();
 
 function google_fail(string $page, string $code) {
-    header('Location: ' . get_base_url() . "auth/$page?google_error=" . urlencode($code));
+    header('Location: ' . get_base_url() . ($page === 'register' ? 'signup' : 'signin') . '?google_error=' . urlencode($code));
     exit();
 }
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'login')
     exit();
 }
 
-// ── Start: sign-up. Validates the workspace details before leaving Astra, so
+// ── Start: sign-up. Validates the workspace details before leaving Hastra, so
 // a problem is reported on the form rather than after the Google round trip.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'register') {
     verify_csrf_token();
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
 
 // ── Callback ────────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'GET' || !isset($_GET['state'])) {
-    header('Location: ' . get_base_url() . 'auth/login');
+    header('Location: ' . get_base_url() . 'signin');
     exit();
 }
 

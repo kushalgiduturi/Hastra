@@ -1,4 +1,4 @@
-# Astra
+# Hastra
 
 Enterprise software-delivery and governance platform: requirements, projects, testing, deployments, billing and credential handover in one workspace, with field-level encryption and a tamper-evident audit trail.
 
@@ -42,7 +42,7 @@ Plain PHP 8 and MySQL/MariaDB, no framework, no build step. Designed to run unde
 
 ## Setup
 
-1. **Place the code** at `C:\xampp\htdocs\login` (the app is served under `/login/`; to change that, edit `BASE_URL_PATH` in `config/config.php` and `RewriteBase` in `.htaccess`).
+1. **Place the code** at `C:\xampp\htdocs\Hastra` (the app is served under `/Hastra/`; to change that, edit `BASE_URL_PATH` in `config/config.php` and `RewriteBase` in `.htaccess`).
 2. **Create the database** `myapp`, import `schema_v2.sql`, then run every migration:
    ```bash
    C:\xampp\php\php.exe tools\run_migrations.php
@@ -58,8 +58,8 @@ Plain PHP 8 and MySQL/MariaDB, no framework, no build step. Designed to run unde
    | `astra_db.key`, `astra_index.key` | Encryption and blind-index keys, generated automatically on first run |
 
    Back up the encryption keys: without `astra_db.key` the encrypted columns cannot be read.
-5. **Google sign-in (optional).** Create a "Web application" OAuth client in Google Cloud Console, set `GOOGLE_CLIENT_ID` in `config/config.php` (or `ASTRA_GOOGLE_CLIENT_ID`), and register `http://localhost/login/auth/google_auth.php` as an authorised redirect URI.
-6. Open `http://localhost/login/`.
+5. **Google sign-in (optional).** Create a "Web application" OAuth client in Google Cloud Console, set `GOOGLE_CLIENT_ID` in `config/config.php` (or `ASTRA_GOOGLE_CLIENT_ID`), and register `http://localhost/Hastra/auth/google_auth.php` as an authorised redirect URI.
+6. Open `http://localhost/Hastra/`.
 
 ## Tests
 

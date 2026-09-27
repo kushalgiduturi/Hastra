@@ -1,12 +1,12 @@
 // ── Slide-out sidebar drawer controller ──────────────────────────────────
-// Wires #sidebar-toggle / #astra-sidebar / #sidebar-overlay if present on
+// Wires #sidebar-toggle / #hastra-sidebar / #sidebar-overlay if present on
 // the page. Safe no-op on pages that don't include the sidebar markup.
 (function () {
   'use strict';
 
   function init() {
     var toggle   = document.getElementById('sidebar-toggle');
-    var sidebar  = document.getElementById('astra-sidebar');
+    var sidebar  = document.getElementById('hastra-sidebar');
     var overlay  = document.getElementById('sidebar-overlay');
     var closeBtn = document.getElementById('sidebar-close');
     if (!toggle || !sidebar || !overlay) return;

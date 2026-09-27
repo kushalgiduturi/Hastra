@@ -8,7 +8,7 @@ $ctx           = client_context($conn, (int)$_SESSION["user_id"]);
 $scope_ids     = id_list($ctx['member_ids']);
 $can_delete    = client_can($ctx, 'delete_requirement');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "portals/client/docs");
+    header("Location: " . get_base_url() . "workspace/client/docs");
     exit();
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                      WHERE id = ? AND user_id IN ($scope_ids)");
                 mysqli_stmt_bind_param($upd, "sssi", $requirement_title, $desc_enc, $feat_enc, $req_id);
                 if (mysqli_stmt_execute($upd)) {
-                    header("Location: " . get_base_url() . "portals/client/requirements_diff?req_id=$req_id");
+                    header("Location: " . get_base_url() . "workspace/client/requirements-diff?req_id=$req_id");
                     exit();
                 }
                 $msg = "Failed to save the revision.";
@@ -116,8 +116,9 @@ $status_order = ["pending_review", "under_review", "approved"];
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Requirements · Astra</title>
+<title>My Requirements · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -614,7 +615,7 @@ $status_order = ["pending_review", "under_review", "approved"];
                 <span class="btn-delete-req disabled" title="Can only delete pending requirements">Delete</span>
               <?php endif; ?>
               <?php if (!empty($req['has_pending_revision'])): ?>
-                <a class="btn-expand" href="<?= get_base_url() ?>portals/client/requirements_diff?req_id=<?= $req['id'] ?>">Revision pending</a>
+                <a class="btn-expand" href="<?= get_base_url() ?>workspace/client/requirements-diff?req_id=<?= $req['id'] ?>">Revision pending</a>
               <?php endif; ?>
             </td>
           </tr>
@@ -639,7 +640,7 @@ $status_order = ["pending_review", "under_review", "approved"];
                 <?php if ($can_delete && $req["status"] !== "rejected"): ?>
                 <details style="margin-top:14px;">
                   <summary style="cursor:pointer;font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Revise this requirement</summary>
-                  <form method="POST" action="my_requirements" style="margin-top:10px;">
+                  <form method="POST" action="my-requirements" style="margin-top:10px;">
                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" name="req_id" value="<?= $req['id'] ?>">
@@ -675,7 +676,7 @@ $status_order = ["pending_review", "under_review", "approved"];
     <h3>Delete Requirement</h3>
     <p id="deleteModalDesc">Are you sure you want to delete this requirement? This cannot be undone.</p>
     <div class="modal-btns">
-      <form method="POST" action="my_requirements" id="deleteForm">
+      <form method="POST" action="my-requirements" id="deleteForm">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="req_id" id="deleteReqId" value="">

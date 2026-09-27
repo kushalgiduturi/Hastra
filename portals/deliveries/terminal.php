@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     };
 
     if ($action === 'handshake') {
-        $step('ASTRA CRYPTOGRAPHIC SUBSYSTEM INITIALIZED', true);
+        $step('HASTRA CRYPTOGRAPHIC SUBSYSTEM INITIALIZED', true);
         astra_dossier_sweep_expired($conn);
         $peek = astra_dossier_peek($conn, $token, $err);
 
@@ -108,9 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-<title>Handover Terminal · Astra</title>
+<title>Handover Terminal · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -119,13 +120,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="ht-body">
 <main class="ht-main">
-  <a class="ht-back" href="<?= get_base_url() ?>portals/<?= ($_SESSION['user_role'] ?? '') === 'client' ? 'client/client_portal' : (($_SESSION['user_role'] ?? '') === 'employee' ? 'emlpoyee/employee_portal' : 'admin/admin_portal') ?>">&larr; Back</a>
+  <a class="ht-back" href="<?= get_base_url() ?>workspace/<?= ($_SESSION['user_role'] ?? '') === 'client' ? 'client/client_portal' : (($_SESSION['user_role'] ?? '') === 'employee' ? 'emlpoyee/employee_portal' : 'admin/admin_portal') ?>">&larr; Back</a>
 
   <section class="ht-terminal" aria-labelledby="htTitle">
     <div class="ht-wash" aria-hidden="true"></div>
     <header class="ht-head">
       <span class="ht-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-      <h1 id="htTitle">Astra secure handover</h1>
+      <h1 id="htTitle">Hastra secure handover</h1>
       <span class="ht-state" id="htState">IDLE</span>
     </header>
 
@@ -151,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </span>
       </div>
       <pre id="htText"></pre>
-      <p class="ht-warn">This is the only copy. It no longer exists on Astra's servers.</p>
+      <p class="ht-warn">This is the only copy. It no longer exists on Hastra's servers.</p>
     </div>
 
     <div class="ht-receipt" id="htReceipt" hidden>
@@ -162,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <dt>Shredded at</dt><dd id="rcAt"></dd>
         <dt>Ledger block</dt><dd id="rcBlock"></dd>
       </dl>
-      <p>The encrypted payload was overwritten with random bytes and cannot be recovered. The destruction is recorded in Astra's tamper-evident audit ledger.</p>
+      <p>The encrypted payload was overwritten with random bytes and cannot be recovered. The destruction is recorded in Hastra's tamper-evident audit ledger.</p>
     </div>
   </section>
 </main>

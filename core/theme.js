@@ -11,10 +11,10 @@
 
     // Matched against just the final path segment (e.g. "login.php" or
     // "project_portal") — NOT the full pathname, which always contains
-    // "login" here since the whole app is served under an /login/ base path.
+    // "login" here since the whole app is served under an /Hastra/ base path.
     const LOADER_TEXT_MAP = [
-      [/^(login|otp|forgot)/,           'Initializing defense-grade workspace…'],
-      [/^(register|verify_register)/,   'Provisioning your Astra workspace…'],
+      [/^(login|otp|forgot|signin|verify$|reset)/, 'Initializing defense-grade workspace…'],
+      [/^(register|verify_register|signup|verify-email|set-password)/, 'Provisioning your Hastra workspace…'],
       [/project|requirement/,           'Fetching SDLC project pipeline…'],
       [/team|roster|directory/,         'Loading enterprise team matrix…'],
       [/deliver/,                       'Decrypting delivery dossier…'],
@@ -36,14 +36,14 @@
     }
 
     document.write(
-      '<div id="astra-page-loader">' +
-        '<div class="astra-loader-spinner"></div>' +
-        '<p id="astra-loader-text" class="loader-status-text">' + contextualText() + '</p>' +
+      '<div id="hastra-page-loader">' +
+        '<div class="hastra-loader-spinner"></div>' +
+        '<p id="hastra-loader-text" class="loader-status-text">' + contextualText() + '</p>' +
       '</div>'
     );
 
     function hidePageLoader() {
-      const el = document.getElementById('astra-page-loader');
+      const el = document.getElementById('hastra-page-loader');
       if (!el) return;
       el.style.opacity = '0';
       el.style.pointerEvents = 'none';
@@ -85,7 +85,7 @@
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(THEME_KEY, theme);
     updateButton(theme);
-    document.dispatchEvent(new CustomEvent('astra:themechange', { detail: { theme: theme } }));
+    document.dispatchEvent(new CustomEvent('hastra:themechange', { detail: { theme: theme } }));
   }
 
   window.toggleTheme = function() {
@@ -142,8 +142,8 @@
     document.body.classList.add('fade-out');
   });
 
-  // ── Brand intro: "ASTRA" projects out of the icon once per tab session ──
-  // (keyframes + the body.astra-intro-run rules live in core/theme.css).
+  // ── Brand intro: "HASTRA" projects out of the icon once per tab session ──
+  // (keyframes + the body.hastra-intro-run rules live in core/theme.css).
   // A page with its own reveal choreography (auth/login.php's video/card
   // sequence) sets <body data-intro-manual> and fires the same class
   // itself at the right moment instead of this automatic run.
@@ -153,10 +153,10 @@
     let played;
     try { played = sessionStorage.getItem(INTRO_KEY); } catch (e) { played = null; }
     if (played) return;
-    document.body.classList.add('astra-intro-run');
+    document.body.classList.add('hastra-intro-run');
     try { sessionStorage.setItem(INTRO_KEY, 'true'); } catch (e) { /* private mode etc. */ }
     window.setTimeout(function() {
-      document.body.classList.remove('astra-intro-run');
+      document.body.classList.remove('hastra-intro-run');
     }, 1200);
   }
   if (document.readyState === 'loading') {
@@ -181,13 +181,13 @@
     const v = url.searchParams.get('v');
     const q = v ? '?v=' + encodeURIComponent(v) : '';
     const css = document.createElement('link');
-    css.rel = 'stylesheet'; css.href = base + 'assets/css/astra-atmosphere.css' + q;
+    css.rel = 'stylesheet'; css.href = base + 'assets/css/hastra-atmosphere.css' + q;
     document.head.appendChild(css);
     // Signed-in portals wear the Netflix design system (theme-netflix.css +
     // netflix-bento.css): a boxless UI over the temple world with its cyber
     // layer, laser-beam controls and the dot-plus-ring cursor.
     // Loaded here, in <head>, so the first paint is already themed.
-    const nf = /\/(portals\/|dashboard(\.php)?$)/.test(location.pathname);
+    const nf = /\/(portals|workspace)\/|\/dashboard(\.php)?$/.test(location.pathname);
     if (nf) {
       document.documentElement.classList.add('nf-portal');
       ['theme-netflix', 'netflix-bento'].forEach(function(name) {

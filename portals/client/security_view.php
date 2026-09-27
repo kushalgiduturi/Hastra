@@ -18,14 +18,14 @@ $error   = null;
 $view    = null;
 
 if (!access_schema_ready($conn)) {
-    $error = "The security summary isn't switched on yet. Ask the Astra sysadmin to run the database migration.";
+    $error = "The security summary isn't switched on yet. Ask the Hastra sysadmin to run the database migration.";
 } elseif (!client_can($ctx, 'security_summary')) {
     $error = "Only your company's Project Manager can open the security summary.";
 } elseif ($_SERVER["REQUEST_METHOD"] === "POST") {
     verify_csrf_token();
     $token = create_security_link($conn, (int)($_POST["delivery_id"] ?? 0), $user_id, $ctx['member_ids'], $error);
     if ($token) {
-        header("Location: " . get_base_url() . "portals/client/security_view.php?t=" . $token);
+        header("Location: " . get_base_url() . "workspace/client/security-view?t=" . $token);
         exit();
     }
 } else {
@@ -38,7 +38,7 @@ if (!access_schema_ready($conn)) {
 $credentials = ''; $cred_error = null;
 if ($view) {
     try { $credentials = decrypt_secret($view['credentials_note'] ?? ''); }
-    catch (Throwable $e) { $cred_error = "The handover credentials couldn't be decrypted. Ask Astra to send them again."; error_log($e->getMessage()); }
+    catch (Throwable $e) { $cred_error = "The handover credentials couldn't be decrypted. Ask Hastra to send them again."; error_log($e->getMessage()); }
 }
 
 $bugs = []; $counts = ['critical' => 0, 'high' => 0, 'medium' => 0, 'low' => 0]; $open = 0;
@@ -61,9 +61,10 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Security Summary · Astra</title>
+<title>Security Summary · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -76,11 +77,11 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
 <?php if (!$view): ?>
   <div class="page-header"><h1>Security summary</h1></div>
   <div class="flash error" role="alert"><?= htmlspecialchars($error ?? "This link is not valid.") ?></div>
-  <p><a class="btn" href="<?= get_base_url() ?>portals/client/client_portal">Back to Projects</a></p>
+  <p><a class="btn" href="<?= get_base_url() ?>workspace/client/">Back to Projects</a></p>
 <?php else: ?>
   <div class="page-header">
     <h1><span class="code-chip"><?= htmlspecialchars($view['project_code']) ?></span><?= htmlspecialchars($view['project_title']) ?>: security summary</h1>
-    <p>What Astra did to secure this project, and every security finding raised during testing.</p>
+    <p>What Hastra did to secure this project, and every security finding raised during testing.</p>
   </div>
 
   <div class="once-banner" role="status">
@@ -121,7 +122,7 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
   </section>
 
   <section class="section">
-    <div class="section-header"><div class="section-title">Security measures in the Astra delivery process</div></div>
+    <div class="section-header"><div class="section-title">Security measures in the Hastra delivery process</div></div>
     <div class="section-body">
       <ul class="measures">
         <?php foreach (SECURITY_MEASURES as $m): ?><li><?= htmlspecialchars($m) ?></li><?php endforeach; ?>

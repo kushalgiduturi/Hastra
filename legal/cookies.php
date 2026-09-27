@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/_layout.php';
-legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage Astra uses, by category, and how to change your choices.');
+legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage Hastra uses, by category, and how to change your choices.');
 ?>
-<p>This policy lists every cookie and browser-storage item Astra uses, grouped by category. Only
+<p>This policy lists every cookie and browser-storage item Hastra uses, grouped by category. Only
   <strong>strictly essential</strong> items are used without your consent. Everything else waits for your choice in the cookie
   banner, which you can reopen at any time with <button type="button" class="legal-linkbtn" data-consent-open>Cookie settings</button>.</p>
 
@@ -14,9 +14,9 @@ legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage As
     <tr><td><code>PHPSESSID</code></td><td>Session token. Server-side it also holds your CSRF token, which every form must send back.</td>
       <td>Until the browser closes; the session expires after 30 minutes of inactivity</td>
       <td><code>HttpOnly</code> (unreadable by scripts), <code>SameSite=Strict</code> (never sent on cross-site requests), <code>Secure</code> whenever the site is served over HTTPS</td></tr>
-    <tr><td><code>astra_goauth</code></td><td>Only while you use "Continue with Google": an encrypted record of the sign-in attempt (anti-forgery state, nonce and PKCE verifier), deleted on return.</td>
+    <tr><td><code>hastra_goauth</code></td><td>Only while you use "Continue with Google": an encrypted record of the sign-in attempt (anti-forgery state, nonce and PKCE verifier), deleted on return.</td>
       <td>10 minutes</td><td><code>HttpOnly</code>, <code>SameSite=Lax</code> (so it survives Google's redirect back), <code>Secure</code> over HTTPS, limited to <code>/auth/</code></td></tr>
-    <tr><td><code>astra_consent_state</code> (local storage)</td><td>Remembers your cookie choices so the banner does not reappear.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
+    <tr><td><code>hastra_consent_state</code> (local storage)</td><td>Remembers your cookie choices so the banner does not reappear.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
     <tr><td><code>astra_theme</code> (local storage)</td><td>Remembers light or dark theme.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
     <tr><td><code>astra_intro_played</code>, <code>astra_login_seen</code> (session storage)</td><td>Plays the intro animations once per tab.</td><td>Until the tab closes</td><td>Not sent to the server</td></tr>
   </tbody>
@@ -31,10 +31,10 @@ legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage As
     <tr><td><code>_GRECAPTCHA</code> and related</td><td>Google reCAPTCHA (sign-in page only)</td><td>Distinguishing people from bots</td><td>Up to 6 months</td></tr>
   </tbody>
 </table>
-<p>Astra's own security controls (session binding, rate limits, VPN screening, honeytokens) run on the server and set no additional cookies.</p>
+<p>Hastra's own security controls (session binding, rate limits, VPN screening, honeytokens) run on the server and set no additional cookies.</p>
 
 <h2 id="performance">3. Performance and telemetry</h2>
-<p>Switched off unless you allow <strong>Analytics</strong>. Astra currently runs <strong>no</strong> analytics or telemetry
+<p>Switched off unless you allow <strong>Analytics</strong>. Hastra currently runs <strong>no</strong> analytics or telemetry
   scripts. If any are added, they will be listed here first and will only load after you opt in.</p>
 
 <h2 id="third-party">4. Third-party integrations</h2>

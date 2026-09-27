@@ -1,4 +1,4 @@
-// core/dock.js — fluid magnification effect for .astra-dock (vanilla JS
+// core/dock.js — fluid magnification effect for .hastra-dock (vanilla JS
 // equivalent of a macOS-style dock: items grow as the mouse gets closer).
 (function () {
   var BASE = 44;
@@ -8,7 +8,7 @@
   var DISTANCE = 140;
 
   function initDock(dock) {
-    var items = Array.prototype.slice.call(dock.querySelectorAll('.astra-dock-item'));
+    var items = Array.prototype.slice.call(dock.querySelectorAll('.hastra-dock-item'));
 
     function apply(mouseX) {
       items.forEach(function (el) {
@@ -47,7 +47,7 @@
   }
 
   function boot() {
-    var docks = document.querySelectorAll('.astra-dock');
+    var docks = document.querySelectorAll('.hastra-dock');
     for (var i = 0; i < docks.length; i++) initDock(docks[i]);
   }
 

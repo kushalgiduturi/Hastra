@@ -25,7 +25,7 @@ while ($lp = mysqli_fetch_assoc($lead_projects_result)) {
 $is_lead = count($lead_projects) > 0;
 
 if (!$is_lead) {
-    header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal");
+    header("Location: " . get_base_url() . "workspace/employee/");
     exit();
 }
 
@@ -309,8 +309,9 @@ function format_bytes($bytes) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Lead · Astra</title>
+<title>Team Lead · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -655,7 +656,7 @@ function format_bytes($bytes) {
 
           <div class="create-task-form">
             <div class="create-task-title">Create New Task</div>
-            <form method="POST" action="team_lead">
+            <form method="POST" action="team-lead">
               <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="action"     value="create_task">
               <input type="hidden" name="project_id" value="<?= $proj['project_id'] ?>">
@@ -725,7 +726,7 @@ function format_bytes($bytes) {
                 </div>
               </div>
               <div class="task-card-right">
-                <form method="POST" action="team_lead">
+                <form method="POST" action="team-lead">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action"  value="delete_task">
                   <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
@@ -753,7 +754,7 @@ function format_bytes($bytes) {
                   <a class="file-chip-name" href="<?= get_base_url() ?>download?file_id=<?= $f['id'] ?>" title="<?= htmlspecialchars($f['file_name']) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($f['file_name']) ?></a>
                   <span class="file-chip-size"><?= format_bytes($f['file_size']) ?></span>
                   <span style="font-size:10px;color:var(--text-dim);">by <?= htmlspecialchars($f['uploader_name']) ?></span>
-                  <form method="POST" action="team_lead" style="display:inline;">
+                  <form method="POST" action="team-lead" style="display:inline;">
                     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                     <input type="hidden" name="action"  value="delete_file">
                     <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
@@ -768,7 +769,7 @@ function format_bytes($bytes) {
               <div style="font-size:12px;color:var(--text-dim);">No files submitted yet.</div>
               <?php endif; ?>
 
-              <form method="POST" action="team_lead" enctype="multipart/form-data" style="margin-top:8px;">
+              <form method="POST" action="team-lead" enctype="multipart/form-data" style="margin-top:8px;">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="upload_file">
                 <input type="hidden" name="task_id" value="<?= $task['id'] ?>">

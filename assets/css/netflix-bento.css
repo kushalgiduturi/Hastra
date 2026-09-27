@@ -1,8 +1,8 @@
-/* Astra — boxless portal UI over the temple world.
+/* Hastra — boxless portal UI over the temple world.
 
    No container surfaces: sections, metric cards, nested frames and table
    rows are transparent, borderless and shadowless, and sit directly on the
-   3-D scene (#astra-kage-scene + assets/js/kage-cyber.js). Structure comes
+   3-D scene (#hastra-kage-scene + assets/js/kage-cyber.js). Structure comes
    from floating hairlines, typographic scale and spacing only. Legibility
    comes from one fixed veil between the scene and the page, not from boxes.
 
@@ -11,7 +11,7 @@
    a surface: a dialog floating over live 3-D needs one to be readable. */
 
 /* ── The veil: dims the world evenly so text reads anywhere on it ── */
-html.nf-portal.astra-kage body::before {
+html.nf-portal.hastra-kage body::before {
   /* core/theme.css uses body::before for a small fading glow; the veil takes
      the element over, so its size, offset, fade and animation are reset */
   content: ''; position: fixed; inset: 0 !important; z-index: -1; pointer-events: none;
@@ -24,13 +24,13 @@ html.nf-portal.astra-kage body::before {
 /* by day the world is frosted rather than dimmed: a soft blur keeps the
    temple's colours but melts its hard edges, and an even wash of paper
    light lets plain dark type read anywhere without halos */
-html.nf-portal.astra-kage[data-theme="light"] body::before {
+html.nf-portal.hastra-kage[data-theme="light"] body::before {
   background:
     linear-gradient(180deg, rgba(248, 250, 252, .78) 0, rgba(248, 250, 252, .6) 28%, rgba(248, 250, 252, .64) 72%, rgba(248, 250, 252, .8) 100%);
 }
 /* the page sits in its own stacking layer, so a backdrop blur cannot reach
    the scene frame; the frame itself is softened instead */
-html.nf-portal[data-theme="light"] #astra-kage-scene { filter: blur(7px) saturate(1.2); transform: scale(1.04); }
+html.nf-portal[data-theme="light"] #hastra-kage-scene { filter: blur(7px) saturate(1.2); transform: scale(1.04); }
 html.nf-portal:not([data-theme="light"]) :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: 0 1px 3px rgba(0, 0, 0, .75); }
 /* clean type by day: the frosted wash does the work */
 html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: none; }
@@ -323,7 +323,7 @@ html.nf-portal .wrap > h1 {
   -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 26px var(--accent-glow));
 }
 html.nf-portal .wrap > h1::before {
-  content: 'ASTRA ORIGINALS  |  NOW STREAMING';
+  content: 'HASTRA ORIGINALS  |  NOW STREAMING';
   display: block; width: max-content; margin-bottom: 14px; padding: 5px 12px 5px 22px;
   font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
   -webkit-text-fill-color: var(--badge-text); color: var(--badge-text);

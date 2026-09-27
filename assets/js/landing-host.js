@@ -1,16 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Landing host: the landing page's side of ThreeUI's LandingPageFrame.
 
-   landing-pages/astra.html is Astra's own document, forked from the ThreeUI
+   landing-pages/hastra.html is Hastra's own document, forked from the ThreeUI
    landing engine: its WebGL world, camera rig, cursor wisps and cloth are
-   the packaged code, its content is Astra's. This script reaches into it
+   the packaged code, its content is Hastra's. This script reaches into it
    after load through the same two seams ThreeUI's frame uses:
 
      1. the typography recipe: one stylesheet appended last to the frame's
         <head>, restating the page's selectors with the configured values
         (Onest 400 / 300, 46 / 17, -0.012em).
 
-     2. the scene API the document publishes: window.__astraScene, with
+     2. the scene API the document publishes: window.__hastraScene, with
         { WORLD, WORD, POST, renderer, scene }. Daylight is written through
         it: the blood moon becomes the sun, the night sky a day sky, the fog
         a morning haze, the lanterns go cold and the key and rim lights come
@@ -49,44 +49,44 @@ h1:not(.jp), h2:not(.jp), h3:not(.jp), .display:not(.jp) {
 
   /* -------------------------------------------- the daylight skin (DOM) */
   const DAY_CSS = `
-html[data-astra-day] {
+html[data-hastra-day] {
   --ink:#d3dfe5; --ink-2:#c6d4db; --bone:#121c24; --bone-dim:#34444d; --muted:#5a6a72;
   --line:rgba(18,28,36,.16); --line-soft:rgba(18,28,36,.09);
 }
-html[data-astra-day] body { background:#f6ecd2; color:#121c24; }
-html[data-astra-day] #gl { background:#f6ecd2; }
-html[data-astra-day] #pre { background:#fbf3de; }
-html[data-astra-day] .pre-bar { background:rgba(18,28,36,.14); }
-html[data-astra-day] #vignette { background:radial-gradient(125% 95% at 50% 42%, transparent 52%, rgba(120,84,30,.14) 100%); }
-html[data-astra-day] #grain { opacity:.03; }
-html[data-astra-day] .eyebrow, html[data-astra-day] .chip b { text-shadow:0 1px 14px rgba(255,251,238,.85); }
-html[data-astra-day] .display { text-shadow:0 2px 30px rgba(255,251,238,.7); }
-html[data-astra-day] .body-lg { color:#26343c; text-shadow:0 1px 18px rgba(255,251,238,.9); }
-html[data-astra-day] .body { color:#33424a; text-shadow:0 1px 16px rgba(255,251,238,.9); }
-html[data-astra-day] .gate-copy .lead { color:#1e2c34; text-shadow:0 1px 18px rgba(255,251,238,.9); }
-html[data-astra-day] .hero-sub { text-shadow:0 1px 22px rgba(255,251,238,.95); }
-html[data-astra-day] .chip p, html[data-astra-day] .les p, html[data-astra-day] .les .t,
-html[data-astra-day] .foot li a, html[data-astra-day] .foot-brand p { color:#3d4c54; text-shadow:none; }
-html[data-astra-day] .hero::before { background:linear-gradient(rgba(255,244,214,.70), rgba(255,244,214,.30) 46%, transparent); }
-html[data-astra-day] .sec::before { background:radial-gradient(110% 62% at 30% 50%, rgba(255,248,230,.86), rgba(255,248,230,.60) 42%, rgba(255,248,230,.16) 74%, rgba(255,248,230,0)); }
-html[data-astra-day] #security::before { background:radial-gradient(108% 64% at 50% 50%, rgba(255,248,230,.66), rgba(255,248,230,.40) 50%, rgba(255,248,230,0)); }
-html[data-astra-day] #ledger::before { background:radial-gradient(82% 58% at 50% 46%, rgba(255,248,230,.24), rgba(255,248,230,.62) 56%, rgba(255,248,230,.88) 82%, rgba(255,248,230,0)); }
-html[data-astra-day] .foot::before { background:linear-gradient(rgba(255,248,230,.55), rgba(255,248,230,.94) 40%, rgba(255,248,230,.98)); }
-html[data-astra-day] .nav::before { background:rgba(255,248,230,.66); }
-html[data-astra-day] .hero-side .v { color:rgba(18,28,36,.55); }
-html[data-astra-day] svg path[stroke="#dfe7e0"] { stroke:#15202a; }
-html[data-astra-day] .peek-play svg path[fill="#dfe7e0"] { fill:#f2f5f3; }
-html[data-astra-day] .peek-cap b { color:#121c24; }
-html[data-astra-day] .nav-actions .nav-signin:hover { background:rgba(18,28,36,.08); }
-html[data-astra-day] .cta:hover { color:#eef3f5; }
-html[data-astra-day] .cta:hover svg path { stroke:#eef3f5; }
-html[data-astra-day] .arrowlink:hover .ar svg path { stroke:#eef3f5; }
-html[data-astra-day] .rail i { background:rgba(18,28,36,.26); }
-html[data-astra-day] .cur-dot { border-color:rgba(18,28,36,.42); }
-html[data-astra-day] .cur-dot.act { background:rgba(18,28,36,.06); border-color:rgba(18,28,36,.6); }
-html[data-astra-day] body[data-layout-curriculum="b"] .les { background:rgba(255,251,238,.84); }
-html[data-astra-day] .fg-el > img { filter:saturate(1) brightness(1.06); }
-@media (max-width:820px){ html[data-astra-day] .nav-links { background:rgba(255,249,234,.98); } }
+html[data-hastra-day] body { background:#f6ecd2; color:#121c24; }
+html[data-hastra-day] #gl { background:#f6ecd2; }
+html[data-hastra-day] #pre { background:#fbf3de; }
+html[data-hastra-day] .pre-bar { background:rgba(18,28,36,.14); }
+html[data-hastra-day] #vignette { background:radial-gradient(125% 95% at 50% 42%, transparent 52%, rgba(120,84,30,.14) 100%); }
+html[data-hastra-day] #grain { opacity:.03; }
+html[data-hastra-day] .eyebrow, html[data-hastra-day] .chip b { text-shadow:0 1px 14px rgba(255,251,238,.85); }
+html[data-hastra-day] .display { text-shadow:0 2px 30px rgba(255,251,238,.7); }
+html[data-hastra-day] .body-lg { color:#26343c; text-shadow:0 1px 18px rgba(255,251,238,.9); }
+html[data-hastra-day] .body { color:#33424a; text-shadow:0 1px 16px rgba(255,251,238,.9); }
+html[data-hastra-day] .gate-copy .lead { color:#1e2c34; text-shadow:0 1px 18px rgba(255,251,238,.9); }
+html[data-hastra-day] .hero-sub { text-shadow:0 1px 22px rgba(255,251,238,.95); }
+html[data-hastra-day] .chip p, html[data-hastra-day] .les p, html[data-hastra-day] .les .t,
+html[data-hastra-day] .foot li a, html[data-hastra-day] .foot-brand p { color:#3d4c54; text-shadow:none; }
+html[data-hastra-day] .hero::before { background:linear-gradient(rgba(255,244,214,.70), rgba(255,244,214,.30) 46%, transparent); }
+html[data-hastra-day] .sec::before { background:radial-gradient(110% 62% at 30% 50%, rgba(255,248,230,.86), rgba(255,248,230,.60) 42%, rgba(255,248,230,.16) 74%, rgba(255,248,230,0)); }
+html[data-hastra-day] #security::before { background:radial-gradient(108% 64% at 50% 50%, rgba(255,248,230,.66), rgba(255,248,230,.40) 50%, rgba(255,248,230,0)); }
+html[data-hastra-day] #ledger::before { background:radial-gradient(82% 58% at 50% 46%, rgba(255,248,230,.24), rgba(255,248,230,.62) 56%, rgba(255,248,230,.88) 82%, rgba(255,248,230,0)); }
+html[data-hastra-day] .foot::before { background:linear-gradient(rgba(255,248,230,.55), rgba(255,248,230,.94) 40%, rgba(255,248,230,.98)); }
+html[data-hastra-day] .nav::before { background:rgba(255,248,230,.66); }
+html[data-hastra-day] .hero-side .v { color:rgba(18,28,36,.55); }
+html[data-hastra-day] svg path[stroke="#dfe7e0"] { stroke:#15202a; }
+html[data-hastra-day] .peek-play svg path[fill="#dfe7e0"] { fill:#f2f5f3; }
+html[data-hastra-day] .peek-cap b { color:#121c24; }
+html[data-hastra-day] .nav-actions .nav-signin:hover { background:rgba(18,28,36,.08); }
+html[data-hastra-day] .cta:hover { color:#eef3f5; }
+html[data-hastra-day] .cta:hover svg path { stroke:#eef3f5; }
+html[data-hastra-day] .arrowlink:hover .ar svg path { stroke:#eef3f5; }
+html[data-hastra-day] .rail i { background:rgba(18,28,36,.26); }
+html[data-hastra-day] .cur-dot { border-color:rgba(18,28,36,.42); }
+html[data-hastra-day] .cur-dot.act { background:rgba(18,28,36,.06); border-color:rgba(18,28,36,.6); }
+html[data-hastra-day] body[data-layout-curriculum="b"] .les { background:rgba(255,251,238,.84); }
+html[data-hastra-day] .fg-el > img { filter:saturate(1) brightness(1.06); }
+@media (max-width:820px){ html[data-hastra-day] .nav-links { background:rgba(255,249,234,.98); } }
 `;
 
   function injectStyle(doc, id, css) {
@@ -186,7 +186,7 @@ html[data-astra-day] .fg-el > img { filter:saturate(1) brightness(1.06); }
   }
 
   function day(win) {
-    const K = win.__astraScene;
+    const K = win.__hastraScene;
     if (!K || !K.WORLD || !win.THREE) return false;
     const T = win.THREE, W = K.WORLD, scene = K.scene;
     if (!dayBuilt) dayBuilt = buildDay(win);
@@ -270,16 +270,16 @@ html[data-astra-day] .fg-el > img { filter:saturate(1) brightness(1.06); }
     if (!doc || !doc.head) return;
     const d = wantDay();
     injectStyle(doc, 'threeui-page-typography', RECIPE_CSS);
-    injectStyle(doc, 'astra-landing-daylight', DAY_CSS);
-    /* mirrored three ways: the skin keys on data-astra-day, the document's
+    injectStyle(doc, 'hastra-landing-daylight', DAY_CSS);
+    /* mirrored three ways: the skin keys on data-hastra-day, the document's
        own light rules on data-theme="light" and .light */
-    doc.documentElement.toggleAttribute('data-astra-day', d);
+    doc.documentElement.toggleAttribute('data-hastra-day', d);
     doc.documentElement.setAttribute('data-theme', d ? 'light' : 'dark');
     doc.documentElement.classList.toggle('light', d);
     clearInterval(poll);
     /* the scene publishes itself only once its eleven build jobs are done */
     const go = () => {
-      const K = win.__astraScene;
+      const K = win.__hastraScene;
       if (!K) return false;
       if (K.fallback) return true;              /* no WebGL: the CSS skin is all there is */
       if (d && !dayOn) { dayOn = day(win); }
@@ -299,7 +299,7 @@ html[data-astra-day] .fg-el > img { filter:saturate(1) brightness(1.06); }
   return { sync, get day() { return dayOn; } };
   }
 
-  window.AstraSceneHost = { attach };
+  window.HastraSceneHost = { attach };
   const landing = document.getElementById('landingFrame');
   if (landing) window.__landingHost = attach(landing, () => { landing.parentElement.dataset.state = 'ready'; });
 })();

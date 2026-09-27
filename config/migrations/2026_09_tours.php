@@ -1,5 +1,5 @@
 <?php
-// Astra — onboarding tour tracking migration (P18, Sep 2026).
+// Hastra — onboarding tour tracking migration (P18, Sep 2026).
 //
 // Adds user_page_tours(user_id, page_key, status, completed_at) so a user's
 // per-page onboarding tour (completed or skipped) is remembered across
@@ -9,7 +9,7 @@
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_tours.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_tours.php
 
 $__astra_tour_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;
 if (!$__astra_tour_cli && !defined('ASTRA_MIGRATION_INCLUDE')) { http_response_code(404); exit(); }

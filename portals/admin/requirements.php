@@ -123,8 +123,9 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Requirement Review · Astra</title>
+<title>Requirement Review · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -306,7 +307,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
         Requirement Review
         <span style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-left:6px;"><?= count($all_reqs) ?> total</span>
       </div>
-      <a href="<?= get_base_url() ?>portals/admin/project_portal" class="btn-nav-portal">
+      <a href="<?= get_base_url() ?>workspace/admin/project-portal" class="btn-nav-portal">
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
         Project Portal
       </a>

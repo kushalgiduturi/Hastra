@@ -12,7 +12,7 @@
    being glued to it. Let go mid-swing and it keeps the throw, slides to
    rest under friction, and bounces off the viewport edge. While it is
    carried it sheds a fading wake of petals and sparks through
-   window.AstraHand.
+   window.HastraHand.
 
    A click without a drag inspects it. Enter or Space does the same, the
    arrow keys nudge it, and Escape closes the panel. Under reduced motion it
@@ -21,8 +21,8 @@
 (function () {
   'use strict';
   const src = document.querySelector('[data-handover-seal]');
-  if (!src || window.__astraSeal) return;
-  window.__astraSeal = true;
+  if (!src || window.__hastraSeal) return;
+  window.__hastraSeal = true;
   const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const KEY = 'astra_seal_pos:' + location.pathname;
   const SIZE = 118, PAD = 18;
@@ -33,16 +33,16 @@
   let rows = [];
   try { rows = JSON.parse(D.sealRows || '[]'); } catch (e) { rows = []; }
   const hash = (D.sealHash || '').trim();
-  const ring = ('ASTRA · VERIFIED HANDOVER · ' + (hash ? 'SHA-256 ' + hash.slice(0, 12) + ' · ' : (D.sealKind || '').toUpperCase() + ' · '));
+  const ring = ('HASTRA · VERIFIED HANDOVER · ' + (hash ? 'SHA-256 ' + hash.slice(0, 12) + ' · ' : (D.sealKind || '').toUpperCase() + ' · '));
 
   /* ------------------------------------------------------------ markup */
   const seal = document.createElement('button');
   seal.type = 'button';
-  seal.className = 'astra-seal';
+  seal.className = 'hastra-seal';
   seal.setAttribute('aria-haspopup', 'dialog');
   seal.setAttribute('aria-label', 'Handover seal: ' + (D.sealTitle || '') + '. Press to inspect; drag or use the arrow keys to move it.');
   seal.innerHTML =
-    '<span class="astra-seal-body">' +
+    '<span class="hastra-seal-body">' +
       '<svg viewBox="0 0 120 120" aria-hidden="true">' +
         '<defs>' +
           '<radialGradient id="sealFace" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ff6a4d"/><stop offset=".55" stop-color="#e0231c"/><stop offset="1" stop-color="#7d0f0b"/></radialGradient>' +
@@ -53,28 +53,28 @@
         '<path fill="#9a130e" d="M60 4c9 0 12 5 20 7s15 1 19 8 2 12 6 19 9 11 9 22-6 14-8 21-1 14-8 19-13 3-20 7-10 9-18 9-12-5-20-7-15-1-19-8-2-12-6-19S5 71 5 60s6-14 8-21 1-14 8-19 13-3 20-7 10-9 19-9z"/>' +
         '<circle cx="60" cy="60" r="50" fill="url(#sealFace)"/>' +
         '<circle cx="60" cy="60" r="36" fill="none" stroke="rgba(255,233,226,.55)" stroke-width="1"/>' +
-        '<text class="astra-seal-ring"><textPath href="#sealRing" textLength="268">' + esc(ring) + '</textPath></text>' +
+        '<text class="hastra-seal-ring"><textPath href="#sealRing" textLength="268">' + esc(ring) + '</textPath></text>' +
         '<g transform="translate(60 61) scale(.62) translate(-24 -24)">' +
-          '<path fill="url(#sealMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/>' +
-          '<path fill="url(#sealMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/>' +
+          '<path fill="url(#sealMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/>' +
+          '<path fill="url(#sealMark)" d="M24 15L30 24L24 33L18 24Z"/>' +
         '</g>' +
       '</svg>' +
-      '<span class="astra-seal-sheen"></span>' +
+      '<span class="hastra-seal-sheen"></span>' +
     '</span>' +
-    (D.sealVerified === '1' ? '<span class="astra-seal-tick" aria-hidden="true">✓</span>' : '');
+    (D.sealVerified === '1' ? '<span class="hastra-seal-tick" aria-hidden="true">✓</span>' : '');
   document.body.appendChild(seal);
 
   const panel = document.createElement('div');
-  panel.className = 'astra-seal-panel';
+  panel.className = 'hastra-seal-panel';
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', 'Handover seal details');
   panel.hidden = true;
   panel.innerHTML =
-    '<div class="astra-seal-k">' + esc(D.sealKind || 'Handover') + '</div>' +
-    '<div class="astra-seal-t">' + esc(D.sealTitle || '') + '</div>' +
+    '<div class="hastra-seal-k">' + esc(D.sealKind || 'Handover') + '</div>' +
+    '<div class="hastra-seal-t">' + esc(D.sealTitle || '') + '</div>' +
     '<dl>' + rows.map(r => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>').join('') + '</dl>' +
-    (hash ? '<div class="astra-seal-h"><span>Signature hash</span><code>' + esc(hash) + '</code></div>' : '') +
-    '<button type="button" class="astra-seal-close">Close</button>';
+    (hash ? '<div class="hastra-seal-h"><span>Signature hash</span><code>' + esc(hash) + '</code></div>' : '') +
+    '<button type="button" class="hastra-seal-close">Close</button>';
   document.body.appendChild(panel);
 
   /* ------------------------------------------------------------ state */
@@ -129,9 +129,9 @@
 
     /* the wake: a few petals and sparks for every stretch it is carried */
     const sp = Math.hypot(S.vx, S.vy);
-    if ((S.drag || sp > 120) && window.AstraHand && now - S.lastWake > 45 && sp > 40) {
+    if ((S.drag || sp > 120) && window.HastraHand && now - S.lastWake > 45 && sp > 40) {
       S.lastWake = now;
-      AstraHand.burst(S.x + SIZE / 2, S.y + SIZE / 2, { count: 2, speed: 50 + sp * .08, angle: Math.atan2(-S.vy, -S.vx) });
+      HastraHand.burst(S.x + SIZE / 2, S.y + SIZE / 2, { count: 2, speed: 50 + sp * .08, angle: Math.atan2(-S.vy, -S.vx) });
     }
     place();
     const quiet = !S.drag && sp < 2 && Math.abs(S.vrx) + Math.abs(S.vry) < .05 && Math.abs(S.rx - trx) + Math.abs(S.ry - try_) < .05;
@@ -206,14 +206,14 @@
     panel.style.left = clamp(left, 12, innerWidth - w - 12) + 'px';
     panel.style.top = clamp(S.y + SIZE / 2 - h / 2, 12, innerHeight - h - 12) + 'px';
     seal.setAttribute('aria-expanded', 'true');
-    panel.querySelector('.astra-seal-close').focus({ preventScroll: true });
+    panel.querySelector('.hastra-seal-close').focus({ preventScroll: true });
   }
   function closePanel() {
     if (panel.hidden) return;
     panel.hidden = true;
     seal.setAttribute('aria-expanded', 'false');
   }
-  panel.querySelector('.astra-seal-close').addEventListener('click', () => { closePanel(); seal.focus({ preventScroll: true }); });
+  panel.querySelector('.hastra-seal-close').addEventListener('click', () => { closePanel(); seal.focus({ preventScroll: true }); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { closePanel(); seal.focus({ preventScroll: true }); } });
   document.addEventListener('pointerdown', e => { if (!panel.hidden && !panel.contains(e.target) && !seal.contains(e.target)) closePanel(); });
 

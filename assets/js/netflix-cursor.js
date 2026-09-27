@@ -1,4 +1,4 @@
-/* Astra — two-layer precision cursor (CustomCursor.jsx).
+/* Hastra — two-layer precision cursor (CustomCursor.jsx).
    A 12px accent dot, a 48px ring that trails it, and a soft ambient glow that
    follows the pointer across the page. The original drives these with
    gsap.quickTo (dot 0.05s, ring 0.15s); here the same feel comes from

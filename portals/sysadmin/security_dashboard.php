@@ -1,6 +1,6 @@
 <?php
 // portals/sysadmin/security_dashboard.php  (P17)
-// Live status of Astra's own security controls, for the sysadmin. Every
+// Live status of Hastra's own security controls, for the sysadmin. Every
 // figure on this page is read from the running config and the database —
 // nothing here is a static claim.
 include __DIR__ . '/../../core/db.php';
@@ -16,8 +16,9 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Dashboard · Astra</title>
+<title>Security Dashboard · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -61,7 +62,7 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
 <?php $nav_current = 'security'; include __DIR__ . '/_nav.php'; ?>
 <div class="wrap">
   <h1>Security dashboard</h1>
-  <p class="lede">What Astra's own security controls are actually doing right now, read live from the config and the database. These are the same measures a client's Project Manager sees once in the delivery handover, kept always on for the sysadmin.</p>
+  <p class="lede">What Hastra's own security controls are actually doing right now, read live from the config and the database. These are the same measures a client's Project Manager sees once in the delivery handover, kept always on for the sysadmin.</p>
 
   <div class="snap">
     <div class="snap-card"><div class="n"><?= $on_count ?>/<?= count($controls) ?></div><div class="l">Controls active</div></div>
@@ -93,8 +94,8 @@ $on_count = count(array_filter($controls, fn($c) => $c['on']));
 
   <h2 class="section">Related</h2>
   <div class="schema-row">
-    <a class="chip off" style="text-decoration:none;" href="<?= get_base_url() ?>portals/sysadmin/migrate">Run database migration</a>
-    <a class="chip off" style="text-decoration:none;" href="<?= get_base_url() ?>portals/sysadmin/sysadmin_portal">Activity log &amp; users</a>
+    <a class="chip off" style="text-decoration:none;" href="<?= get_base_url() ?>workspace/sysadmin/migrate">Run database migration</a>
+    <a class="chip off" style="text-decoration:none;" href="<?= get_base_url() ?>workspace/sysadmin/">Activity log &amp; users</a>
   </div>
 </div>
 </body>

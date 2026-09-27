@@ -10,14 +10,14 @@ $__can_team     = client_can($ctx, 'manage_team') && !astra_is_solo_company($ctx
 ?>
 <nav class="topnav">
   <div class="nav-left">
-    <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="astra-sidebar" aria-label="Open menu">
+    <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
-    <a href="<?= get_base_url() ?>portals/index" class="nav-brand-link" title="All pages for your role">
-      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
-      <span class="nav-title">Astra</span>
+    <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
+      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg></div>
+      <span class="nav-title">Hastra</span>
     </a>
-    <a class="nav-badge" href="<?= get_base_url() ?>portals/client/client_portal"><?= htmlspecialchars($ctx['label']) ?></a>
+    <a class="nav-badge" href="<?= get_base_url() ?>workspace/client/"><?= htmlspecialchars($ctx['label']) ?></a>
   </div>
   <?php $__company_logo = astra_session_company_logo($conn); if ($__company_logo): ?>
   <div class="nav-center-logo"><img src="<?= htmlspecialchars($__company_logo) ?>" alt="Company logo"></div>
@@ -28,20 +28,20 @@ $__can_team     = client_can($ctx, 'manage_team') && !astra_is_solo_company($ctx
       <span class="theme-label"></span>
     </button>
     <span class="nav-user">Signed in as <span><?= htmlspecialchars($_SESSION["user_name"]) ?></span></span>
-    <a href="<?= get_base_url() ?>portals/user/profile" class="nav-avatar" title="My Profile"><?= strtoupper(substr($_SESSION["user_name"], 0, 1)) ?></a>
+    <a href="<?= get_base_url() ?>workspace/user/profile" class="nav-avatar" title="My Profile"><?= strtoupper(substr($_SESSION["user_name"], 0, 1)) ?></a>
   </div>
 </nav>
 <?php
 $__core_links = [];
 if ($__can_projects) {
-  $__core_links[] = ['key' => 'projects',     'label' => 'Projects',                 'href' => get_base_url() . 'portals/client/client_portal',    'current' => $nav_current === 'projects'];
-  $__core_links[] = ['key' => 'requirements', 'label' => 'Requirements & Deliveries','href' => get_base_url() . 'portals/client/my_requirements',  'current' => $nav_current === 'requirements'];
+  $__core_links[] = ['key' => 'projects',     'label' => 'Projects',                 'href' => get_base_url() . 'workspace/client/',    'current' => $nav_current === 'projects'];
+  $__core_links[] = ['key' => 'requirements', 'label' => 'Requirements & Deliveries','href' => get_base_url() . 'workspace/client/my-requirements',  'current' => $nav_current === 'requirements'];
 }
-$__core_links[] = ['key' => 'docs', 'label' => 'Documentation', 'href' => get_base_url() . 'portals/client/docs', 'current' => $nav_current === 'docs'];
+$__core_links[] = ['key' => 'docs', 'label' => 'Documentation', 'href' => get_base_url() . 'workspace/client/docs', 'current' => $nav_current === 'docs'];
 
 $__team_links = [];
 if ($__can_team) {
-  $__team_links[] = ['key' => 'team', 'label' => 'Team Roster', 'href' => get_base_url() . 'portals/client/team', 'current' => $nav_current === 'team'];
+  $__team_links[] = ['key' => 'team', 'label' => 'Team Roster', 'href' => get_base_url() . 'workspace/client/team', 'current' => $nav_current === 'team'];
 }
 
 render_sidebar(
@@ -50,18 +50,18 @@ render_sidebar(
     ['label' => 'Team',  'links' => $__team_links],
   ],
   [
-    ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'portals/user/profile'],
+    ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'workspace/user/profile'],
     ['key' => 'help',    'label' => 'Help / Onboarding Guide', 'tag' => 'button', 'extra_class' => 'tour-restart-btn'],
-    ['key' => 'logout',  'label' => 'Logout', 'href' => get_base_url() . 'auth/logout', 'extra_class' => 'logout'],
+    ['key' => 'logout',  'label' => 'Logout', 'href' => get_base_url() . 'signout', 'extra_class' => 'logout'],
   ]
 );
 ?>
 <?php
 $__dock_items = [
-  ['key' => 'dashboard', 'label' => $ctx['label'], 'href' => get_base_url() . 'portals/client/client_portal', 'current' => ($nav_current ?? '') === 'dashboard'],
+  ['key' => 'dashboard', 'label' => $ctx['label'], 'href' => get_base_url() . 'workspace/client/', 'current' => ($nav_current ?? '') === 'dashboard'],
 ];
-if ($__can_projects) $__dock_items[] = ['key' => 'projects', 'label' => 'Projects', 'href' => get_base_url() . 'portals/client/client_portal', 'current' => $nav_current === 'projects'];
-$__dock_items[] = ['key' => 'docs', 'label' => 'Documentation', 'href' => get_base_url() . 'portals/client/docs', 'current' => $nav_current === 'docs'];
-if ($__can_team) $__dock_items[] = ['key' => 'team', 'label' => 'Team', 'href' => get_base_url() . 'portals/client/team', 'current' => $nav_current === 'team'];
+if ($__can_projects) $__dock_items[] = ['key' => 'projects', 'label' => 'Projects', 'href' => get_base_url() . 'workspace/client/', 'current' => $nav_current === 'projects'];
+$__dock_items[] = ['key' => 'docs', 'label' => 'Documentation', 'href' => get_base_url() . 'workspace/client/docs', 'current' => $nav_current === 'docs'];
+if ($__can_team) $__dock_items[] = ['key' => 'team', 'label' => 'Team', 'href' => get_base_url() . 'workspace/client/team', 'current' => $nav_current === 'team'];
 render_dock($__dock_items); astra_consent_banner();
 ?>

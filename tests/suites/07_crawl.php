@@ -48,7 +48,7 @@ function crawl_check(string $rel, ?string $role, string $query = '', ?int $expec
         }
     }
     return $r['status'] === 200 ? sprintf('%d KB', strlen($r['body']) / 1024)
-         : ($r['location'] ? 'redirect -> ' . preg_replace('~^.*/login/~', '', $r['location']) : "HTTP {$r['status']}");
+         : ($r['location'] ? 'redirect -> ' . preg_replace('~^.*/Hastra/~', '', $r['location']) : "HTTP {$r['status']}");
 }
 
 $pages = array_merge(glob(ASTRA_ROOT . '/portals/*/*.php'), glob(ASTRA_ROOT . '/auth/*.php'), glob(ASTRA_ROOT . '/*.php'));
@@ -68,7 +68,7 @@ t('client pages refuse an employee session', function () {
     $r = cgi('GET', 'portals/client/my_projects.php', ['session' => as_user('employee')]);
     expect(in_array($r['status'], [302, 403], true), "HTTP {$r['status']}");
     expect_clean($r);
-    return $r['location'] ? 'redirect -> ' . preg_replace('~^.*/login/~', '', $r['location']) : "HTTP {$r['status']}";
+    return $r['location'] ? 'redirect -> ' . preg_replace('~^.*/Hastra/~', '', $r['location']) : "HTTP {$r['status']}";
 });
 t('admin pages refuse a client session', function () {
     $r = cgi('GET', 'portals/admin/admin_portal.php', ['session' => as_user('client')]);

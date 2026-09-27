@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — pure-PHP database backup (no mysqldump needed).
+// Hastra — pure-PHP database backup (no mysqldump needed).
 // Shared by portals/sysadmin/migrate.php (manual, in-browser) and
 // tools/backup_db.php (headless, for cron / Task Scheduler).
 
@@ -15,7 +15,7 @@ function astra_backup_database($conn) {
     $charset = mysqli_character_set_name($conn);
     $tables  = 0; $rows = 0;
 
-    fwrite($fh, "-- Astra backup of `" . DB_NAME . "` taken " . date('Y-m-d H:i:s') . "\n");
+    fwrite($fh, "-- Hastra backup of `" . DB_NAME . "` taken " . date('Y-m-d H:i:s') . "\n");
     $tz = mysqli_fetch_row(mysqli_query($conn, "SELECT @@session.time_zone"))[0];
     fwrite($fh, "SET NAMES $charset;\nSET time_zone = '$tz';\nSET FOREIGN_KEY_CHECKS = 0;\n\n");
 

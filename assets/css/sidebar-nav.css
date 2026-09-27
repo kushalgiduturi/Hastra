@@ -55,7 +55,7 @@
 }
 .nav-badge.lead { color: var(--accent-bright); background: rgba(var(--accent-rgb),0.1); }
 
-/* ── Center: the signed-in user's company logo, alongside the Astra mark ──
+/* ── Center: the signed-in user's company logo, alongside the Hastra mark ──
    Absolutely centered so it never disrupts the left/right flex clusters;
    .topnav's own `position: sticky` already establishes the containing block. */
 .nav-center-logo {

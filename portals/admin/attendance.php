@@ -270,8 +270,9 @@ if ($employees) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Attendance · Astra</title>
+<title>Attendance · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -313,7 +314,7 @@ if ($employees) {
   .cal-toggle svg { width: 14px; height: 14px; fill: currentColor; }
   .cal-popover { position: absolute; top: calc(100% + 8px); right: 0; z-index: 50; }
   .cal-popover[hidden] { display: none; }
-  .cal-popover .astra-calendar-root { box-shadow: var(--shadow-modal, 0 20px 50px rgba(0,0,0,0.5)); }
+  .cal-popover .hastra-calendar-root { box-shadow: var(--shadow-modal, 0 20px 50px rgba(0,0,0,0.5)); }
   /* Column picked in the calendar */
   table.grid .day-focus { background: rgba(var(--accent-rgb), 0.14); }
   table.grid th.day-focus { color: #fff; background: var(--color-void-violet, var(--accent)); }
@@ -422,7 +423,7 @@ if ($employees) {
         Jump to day
       </button>
       <div class="cal-popover" id="calPopover" hidden>
-        <div class="astra-calendar-root" id="attendanceCalendar"></div>
+        <div class="hastra-calendar-root" id="attendanceCalendar"></div>
       </div>
     </div>
   </div>
@@ -539,7 +540,7 @@ if ($employees) {
       </div>
       <p class="webhook-hint">
         POST biometric logs as JSON to <code><?= htmlspecialchars(get_base_url()) ?>api/attendance_sync.php</code>
-        with header <code>X-Astra-Webhook-Secret: &lt;secret&gt;</code>. Body: an array of
+        with header <code>X-Hastra-Webhook-Secret: &lt;secret&gt;</code>. Body: an array of
         <code>{"email":"...","work_date":"YYYY-MM-DD","check_in":"HH:MM","status":"present"}</code>.
       </p>
     </div>
@@ -607,7 +608,7 @@ if ($employees) {
       wrap.scrollTo({ left: Math.max(0, th.offsetLeft - nameW - 80), behavior: 'smooth' });
     }
 
-    const cal = AstraCalendar.mount('#attendanceCalendar', {
+    const cal = HastraCalendar.mount('#attendanceCalendar', {
       mode: 'single',
       month: LOADED_MONTH,
       onSelect(detail) {
@@ -624,7 +625,7 @@ if ($employees) {
     });
 
     function openPopover()  { popover.hidden = false; toggle.setAttribute('aria-expanded', 'true');
-                              const b = popover.querySelector('.astra-cal-day[tabindex="0"]'); if (b) b.focus(); }
+                              const b = popover.querySelector('.hastra-cal-day[tabindex="0"]'); if (b) b.focus(); }
     function closePopover() { popover.hidden = true;  toggle.setAttribute('aria-expanded', 'false'); }
     toggle.addEventListener('click', () => popover.hidden ? openPopover() : closePopover());
     document.addEventListener('click', (e) => {

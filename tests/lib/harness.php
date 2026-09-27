@@ -8,8 +8,8 @@ const ASTRA_ROOT     = __DIR__ . '/../..';
 const ASTRA_PHPCGI   = 'C:/xampp/php/php-cgi.exe';
 const ASTRA_BOOT     = __DIR__ . '/bootstrap.php';
 const ASTRA_RESULTS  = __DIR__ . '/../.results';
-const ASTRA_WEB_BASE = 'http://localhost/login/';
-const ASTRA_TEST_UA  = 'AstraTestRunner/1.0 (+tests/runner.php)';
+const ASTRA_WEB_BASE = 'http://localhost/Hastra/';
+const ASTRA_TEST_UA  = 'HastraTestRunner/1.0 (+tests/runner.php)';
 const ASTRA_TEST_LANG = 'en-IN,en;q=0.9';
 
 final class TestFailure extends Exception {}
@@ -37,7 +37,7 @@ function t(string $name, callable $fn): void {
         $status = 'FAIL'; $detail = $e->getMessage();
     } catch (Throwable $e) {
         $status = 'FAIL';
-        $detail = get_class($e) . ': ' . $e->getMessage() . ' @ ' . preg_replace('~^.*/login/~', '', str_replace('\\', '/', $e->getFile())) . ':' . $e->getLine();
+        $detail = get_class($e) . ': ' . $e->getMessage() . ' @ ' . preg_replace('~^.*/Hastra/~', '', str_replace('\\', '/', $e->getFile())) . ':' . $e->getLine();
     }
     if ($status === 'PASS' && $GLOBALS['__astra_test_issues']) {
         $i = $GLOBALS['__astra_test_issues'][0];
@@ -120,7 +120,7 @@ function astra_test_session(array $data, array $client = []): string {
 
     $data += ['initiated' => true, 'last_activity' => time(), 'csrf_token' => bin2hex(random_bytes(32))];
     if (isset($data['user_id']) && !array_key_exists('auth_fp', $data)) { $data['auth_fp'] = $fp['hash']; $data['auth_fp_touched'] = time(); }
-    $id = 'astratest' . bin2hex(random_bytes(12));
+    $id = 'hastratest' . bin2hex(random_bytes(12));
     $enc = '';
     foreach ($data as $k => $v) $enc .= $k . '|' . serialize($v);
     file_put_contents(rtrim(ini_get('session.save_path'), '/\\') . '/sess_' . $id, $enc);
@@ -159,8 +159,8 @@ function cgi(string $method, string $path, array $o = []): array {
         'ASTRA_TEST' => '1', 'ASTRA_TEST_DB' => DB_NAME, 'ASTRA_TEST_SMTP_PORT' => (string)$GLOBALS['__astra_smtp_port'],
         'ASTRA_TEST_ISSUES_FILE' => $issues_file,
         'GATEWAY_INTERFACE' => 'CGI/1.1', 'SERVER_PROTOCOL' => 'HTTP/1.1', 'REDIRECT_STATUS' => '200',
-        'REQUEST_METHOD' => $method, 'SCRIPT_FILENAME' => $file, 'SCRIPT_NAME' => '/login/' . $script,
-        'PHP_SELF' => '/login/' . $script, 'REQUEST_URI' => '/login/' . $path, 'QUERY_STRING' => $qs,
+        'REQUEST_METHOD' => $method, 'SCRIPT_FILENAME' => $file, 'SCRIPT_NAME' => '/Hastra/' . $script,
+        'PHP_SELF' => '/Hastra/' . $script, 'REQUEST_URI' => '/Hastra/' . $path, 'QUERY_STRING' => $qs,
         'DOCUMENT_ROOT' => 'C:/xampp/htdocs', 'SERVER_NAME' => 'localhost', 'SERVER_PORT' => '80', 'HTTP_HOST' => 'localhost',
         'REMOTE_ADDR' => $o['ip'] ?? '127.0.0.1', 'HTTP_USER_AGENT' => $o['ua'] ?? ASTRA_TEST_UA,
         'HTTP_ACCEPT_LANGUAGE' => $o['lang'] ?? ASTRA_TEST_LANG,
@@ -198,7 +198,7 @@ function cgi(string $method, string $path, array $o = []): array {
 // multipart/form-data body for file uploads through cgi().
 // $files: field => [filename, content]
 function multipart(array $fields, array $files): array {
-    $b = '----astratest' . bin2hex(random_bytes(8));
+    $b = '----hastratest' . bin2hex(random_bytes(8));
     $body = '';
     foreach ($fields as $k => $v) $body .= "--$b\r\nContent-Disposition: form-data; name=\"$k\"\r\n\r\n$v\r\n";
     foreach ($files as $k => [$name, $content]) {

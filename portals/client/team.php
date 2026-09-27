@@ -21,10 +21,10 @@ if ($ready) {
 if (!$ready || !$me || $me["client_role"] !== "it_manager" || !$company || !empty($company["is_internal"])) {
     http_response_code(403);
     $reason = !$ready
-        ? "Team management isn't switched on yet. Ask the Astra sysadmin to run the database migration."
+        ? "Team management isn't switched on yet. Ask the Hastra sysadmin to run the database migration."
         : "Only your company's IT Manager can manage the team.";
-    echo "<!DOCTYPE html><meta charset='utf-8'><title>Team · Astra</title><p style='font-family:sans-serif;padding:2rem'>"
-       . htmlspecialchars($reason) . " <a href='" . get_base_url() . "portals/client/client_portal'>Back to the client portal</a></p>";
+    echo "<!DOCTYPE html><meta charset='utf-8'><title>Team · Hastra</title><p style='font-family:sans-serif;padding:2rem'>"
+       . htmlspecialchars($reason) . " <a href='" . get_base_url() . "workspace/client/'>Back to the client portal</a></p>";
     exit();
 }
 $company_id = (int)$company["id"];
@@ -33,7 +33,7 @@ $flash = $_SESSION["team_flash"] ?? null;
 unset($_SESSION["team_flash"]);
 function team_redirect($type, $text) {
     $_SESSION["team_flash"] = ['type' => $type, 'text' => $text];
-    header("Location: " . get_base_url() . "portals/client/team");
+    header("Location: " . get_base_url() . "workspace/client/team");
     exit();
 }
 
@@ -207,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $text = "$created account" . ($created === 1 ? "" : "s") . " created and invited.";
         if ($unsent)  $text .= " $unsent invite email" . ($unsent === 1 ? "" : "s") . " couldn't be sent. Use Resend below.";
-        if ($full)    $text .= " Your company's ID range is full; contact Astra support.";
+        if ($full)    $text .= " Your company's ID range is full; contact Hastra support.";
         if ($blocked) team_redirect('error', $text . " $blocked row" . ($blocked === 1 ? " still needs" : "s still need") . " fixing. They're highlighted below.");
         team_redirect('success', $text);
     }
@@ -264,8 +264,9 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team · Astra</title>
+<title>Team · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -345,13 +346,13 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
 <div class="main">
   <div class="page-header">
     <h1><?= htmlspecialchars($company["company_name"]) ?> team</h1>
-    <p>Upload your staff roster, check what Astra read from it, and invite everyone. People can sign in once they open their activation email and choose a password.</p>
+    <p>Upload your staff roster, check what Hastra read from it, and invite everyone. People can sign in once they open their activation email and choose a password.</p>
     <div class="company-meta">
       <span>Status <b><?= htmlspecialchars($status_labels[$company["onboarding_status"]] ?? $company["onboarding_status"]) ?></b></span>
       <span>Email domain <b>@<?= htmlspecialchars($company["email_domain"]) ?></b></span>
       <?php if (!empty($company["size_band"])): ?><span>Size <b><?= htmlspecialchars(COMPANY_SIZES[$company["size_band"]] ?? $company["size_band"]) ?></b></span><?php endif; ?>
       <?php if (!empty($company["contract_ref"])): ?><span>Contract <b><?= htmlspecialchars($company["contract_ref"]) ?></b></span><?php endif; ?>
-      <span>Astra IDs <b><?= htmlspecialchars(company_range_label($company)) ?></b></span>
+      <span>Hastra IDs <b><?= htmlspecialchars(company_range_label($company)) ?></b></span>
     </div>
     <form method="POST" action="team" style="margin-top:10px;">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
@@ -410,7 +411,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
       <div class="tbl-wrap">
         <table class="grid">
           <thead>
-            <tr><th>Row</th><th>Invite</th><th>Name</th><th>Email</th><th>Phone</th><th>Astra role</th><th>Check</th></tr>
+            <tr><th>Row</th><th>Invite</th><th>Name</th><th>Email</th><th>Phone</th><th>Hastra role</th><th>Check</th></tr>
           </thead>
           <tbody id="gridBody">
             <?php foreach ($rows as $r):
@@ -426,7 +427,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
               <td><input type="email" name="rows[<?= $rid ?>][email]" value="<?= htmlspecialchars($r['email']) ?>" maxlength="100" aria-label="Email"></td>
               <td><input type="text"  name="rows[<?= $rid ?>][phone]" value="<?= htmlspecialchars($r['phone_number']) ?>" maxlength="15" aria-label="Phone"></td>
               <td>
-                <select name="rows[<?= $rid ?>][role]" aria-label="Astra role">
+                <select name="rows[<?= $rid ?>][role]" aria-label="Hastra role">
                   <?php foreach (CLIENT_ROLES as $val => $label): ?>
                   <option value="<?= $val ?>" <?= $r['client_role'] === $val ? 'selected' : '' ?>><?= $label ?></option>
                   <?php endforeach; ?>
@@ -460,7 +461,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
           <td><input type="text"  name="new[__i__][name]"  maxlength="100" aria-label="Name" placeholder="Full name"></td>
           <td><input type="email" name="new[__i__][email]" maxlength="100" aria-label="Email" placeholder="name@<?= htmlspecialchars($company['email_domain']) ?>"></td>
           <td><input type="text"  name="new[__i__][phone]" maxlength="15" aria-label="Phone"></td>
-          <td><select name="new[__i__][role]" aria-label="Astra role">
+          <td><select name="new[__i__][role]" aria-label="Hastra role">
             <?php foreach (CLIENT_ROLES as $val => $label): ?><option value="<?= $val ?>" <?= $val === 'teammate' ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
           </select></td>
           <td><ul class="issues"><li class="n">Checked when you save</li></ul></td>
@@ -495,7 +496,7 @@ $state_labels   = ['active' => 'Active', 'pending' => 'Invite sent', 'expired' =
     <?php else: ?>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Astra ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Invited</th><th></th></tr></thead>
+        <thead><tr><th>Hastra ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Invited</th><th></th></tr></thead>
         <tbody>
           <?php foreach ($members as $m): $is_me = (int)$m['id'] === $user_id; ?>
           <tr>

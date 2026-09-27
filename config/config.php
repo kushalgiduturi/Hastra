@@ -11,8 +11,8 @@ define('MAIL_PORT', 1025);
 define('MAIL_AUTH', false);
 define('MAIL_SECURE', '');
 define('MAIL_FROM', 'noreply@test.com');
-define('APP_NAME', 'Astra');
-define('MAIL_NAME', 'Astra');
+define('APP_NAME', 'Hastra');
+define('MAIL_NAME', 'Hastra');
 
 // ── reCAPTCHA ─────────────────────────────────────────────────────────────────
 // The secret lives outside the code: ASTRA_RECAPTCHA_SECRET in the environment,
@@ -22,8 +22,8 @@ define('RECAPTCHA_SECRET', getenv('ASTRA_RECAPTCHA_SECRET')
 
 
 // ── App-wide constants ────────────────────────────────────────────────────────
-define('BASE_URL_PATH', '/login/');
-// Internal team (the company that runs Astra). Client companies get their own
+define('BASE_URL_PATH', '/Hastra/');
+// Internal team (the company that runs Hastra). Client companies get their own
 // domain derived from the company name — see core/company.php.
 define('INTERNAL_COMPANY_NAME', 'Cycops');
 define('EMPLOYEE_EMAIL_DOMAIN', '@cycops.com');
@@ -44,7 +44,7 @@ define('DOC_AI_MODEL', 'claude-sonnet-4-5');
 define('PRIMARY_SYSADMIN_EMAIL', 'kushalgiduturi@gmail.com');
 
 // ── Legal entity (shown in every public footer and the policy documents) ─────
-// The person or company operating Astra. Leave LEGAL_ADDRESS or
+// The person or company operating Hastra. Leave LEGAL_ADDRESS or
 // LEGAL_COMPANY_ID empty ('') and that line is simply left out everywhere.
 define('LEGAL_ENTITY_NAME',   'Kushal Giduturi');
 define('LEGAL_ADDRESS',       '');
@@ -62,4 +62,4 @@ define('LEGAL_TERMS_VERSION', '2026-09-26');
 // Leave GOOGLE_CLIENT_ID empty to disable the feature.
 define('GOOGLE_CLIENT_ID', getenv('ASTRA_GOOGLE_CLIENT_ID') ?: '920806944315-8fuaqb9tei1l7ui9tjklpubu61fr0sae.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET_FILE', __DIR__ . '/google_oauth.key');
-define('GOOGLE_REDIRECT_URI', 'http://localhost/login/auth/google_auth.php');
+define('GOOGLE_REDIRECT_URI', 'http://localhost/Hastra/auth/google_auth.php');

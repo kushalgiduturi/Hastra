@@ -1,8 +1,8 @@
 <?php
-// Astra — enterprise onboarding migration (P13, Sep 2026). Run after 2026_09_companies.
+// Hastra — enterprise onboarding migration (P13, Sep 2026). Run after 2026_09_companies.
 //
 //   • Sysadmin portal → "Database migration" page
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_onboarding.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_onboarding.php
 //
 // Adds only (never drops):
 //   companies:             size_band, contract_ref, it_manager_id, onboarding_status

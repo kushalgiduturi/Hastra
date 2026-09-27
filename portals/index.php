@@ -72,7 +72,8 @@ $ICONS = [
   'info'      => '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/>',
 ];
 ?>
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard · Astra</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:var(--font-sans)}
@@ -110,9 +111,9 @@ body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);back
 <body class="workspace-index">
 <?php render_profile_barrier($conn); ?>
 <header class="bar">
-  <span class="brand"><span class="brand-mark"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></span>ASTRA / DASHBOARD</span>
+  <span class="brand"><span class="brand-mark"><svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg></span>HASTRA / DASHBOARD</span>
   <div class="actions">
-    <a class="account" href="<?= get_base_url() ?>portals/user/profile"><?= htmlspecialchars($name) ?></a>
+    <a class="account" href="<?= get_base_url() ?>workspace/user/profile"><?= htmlspecialchars($name) ?></a>
     <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle"><span class="theme-icon"></span><span class="theme-label"></span></button>
   </div>
 </header>
@@ -125,7 +126,7 @@ body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);back
       $icon = $ICONS[$item[3]] ?? $ICONS['info'];
       $delay = min($i, 8) * 0.05;
     ?>
-    <a class="dash-card" style="animation-delay:<?= $delay ?>s" href="<?= get_base_url() ?>portals/<?= $item[2] ?>">
+    <a class="dash-card" style="animation-delay:<?= $delay ?>s" href="<?= get_base_url() ?>workspace/<?= $item[2] ?>">
       <div class="dash-card-top">
         <div class="dash-icon"><svg viewBox="0 0 24 24"><?= $icon ?></svg></div>
         <span class="dash-arrow">&rarr;</span>

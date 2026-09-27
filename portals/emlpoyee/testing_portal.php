@@ -603,8 +603,9 @@ foreach ($qa_projects as $pid => $info) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Testing & QA · Astra</title>
+<title>Testing & QA · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -910,7 +911,7 @@ foreach ($qa_projects as $pid => $info) {
     <div class="section-body">
       <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Start testing when development is ready for QA. The team lead can request deployment only after testing has started.</p>
       <?php foreach ($to_start as $pid => $info): ?>
-      <form method="POST" action="testing_portal.php" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border-dim);">
+      <form method="POST" action="testing-portal" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border-dim);">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="start_testing">
         <input type="hidden" name="project_id" value="<?= (int)$pid ?>">
@@ -933,7 +934,7 @@ foreach ($qa_projects as $pid => $info) {
       </div>
     </div>
     <div class="section-body">
-      <form method="POST" action="testing_portal" id="bugForm" enctype="multipart/form-data">
+      <form method="POST" action="testing-portal" id="bugForm" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="report_bug">
 
@@ -1068,7 +1069,7 @@ foreach ($qa_projects as $pid => $info) {
               <a class="file-chip-name" href="<?= get_base_url() ?>download?file_id=<?= $f['id'] ?>" title="<?= htmlspecialchars($f['file_name']) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($f['file_name']) ?></a>
               <span class="file-chip-size"><?= format_bytes($f['file_size']) ?></span>
               <?php if ((int)$f['uploaded_by'] === $user_id): ?>
-              <form method="POST" action="testing_portal" style="display:inline;">
+              <form method="POST" action="testing-portal" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
@@ -1081,7 +1082,7 @@ foreach ($qa_projects as $pid => $info) {
             <?php endforeach; ?>
           </div>
           <?php endif; ?>
-          <form method="POST" action="testing_portal" enctype="multipart/form-data">
+          <form method="POST" action="testing-portal" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action"  value="upload_bug_file">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1096,7 +1097,7 @@ foreach ($qa_projects as $pid => $info) {
         <?php if (in_array($bug['status'], ['open', 'in_progress'])): ?>
         <div class="bug-actions">
           <?php if ($bug['status'] === 'open'): ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="update_bug_status">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1104,7 +1105,7 @@ foreach ($qa_projects as $pid => $info) {
             <button type="submit" class="action-btn start">Start Working</button>
           </form>
           <?php endif; ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="update_bug_status">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1159,7 +1160,7 @@ foreach ($qa_projects as $pid => $info) {
               <a class="file-chip-name" href="<?= get_base_url() ?>download?file_id=<?= $f['id'] ?>" title="<?= htmlspecialchars($f['file_name']) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($f['file_name']) ?></a>
               <span class="file-chip-size"><?= format_bytes($f['file_size']) ?></span>
               <?php if ((int)$f['uploaded_by'] === $user_id): ?>
-              <form method="POST" action="testing_portal" style="display:inline;">
+              <form method="POST" action="testing-portal" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
@@ -1172,7 +1173,7 @@ foreach ($qa_projects as $pid => $info) {
             <?php endforeach; ?>
           </div>
           <?php endif; ?>
-          <form method="POST" action="testing_portal" enctype="multipart/form-data">
+          <form method="POST" action="testing-portal" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action"  value="upload_bug_file">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1187,7 +1188,7 @@ foreach ($qa_projects as $pid => $info) {
         <?php if (in_array($bug['status'], ['fixed', 'retest'])): ?>
         <div class="bug-actions">
           <?php if ($bug['status'] === 'fixed'): ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="retest_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1195,14 +1196,14 @@ foreach ($qa_projects as $pid => $info) {
             <button type="submit" class="action-btn retest">Mark Retesting</button>
           </form>
           <?php endif; ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="retest_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <input type="hidden" name="new_status" value="closed">
             <button type="submit" class="action-btn close">Confirm & Close</button>
           </form>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="retest_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1260,7 +1261,7 @@ foreach ($qa_projects as $pid => $info) {
               <a class="file-chip-name" href="<?= get_base_url() ?>download?file_id=<?= $f['id'] ?>" title="<?= htmlspecialchars($f['file_name']) ?>" style="color:inherit;text-decoration:none;"><?= htmlspecialchars($f['file_name']) ?></a>
               <span class="file-chip-size"><?= format_bytes($f['file_size']) ?></span>
               <?php if ((int)$f['uploaded_by'] === $user_id): ?>
-              <form method="POST" action="testing_portal" style="display:inline;">
+              <form method="POST" action="testing-portal" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
@@ -1273,7 +1274,7 @@ foreach ($qa_projects as $pid => $info) {
             <?php endforeach; ?>
           </div>
           <?php endif; ?>
-          <form method="POST" action="testing_portal" enctype="multipart/form-data">
+          <form method="POST" action="testing-portal" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action"  value="upload_bug_file">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1288,7 +1289,7 @@ foreach ($qa_projects as $pid => $info) {
         <?php if (!in_array($bug['status'], ['closed', 'wont_fix'])): ?>
         <div class="bug-actions">
           <?php if (in_array($bug['status'], ['fixed', 'retest']) && (int)$bug['reported_by'] !== $user_id): ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="retest_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
@@ -1297,14 +1298,14 @@ foreach ($qa_projects as $pid => $info) {
               onclick="return confirm('Close this bug without the reporter\'s retest? This override is recorded in the activity log.')">Close (override)</button>
           </form>
           <?php endif; ?>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="wont_fix_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <button type="submit" class="action-btn wontfix"
               onclick="return confirm('Mark this bug as Won\'t Fix?')">Won't Fix</button>
           </form>
-          <form method="POST" action="testing_portal">
+          <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="delete_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">

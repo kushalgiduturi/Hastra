@@ -6,8 +6,8 @@
 //
 //   POST /api/payment_webhook.php
 //   Content-Type: application/json
-//   X-Astra-Timestamp: <unix seconds>
-//   X-Astra-Signature: sha256=<hex HMAC-SHA256 of "<timestamp>.<raw body>">
+//   X-Hastra-Timestamp: <unix seconds>
+//   X-Hastra-Signature: sha256=<hex HMAC-SHA256 of "<timestamp>.<raw body>">
 //   {"invoice_number":"26INV0007","amount":"45000.00","reference":"pay_8Kx...","status":"paid"}
 //
 // The HMAC key is config/astra_payment_webhook.key (created by the v4
@@ -35,11 +35,13 @@ $key = astra_read_key_file(PAYMENT_WEBHOOK_KEY_FILE, false);
 if (!$key) payment_webhook_fail(503, 'Payment webhook is not configured.');
 
 $raw = file_get_contents('php://input', false, null, 0, 16384);
-$ts  = $_SERVER['HTTP_X_ASTRA_TIMESTAMP'] ?? '';
-$sig = $_SERVER['HTTP_X_ASTRA_SIGNATURE'] ?? '';
+// The new header names take priority; the pre-rebrand ones are still honoured
+// so an already-configured provider keeps working until it updates.
+$ts  = $_SERVER['HTTP_X_HASTRA_TIMESTAMP'] ?? $_SERVER['HTTP_X_ASTRA_TIMESTAMP'] ?? '';
+$sig = $_SERVER['HTTP_X_HASTRA_SIGNATURE'] ?? $_SERVER['HTTP_X_ASTRA_SIGNATURE'] ?? '';
 
 if (!ctype_digit($ts) || abs(time() - (int)$ts) > PAYMENT_WEBHOOK_SKEW) {
-    payment_webhook_fail(401, 'Missing or stale X-Astra-Timestamp.');
+    payment_webhook_fail(401, 'Missing or stale X-Hastra-Timestamp.');
 }
 $expected = 'sha256=' . hash_hmac('sha256', $ts . '.' . $raw, $key);
 if (!hash_equals($expected, $sig)) {

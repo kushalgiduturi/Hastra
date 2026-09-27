@@ -1,5 +1,5 @@
 <?php
-// Astra — client access rules migration (P14, Sep 2026). Run after 2026_09_onboarding.
+// Hastra — client access rules migration (P14, Sep 2026). Run after 2026_09_onboarding.
 // Adds only: deliveries.security_viewed_at / security_viewed_by, security_disclosures table.
 
 $__astra_acc_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;

@@ -1,9 +1,9 @@
 <?php
-// Astra — multi-track registration migration (Sep 2026)
+// Hastra — multi-track registration migration (Sep 2026)
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_account_type.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_account_type.php
 //
 // Adds companies.account_type, distinguishing the four self-serve
 // registration tracks in auth/register.php:

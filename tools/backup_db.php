@@ -1,5 +1,5 @@
 <?php
-// Astra — headless database backup for cron / Windows Task Scheduler.
+// Hastra — headless database backup for cron / Windows Task Scheduler.
 //
 // Writes a timestamped .sql dump to config/backups/ (same format and
 // function used by the sysadmin "Database migration" page) and prunes

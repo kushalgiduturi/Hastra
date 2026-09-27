@@ -1,5 +1,5 @@
 <?php
-// Astra — attendance & leave management migration (Sep 2026). Run after
+// Hastra — attendance & leave management migration (Sep 2026). Run after
 // 2026_09_crypto.
 //
 // Adds: companies leave-policy columns, users.gender/profile_updated/

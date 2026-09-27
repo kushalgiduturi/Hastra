@@ -1,4 +1,4 @@
-// Astra — Feature Showcase: cobe globe init (Card 4, "Global Anti-VPN &
+// Hastra — Feature Showcase: cobe globe init (Card 4, "Global Anti-VPN &
 // Geo-Fencing Shield"). Loaded as a native ES module (type="module") so the
 // CDN import works with zero build step. Auto-inits on DOMContentLoaded and
 // tears the WebGL context down on pagehide/unload — a globe left running
@@ -6,7 +6,7 @@
 // animation-frame loop and GPU context otherwise.
 import createGlobe from 'https://cdn.jsdelivr.net/npm/cobe@0.6.3/+esm';
 
-// Secure gateway nodes plotted on the globe — Astra's anti-VPN/geo-fencing
+// Secure gateway nodes plotted on the globe — Hastra's anti-VPN/geo-fencing
 // reference points, not literal infrastructure locations.
 const GATEWAY_MARKERS = [
   { location: [37.7749, -122.4194], size: 0.05 }, // San Francisco

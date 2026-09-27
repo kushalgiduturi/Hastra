@@ -1,4 +1,4 @@
-/* Deliberately no Google Fonts import — Astra runs the system UI stack
+/* Deliberately no Google Fonts import — Hastra runs the system UI stack
    (see --font-sans below) plus Share Tech Mono for tabular IDs/timestamps/
    matrices, loaded per-page only where that mono face is actually used. */
 
@@ -80,33 +80,33 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BRAND INTRO — "ASTRA" text projects outward from inside the icon,
+   BRAND INTRO — "HASTRA" text projects outward from inside the icon,
    once per browser tab session. Portal nav bars trigger this
-   automatically via body.astra-intro-run (see the bottom of
+   automatically via body.hastra-intro-run (see the bottom of
    core/theme.js). A page that stages its own reveal — like
    auth/login.php's video/card sequence — opts out with
    <body data-intro-manual> and fires these exact same keyframes
    itself, timed to its own choreography instead of page load. */
-@keyframes astraTextIntro { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
-@keyframes astraIconPop   { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
-@keyframes astraFadeUp    { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hastraTextIntro { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes hastraIconPop   { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes hastraFadeUp    { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-body.astra-intro-run .nav-title,
-body.astra-intro-run .brand-text .title {
+body.hastra-intro-run .nav-title,
+body.hastra-intro-run .brand-text .title {
   display: inline-block;
   transform-origin: left center;
-  animation: astraTextIntro .6s cubic-bezier(.16,1,.3,1) both;
+  animation: hastraTextIntro .6s cubic-bezier(.16,1,.3,1) both;
 }
-body.astra-intro-run .nav-title       { animation-delay: .2s; }
-body.astra-intro-run .brand-text .title { animation-delay: .15s; }
-body.astra-intro-run .brand-text .sub {
+body.hastra-intro-run .nav-title       { animation-delay: .2s; }
+body.hastra-intro-run .brand-text .title { animation-delay: .15s; }
+body.hastra-intro-run .brand-text .sub {
   display: inline-block;
-  animation: astraTextIntro .5s .35s cubic-bezier(.16,1,.3,1) both;
+  animation: hastraTextIntro .5s .35s cubic-bezier(.16,1,.3,1) both;
 }
 @media (prefers-reduced-motion: reduce) {
-  body.astra-intro-run .nav-title,
-  body.astra-intro-run .brand-text .title,
-  body.astra-intro-run .brand-text .sub { animation: none; }
+  body.hastra-intro-run .nav-title,
+  body.hastra-intro-run .brand-text .title,
+  body.hastra-intro-run .brand-text .sub { animation: none; }
 }
 
 /* ── Brand / logo link — takes the user to the full index of pages
@@ -201,25 +201,25 @@ input, select, textarea, button { font-family: var(--font-sans); }
 /* ── Floating dock quick-nav (core/dock.css) — was hardcoded dark with
    no light-theme rule at all, so it showed as a dark blurred pill on an
    otherwise light page. ── */
-[data-theme="light"] .astra-dock {
+[data-theme="light"] .hastra-dock {
   background: rgba(255,255,255,0.92) !important;
   border-color: rgba(15,23,42,0.1) !important;
   box-shadow: 0 10px 30px -5px rgba(15,23,42,0.12), 0 0 0 1px rgba(15,23,42,0.05) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-[data-theme="light"] .astra-dock-item {
+[data-theme="light"] .hastra-dock-item {
   background: #ffffff !important;
   border-color: rgba(15,23,42,0.1) !important;
   color: #334155 !important;
 }
-[data-theme="light"] .astra-dock-item:hover,
-[data-theme="light"] .astra-dock-item.is-current {
+[data-theme="light"] .hastra-dock-item:hover,
+[data-theme="light"] .hastra-dock-item.is-current {
   color: var(--accent-bright) !important;
   border-color: rgba(var(--accent-rgb),0.35) !important;
   background: rgba(var(--accent-rgb),0.1) !important;
 }
-[data-theme="light"] .astra-dock-tooltip {
+[data-theme="light"] .hastra-dock-tooltip {
   background: #0f172a !important;
   border-color: rgba(15,23,42,0.15) !important;
   color: #f8fafc !important;
@@ -1396,7 +1396,7 @@ body::before {
 }
 
 /* ── Global AX preloader (injected by core/theme.js via document.write) ── */
-#astra-page-loader {
+#hastra-page-loader {
   position: fixed; inset: 0; z-index: 99999;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 18px;
@@ -1407,15 +1407,15 @@ body::before {
   transition: opacity 0.25s ease-out;
 }
 
-.astra-loader-spinner {
+.hastra-loader-spinner {
   width: 52px; height: 52px; border-radius: 50%;
   border: 3px solid rgba(var(--accent-rgb), 0.18);
   border-top-color: var(--accent-bright);
   box-shadow: 0 0 24px -4px var(--accent-glow);
-  animation: astraLoaderSpin 0.85s linear infinite;
+  animation: hastraLoaderSpin 0.85s linear infinite;
 }
 
-@keyframes astraLoaderSpin {
+@keyframes hastraLoaderSpin {
   to { transform: rotate(360deg); }
 }
 
@@ -1426,15 +1426,15 @@ body::before {
   color: var(--text-dim);
   text-align: center;
   max-width: 80vw;
-  animation: astraLoaderPulse 1.6s ease-in-out infinite;
+  animation: hastraLoaderPulse 1.6s ease-in-out infinite;
 }
 
-@keyframes astraLoaderPulse {
+@keyframes hastraLoaderPulse {
   0%, 100% { opacity: 0.55; }
   50%      { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .astra-loader-spinner { animation-duration: 1.6s; }
+  .hastra-loader-spinner { animation-duration: 1.6s; }
   .loader-status-text { animation: none; opacity: 0.85; }
 }

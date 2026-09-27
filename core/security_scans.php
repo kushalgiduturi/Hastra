@@ -180,7 +180,7 @@ function astra_security_run_sast($conn, array $scan, callable $emit): array {
     $skip_reasons = [];
     foreach ($result['skipped'] as [, $why]) $skip_reasons[$why] = ($skip_reasons[$why] ?? 0) + 1;
     astra_security_finish_scan($conn, $scan, $counts, $stats, [
-        'engine' => 'Astra SAST', 'skipped_by_reason' => $skip_reasons,
+        'engine' => 'Hastra SAST', 'skipped_by_reason' => $skip_reasons,
         'skipped_sample' => array_slice(array_map(fn($s) => $s[0] . ' (' . $s[1] . ')', $result['skipped']), 0, 50),
     ]);
     astra_log_chained('SECURITY_SCAN_COMPLETED', "SAST scan #{$scan['id']}: {$stats['scanned']} files, " . array_sum($counts) . ' open findings',

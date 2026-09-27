@@ -18,7 +18,7 @@ mysqli_stmt_execute($lead_check);
 mysqli_stmt_store_result($lead_check);
 
 if (mysqli_stmt_num_rows($lead_check) === 0) {
-    header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal");
+    header("Location: " . get_base_url() . "workspace/employee/");
     exit();
 }
 
@@ -143,8 +143,9 @@ $status_labels = [
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deployment Portal · Astra</title>
+<title>Deployment Portal · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -404,7 +405,7 @@ $status_labels = [
         </div>
 
         <div class="deploy-form">
-          <form method="POST" action="deployment_portal">
+          <form method="POST" action="deployment-portal">
             <input type="hidden" name="csrf_token"  value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action"      value="request_deployment">
             <input type="hidden" name="project_id"  value="<?= $proj['id'] ?>">
@@ -500,7 +501,7 @@ $status_labels = [
         </div>
         <div class="not-ready-note">
           <?php if ($proj['status'] !== 'testing'): ?>
-          Testing hasn't started. A tester or security tester starts it from the <a href="<?= get_base_url() ?>portals/emlpoyee/testing_portal.php" style="color:#fca5a5;">Testing Portal</a>.<br>
+          Testing hasn't started. A tester or security tester starts it from the <a href="<?= get_base_url() ?>workspace/employee/testing-portal" style="color:#fca5a5;">Testing Portal</a>.<br>
           <?php endif; ?>
           <?php if ($proj['open_bugs'] > 0): ?>
           <strong><?= $proj['open_bugs'] ?></strong> bug<?= $proj['open_bugs'] != 1 ? 's' : '' ?> must be closed or marked Won't Fix.<br>

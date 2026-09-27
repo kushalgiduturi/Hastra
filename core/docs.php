@@ -36,11 +36,11 @@ function sanitize_doc_html($html) {
 
     $doc = new DOMDocument();
     $prev = libxml_use_internal_errors(true);
-    $doc->loadHTML('<?xml encoding="UTF-8"><div id="astra-root">' . $html . '</div>', LIBXML_NONET | LIBXML_HTML_NODEFDTD);
+    $doc->loadHTML('<?xml encoding="UTF-8"><div id="hastra-root">' . $html . '</div>', LIBXML_NONET | LIBXML_HTML_NODEFDTD);
     libxml_clear_errors();
     libxml_use_internal_errors($prev);
 
-    $root = $doc->getElementById('astra-root');
+    $root = $doc->getElementById('hastra-root');
     if (!$root) return '';
     sanitize_doc_node($root);
 
@@ -169,7 +169,7 @@ function build_template_doc(array $ctx) {
     if ($ctx['team']) {
         $out .= '<h2>Team</h2><ul>' . implode('', array_map(fn($m) => '<li>' . $h($m['name']) . ': ' . $h(str_replace('_', ' ', $m['role'])) . '</li>', $ctx['team'])) . '</ul>';
     }
-    $out .= '<h2>Maintenance &amp; support</h2><p>Raise change requests from the Astra client portal against this project (' . $h($p['code']) . ').</p>';
+    $out .= '<h2>Maintenance &amp; support</h2><p>Raise change requests from the Hastra client portal against this project (' . $h($p['code']) . ').</p>';
     return $out;
 }
 

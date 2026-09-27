@@ -354,8 +354,9 @@ $status_labels = [
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project Portal · Astra</title>
+<title>Project Portal · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -729,7 +730,7 @@ $status_labels = [
           &nbsp;Fill in project details and assign the team
         </p>
 
-        <form method="POST" action="project_portal" id="projectForm">
+        <form method="POST" action="project-portal" id="projectForm">
           <input type="hidden" name="csrf_token"     value="<?= generate_csrf_token() ?>">
           <input type="hidden" name="action"         value="create_project">
           <input type="hidden" name="requirement_id" id="selectedReqId" value="">
@@ -832,7 +833,7 @@ $status_labels = [
                   <?= htmlspecialchars($role_labels[$member['project_role']] ?? $member['project_role']) ?>
                 </span>
                 <?php if ($member['project_role'] !== 'team_lead'): ?>
-                <form method="POST" action="project_portal" style="display:inline;">
+                <form method="POST" action="project-portal" style="display:inline;">
                   <input type="hidden" name="csrf_token"  value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action"      value="remove_member">
                   <input type="hidden" name="member_id"   value="<?= $member['member_id'] ?>">
@@ -852,7 +853,7 @@ $status_labels = [
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Add Member
           </button>
-          <form method="POST" action="project_portal">
+          <form method="POST" action="project-portal">
             <div class="add-member-row" id="addRow_<?= $proj['id'] ?>">
               <input type="hidden" name="csrf_token"  value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="action"      value="add_member">

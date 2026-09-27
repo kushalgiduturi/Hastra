@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '82');
+    define('ASSET_VERSION', '84');
 }
 
 header_remove('X-Powered-By'); // don't advertise the PHP version
@@ -54,7 +54,7 @@ function secure_session_start() {
             session_unset();
             session_destroy();
             if (basename($_SERVER["PHP_SELF"]) !== "login.php") {
-                header("Location: " . get_base_url() . "auth/login.php");
+                header("Location: " . get_base_url() . "signin");
                 exit();
             }
         }
@@ -74,7 +74,7 @@ function get_base_url() {
 
 function verify_session($conn, $role = null) {
     if (!isset($_SESSION["user_id"])) {
-        header("Location: " . get_base_url() . "auth/login.php");
+        header("Location: " . get_base_url() . "signin");
         exit();
     }
 
@@ -87,21 +87,21 @@ function verify_session($conn, $role = null) {
 
     if (!$user) {
         session_unset(); session_destroy();
-        header("Location: " . get_base_url() . "auth/login.php"); exit();
+        header("Location: " . get_base_url() . "signin"); exit();
     }
 
     if ($role) {
         $allowed = is_array($role) ? $role : [$role];
         if (!in_array($user["role"], $allowed)) {
             session_unset(); session_destroy();
-            header("Location: " . get_base_url() . "auth/login.php"); exit();
+            header("Location: " . get_base_url() . "signin"); exit();
         }
     }
 
     if (isset($_GET["id"]) && $_GET["id"] != $_SESSION["user_id"]) {
         session_unset();
         session_destroy();
-        header("Location: " . get_base_url() . "auth/login.php");
+        header("Location: " . get_base_url() . "signin");
         exit();
     }
 }
@@ -116,7 +116,7 @@ function generate_csrf_token() {
 function verify_csrf_token() {
     if (!isset($_POST["csrf_token"]) ||
         $_POST["csrf_token"] !== $_SESSION["csrf_token"]) {
-        die("Invalid request. <a href='" . get_base_url() . "auth/login.php'>Go back</a>");
+        die("Invalid request. <a href='" . get_base_url() . "signin'>Go back</a>");
     }
 }
 
@@ -283,4 +283,38 @@ require_once __DIR__ . '/auth_check.php';
 // user-supplied identifier — this call is what makes the resulting block
 // actually stick past the request that triggered it.
 astra_canary_guard($conn);
+
+// ── Short addresses ─────────────────────────────────────────────────────────
+// Every page answers at one short address (.htaccess maps it to the file).
+// A page reached any other way (/portals/…, /auth/login, underscores, .php)
+// is sent there with a 301, so bookmarks and old links keep working.
+function astra_pretty_path(string $script): ?string {
+    $auth = ['login' => 'signin', 'register' => 'signup', 'otp' => 'verify', 'verify_register' => 'verify-email',
+             'forgot_otp' => 'reset-code', 'forgot' => 'forgot-password', 'reset' => 'reset-password',
+             'set_password' => 'set-password', 'logout' => 'signout'];
+    if (preg_match('~^auth/([a-z_]+)\.php$~', $script, $m)) return $auth[$m[1]] ?? null;
+    if ($script === 'portals/index.php') return 'workspace/';
+    if (preg_match('~^portals/([a-z]+)/([a-z][a-z_]*)\.php$~', $script, $m)) {
+        $dir = $m[1] === 'emlpoyee' ? 'employee' : $m[1];
+        if ($m[2] === "{$dir}_portal") return "workspace/$dir/";
+        return "workspace/$dir/" . str_replace('_', '-', $m[2]);
+    }
+    if (preg_match('~^legal/([a-z][a-z_]*)\.php$~', $script, $m)) return 'legal/' . $m[1];
+    return null;
+}
+(function () {
+    if (PHP_SAPI === 'cli' || getenv('ASTRA_TEST') === '1' || headers_sent()) return;
+    if (!in_array($_SERVER['REQUEST_METHOD'] ?? '', ['GET', 'HEAD'], true)) return;
+    $base = get_base_url();
+    $script = (string)($_SERVER['SCRIPT_NAME'] ?? '');
+    if (strncmp($script, $base, strlen($base)) !== 0) return;
+    $pretty = astra_pretty_path(substr($script, strlen($base)));
+    if ($pretty === null) return;
+    $uri = (string)($_SERVER['REQUEST_URI'] ?? '');
+    $path = rawurldecode((string)parse_url($uri, PHP_URL_PATH));
+    if ($path === $base . $pretty) return;
+    $qs = (string)parse_url($uri, PHP_URL_QUERY);
+    header('Location: ' . $base . $pretty . ($qs !== '' ? '?' . $qs : ''), true, 301);
+    exit();
+})();
 ?>

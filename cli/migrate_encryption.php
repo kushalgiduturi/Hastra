@@ -1,10 +1,10 @@
 <?php
-// Astra — encryption migration runner (CLI only).
+// Hastra — encryption migration runner (CLI only).
 //
 //   php cli/migrate_encryption.php [--dry-run] [--chunk=500] [--status] [--reset]
 //
 // Converts every encrypted column forward to the current envelope
-// ("astra:v1:", see core/crypto.php) and backfills the four blind indexes.
+// ("hastra:v1:", see core/crypto.php) and backfills the four blind indexes.
 // It handles all three input states a column can be in — untouched plaintext,
 // the superseded "adb:v1:" envelope, and already-current values — so it is
 // safe to run against a fresh database, a half-migrated one, or one that is
@@ -205,7 +205,10 @@ function migrate_column($conn, array $spec, int $chunk, bool $dry): array {
     // "Needs work" = not yet on the current envelope, or missing its blind
     // index. Filtering in SQL keeps a re-run over an already-converted table
     // cheap, while the cursor guarantees forward progress either way.
-    $needs = "(`$column` IS NOT NULL AND `$column` <> '' AND `$column` NOT LIKE 'astra:v1:%')";
+    // Both envelope prefixes (the current "hastra:v1:" tag and the pre-rebrand
+    // "astra:v1:" one it replaced) are already-converted rows; only a value
+    // under neither one is still plaintext waiting for its first pass.
+    $needs = "(`$column` IS NOT NULL AND `$column` <> '' AND `$column` NOT LIKE 'hastra:v1:%' AND `$column` NOT LIKE 'astra:v1:%')";
     if ($bindex && db_column_exists($conn, $table, $bindex)) {
         $needs = "($needs OR (`$bindex` IS NULL AND `$column` IS NOT NULL AND `$column` <> ''))";
     } else {
@@ -323,7 +326,7 @@ if ($reset) {
     exit(0);
 }
 
-say("Astra encryption migration" . ($dry_run ? "  [DRY RUN: no writes]" : ""));
+say("Hastra encryption migration" . ($dry_run ? "  [DRY RUN: no writes]" : ""));
 say("chunk size: $chunk rows per transaction");
 
 try {

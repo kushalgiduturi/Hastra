@@ -9,7 +9,7 @@ $scope_ids     = id_list($ctx['member_ids']);
 $can_pay       = client_can($ctx, 'pay_invoice');
 $can_security  = client_can($ctx, 'security_summary') && access_schema_ready($conn);
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "portals/client/docs");
+    header("Location: " . get_base_url() . "workspace/client/docs");
     exit();
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
         // Milestone escrow invoices release deliverables, so they settle only
-        // when Astra confirms the money arrived (admin clearance or the signed
+        // when Hastra confirms the money arrived (admin clearance or the signed
         // payment webhook), never from this button (core/escrow.php).
         if (!empty($inv_row['milestone_id'])) {
             echo json_encode(['success' => false, 'message' => "This invoice is held in milestone escrow. It's marked paid once your payment is confirmed, and your handover unlocks automatically."]);
@@ -111,8 +111,9 @@ unset($dr);
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Delivery &amp; Billing · Astra</title>
+<title>Delivery &amp; Billing · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -254,7 +255,7 @@ unset($dr);
         </div>
         <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">
           <?php if (safe_url($d['source_code_link'])): ?><a href="<?= htmlspecialchars(safe_url($d['source_code_link'])) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Source Code</a><?php endif; ?>
-          <?php if ($d['has_doc']): ?><a href="<?= get_base_url() ?>portals/client/doc_view.php?project=<?= (int)$d['project_id'] ?>" style="color:var(--accent-bright);">Documentation</a>
+          <?php if ($d['has_doc']): ?><a href="<?= get_base_url() ?>workspace/client/doc-view?project=<?= (int)$d['project_id'] ?>" style="color:var(--accent-bright);">Documentation</a>
           <?php elseif (safe_url($d['documentation_link'])): ?><a href="<?= htmlspecialchars(safe_url($d['documentation_link'])) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Documentation</a><?php endif; ?>
           <?php if ($d['has_doc'] && safe_url($d['documentation_link'])): ?><a href="<?= htmlspecialchars(safe_url($d['documentation_link'])) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">External docs</a><?php endif; ?>
           <?php if (safe_url($d['deployment_link'])): ?><a href="<?= htmlspecialchars(safe_url($d['deployment_link'])) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--accent-bright);">Live Deployment</a><?php endif; ?>
@@ -265,7 +266,7 @@ unset($dr);
             Security summary viewed on <?= htmlspecialchars(date('d M Y, H:i', strtotime($d['security_viewed_at']))) ?>. It can't be opened again.
           <?php elseif ($can_security): ?>
             <span>Security summary and handover credentials: <b style="color:var(--yellow);">can be opened only once</b>.</span>
-            <form method="POST" action="<?= get_base_url() ?>portals/client/security_view.php" style="display:inline;"
+            <form method="POST" action="<?= get_base_url() ?>workspace/client/security-view" style="display:inline;"
                   onsubmit="return confirm('The security summary can be opened only once. Open it now?')">
               <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="delivery_id" value="<?= (int)$d['id'] ?>">
@@ -516,7 +517,7 @@ function processPayment() {
     fd.append('invoice_id', currentInvoiceId);
     fd.append('pay_method', currentPayMethod);
 
-    fetch('delivery_billing', {
+    fetch('delivery-billing', {
       method: 'POST',
       body: fd
     })

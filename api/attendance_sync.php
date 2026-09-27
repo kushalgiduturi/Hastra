@@ -1,11 +1,11 @@
 <?php
 // api/attendance_sync.php
 // Automated biometric/attendance webhook. No session — authenticated purely
-// by the X-Astra-Webhook-Secret header, scoped to whichever company that
+// by the X-Hastra-Webhook-Secret header, scoped to whichever company that
 // secret belongs to (see portals/admin/attendance.php to generate one).
 //
 //   POST /api/attendance_sync.php
-//   Header: X-Astra-Webhook-Secret: <secret>
+//   Header: X-Hastra-Webhook-Secret: <secret>
 //   Body:   [{"email":"...","work_date":"YYYY-MM-DD","check_in":"HH:MM","status":"present"}, ...]
 //
 // A record whose date was already manually overridden by a manager is left
@@ -23,9 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     attendance_sync_fail(405, 'POST required.');
 }
 
-$secret = $_SERVER['HTTP_X_ASTRA_WEBHOOK_SECRET'] ?? '';
+// The new header name takes priority; the pre-rebrand one is still honoured
+// so an already-configured external sender keeps working until it updates.
+$secret = $_SERVER['HTTP_X_HASTRA_WEBHOOK_SECRET'] ?? $_SERVER['HTTP_X_ASTRA_WEBHOOK_SECRET'] ?? '';
 if ($secret === '') {
-    attendance_sync_fail(401, 'Missing X-Astra-Webhook-Secret header.');
+    attendance_sync_fail(401, 'Missing X-Hastra-Webhook-Secret header.');
 }
 
 // Honeytoken trap: a decoy API key planted for reconnaissance to find. A

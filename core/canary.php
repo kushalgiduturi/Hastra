@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — honeytoken intrusion traps and the lockdown they trigger.
+// Hastra — honeytoken intrusion traps and the lockdown they trigger.
 //
 // A honeytoken is a decoy identifier (an unlinked "admin" email, a fake API
 // key, a planted document token) that no legitimate user or integration has

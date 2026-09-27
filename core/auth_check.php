@@ -42,7 +42,7 @@ function render_profile_barrier($conn) {
     <div id="profileBarrierOverlay" class="profile-barrier-overlay" data-csrf="<?= htmlspecialchars($csrf) ?>" data-endpoint="<?= htmlspecialchars(get_base_url()) ?>api/complete_profile.php">
       <div class="profile-barrier-modal" role="dialog" aria-modal="true" aria-labelledby="pbTitle">
         <h2 id="pbTitle">One more thing before you continue</h2>
-        <p>Select your gender to finish setting up your Astra account. You'll only need to do this once.</p>
+        <p>Select your gender to finish setting up your Hastra account. You'll only need to do this once.</p>
         <div class="pb-options">
           <button type="button" class="pb-opt" data-gender="male">
             <span class="pb-opt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="14" r="6"/><path d="M14.5 9.5L20 4M20 4h-5M20 4v5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>

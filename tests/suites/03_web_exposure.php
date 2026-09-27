@@ -31,12 +31,20 @@ foreach (glob(ASTRA_ROOT . '/_backup_*', GLOB_ONLYDIR) as $dir) {
     t("backup folder not served: $name/", fn() => expect_blocked("$name/"));
     if ($php) {
         $rel = $name . '/' . str_replace('\\', '/', substr($php[0], strlen($dir) + 1));
-        t("backup PHP not executable: $rel", fn() => expect_blocked($rel, ['Astra', 'theme.css']));
+        t("backup PHP not executable: $rel", fn() => expect_blocked($rel, ['Hastra', 'theme.css']));
     }
 }
-t('public landing page serves', function () {
-    $r = web_get('index.php');
-    expect_eq($r['status'], 200, 'index.php');
+t('public landing page serves at a clean address; .php addresses redirect to it', function () {
+    $r = web_get('');
+    expect_eq($r['status'], 200, '/Hastra/');
+    foreach (['index.php' => '', 'auth/login.php?error=reauth' => 'auth/login?error=reauth', 'legal/terms.php' => 'legal/terms'] as $from => $to) {
+        $h = [];
+        $ctx = stream_context_create(['http' => ['method' => 'GET', 'ignore_errors' => true, 'follow_location' => 0, 'timeout' => 10]]);
+        @file_get_contents(ASTRA_WEB_BASE . $from, false, $ctx);
+        $loc = ''; $code = 0;
+        foreach ($http_response_header ?? [] as $l) { if (preg_match('~^HTTP/\S+\s+(\d{3})~', $l, $m)) $code = (int)$m[1]; if (stripos($l, 'Location:') === 0) $loc = trim(substr($l, 9)); }
+        expect($code === 301 && str_ends_with($loc, '/Hastra/' . $to), "$from should 301 to /Hastra/$to, got $code $loc");
+    }
 });
 
 // ── download.php ────────────────────────────────────────────────────────────
@@ -65,7 +73,7 @@ t('absolute path outside uploads/: blocked', function () {
     expect(!str_contains($r['body'], 'DB_PASS'), 'config contents leaked');
 });
 t('authorised download of a real upload: 200 with the file', function () {
-    $dir = ASTRA_ROOT . '/uploads/astra-test';
+    $dir = ASTRA_ROOT . '/uploads/hastra-test';
     @mkdir($dir, 0700, true);
     $path = $dir . '/evidence-' . F::$suffix . '.txt';
     file_put_contents($path, 'evidence ' . F::$suffix);

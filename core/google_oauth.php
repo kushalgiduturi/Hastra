@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — Google OAuth 2.0 / OpenID Connect sign-in.
+// Hastra — Google OAuth 2.0 / OpenID Connect sign-in.
 //
 // Authorization-code flow with PKCE (S256), a per-attempt `state` (CSRF) and
 // `nonce` (replay), sealed in an encrypted cookie (see GOOGLE_ATTEMPT_COOKIE). The ID token returned by
@@ -38,7 +38,7 @@ function astra_google_schema_ready($conn): bool {
 // SameSite=Strict, so the browser withholds it on Google's cross-site redirect
 // back. It rides in its own SameSite=Lax cookie instead, sealed with
 // AES-256-GCM (confidential and tamper-evident), scoped to /auth/, 10 minutes.
-const GOOGLE_ATTEMPT_COOKIE = 'astra_goauth';
+const GOOGLE_ATTEMPT_COOKIE = 'hastra_goauth';
 
 function astra_google_attempt_cookie(string $value, int $expires): void {
     setcookie(GOOGLE_ATTEMPT_COOKIE, $value, [
@@ -102,7 +102,7 @@ function astra_google_http(string $url, ?array $post = null): ?array {
     $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($body === false || $code !== 200) {
-        error_log("[astra-google] HTTP $code from " . parse_url($url, PHP_URL_HOST));
+        error_log("[hastra-google] HTTP $code from " . parse_url($url, PHP_URL_HOST));
         return null;
     }
     $data = json_decode($body, true);
@@ -137,7 +137,7 @@ function astra_google_complete(array $attempt, string $code): ?array {
        && ($c['sub'] ?? '') !== ''
        && filter_var($c['email'] ?? '', FILTER_VALIDATE_EMAIL);
     if (!$ok) {
-        error_log('[astra-google] ID token rejected: claim check failed');
+        error_log('[hastra-google] ID token rejected: claim check failed');
         return null;
     }
     return [
@@ -150,15 +150,15 @@ function astra_google_complete(array $attempt, string $code): ?array {
 
 function astra_role_home(string $role): string {
     $map = [
-        'sysadmin' => 'portals/sysadmin/sysadmin_portal',
-        'admin'    => 'portals/admin/admin_portal',
-        'employee' => 'portals/emlpoyee/employee_portal',
-        'client'   => 'portals/client/client_portal',
+        'sysadmin' => 'workspace/sysadmin/',
+        'admin'    => 'workspace/admin/',
+        'employee' => 'workspace/employee/',
+        'client'   => 'workspace/client/',
     ];
-    return get_base_url() . ($map[$role] ?? 'portals/user/newuser_portal');
+    return get_base_url() . ($map[$role] ?? 'workspace/user/newuser-portal');
 }
 
-// Finds the Astra account for a verified Google profile: by the bound Google
+// Finds the Hastra account for a verified Google profile: by the bound Google
 // id first, then by email. Returns [user_row|null, error_code|null].
 function astra_google_find_user($conn, array $profile): array {
     $gid = astra_blind_index($profile['google_id']);
@@ -222,7 +222,7 @@ function astra_same_site_redirect(string $url): void {
     $u = htmlspecialchars($url, ENT_QUOTES);
     header("Cache-Control: no-store");
     echo "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta http-equiv=\"refresh\" content=\"0;url=$u\">"
-       . "<title>Signing you in · Astra</title></head><body><p><a href=\"$u\">Continue to Astra</a></p></body></html>";
+       . "<title>Signing you in · Hastra</title></head><body><p><a href=\"$u\">Continue to Hastra</a></p></body></html>";
     exit();
 }
 // Creates the company and account for a verified Google identity signing up

@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                 mysqli_stmt_bind_param($token_insert, "iss", $new_user_id, $token_enc, $token_bindex);
                 mysqli_stmt_execute($token_insert);
 
-                $set_link = "http://" . $_SERVER['HTTP_HOST'] . get_base_url() . "auth/set_password.php?token=" . $token;
+                $set_link = "http://" . $_SERVER['HTTP_HOST'] . get_base_url() . "set-password?token=" . $token;
 
                 $mail = new PHPMailer(true);
                 try {
@@ -100,10 +100,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                     $mail->SMTPAutoTLS = false;
                     $mail->setFrom(MAIL_FROM, MAIL_NAME);
                     $mail->addAddress($email);
-                    $mail->Subject = 'Set up your Astra account';
+                    $mail->Subject = 'Set up your Hastra account';
                     $mail->Body    =
                         "Hi $full_name,\n\n" .
-                        "An account has been created for you at Astra.\n\n" .
+                        "An account has been created for you at Hastra.\n\n" .
                         "Click the link below to set your password:\n$set_link\n\n" .
                         "This link expires in 24 hours.\n\n" .
                         "Your account will be active once sysadmin approves it.";
@@ -129,8 +129,9 @@ $internal_company    = get_internal_company($conn);
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Employee · Astra</title>
+<title>Create Employee · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -218,7 +219,7 @@ $internal_company    = get_internal_company($conn);
       </div>
     </div>
     <div class="section-body">
-      <form method="POST" action="create_employee" id="createForm">
+      <form method="POST" action="create-employee" id="createForm">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="create_employee">
         <div class="form-grid">
@@ -278,7 +279,7 @@ function suggestEmail(companyChanged = false) {
     fd.append('full_name', name);
     fd.append('company_id', companySelect.value);
     try {
-      const res  = await fetch('create_employee', { method: 'POST', body: fd });
+      const res  = await fetch('create-employee', { method: 'POST', body: fd });
       const data = await res.json();
       if (data.email) document.getElementById('employee_email').value = data.email;
     } catch(e) {}

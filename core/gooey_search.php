@@ -5,7 +5,7 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 // gooey-search.css, assets/js/gooey-search.js) — a small search field,
 // sized to match this app's other filter inputs, that widens with a spring
 // transition on click/focus. Ported from a React/Framer-Motion spec to
-// plain markup so it works in Astra's procedural PHP views with no build
+// plain markup so it works in Hastra's procedural PHP views with no build
 // step; simplified from the original spec's SVG blur-filter/floating-bubble
 // treatment, which made the control taller and rounder than everything
 // next to it and read as a separate stray element rather than part of the

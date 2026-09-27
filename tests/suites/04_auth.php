@@ -15,7 +15,7 @@ function full_login(string $key, string $portal = 'enterprise'): array {
     mail_clear();
     $r = login_post(F::$u[$key]['email'], FIX_PASSWORD, $portal);
     expect_clean($r, 'login');
-    expect(str_contains((string)$r['location'], 'otp'), "no OTP redirect for $key (status {$r['status']}): " . substr(trim(visible_text($r['body'])), 0, 160));
+    expect(str_contains((string)$r['location'], 'verify'), "no OTP redirect for $key (status {$r['status']}): " . substr(trim(visible_text($r['body'])), 0, 160));
     $code = mail_code_to(F::$u[$key]['email']);
     expect($code !== null, 'no OTP email captured');
     $o = cgi('POST', 'auth/otp.php', ['session' => $r['session'], 'post' => ['csrf_token' => csrf_of($r['session']), 'otp' => $code]]);
@@ -31,7 +31,7 @@ t('login page renders cleanly (both portals)', function () {
 });
 t('enterprise sign-in: password + OTP -> admin portal, session populated', function () {
     $o = full_login('admin');
-    expect(str_contains((string)$o['location'], 'portals/admin/admin_portal'), "routed to '{$o['location']}' (HTTP {$o['status']}): " . substr(trim(preg_replace('/\s+/', ' ', visible_text($o['body']))), 0, 200));
+    expect(str_contains((string)$o['location'], 'workspace/admin/'), "routed to '{$o['location']}' (HTTP {$o['status']}): " . substr(trim(preg_replace('/\s+/', ' ', visible_text($o['body']))), 0, 200));
     $sess = astra_test_session_data($o['session']);
     // otp.php regenerates the session id; follow it via the stored data instead.
     $row = q1("SELECT user_id FROM user_sessions WHERE user_id = ? ORDER BY id DESC LIMIT 1", [F::$u['admin']['id']]);
@@ -53,13 +53,13 @@ t('session holds decrypted name + role (not ciphertext)', function () {
     expect($found !== null, 'signed-in session not found');
     expect_eq($found['user_name'], F::$u['employee']['name'], 'user_name');
     expect_eq($found['user_role'], 'employee', 'user_role');
-    expect(!str_starts_with((string)$found['user_name'], 'astra:'), 'name stored encrypted in session');
+    expect(!str_starts_with((string)$found['user_name'], 'hastra:'), 'name stored encrypted in session');
     expect(!empty($found['auth_fp']), 'no fingerprint anchor in session');
     return "keys: user_id, user_name, user_role (spec's \$_SESSION['user'] doesn't exist in this app)";
 });
 t('client sign-in routes to the Client Gateway', function () {
     $o = full_login('client', 'client');
-    expect(str_contains((string)$o['location'], 'portals/client/client_portal'), 'routed to ' . $o['location']);
+    expect(str_contains((string)$o['location'], 'workspace/client/'), 'routed to ' . $o['location']);
 });
 t('wrong OTP is rejected and the session stays signed out', function () {
     mail_clear();
@@ -98,7 +98,7 @@ t('OTP step: more than 5 guesses ends the attempt', function () {
     $r = login_post(F::$u['admin']['email'], FIX_PASSWORD);
     $last = null;
     for ($i = 0; $i < 6; $i++) $last = cgi('POST', 'auth/otp.php', ['session' => $r['session'], 'post' => ['csrf_token' => csrf_of($r['session']), 'otp' => '11111' . $i]]);
-    expect(str_contains((string)$last['location'], 'login'), 'sixth guess was still accepted for checking');
+    expect(str_contains((string)$last['location'], 'signin'), 'sixth guess was still accepted for checking');
 });
 t('CAPTCHA failure is handled without PHP warnings', function () {
     $s = astra_test_session([]);

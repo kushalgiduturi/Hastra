@@ -1,4 +1,4 @@
-// Astra — Gooey Search component behavior (vanilla JS, no build step).
+// Hastra — Gooey Search component behavior (vanilla JS, no build step).
 //
 // Wires every `.gooey-search-root` on the page: click/focus expands the pill
 // and focuses its real <input>, blur collapses it back down if it's empty.
@@ -68,5 +68,5 @@
 
   // Exposed so a page that injects a gooey search root dynamically (e.g.
   // after an AJAX re-render) can wire it up without a full re-init.
-  window.astraInitGooeySearch = initGooeySearch;
+  window.hastraInitGooeySearch = initGooeySearch;
 })();

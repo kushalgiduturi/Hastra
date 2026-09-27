@@ -1,10 +1,10 @@
 <?php
 require __DIR__ . '/_layout.php';
-legal_page_start('privacy', 'Privacy Policy', 'What personal data Astra collects, how it is protected, how long it is kept and how to exercise your rights.');
+legal_page_start('privacy', 'Privacy Policy', 'What personal data Hastra collects, how it is protected, how long it is kept and how to exercise your rights.');
 ?>
-<p>This policy explains what personal data <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?> ("Astra", "we") processes when you use
-  the Astra software-delivery platform, why, how it is protected, how long it is kept and the rights you have over it.
-  For workspace data your organization puts into Astra, your organization is the controller and we act as its processor;
+<p>This policy explains what personal data <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?> ("Hastra", "we") processes when you use
+  the Hastra software-delivery platform, why, how it is protected, how long it is kept and the rights you have over it.
+  For workspace data your organization puts into Hastra, your organization is the controller and we act as its processor;
   for account, security and billing data we are the controller.</p>
 
 <nav class="legal-toc" aria-label="On this page"><ol>
@@ -26,8 +26,8 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Astra collects
       account's verified email, display name and a stable Google account identifier. We do not store your Google profile photo.</td></tr>
     <tr><td>Profile</td><td>Gender (used for leave-policy eligibility), optional GitHub and LinkedIn profile links.</td></tr>
     <tr><td>Company identity</td><td>Organization name, email domain, size band, contract reference, logo, account type and leave policy.</td></tr>
-    <tr><td>Attendance sync payloads</td><td>If your organization connects an attendance or biometric device, Astra receives only
-      the employee email, work date, check-in time and attendance status. Astra does <strong>not</strong> receive or store
+    <tr><td>Attendance sync payloads</td><td>If your organization connects an attendance or biometric device, Hastra receives only
+      the employee email, work date, check-in time and attendance status. Hastra does <strong>not</strong> receive or store
       fingerprints, face templates or any other biometric identifier.</td></tr>
     <tr><td>IP and device intelligence</td><td>Your IP address; the country, city and network provider derived from it; whether it
       appears to be a VPN, proxy or hosting address; and a one-way keyed hash (HMAC) of your browser user-agent, language and IP
@@ -35,7 +35,7 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Astra collects
     <tr><td>Project content</td><td>Requirements, tasks, defects, test results, security-scan uploads and findings, documentation,
       delivery records, handover credentials and ephemeral dossiers.</td></tr>
     <tr><td>Transaction history</td><td>Invoices, milestone escrow records, payment status and the payment provider's transaction
-      reference. Card and bank details are handled by the payment provider; Astra never receives them.</td></tr>
+      reference. Card and bank details are handled by the payment provider; Hastra never receives them.</td></tr>
     <tr><td>Activity log</td><td>A record of security-relevant actions (sign-ins, approvals, changes) with the time, account and IP address.</td></tr>
   </tbody>
 </table>
@@ -48,7 +48,7 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Astra collects
   versioned so they can be rotated without re-writing everything at once, and they are stored outside the database.
   Handover credentials and ephemeral dossiers are encrypted with the same algorithm under separate keys.</p>
 <h3>Blind-index search</h3>
-<p>To look up an account by email without storing the email in readable form, Astra stores an HMAC-SHA256 "blind index"
+<p>To look up an account by email without storing the email in readable form, Hastra stores an HMAC-SHA256 "blind index"
   computed with a second, independent key. Blind indexes are only used for high-entropy identifiers (email, phone, domain,
   access tokens, Google account id), never for low-variety fields such as gender or role, where an index could reveal the
   value by frequency.</p>
@@ -69,7 +69,7 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Astra collects
   <li><strong>To keep accounts and data secure</strong>: fraud, abuse and intrusion detection, VPN/proxy screening, audit logging (legitimate interests; legal obligations).</li>
   <li><strong>To bill and settle milestones</strong> (contract; legal obligations such as tax records).</li>
   <li><strong>To send service emails</strong> such as verification codes and notifications (contract).</li>
-  <li><strong>Analytics</strong> only if you allow it in the cookie banner (consent). Astra currently runs no analytics scripts.</li>
+  <li><strong>Analytics</strong> only if you allow it in the cookie banner (consent). Hastra currently runs no analytics scripts.</li>
 </ul>
 <p>We do not sell personal data, and we do not use it for advertising or automated decisions with legal effects.</p>
 

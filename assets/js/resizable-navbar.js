@@ -1,9 +1,9 @@
-// Astra — Resizable Scroll-Reactive Floating Navbar (vanilla JS, no build
-// step). Toggles `.scrolled-navbar` on <nav class="astra-resizable-nav">
+// Hastra — Resizable Scroll-Reactive Floating Navbar (vanilla JS, no build
+// step). Toggles `.scrolled-navbar` on <nav class="hastra-resizable-nav">
 // past 100px of scroll, throttled to one check per animation frame so a
 // fast scroll gesture doesn't fire dozens of redundant class toggles.
 (function () {
-  const nav = document.getElementById('astraNav');
+  const nav = document.getElementById('hastraNav');
   if (!nav) return;
 
   let ticking = false;

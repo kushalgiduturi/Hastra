@@ -2,7 +2,7 @@
 require __DIR__ . '/core/db.php';
 secure_session_start();
 if (isset($_SESSION["user_id"])) {
-    header("Location: " . get_base_url() . "portals/index");
+    header("Location: " . get_base_url() . "workspace/");
     exit();
 }
 ?>
@@ -10,9 +10,10 @@ if (isset($_SESSION["user_id"])) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Astra · Enterprise Software Delivery &amp; Governance</title>
-<meta name="description" content="Astra: governed, auditable enterprise software delivery.">
+<title>Hastra · Enterprise Software Delivery &amp; Governance</title>
+<meta name="description" content="Hastra: governed, auditable enterprise software delivery.">
 <!-- data-loader-manual: the landing document carries its own preloader -->
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>" data-loader-manual></script>
 <style>
@@ -35,8 +36,8 @@ if (isset($_SESSION["user_id"])) {
 <div class="threeui-background landing-page-frame" data-state="loading">
   <!-- allow-top-navigation-by-user-activation: Sign In / Get Started in the
        document's own nav open the auth pages in this window, on a click only -->
-  <iframe id="landingFrame" title="Astra · Enterprise Software Delivery &amp; Governance"
-          src="<?= get_base_url() ?>landing-pages/astra.html?v=<?= ASSET_VERSION ?>"
+  <iframe id="landingFrame" title="Hastra · Enterprise Software Delivery &amp; Governance"
+          src="<?= get_base_url() ?>landing-pages/hastra.html?v=<?= ASSET_VERSION ?>"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
           loading="eager"></iframe>
 </div>

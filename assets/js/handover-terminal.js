@@ -1,4 +1,4 @@
-// Astra — live handover terminal client (portals/deliveries/terminal.php).
+// Hastra — live handover terminal client (portals/deliveries/terminal.php).
 // The server does every check; this script only streams the results it
 // returns, line by line, then shows the payload and the destruction receipt.
 (function () {
@@ -118,7 +118,7 @@
   $('htDownload').addEventListener('click', () => {
     if (payload === null) return;
     const url = URL.createObjectURL(new Blob([payload], { type: 'text/plain' }));
-    const a = Object.assign(document.createElement('a'), { href: url, download: 'astra-handover.txt' });
+    const a = Object.assign(document.createElement('a'), { href: url, download: 'hastra-handover.txt' });
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });

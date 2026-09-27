@@ -1,4 +1,4 @@
-/* Astra — Scan Center (portals/security/scan_center.php). AuthKit midnight. */
+/* Hastra — Scan Center (portals/security/scan_center.php). AuthKit midnight. */
 .sc-body *, .sc-body *::before, .sc-body *::after { box-sizing: border-box; } /* padding stays inside height:100% panels */
 .sc-body { margin: 0; min-height: 100vh; background: var(--color-midnight-canvas, #05060f); color: var(--color-ice-highlight, #e2ecf8); font-family: var(--font-sans, system-ui, sans-serif); }
 .sc-main { max-width: 1180px; margin: 0 auto; padding: 1.6rem 1.2rem 4rem; }

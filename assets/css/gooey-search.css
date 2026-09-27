@@ -1,6 +1,6 @@
-/* Astra — Gooey Search component (vanilla CSS, no build step).
+/* Hastra — Gooey Search component (vanilla CSS, no build step).
    Ported from a React/Framer-Motion spec to plain markup so it drops into
-   Astra's procedural PHP views.
+   Hastra's procedural PHP views.
 
    Simplified from the first pass: the decorative floating "bubble" (welded
    to the pill via an SVG blur filter) made the control taller and rounder
@@ -10,7 +10,7 @@
    that actually matters, a compact field that springs open to a wider one on
    click/focus, sized and radiused to match the surrounding controls exactly.
 
-   Colors are pulled from Astra's existing theme variables (core/theme.css),
+   Colors are pulled from Hastra's existing theme variables (core/theme.css),
    so this automatically follows the dark/light toggle — no separate
    light-mode block needed. */
 

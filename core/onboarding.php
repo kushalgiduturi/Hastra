@@ -72,12 +72,12 @@ function send_activation_invite($conn, $user_id, $name, $email, $company_name, &
     mysqli_stmt_execute($ins);
 
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $link   = $scheme . "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . get_base_url() . "auth/set_password.php?token=" . $token;
+    $link   = $scheme . "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . get_base_url() . "set-password?token=" . $token;
 
     try {
-        astra_send_mail($email, "You've been invited to Astra",
+        astra_send_mail($email, "You've been invited to Hastra",
             "Hi $name,\n\n" .
-            "$company_name has added you to Astra, where you can follow your projects with us.\n\n" .
+            "$company_name has added you to Hastra, where you can follow your projects with us.\n\n" .
             "Activate your account by choosing a password:\n$link\n\n" .
             "This link expires in " . INVITE_VALID_HOURS . " hours. If it expires, ask your IT Manager to resend it.\n\n" .
             "Regards,\nAstra Team");
@@ -359,7 +359,7 @@ function validate_staging_rows($conn, array $rows, array $company) {
             mysqli_stmt_bind_param($check, "s", $email_bindex);
             mysqli_stmt_execute($check);
             mysqli_stmt_store_result($check);
-            if (mysqli_stmt_num_rows($check) > 0) $r['problems'][] = 'Already has an Astra account';
+            if (mysqli_stmt_num_rows($check) > 0) $r['problems'][] = 'Already has an Hastra account';
             if (isset($seen[$email]))            $r['problems'][] = 'Duplicate of row ' . $seen[$email];
             $seen[$email] = $r['source_row'] ?: '#' . $r['id'];
             if (!email_matches_domain($email, $domain)) $r['notes'][] = "Not a $domain address";

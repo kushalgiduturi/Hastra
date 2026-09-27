@@ -39,7 +39,7 @@ t('policy documents render with the facts they must state', function () {
         expect_eq($r['status'], 200, "$doc status");
         foreach ($phrases as $p) expect(str_contains($r['body'], $p), "$doc lacks '$p'");
         expect(str_contains($r['body'], LEGAL_SUPPORT_EMAIL) && str_contains($r['body'], htmlspecialchars(LEGAL_ENTITY_NAME)), "$doc lacks business details");
-        expect(str_contains($r['body'], 'id="astra-consent"'), "$doc lacks the consent banner");
+        expect(str_contains($r['body'], 'id="hastra-consent"'), "$doc lacks the consent banner");
     }
     return '4 documents';
 });
@@ -48,14 +48,14 @@ t('public views carry the legal footer and the consent banner', function () {
     foreach (['auth/login.php', 'auth/register.php', 'auth/forgot.php', 'index.php'] as $page) {
         $r = cgi('GET', $page);
         expect_clean($r, $page);
-        expect(str_contains($r['body'], 'id="astra-consent"') && str_contains($r['body'], 'cookie-consent.js'), "$page: no consent banner");
+        expect(str_contains($r['body'], 'id="hastra-consent"') && str_contains($r['body'], 'cookie-consent.js'), "$page: no consent banner");
         if ($page === 'index.php') continue; // the landing footer lives in the framed document
         foreach (array_keys(ASTRA_LEGAL_DOCS) as $d) expect(str_contains($r['body'], "legal/$d"), "$page: no link to $d");
         expect(str_contains($r['body'], LEGAL_SUPPORT_EMAIL) && str_contains($r['body'], htmlspecialchars(LEGAL_ENTITY_NAME)), "$page: no business details");
         if (LEGAL_COMPANY_ID === '') expect(!str_contains($r['body'], 'Company ID'), "$page: shows an empty company ID");
         expect(!str_contains($r['body'], 'set LEGAL_'), "$page: still shows a config placeholder");
     }
-    $doc = file_get_contents(ASTRA_ROOT . '/landing-pages/astra.html');
+    $doc = file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html');
     foreach (['../legal/privacy', '../legal/terms', '../legal/cookies', '../legal/refunds', LEGAL_SUPPORT_EMAIL] as $n)
         expect(str_contains($doc, $n), "landing footer lacks $n");
 });
@@ -67,8 +67,8 @@ t('consent banner: essential locked on, others off until chosen, no dismiss with
     expect(!preg_match('~data-consent-cat="[^"]+"[^>]*\bchecked\b~', $b), 'a non-essential toggle is pre-checked');
     expect(!str_contains(strtolower($b), 'aria-label="close'), 'banner can be closed without choosing');
     $js = file_get_contents(ASTRA_ROOT . '/assets/js/cookie-consent.js');
-    expect(str_contains($js, "'astra_consent_state'") && str_contains($js, 'Click to load external asset'), 'consent engine lost its key or placeholder');
-    expect(str_contains(file_get_contents(ASTRA_ROOT . '/auth/register.php'), "AstraConsent.allows('thirdparty')"), 'logo lookups are not consent-gated');
+    expect(str_contains($js, "'hastra_consent_state'") && str_contains($js, 'Click to load external asset'), 'consent engine lost its key or placeholder');
+    expect(str_contains(file_get_contents(ASTRA_ROOT . '/auth/register.php'), "HastraConsent.allows('thirdparty')"), 'logo lookups are not consent-gated');
 });
 
 t('affirmative consent: never pre-checked, and enforced server-side', function () {
@@ -84,7 +84,7 @@ t('affirmative consent: never pre-checked, and enforced server-side', function (
         'csrf_token' => csrf_of($s), 'flow' => 'client_individual', 'name' => 'No Consent', 'email' => $email,
         'phone_number' => '+919876500077', 'password' => FIX_PASSWORD, 'confirm' => FIX_PASSWORD, 'country' => 'India']]);
     expect_clean($r);
-    expect(!str_contains((string)$r['location'], 'verify_register'), 'registration accepted without consent');
+    expect(!str_contains((string)$r['location'], 'verify-email'), 'registration accepted without consent');
     expect(!q1("SELECT 1 FROM pending_registrations WHERE email_bindex = ?", [astra_blind_index($email)]), 'pending row created without consent');
 
     $title = 'No consent ' . F::$suffix;
@@ -112,7 +112,7 @@ t('recorded consent: version and time travel from sign-up to the account', funct
 });
 
 t('landing copy: no fake social proof or absolute claims', function () {
-    $doc = file_get_contents(ASTRA_ROOT . '/landing-pages/astra.html');
+    $doc = file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html');
     foreach (['unhackable', 'bug free', 'bug-free', 'instant delivery', 'zero-knowledge', '5220.22', 'immutable audit', 'edge nodes',
               'plaintext exposure', 'testimonial', '★', 'trusted by', 'node [frankfurt'] as $bad)
         expect(!str_contains(strtolower($doc), $bad), "landing still says '$bad'");
@@ -193,24 +193,24 @@ t('google: sign-in starts an S256 PKCE request with a sealed Lax state cookie', 
         expect(strlen($qs['state'] ?? '') === 64 && strlen($qs['nonce'] ?? '') === 64 && strlen($qs['code_challenge'] ?? '') === 43, 'state/nonce/challenge');
         expect_eq($qs['redirect_uri'] ?? '', GOOGLE_REDIRECT_URI, 'redirect_uri');
         $set = implode("\n", $r['headers']['set-cookie'] ?? []);
-        expect(preg_match('~astra_goauth=([^;]+);~', $set, $m) === 1, 'no attempt cookie');
+        expect(preg_match('~hastra_goauth=([^;]+);~', $set, $m) === 1, 'no attempt cookie');
         expect(stripos($set, 'HttpOnly') !== false && stripos($set, 'SameSite=Lax') !== false, "attempt cookie flags: $set");
         $sealed = urldecode($m[1]);
-        expect(str_starts_with($sealed, 'astra:v1:'), 'attempt cookie is not encrypted');
+        expect(str_starts_with($sealed, 'hastra:v1:'), 'attempt cookie is not encrypted');
         $a = json_decode((string)astra_decrypt($sealed), true);
         expect(($a['state'] ?? '') === $qs['state'] && hash('sha256', $a['verifier'], true) !== '', 'sealed state does not match');
         expect(rtrim(strtr(base64_encode(hash('sha256', $a['verifier'], true)), '+/', '-_'), '=') === $qs['code_challenge'], 'challenge is not S256(verifier)');
 
         // wrong state, and a forged (unencrypted) cookie, are both refused
-        $bad = cgi('GET', 'auth/google_auth.php?state=' . str_repeat('0', 64) . '&code=x', ['headers' => ['Cookie' => 'astra_goauth=' . $m[1]]]);
+        $bad = cgi('GET', 'auth/google_auth.php?state=' . str_repeat('0', 64) . '&code=x', ['headers' => ['Cookie' => 'hastra_goauth=' . $m[1]]]);
         expect(str_contains((string)$bad['location'], 'google_error=expired'), 'wrong state accepted');
         $forged = urlencode(json_encode(['state' => 'abc', 'started' => time()]));
-        $bad = cgi('GET', 'auth/google_auth.php?state=abc&code=x', ['headers' => ['Cookie' => "astra_goauth=$forged"]]);
+        $bad = cgi('GET', 'auth/google_auth.php?state=abc&code=x', ['headers' => ['Cookie' => "hastra_goauth=$forged"]]);
         expect(str_contains((string)$bad['location'], 'google_error=expired'), 'forged attempt cookie accepted');
     });
 });
 
-t('google: sign-up validates consent and the workspace before leaving Astra', function () {
+t('google: sign-up validates consent and the workspace before leaving Hastra', function () {
     return cmp_with_google(function () {
         $s = astra_test_session([]);
         $r = cgi('POST', 'auth/google_auth.php', ['session' => $s, 'post' => [
@@ -238,7 +238,7 @@ t('google: verified identities link by email, never re-bind, and provision new t
     expect($u && (int)$u['id'] === $emp['id'] && $err === null, 'existing account not found by email');
     expect_eq(qv("SELECT google_id_bindex FROM users WHERE id = ?", [$emp['id']]), astra_blind_index($sub), 'google id not bound as a blind index');
     [$u, $err] = astra_google_find_user($conn, ['google_id' => 'g-other', 'email' => $emp['email'], 'name' => 'x', 'picture' => '']);
-    expect($u === null && $err === 'google_mismatch', 'a second Google account was allowed onto the same Astra account');
+    expect($u === null && $err === 'google_mismatch', 'a second Google account was allowed onto the same Hastra account');
     [$u] = astra_google_find_user($conn, ['google_id' => $sub, 'email' => 'changed.' . F::$suffix . '@example.test', 'name' => 'x', 'picture' => '']);
     expect($u && (int)$u['id'] === $emp['id'], 'bound account not found by Google id after an email change');
 
@@ -248,7 +248,7 @@ t('google: verified identities link by email, never re-bind, and provision new t
          'leave_cycle' => 'monthly', 'monthly_general_leaves' => 2, 'monthly_sick_leaves' => 1, 'annual_leave_allowance' => 18]);
     expect(isset($made['id']) && $made['role'] === 'admin', 'provisioning failed: ' . json_encode($made));
     $row = q1("SELECT * FROM users WHERE id = ?", [$made['id']]);
-    expect(str_starts_with($row['email'], 'astra:v1:') && str_starts_with($row['name'], 'astra:v1:'), 'Google account PII not encrypted');
+    expect(str_starts_with($row['email'], 'hastra:v1:') && str_starts_with($row['name'], 'hastra:v1:'), 'Google account PII not encrypted');
     expect($row['google_id_bindex'] === astra_blind_index('g-' . F::$suffix . '-new'), 'new account not bound to its Google id');
     expect($row['terms_version'] === LEGAL_TERMS_VERSION && $row['terms_accepted_at'], 'consent not recorded for the Google account');
     expect(astra_profile_barrier_needed($conn, (int)$made['id']), 'new Google account skips the profile barrier');

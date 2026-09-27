@@ -1,11 +1,11 @@
-// Astra — AuthKit calendar (vanilla port of the Lightswind/shadcn calendar;
+// Hastra — AuthKit calendar (vanilla port of the Lightswind/shadcn calendar;
 // no React, no build step). Styles: assets/css/calendar-authkit.css.
 //
 // Usage, declarative:
-//   <div class="astra-calendar-root" data-mode="range"
+//   <div class="hastra-calendar-root" data-mode="range"
 //        data-bind-start="#start_date" data-bind-end="#end_date"></div>
 // or imperative:
-//   AstraCalendar.mount(el, { mode: 'single', bind: '#day', onSelect(d) {} });
+//   HastraCalendar.mount(el, { mode: 'single', bind: '#day', onSelect(d) {} });
 //
 // Options (data-* attribute equivalents in brackets):
 //   mode      'single' | 'range'                     [data-mode]
@@ -17,7 +17,7 @@
 //
 // On every selection the bound inputs are updated and get real `input` and
 // `change` events, so existing handlers on them (e.g. onchange="…") keep
-// working. The root also dispatches `astra-calendar:change` with
+// working. The root also dispatches `hastra-calendar:change` with
 // detail { mode, date, start, end } (ISO strings, or null).
 // Typing into a bound input updates the calendar in the other direction.
 (function () {
@@ -41,7 +41,7 @@
   const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
   const q = (sel) => (typeof sel === 'string' ? document.querySelector(sel) : sel) || null;
 
-  function AstraCalendar(root, opts) {
+  function HastraCalendar(root, opts) {
     this.root = root;
     this.mode = opts.mode === 'range' ? 'range' : 'single';
     this.inSingle = q(opts.bind);
@@ -63,14 +63,14 @@
     this.listenInputs();
   }
 
-  AstraCalendar.prototype.inView = function (d) {
+  HastraCalendar.prototype.inView = function (d) {
     return d.getFullYear() === this.view.getFullYear() && d.getMonth() === this.view.getMonth();
   };
-  AstraCalendar.prototype.isDisabled = function (d) {
+  HastraCalendar.prototype.isDisabled = function (d) {
     return (this.min && d < this.min) || (this.max && d > this.max);
   };
 
-  AstraCalendar.prototype.readInputs = function () {
+  HastraCalendar.prototype.readInputs = function () {
     if (this.mode === 'single') {
       this.date = this.inSingle ? fromISO(this.inSingle.value) : this.date;
     } else {
@@ -80,39 +80,39 @@
     }
   };
 
-  AstraCalendar.prototype.build = function () {
+  HastraCalendar.prototype.build = function () {
     const r = this.root;
-    r.classList.add('astra-calendar-root');
+    r.classList.add('hastra-calendar-root');
     r.innerHTML =
-      '<div class="astra-cal-head">' +
-        '<button type="button" class="astra-cal-nav" data-nav="-1" aria-label="Previous month">' + CHEVRON_L + '</button>' +
-        '<div class="astra-cal-caption" aria-live="polite"></div>' +
-        '<button type="button" class="astra-cal-nav" data-nav="1" aria-label="Next month">' + CHEVRON_R + '</button>' +
+      '<div class="hastra-cal-head">' +
+        '<button type="button" class="hastra-cal-nav" data-nav="-1" aria-label="Previous month">' + CHEVRON_L + '</button>' +
+        '<div class="hastra-cal-caption" aria-live="polite"></div>' +
+        '<button type="button" class="hastra-cal-nav" data-nav="1" aria-label="Next month">' + CHEVRON_R + '</button>' +
       '</div>' +
-      '<div class="astra-cal-grid" role="grid"></div>' +
-      (this.mode === 'range' ? '<div class="astra-cal-foot"></div>' : '') +
-      '<div class="astra-cal-sr" aria-live="polite"></div>';
-    this.caption = r.querySelector('.astra-cal-caption');
-    this.grid = r.querySelector('.astra-cal-grid');
-    this.foot = r.querySelector('.astra-cal-foot');
-    this.sr = r.querySelector('.astra-cal-sr');
+      '<div class="hastra-cal-grid" role="grid"></div>' +
+      (this.mode === 'range' ? '<div class="hastra-cal-foot"></div>' : '') +
+      '<div class="hastra-cal-sr" aria-live="polite"></div>';
+    this.caption = r.querySelector('.hastra-cal-caption');
+    this.grid = r.querySelector('.hastra-cal-grid');
+    this.foot = r.querySelector('.hastra-cal-foot');
+    this.sr = r.querySelector('.hastra-cal-sr');
 
-    r.querySelectorAll('.astra-cal-nav').forEach((b) =>
+    r.querySelectorAll('.hastra-cal-nav').forEach((b) =>
       b.addEventListener('click', () => this.shiftMonth(Number(b.dataset.nav), false)));
     this.grid.addEventListener('click', (e) => {
-      const b = e.target.closest('.astra-cal-day');
+      const b = e.target.closest('.hastra-cal-day');
       if (b && !b.disabled) this.pick(fromISO(b.dataset.date));
     });
     this.grid.addEventListener('keydown', (e) => this.onKey(e));
   };
 
-  AstraCalendar.prototype.shiftMonth = function (n, keepFocus) {
+  HastraCalendar.prototype.shiftMonth = function (n, keepFocus) {
     this.view = new Date(this.view.getFullYear(), this.view.getMonth() + n, 1);
     if (!keepFocus) this.focusDate = this.view;
     this.render();
   };
 
-  AstraCalendar.prototype.render = function () {
+  HastraCalendar.prototype.render = function () {
     const v = this.view;
     this.caption.textContent = v.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
@@ -122,10 +122,10 @@
     const t = today();
     const lo = this.start, hi = this.end;
 
-    let html = WEEKDAYS.map((w) => '<div class="astra-cal-weekday" role="columnheader">' + w + '</div>').join('');
+    let html = WEEKDAYS.map((w) => '<div class="hastra-cal-weekday" role="columnheader">' + w + '</div>').join('');
     for (let i = 0; i < 42; i++) {
       const d = addDays(gridStart, i);
-      const cls = ['astra-cal-day'];
+      const cls = ['hastra-cal-day'];
       if (!this.inView(d)) cls.push('is-outside');
       if (sameDay(d, t)) cls.push('is-today');
       let selected = false;
@@ -165,7 +165,7 @@
     }
   };
 
-  AstraCalendar.prototype.pick = function (d) {
+  HastraCalendar.prototype.pick = function (d) {
     if (!d) return;
     if (this.mode === 'single') {
       this.date = d;
@@ -184,7 +184,7 @@
     if (btn) btn.focus();
   };
 
-  AstraCalendar.prototype.emit = function () {
+  HastraCalendar.prototype.emit = function () {
     const iso = (d) => (d ? toISO(d) : null);
     const detail = { mode: this.mode, date: iso(this.date), start: iso(this.start), end: iso(this.end) };
 
@@ -202,12 +202,12 @@
     this.sr.textContent = this.mode === 'single'
       ? (detail.date ? 'Selected ' + this.date.toDateString() : '')
       : (this.foot ? this.foot.textContent : '');
-    this.root.dispatchEvent(new CustomEvent('astra-calendar:change', { bubbles: true, detail }));
+    this.root.dispatchEvent(new CustomEvent('hastra-calendar:change', { bubbles: true, detail }));
     if (this.onSelect) this.onSelect(detail);
   };
 
   // Typing a date into a bound input moves the calendar to match.
-  AstraCalendar.prototype.listenInputs = function () {
+  HastraCalendar.prototype.listenInputs = function () {
     const sync = () => {
       if (this.syncing) return;
       this.readInputs();
@@ -220,8 +220,8 @@
   };
 
   // Grid keyboard support, per the WAI-ARIA date picker pattern.
-  AstraCalendar.prototype.onKey = function (e) {
-    const cur = fromISO((e.target.closest('.astra-cal-day') || {}).dataset?.date);
+  HastraCalendar.prototype.onKey = function (e) {
+    const cur = fromISO((e.target.closest('.hastra-cal-day') || {}).dataset?.date);
     if (!cur) return;
     const moves = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
     let next = null;
@@ -249,12 +249,12 @@
 
   // ── Public API ──
   const instances = new WeakMap();
-  window.AstraCalendar = {
+  window.HastraCalendar = {
     mount(el, opts) {
       el = q(el);
       if (!el) return null;
       if (instances.has(el)) return instances.get(el);
-      const cal = new AstraCalendar(el, opts || {});
+      const cal = new HastraCalendar(el, opts || {});
       instances.set(el, cal);
       return cal;
     },
@@ -262,9 +262,9 @@
   };
 
   function autoInit() {
-    document.querySelectorAll('.astra-calendar-root[data-mode], .astra-calendar-root[data-bind], .astra-calendar-root[data-bind-start]').forEach((el) => {
+    document.querySelectorAll('.hastra-calendar-root[data-mode], .hastra-calendar-root[data-bind], .hastra-calendar-root[data-bind-start]').forEach((el) => {
       const ds = el.dataset;
-      window.AstraCalendar.mount(el, {
+      window.HastraCalendar.mount(el, {
         mode: ds.mode, bind: ds.bind, bindStart: ds.bindStart, bindEnd: ds.bindEnd,
         min: ds.min, max: ds.max, month: ds.month,
       });

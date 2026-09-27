@@ -1,4 +1,4 @@
-/* Astra — slide-down select and slider bars.
+/* Hastra — slide-down select and slider bars.
  *
  * <select data-ax-select> becomes a button + slide-down listbox (WAI-ARIA
  * listbox pattern). The native <select> stays in the form, visually hidden,

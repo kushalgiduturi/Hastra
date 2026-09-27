@@ -2,7 +2,7 @@
    Kage × cyber: the signed-in portals' version of the temple world.
 
    assets/js/kage-scene.js hangs the landing page's three.js world behind the
-   page (#astra-kage-scene). On portal pages this module reaches into that
+   page (#hastra-kage-scene). On portal pages this module reaches into that
    same-origin frame once it reports ready, and adds a cybernetic layer to
    the real 3-D scene, so it is lit, fogged, depth-tested and bloomed with
    the temple rather than painted over it:
@@ -20,23 +20,23 @@
    ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  if (window.__astraCyber) return;
-  window.__astraCyber = true;
+  if (window.__hastraCyber) return;
+  window.__hastraCyber = true;
 
   const NIGHT = [229 / 255, 9 / 255, 20 / 255];      /* #E50914 */
   const DAY   = [37 / 255, 99 / 255, 235 / 255];     /* #2563eb */
   const isDay = () => document.documentElement.getAttribute('data-theme') === 'light';
 
   function install() {
-    const frame = document.getElementById('astra-kage-scene');
+    const frame = document.getElementById('hastra-kage-scene');
     let win;
     try { win = frame && frame.contentWindow; } catch (e) { return false; }
-    const K = win && win.__astraScene, T = win && win.THREE;
-    if (!K || !T || !K.scene || K.scene.getObjectByName('astra-cyber')) return !!(K && K.fallback);
+    const K = win && win.__hastraScene, T = win && win.THREE;
+    if (!K || !T || !K.scene || K.scene.getObjectByName('hastra-cyber')) return !!(K && K.fallback);
 
     const U = { uT: { value: 0 }, uCol: { value: new T.Vector3().fromArray(NIGHT) }, uDay: { value: 0 } };
     const group = new T.Group();
-    group.name = 'astra-cyber';
+    group.name = 'hastra-cyber';
 
     /* ── ground: grid, scanline, radar ────────────────────────────────────
        The same holographic floor shader laid on the three grounds the portal
@@ -227,6 +227,6 @@
     let n = 0;
     const id = setInterval(() => { if (install() || ++n > 80) clearInterval(id); }, 250);
   }
-  document.addEventListener('astra:atmosphere-ready', attempt);
-  if (window.AstraAtmosphere && window.AstraAtmosphere.ready) attempt();
+  document.addEventListener('hastra:atmosphere-ready', attempt);
+  if (window.HastraAtmosphere && window.HastraAtmosphere.ready) attempt();
 })();

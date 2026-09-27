@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — leave quota enforcement.
+// Hastra — leave quota enforcement.
 //
 // 'maternity' and 'unpaid' are unlimited (maternity is gated separately by
 // users.maternity_leave_eligible; unpaid has no cap by definition) — both

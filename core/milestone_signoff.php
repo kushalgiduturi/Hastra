@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — dual-key cryptographic milestone sign-off.
+// Hastra — dual-key cryptographic milestone sign-off.
 //
 // A milestone (e.g. "Final Delivery") needs two independent signatures before
 // it counts as complete: the project lead's, then the client's. Neither party
@@ -131,7 +131,7 @@ function astra_signoff_client_sign($conn, int $project_id, string $milestone_nam
         mysqli_commit($conn);
     } catch (Throwable $e) {
         mysqli_rollback($conn);
-        error_log('[astra-signoff] countersign failed: ' . $e->getMessage());
+        error_log('[hastra-signoff] countersign failed: ' . $e->getMessage());
         $error = "Couldn't record your signature. Nothing was changed; try again.";
         return null;
     }

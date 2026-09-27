@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — IP reputation / anti-VPN engine.
+// Hastra — IP reputation / anti-VPN engine.
 //
 // astra_inspect_ip($ip) is the single entry point: it checks the ip_cache
 // table for a result less than 24h old, and if there isn't one, queries an

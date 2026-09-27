@@ -1,4 +1,4 @@
-/* Astra — Netflix "developer series" design tokens for the signed-in portals.
+/* Hastra — Netflix "developer series" design tokens for the signed-in portals.
    Loaded by core/theme.js only on portal/dashboard pages, which get
    html.nf-portal. Ported from Netflix_portfolio-main (About/Expertise/
    Projects/Contact/CustomCursor). Dark: cinema black + crimson. Light:
@@ -149,7 +149,7 @@ html.nf-portal .btn-theme-toggle:hover { border-color: var(--border-accent) !imp
 /* ── Page header: episode headline ── */
 html.nf-portal .page-header { margin-bottom: 2.4rem !important; }
 html.nf-portal .page-header::before {
-  content: 'ASTRA ORIGINALS  |  NOW STREAMING';
+  content: 'HASTRA ORIGINALS  |  NOW STREAMING';
   display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 5px 12px 5px 22px;
   font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
   color: var(--badge-text); background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 4px;
@@ -257,11 +257,15 @@ html.nf-portal .modal-overlay > :is(.modal, .modal-box, .modal-card, div:first-c
 /* ── Sidebar drawer & dock pick up the palette ── */
 html.nf-portal .sidebar-drawer { background: var(--bg-surface) !important; border-right: 1px solid var(--border-subtle) !important; }
 html.nf-portal .sidebar-link.current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
-html.nf-portal .astra-dock { background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; }
-html.nf-portal .astra-dock-item.is-current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
+html.nf-portal .hastra-dock { background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; }
+html.nf-portal .hastra-dock-item.is-current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
 
 /* ── Scrollbars ── */
 html.nf-portal { scrollbar-color: rgba(var(--accent-primary-rgb), .45) var(--bg-canvas); }
 
 /* decorative bleeds (cloth canvases, glows) never create a sideways scroll */
 html.nf-portal, html.nf-portal body { overflow-x: clip; }
+
+/* ── Brand mark: crimson on cinema black, cobalt on daylight white ── */
+html.nf-portal[data-theme="dark"] .hastra-primary-fill { fill: url(#hastra-crimson) !important; }
+html.nf-portal[data-theme="light"] .hastra-primary-fill { fill: url(#hastra-cobalt) !important; }

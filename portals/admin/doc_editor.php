@@ -27,7 +27,7 @@ $flash = $_SESSION["doc_flash"] ?? null;
 unset($_SESSION["doc_flash"]);
 function doc_redirect($project_id, $type, $text, $version = null) {
     $_SESSION["doc_flash"] = ['type' => $type, 'text' => $text];
-    header("Location: doc_editor.php?project=" . (int)$project_id . ($version ? "&v=" . (int)$version : ""));
+    header("Location: doc-editor?project=" . (int)$project_id . ($version ? "&v=" . (int)$version : ""));
     exit();
 }
 
@@ -81,8 +81,9 @@ $has_key  = anthropic_api_key() !== '';
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documentation <?= htmlspecialchars($project['project_code']) ?> · Astra</title>
+<title>Documentation <?= htmlspecialchars($project['project_code']) ?> · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -119,22 +120,22 @@ $has_key  = anthropic_api_key() !== '';
 <?php render_profile_barrier($conn); ?>
 <nav class="topnav">
   <div class="nav-left">
-    <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
-    <span class="nav-title">Astra</span>
+    <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg></div>
+    <span class="nav-title">Hastra</span>
     <div class="nav-divider"></div>
-    <a class="nav-badge" href="<?= get_base_url() ?>portals/admin/admin_portal">Admin</a>
-    <a class="nav-link" href="<?= get_base_url() ?>portals/admin/admin_portal">Admin portal</a>
+    <a class="nav-badge" href="<?= get_base_url() ?>workspace/admin/">Admin</a>
+    <a class="nav-link" href="<?= get_base_url() ?>workspace/admin/">Admin portal</a>
     <span class="nav-link current">Documentation</span>
   </div>
   <div class="nav-right">
     <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle"><span class="theme-icon"></span><span class="theme-label"></span></button>
-    <a href="<?= get_base_url() ?>auth/logout" class="btn-logout">Logout</a>
+    <a href="<?= get_base_url() ?>signout" class="btn-logout">Logout</a>
   </div>
 </nav>
 
 <div class="main">
   <div class="page-header">
-    <a class="back" href="<?= get_base_url() ?>portals/admin/admin_portal">← Back to the admin portal</a>
+    <a class="back" href="<?= get_base_url() ?>workspace/admin/">← Back to the admin portal</a>
     <h1 style="margin-top:8px;"><span class="code-chip"><?= htmlspecialchars($project['project_code']) ?></span><?= htmlspecialchars($project['title']) ?>: documentation</h1>
     <p>Generate a draft, edit it, and approve the version that ships with the delivery. A deployment can't be approved until one version is approved.</p>
   </div>
@@ -222,7 +223,7 @@ $has_key  = anthropic_api_key() !== '';
           <?php foreach ($versions as $v): ?>
           <li class="<?= $current && (int)$current['version'] === (int)$v['version'] ? 'current' : '' ?>">
             <div>
-              <a href="doc_editor.php?project=<?= $project_id ?>&amp;v=<?= (int)$v['version'] ?>">Version <?= (int)$v['version'] ?></a>
+              <a href="doc-editor?project=<?= $project_id ?>&amp;v=<?= (int)$v['version'] ?>">Version <?= (int)$v['version'] ?></a>
               <div class="meta"><?= htmlspecialchars(DOC_ENGINE_LABELS[$v['source']] ?? $v['source']) ?> · <?= htmlspecialchars($v['author'] ?? '-') ?> · <?= htmlspecialchars(date('d M, H:i', strtotime($v['created_at']))) ?></div>
             </div>
             <?php if ($v['approved_at']): ?><span class="pill active">Approved</span><?php endif; ?>

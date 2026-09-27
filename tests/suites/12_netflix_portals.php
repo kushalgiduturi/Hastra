@@ -41,11 +41,11 @@ t('laser beam: conic border beam on buttons, active filters and pending role cha
 
 t('kage x cyber: grid, radar, packets, wisps and neon lanterns in the portal scene', function () {
     $js = file_get_contents(ASTRA_ROOT . '/assets/js/kage-cyber.js');
-    foreach (['astra-cyber', 'float scan', 'float ring', 'float sweep', 'const packets = new T.Points', 'const wisps = new T.Points',
+    foreach (['hastra-cyber', 'float scan', 'float ring', 'float sweep', 'const packets = new T.Points', 'const wisps = new T.Points',
               'lanternLights', '229 / 255, 9 / 255, 20 / 255', '37 / 255, 99 / 255, 235 / 255', 'win.Float32Array', 'onBeforeRender'] as $n)
         expect(str_contains($js, $n), "cyber layer lost: $n");
-    $css = file_get_contents(ASTRA_ROOT . '/assets/css/astra-atmosphere.css');
-    expect(preg_match('~#astra-kage-scene \{[^}]*z-index: 0; pointer-events: none;~', $css) === 1, 'scene frame can intercept input');
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/hastra-atmosphere.css');
+    expect(preg_match('~#hastra-kage-scene \{[^}]*z-index: 0; pointer-events: none;~', $css) === 1, 'scene frame can intercept input');
 });
 
 t('precision cursor: 12px dot, 48px trailing ring, 600px glow, off on touch', function () {
@@ -59,14 +59,14 @@ t('precision cursor: 12px dot, 48px trailing ring, 600px glow, off on touch', fu
 
 t('theme.js gives portals the Netflix stack, and only portals', function () {
     $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
-    expect(str_contains($js, "const nf = /\\/(portals\\/|dashboard(\\.php)?$)/.test(location.pathname);"), 'portal detection changed');
+    expect(str_contains($js, "const nf = /\\/(portals|workspace)\\/|\\/dashboard(\\.php)?$/.test(location.pathname);"), 'portal detection changed');
     expect(str_contains($js, "['theme-netflix', 'netflix-bento']"), 'portal stylesheets not loaded');
     expect(str_contains($js, "? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']"), 'portal script stack changed');
     expect(str_contains($js, ": ['landing-host', 'kage-scene', 'hybrid-hand-cursor'"), 'non-portal pages lost their scene');
-    foreach (['/login/portals/admin/admin_portal', '/login/portals/client/my_projects', '/login/portals/projects/signoff', '/login/dashboard.php'] as $p)
-        expect(preg_match('~/(portals/|dashboard(\.php)?$)~', $p) === 1, "$p would not be themed");
-    foreach (['/login/auth/login', '/login/', '/login/legal/privacy', '/login/auth/register'] as $p)
-        expect(preg_match('~/(portals/|dashboard(\.php)?$)~', $p) === 0, "$p would be themed");
+    foreach (['/Hastra/workspace/admin/', '/Hastra/workspace/client/my-projects', '/Hastra/portals/projects/signoff', '/Hastra/dashboard.php'] as $p)
+        expect(preg_match('~/(portals|workspace)/|/dashboard(\.php)?$~', $p) === 1, "$p would not be themed");
+    foreach (['/Hastra/signin', '/Hastra/', '/Hastra/legal/privacy', '/Hastra/signup'] as $p)
+        expect(preg_match('~/(portals|workspace)/|/dashboard(\.php)?$~', $p) === 0, "$p would be themed");
 });
 
 t('portal routes and role guards are untouched', function () {

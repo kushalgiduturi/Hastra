@@ -136,7 +136,7 @@ function export_company_logs_csv($conn, $company_id, $company_name) {
     mysqli_stmt_execute($q);
     $res = mysqli_stmt_get_result($q);
 
-    $fname = 'astra-audit-' . preg_replace('/[^a-z0-9]+/i', '-', $company_name) . '-' . date('Ymd') . '.csv';
+    $fname = 'hastra-audit-' . preg_replace('/[^a-z0-9]+/i', '-', $company_name) . '-' . date('Ymd') . '.csv';
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $fname . '"');
     header('Cache-Control: no-store');

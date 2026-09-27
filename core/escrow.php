@@ -118,7 +118,7 @@ function astra_escrow_settle($conn, int $invoice_id, string $reference, string $
         mysqli_commit($conn);
     } catch (Throwable $e) {
         mysqli_rollback($conn);
-        error_log('[astra-escrow] settle failed: ' . $e->getMessage());
+        error_log('[hastra-escrow] settle failed: ' . $e->getMessage());
         $error = "Couldn't record the payment.";
         return null;
     }

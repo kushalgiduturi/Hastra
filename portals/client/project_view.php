@@ -34,8 +34,9 @@ if ($projects && astra_escrow_ready($conn)) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Handover Status · Astra</title>
+<title>Handover Status · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -130,12 +131,12 @@ if ($projects && astra_escrow_ready($conn)) {
         <?php if ($disputed): ?>
           This milestone is disputed. Nothing is released until it's resolved with your project lead.
         <?php elseif ($ms['status'] === 'pending_client'): ?>
-          Waiting for your signature. <a class="pv-btn" href="<?= get_base_url() ?>portals/projects/signoff">Review &amp; sign</a>
+          Waiting for your signature. <a class="pv-btn" href="<?= get_base_url() ?>workspace/projects/signoff">Review &amp; sign</a>
         <?php elseif ($ms['escrow_status'] === 'payment_pending'): ?>
           Your handover unlocks automatically once payment for <?= htmlspecialchars($ms['invoice_code']) ?> is confirmed.
         <?php elseif ($ms['escrow_status'] === 'released' && (int)$ms['live_dossiers'] > 0): ?>
           Unlocked. Use the access code your project manager sent you.
-          <a class="pv-btn" href="<?= get_base_url() ?>portals/deliveries/terminal">Open handover terminal</a>
+          <a class="pv-btn" href="<?= get_base_url() ?>workspace/deliveries/terminal">Open handover terminal</a>
         <?php elseif ($ms['escrow_status'] === 'released'): ?>
           Unlocked. Your project manager will send the secure handover code.
         <?php endif; ?>

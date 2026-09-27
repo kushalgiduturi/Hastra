@@ -1,4 +1,4 @@
-/* Astra — bento card spotlight (About.jsx / Expertise.jsx).
+/* Hastra — bento card spotlight (About.jsx / Expertise.jsx).
    One delegated pointer listener writes the pointer position into the hovered
    card's --mouse-x / --mouse-y; netflix-bento.css paints the radial glow there.
    Delegation means cards rendered later (modals, AJAX lists) work too. */

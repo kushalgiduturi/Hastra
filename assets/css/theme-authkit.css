@@ -1,4 +1,4 @@
-/* Astra — AuthKit "Frosted Glass Cathedral at Midnight" design tokens.
+/* Hastra — AuthKit "Frosted Glass Cathedral at Midnight" design tokens.
    Additive, not a replacement: core/theme.css's existing --navy/--accent/
    --text variable system (and its dark/light [data-theme] toggle) stays in
    place and keeps driving every page that hasn't been migrated yet. This

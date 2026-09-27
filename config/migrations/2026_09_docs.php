@@ -1,5 +1,5 @@
 <?php
-// Astra — documentation pipeline migration (P16, Sep 2026). Run after 2026_09_integrity.
+// Hastra — documentation pipeline migration (P16, Sep 2026). Run after 2026_09_integrity.
 // Adds: doc_drafts (versioned project documentation), projects.repo_url.
 
 $__astra_doc_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;

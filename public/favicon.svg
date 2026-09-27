@@ -1,0 +1,12 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hastra logo">
+  <defs>
+    <linearGradient id="hastraCrimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7a1224"/>
+      <stop offset="1" stop-color="#e11d3c"/>
+    </linearGradient>
+  </defs>
+  <!-- Torii-post H frame -->
+  <path class="hastra-primary-fill" fill="url(#hastraCrimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/>
+  <!-- Integrated core spark -->
+  <path class="hastra-primary-fill" fill="url(#hastraCrimson)" d="M24 15L30 24L24 33L18 24Z"/>
+</svg>

@@ -1,5 +1,5 @@
 <?php
-// Astra — advanced governance migration (Sep 2026). Run after 2026_09_user_pii.
+// Hastra — advanced governance migration (Sep 2026). Run after 2026_09_user_pii.
 //
 // Adds the four tables + supporting columns behind schema_v3
 // (config/migrations/v3_advanced_governance.sql documents the shape this
@@ -8,7 +8,7 @@
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_advanced_governance.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_advanced_governance.php
 
 $__astra_gov_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;
 if (!$__astra_gov_cli && !defined('ASTRA_MIGRATION_INCLUDE')) { http_response_code(404); exit(); }

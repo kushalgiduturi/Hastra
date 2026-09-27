@@ -1,9 +1,9 @@
 <?php
-// Astra — company logo migration (Sep 2026)
+// Hastra — company logo migration (Sep 2026)
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_company_logo.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_company_logo.php
 //
 // Adds companies.logo_url (either an external logo API URL or a path under
 // uploads/company_logos/ for a manually uploaded file — see

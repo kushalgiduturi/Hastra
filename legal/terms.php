@@ -1,10 +1,10 @@
 <?php
 require __DIR__ . '/_layout.php';
-legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of the Astra platform.');
+legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of the Hastra platform.');
 ?>
 <p>These terms are an agreement between you (and, if you register for an organization, that organization) and
-  <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?> for use of Astra. By creating an account or signing in you confirm you have read
-  them and the <a href="privacy">Privacy Policy</a>. If you do not agree, do not use Astra.</p>
+  <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?> for use of Hastra. By creating an account or signing in you confirm you have read
+  them and the <a href="privacy">Privacy Policy</a>. If you do not agree, do not use Hastra.</p>
 
 <nav class="legal-toc" aria-label="On this page"><ol>
   <li><a href="#accounts">Accounts and workspaces</a></li>
@@ -22,7 +22,7 @@ legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of th
 <h2 id="accounts">1. Accounts and workspaces</h2>
 <ul>
   <li>You must give accurate details and keep your credentials, email account and any linked Google account secure. You are responsible for activity under your account.</li>
-  <li>The person who registers an organization becomes its administrator and may add, change and remove members. The organization, not Astra, decides who may access its workspace.</li>
+  <li>The person who registers an organization becomes its administrator and may add, change and remove members. The organization, not Hastra, decides who may access its workspace.</li>
   <li>You must be old enough to enter a binding contract where you live.</li>
 </ul>
 
@@ -30,11 +30,11 @@ legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of th
 <p>You must not:</p>
 <ul>
   <li>access, probe or attempt to access another organization's workspace, or any account, data or system you are not authorized to use;</li>
-  <li>scrape, bulk-export or automatically extract data outside the features Astra provides;</li>
+  <li>scrape, bulk-export or automatically extract data outside the features Hastra provides;</li>
   <li>submit or interact with decoy ("honeytoken") identifiers, or otherwise attempt to discover or bypass security controls;</li>
   <li>evade network controls, including by rotating IP addresses, using anonymizing proxies or VPNs where the sign-in screen blocks them, or exceeding rate limits;</li>
   <li>upload malware, or content you do not have the right to share, or that infringes others' rights or the law;</li>
-  <li>use Astra to send spam or to harass others, or resell it without our written permission.</li>
+  <li>use Hastra to send spam or to harass others, or resell it without our written permission.</li>
 </ul>
 <p>Security research is welcome only with our prior written agreement; contact <?= legal_contact() ?>.</p>
 
@@ -44,20 +44,20 @@ legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of th
   aware that you can see another organization's data, stop, do not use it, and tell us immediately.</p>
 
 <h2 id="governance">4. SSDLC governance and sign-offs</h2>
-<p>Astra enforces workflow gates (for example: requirements must be versioned, tests and security checks recorded, and
+<p>Hastra enforces workflow gates (for example: requirements must be versioned, tests and security checks recorded, and
   approvals captured before a stage advances). These gates record who approved what and when. They are tools that support your
-  process; they do not replace your own review. An approval given in Astra by an authorized member binds the organization that
+  process; they do not replace your own review. An approval given in Hastra by an authorized member binds the organization that
   member belongs to, and it is recorded in the tamper-evident activity log.</p>
 
 <h2 id="milestones">5. Dual-key milestones, escrow and liability</h2>
 <ul>
   <li>A milestone is sealed only when both the delivery project manager and the client approve it. Each party is responsible for reviewing the evidence before approving; an approval is final for that milestone.</li>
   <li>Deliverables linked to an escrow invoice are released only after payment clears and both approvals match. Ephemeral dossiers are shredded after their view limit or expiry, and cannot be recovered afterwards; download or record anything you need before viewing expires.</li>
-  <li>Astra records approvals and releases but is not a party to the commercial agreement between a delivery organization and its client, and is not responsible for the quality, fitness or timeliness of the software delivered between them.</li>
+  <li>Hastra records approvals and releases but is not a party to the commercial agreement between a delivery organization and its client, and is not responsible for the quality, fitness or timeliness of the software delivered between them.</li>
 </ul>
 
 <h2 id="sla">6. Availability</h2>
-<p>We aim for at least <strong>99.5% monthly availability</strong> of the Astra web application, excluding scheduled maintenance
+<p>We aim for at least <strong>99.5% monthly availability</strong> of the Hastra web application, excluding scheduled maintenance
   announced at least 48 hours ahead, emergency security maintenance, and causes outside our reasonable control (including
   failures of your network, identity provider or third-party services). Enterprise agreements may set a different commitment and
   remedies; where none is agreed, this target is not a guarantee.</p>
@@ -75,12 +75,12 @@ legal_page_start('terms', 'Terms & Conditions', 'The terms that govern use of th
 </ul>
 
 <h2 id="ip">8. Intellectual property</h2>
-<p>You keep all rights to the content you and your organization put into Astra, and grant us only the licence needed to host,
-  process and display it to run the service. Astra's software, design and trademarks remain ours. Feedback you give us may be used
+<p>You keep all rights to the content you and your organization put into Hastra, and grant us only the licence needed to host,
+  process and display it to run the service. Hastra's software, design and trademarks remain ours. Feedback you give us may be used
   without obligation. You must not upload material that infringes anyone's intellectual property; we will remove it on a valid notice.</p>
 
 <h2 id="liability">9. Warranties and limitation of liability</h2>
-<p>Astra is provided "as is" to the extent the law allows. Security features reduce risk but no software is free of defects or
+<p>Hastra is provided "as is" to the extent the law allows. Security features reduce risk but no software is free of defects or
   immune to attack, and we do not promise uninterrupted or error-free operation. To the extent the law allows, our total
   liability for any claim is limited to the fees you paid us in the 12 months before the claim, and we are not liable for indirect
   or consequential loss. Nothing in these terms limits liability that cannot be limited by law, or your statutory consumer rights.</p>

@@ -1,9 +1,9 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — application-level column encryption (AES-256-GCM, versioned envelope).
+// Hastra — application-level column encryption (AES-256-GCM, versioned envelope).
 //
 // Payload format
-//   astra:v1:{base64( [1-byte key_version][12-byte IV][16-byte tag][ciphertext] )}
+//   hastra:v1:{base64( [1-byte key_version][12-byte IV][16-byte tag][ciphertext] )}
 //
 // The key_version byte lives *inside* the authenticated envelope, so a value
 // always carries the identity of the key that produced it. That is what makes
@@ -13,7 +13,7 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 //
 // Three input shapes are accepted on read, and they are distinguishable without
 // any out-of-band state:
-//   • "astra:v1:…"  current envelope, key chosen by the embedded version byte
+//   • "hastra:v1:…"  current envelope, key chosen by the embedded version byte
 //   • "adb:v1:…"    pre-envelope format (raw iv|tag|ct under key v1); still
 //                   readable so a half-migrated table renders correctly.
 //                   cli/migrate_encryption.php rewrites these forward.
@@ -54,7 +54,7 @@ function astra_read_key_file(string $path, bool $create = false): ?string {
     }
     $raw = base64_decode(trim((string)file_get_contents($path)), true);
     if ($raw === false || strlen($raw) !== 32) {
-        throw new RuntimeException("An Astra key file is damaged (expected 32 base64-encoded bytes): $path");
+        throw new RuntimeException("An Hastra key file is damaged (expected 32 base64-encoded bytes): $path");
     }
     return $raw;
 }
@@ -86,12 +86,14 @@ if (!defined('ASTRA_ACTIVE_KEY_VERSION')) {
 }
 
 // ── Envelope primitives ─────────────────────────────────────────────────────
-const ASTRA_ENC_PREFIX    = 'astra:v1:';  // current envelope
-const ASTRA_DB_ENC_PREFIX = 'adb:v1:';    // pre-envelope, read-only
+const ASTRA_ENC_PREFIX        = 'hastra:v1:'; // current envelope (written by astra_encrypt())
+const ASTRA_ENC_PREFIX_LEGACY = 'astra:v1:';  // same binary layout, pre-rebrand prefix; read-only
+const ASTRA_DB_ENC_PREFIX     = 'adb:v1:';    // pre-envelope, read-only
 
 function astra_is_encrypted($value): bool {
     $s = (string)$value;
     return strncmp($s, ASTRA_ENC_PREFIX, strlen(ASTRA_ENC_PREFIX)) === 0
+        || strncmp($s, ASTRA_ENC_PREFIX_LEGACY, strlen(ASTRA_ENC_PREFIX_LEGACY)) === 0
         || strncmp($s, ASTRA_DB_ENC_PREFIX, strlen(ASTRA_DB_ENC_PREFIX)) === 0;
 }
 
@@ -126,8 +128,15 @@ function astra_encrypt(string $plaintext, int $key_version = ASTRA_ACTIVE_KEY_VE
 function astra_decrypt(?string $payload): ?string {
     if ($payload === null || $payload === '') return $payload;
 
-    if (strncmp($payload, ASTRA_ENC_PREFIX, strlen(ASTRA_ENC_PREFIX)) === 0) {
-        $raw = base64_decode(substr($payload, strlen(ASTRA_ENC_PREFIX)), true);
+    // Both prefixes wrap the identical binary envelope — only the text tag
+    // changed with the rebrand — so a value written before the rename decrypts
+    // exactly like one written after it.
+    $prefix = null;
+    if (strncmp($payload, ASTRA_ENC_PREFIX, strlen(ASTRA_ENC_PREFIX)) === 0) $prefix = ASTRA_ENC_PREFIX;
+    elseif (strncmp($payload, ASTRA_ENC_PREFIX_LEGACY, strlen(ASTRA_ENC_PREFIX_LEGACY)) === 0) $prefix = ASTRA_ENC_PREFIX_LEGACY;
+
+    if ($prefix !== null) {
+        $raw = base64_decode(substr($payload, strlen($prefix)), true);
         if ($raw === false || strlen($raw) < 29) return astra_tamper_alert('truncated envelope');
 
         $version    = unpack('C', substr($raw, 0, 1))[1];
@@ -158,7 +167,7 @@ function astra_decrypt(?string $payload): ?string {
 // genuine tampering or the wrong key file deployed. Both need a human, and
 // neither should quietly reach a template — so it is logged and nulled.
 function astra_tamper_alert(string $reason): ?string {
-    error_log("[astra-crypto] decrypt failed: $reason");
+    error_log("[hastra-crypto] decrypt failed: $reason");
     return null;
 }
 
@@ -198,6 +207,14 @@ define('ASTRA_INDEX_KEY_FILE', __DIR__ . '/../config/astra_index.key');
 function astra_index_key_material() {
     static $key = null;
     if ($key !== null) return $key;
+    // HASTRA_CRYPTO_KEY (base64, 32 bytes) lets the HMAC salt be supplied out of
+    // band — a secrets manager at deploy time, say — instead of the key file.
+    // Falls back to the on-disk file (auto-created on first use) when unset.
+    $env = getenv('HASTRA_CRYPTO_KEY');
+    if ($env) {
+        $raw = base64_decode(trim($env), true);
+        if ($raw !== false && strlen($raw) === 32) return $key = $raw;
+    }
     return $key = astra_read_key_file(ASTRA_INDEX_KEY_FILE, true);
 }
 if (!defined('ASTRA_INDEX_KEY')) {

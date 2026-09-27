@@ -1,5 +1,5 @@
 <?php
-// Astra — daily attendance digest for cron / Windows Task Scheduler.
+// Hastra — daily attendance digest for cron / Windows Task Scheduler.
 //
 // Summarizes one day's attendance for the internal company (present, absent,
 // half-day, on-leave, WFH, and anyone with no record at all for that date),

@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="../assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Astra — Enterprise Software Delivery &amp; Governance</title>
-<meta name="description" content="Astra runs requirements, projects, testing, deployment, billing, and credentials in one encrypted, audited workspace.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%2305060f'/%3E%3Cpath fill='%2398c0ef' d='M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z'/%3E%3Cpath fill='%23663af3' d='M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z'/%3E%3C/svg%3E">
+<title>Hastra — Enterprise Software Delivery &amp; Governance</title>
+<meta name="description" content="Hastra runs requirements, projects, testing, deployment, billing, and credentials in one encrypted, audited workspace.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&amp;display=block">
@@ -979,7 +979,7 @@ body[data-layout-footer="b"] .foot-base span:last-child{ text-align:right; }
 }
 
 /* ═══ Light theme ════════════════════════════════════════════════════════
-   The host mirrors Astra's theme onto this document as data-theme="light"
+   The host mirrors Hastra's theme onto this document as data-theme="light"
    and .light, so both spellings are honoured. */
 html.light .h-hero,
 [data-theme="light"] .h-hero {
@@ -1083,9 +1083,9 @@ html.light .nav-link, [data-theme="light"] .nav-link { letter-spacing:.17em; }
 html.light .chip b, [data-theme="light"] .chip b { text-shadow:none !important; }
 
 /* ═══ Background mode (?scene=bg) ════════════════════════════════════════
-   The same world, hung behind Astra's portal, dashboard and auth pages by
+   The same world, hung behind Hastra's portal, dashboard and auth pages by
    the shared scene host in assets/js. Only the render survives: no document, no
-   preloader, no ASTRA glyphs and no card windows. */
+   preloader, no HASTRA glyphs and no card windows. */
 html.scene-bg, html.scene-bg body{ overflow:hidden !important; background:#05070a; }
 html.scene-bg[data-theme="light"], html.scene-bg[data-theme="light"] body{ background:#f6ecd2; }
 html.scene-bg body > :not(#gl):not(#vignette):not(#grain){ display:none !important; }
@@ -1116,8 +1116,8 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
 <!-- ============================================================ preloader -->
 <div id="pre">
   <div class="pre-in">
-    <div class="pre-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="pmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#pmk)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#pmk)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
-    <div class="pre-word">ASTRA</div>
+    <div class="pre-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="pmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#pmk)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#pmk)" d="M24 15L30 24L24 33L18 24Z"/></svg></div>
+    <div class="pre-word">HASTRA</div>
     <div class="pre-bar"><i id="pre-fill"></i></div>
     <div class="pre-meta">
       <span>Initializing cryptographic workspace...</span><b><span id="pre-pct">0</span>%</b>
@@ -1128,8 +1128,8 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
 <!-- ============================================================ nav -->
 <header class="nav" id="nav">
   <a class="brand" href="#top" data-cursor>
-    <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="nmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#nmk)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#nmk)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
-    <span class="brand-tx"><b>ASTRA</b><i>ENTERPRISE GOVERNANCE</i></span>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="nmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#nmk)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#nmk)" d="M24 15L30 24L24 33L18 24Z"/></svg>
+    <span class="brand-tx"><b>HASTRA</b><i>ENTERPRISE GOVERNANCE</i></span>
   </a>
   <nav class="nav-links" id="navlinks">
     <a class="nav-link" href="#architecture" data-cursor><span>Architecture</span><span class="alt">Architecture</span></a>
@@ -1141,8 +1141,8 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     <!-- the host page owns the theme; this frame only asks it to switch -->
     <button type="button" class="nav-theme" aria-label="Switch between light and dark theme" data-cursor
             onclick="if (window.parent && window.parent.toggleTheme) window.parent.toggleTheme()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M5.2 18.8l1.6-1.6M17.2 6.8l1.6-1.6"/></svg></button>
-    <a class="nav-signin" href="../auth/login" target="_top" data-cursor>Sign In</a>
-    <a class="nav-cta" href="../auth/register" target="_top" data-cursor>Get Started</a>
+    <a class="nav-signin" href="../signin" target="_top" data-cursor>Sign In</a>
+    <a class="nav-cta" href="../signup" target="_top" data-cursor>Get Started</a>
   </div>
   <button type="button" class="nav-burger" aria-label="Toggle navigation menu" aria-controls="navlinks" data-cursor><i></i><i></i></button>
 </header>
@@ -1154,11 +1154,11 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
   <div class="hero-top">
     <div class="eyebrow" data-rv="fade"><span class="dot"></span> Enterprise software delivery, governed end-to-end</div>
     <h1 class="display h-hero">
-      <span class="mask-line"><span>Ship client work with a</span></span>
-      <span class="mask-line"><span>paper trail that</span></span>
+      <span class="mask-line"><span>Ship client work with</span></span>
+      <span class="mask-line"><span>a paper trail that</span></span>
       <span class="mask-line"><span>survives an audit.</span></span>
     </h1>
-    <p class="hero-sub body" data-rv="up">Astra runs requirements, projects, testing, deployment, billing, and credentials
+    <p class="hero-sub body" data-rv="up">Hastra runs requirements, projects, testing, deployment, billing, and credentials
       in one workspace. Personal and credential fields are encrypted at rest with AES-256-GCM, and security-relevant actions are written to an HMAC-chained log.</p>
   </div>
 
@@ -1178,7 +1178,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     </div>
   </div>
 
-  <div class="word-fb" aria-hidden="true">ASTRA</div>
+  <div class="word-fb" aria-hidden="true">HASTRA</div>
 </section>
 
 <!-- ============================================================ 01 architecture -->
@@ -1201,7 +1201,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     <h2 class="display h-sec" data-rv="up">Every task, defect, and deployment moves through one verified pipeline.</h2>
     <div class="gate-copy">
       <p class="lead" data-rv="up">Stop fragmenting software delivery across spreadsheets, chat logs, and unmonitored
-        git commits. Astra enforces strict governance gates where code cannot advance to deployment without passing
+        git commits. Hastra enforces strict governance gates where code cannot advance to deployment without passing
         security checks and verified test sign-offs.</p>
       <a class="arrowlink" href="#security" data-rv="fade" data-cursor>
         <span>See the defense matrix</span>
@@ -1376,7 +1376,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
   <h2 class="display" data-rv="up">Tamper-Evident Audit Ledger</h2>
   <p class="body-lg" data-rv="up">Security-relevant actions are chained with HMAC-SHA256, so editing or deleting an
     entry breaks verification and is detected.</p>
-  <a class="cta" href="../auth/register" target="_top" data-rv="fade" data-cursor>
+  <a class="cta" href="../signup" target="_top" data-rv="fade" data-cursor>
     <i></i><span>Launch Workspace</span>
     <svg viewBox="0 0 14 14" fill="none" width="13" height="13"><path d="M3 11 11 3M5 3h6v6" stroke="#dfe7e0" stroke-width="1.3"/></svg>
   </a>
@@ -1397,8 +1397,8 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
   </div>
   <div class="foot-grid">
     <div class="foot-brand">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="fmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#fmk)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#fmk)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
-      <p>Astra provides enterprise software delivery and project governance for studios, agencies, and solo engineers.</p>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="fmk" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#98c0ef"/><stop offset="1" stop-color="var(--ax)"/></linearGradient></defs><path fill="url(#fmk)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#fmk)" d="M24 15L30 24L24 33L18 24Z"/></svg>
+      <p>Hastra provides enterprise software delivery and project governance for studios, agencies, and solo engineers.</p>
     </div>
     <div><h4>Platform</h4><ul>
       <li><a href="#architecture" data-cursor>Core Platform</a></li>
@@ -1407,14 +1407,14 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     </ul></div>
     <div><h4>Trust</h4><ul>
       <li><a href="#ledger" data-cursor>Privacy Architecture</a></li>
-      <li><a href="../auth/login" target="_top" data-cursor>Documentation</a></li>
+      <li><a href="../signin" target="_top" data-cursor>Documentation</a></li>
     </ul></div>
     <div><h4>Legal</h4><ul>
       <li><a href="../legal/privacy" target="_top" data-cursor>Privacy Policy</a></li>
       <li><a href="../legal/terms" target="_top" data-cursor>Terms &amp; Conditions</a></li>
       <li><a href="../legal/cookies" target="_top" data-cursor>Cookie Policy</a></li>
       <li><a href="../legal/refunds" target="_top" data-cursor>Refund Policy</a></li>
-      <li><button type="button" class="foot-consent" data-cursor onclick="if (window.parent &amp;&amp; window.parent.AstraConsent) window.parent.AstraConsent.open()">Cookie settings</button></li>
+      <li><button type="button" class="foot-consent" data-cursor onclick="if (window.parent &amp;&amp; window.parent.HastraConsent) window.parent.HastraConsent.open()">Cookie settings</button></li>
     </ul></div>
   </div>
   <!-- kept in step with LEGAL_* in config/config.php -->
@@ -1423,7 +1423,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     <span>Support: <a href="mailto:kushalgiduturi@gmail.com">kushalgiduturi@gmail.com</a></span>
   </address>
   <div class="foot-base">
-    <span>© 2026 Astra Delivery Network. All rights reserved.</span>
+    <span>© 2026 Hastra Delivery Network. All rights reserved.</span>
     <span>AES-256-GCM · HMAC audit chain</span>
     <span>WebGL · Onest</span>
   </div>
@@ -1489,13 +1489,13 @@ if (canvas && !document.documentElement.classList.contains('scene-bg')) {
     new IntersectionObserver(es => globe.toggle(es[es.length - 1].isIntersecting)).observe(canvas);
     document.addEventListener('visibilitychange', () => globe.toggle(!document.hidden));
   }
-  window.__astraGlobe = globe;
+  window.__hastraGlobe = globe;
 }
 </script>
 <script src="secret-pathways-assets/three.min.js"></script>
 <script>
 /* =====================================================================
-   ASTRA: the delivery workspace, rendered as a live night scene.
+   HASTRA: the delivery workspace, rendered as a live night scene.
    Everything in the 3-D world is generated at runtime: no photographs,
    no video, no external assets beyond three.js and the foreground cut-outs.
    ===================================================================== */
@@ -1511,9 +1511,9 @@ const COARSE = matchMedia('(hover: none)').matches;
 /* ?scene=bg: the world alone, behind another page; that page drives the rig */
 const BG = qs('scene', '') === 'bg';
 const BGS = { from: 0, to: 0, t0: 0, dur: 0, scroll: 0, dirty: true };
-/* The host mirrors Astra's theme onto this document (data-theme="light",
-   .light, data-astra-day). The DOM follows through CSS; the pieces baked into
-   textures (the ASTRA glyphs and the card fabric) are swapped here. */
+/* The host mirrors Hastra's theme onto this document (data-theme="light",
+   .light, data-hastra-day). The DOM follows through CSS; the pieces baked into
+   textures (the HASTRA glyphs and the card fabric) are swapped here. */
 const isDay = () => document.documentElement.getAttribute('data-theme') === 'light'
   || document.documentElement.classList.contains('light');
 let themeWas = isDay();
@@ -3327,7 +3327,7 @@ function buildWordmark() {
   const m = cvs(4, 4).getContext('2d');
   m.font = '600 ' + SZ + 'px Onest, sans-serif';
   m.textBaseline = 'alphabetic'; m.textAlign = 'left';
-  const word = 'ASTRA', gl = [];
+  const word = 'HASTRA', gl = [];
   let pen = 0, ascMax = 0, descMax = 0, xMin = 1e9, xMax = -1e9;
   for (const ch of word) {
     const t = m.measureText(ch);
@@ -3601,7 +3601,7 @@ const WISP_D = 3.4;
 const WISP = { list: [], i: 0, acc: 0, ex: 0, ey: 0, lx: 0, ly: 0, idle: 0, seen: false };
 function buildWisps() {
   /* the hybrid pointer engine (petals and sparks) carries the cursor now */
-  if (COARSE || BG || window.AstraHand) return;
+  if (COARSE || BG || window.HastraHand) return;
   /* The motes are round, so nothing here is oriented: no per-particle angle,
      no rotated lookup. They are also small — a few pixels of core inside a
      faint halo — which is what lets the count go up without the additive fill
@@ -5176,7 +5176,7 @@ function boot() {
     let r;
     try { r = j[1](); }
     catch (err) {
-      console.error('[astra] job "' + j[0] + '" failed', err);
+      console.error('[hastra] job "' + j[0] + '" failed', err);
       if (i <= 1) return fallback(err);          /* no renderer, no scene */
     }
     (r && r.then) ? r.then(done, done) : done();
@@ -5185,13 +5185,13 @@ function boot() {
 }
 
 function fallback(err) {
-  if (BG) { try { parent.postMessage({ astra: 'scene-fallback' }, location.origin); } catch (e) { /* detached */ } }
+  if (BG) { try { parent.postMessage({ hastra: 'scene-fallback' }, location.origin); } catch (e) { /* detached */ } }
   document.documentElement.classList.add('no-webgl');
   document.body.classList.add('no-webgl');
   document.body.classList.remove('is-locked');
   preEl.classList.add('done');
   $$('[data-rv], .mask-line').forEach(e => e.classList.add('rv-in'));
-  window.__astraScene = { fallback: true, error: String(err && err.message || err) };
+  window.__hastraScene = { fallback: true, error: String(err && err.message || err) };
 }
 
 function start() {
@@ -5208,7 +5208,7 @@ function start() {
     preEl.classList.add('done');
     running = true; tPrev = performance.now(); queue();
     /* the host page's handle on the rig: u is a waypoint index 0…5 */
-    window.__astraBg = {
+    window.__hastraBg = {
       flyTo(u, o) {
         o = o || {};
         const cur = RIG.smooth - BGS.scroll;
@@ -5224,8 +5224,8 @@ function start() {
       kick: kick,
       perf: PERF
     };
-    window.__astraScene = { RIG: RIG, WORLD: WORLD, WORD: WORD, CAM: CAM, POST: POST, renderer: renderer, scene: scene, camera: camera, anchors: () => anchors, kick: kick, bg: true };
-    try { parent.postMessage({ astra: 'scene-ready' }, location.origin); } catch (e) { /* detached */ }
+    window.__hastraScene = { RIG: RIG, WORLD: WORLD, WORD: WORD, CAM: CAM, POST: POST, renderer: renderer, scene: scene, camera: camera, anchors: () => anchors, kick: kick, bg: true };
+    try { parent.postMessage({ hastra: 'scene-ready' }, location.origin); } catch (e) { /* detached */ }
     return;
   }
 
@@ -5249,7 +5249,7 @@ function start() {
   running = true; tPrev = performance.now();
   INTRO.t0 = shot !== null ? 0 : (REDUCE ? performance.now() - 4000 : performance.now());
   queue();
-  window.__astraScene = { RIG: RIG, WORLD: WORLD, WORD: WORD, CAM: CAM, POST: POST, renderer: renderer, scene: scene, camera: camera, anchors: () => anchors, kick: kick };
+  window.__hastraScene = { RIG: RIG, WORLD: WORLD, WORD: WORD, CAM: CAM, POST: POST, renderer: renderer, scene: scene, camera: camera, anchors: () => anchors, kick: kick };
 }
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(boot, 0);
@@ -5508,7 +5508,7 @@ else addEventListener('DOMContentLoaded', boot);
       open(card.dataset.open, b || card.querySelector('button[data-open]'));
     });
   });
-  window.__astraInspect = open;
+  window.__hastraInspect = open;
 })();
 </script>
 </body>

@@ -1,9 +1,9 @@
 <?php
-// Astra — company model migration (Sep 2026)
+// Hastra — company model migration (Sep 2026)
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_companies.php [--reindex]
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_companies.php [--reindex]
 //
 // Safe to run more than once. Without reindex it only lists which existing
 // users sit outside their company's ID block; with reindex it moves them

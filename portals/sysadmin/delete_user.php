@@ -154,7 +154,7 @@ if ($action === "verify_otp") {
     try { log_activity($conn, $actor_id, "user_deleted", $actor_name); } catch (Throwable $e) {}
 
     try {
-        send_mail_to($target["email"], "Your Astra account has been deleted",
+        send_mail_to($target["email"], "Your Hastra account has been deleted",
             "Dear {$target['name']},\n\nYour account has been deleted by a system administrator.\n\n" .
             "If you believe this is a mistake, please contact support.");
     } catch (Exception $e) {}

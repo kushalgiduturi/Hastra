@@ -4,50 +4,50 @@
 :where([data-theme="light"]) { --accent: #0265dc; --accent-bright: #1668d0; --accent-dim: #024fac; --accent-rgb: 2,101,220; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Astra atmosphere: the layers around the shared 3-D scene.
+   Hastra atmosphere: the layers around the shared 3-D scene.
 
-      0  #astra-kage-scene  the landing world (assets/js/kage-scene.js),
+      0  #hastra-kage-scene  the landing world (assets/js/kage-scene.js),
                             fixed, the root's first child, outside <body>
       1  body               lifted to its own stacking layer, transparent
-    top  #astra-hand        the pointer's petals and sparks, pointer-transparent
+    top  #hastra-hand        the pointer's petals and sparks, pointer-transparent
 
    The scene sits at z-index 0 as its own layer outside <body>, and <body>
    takes z-index 1 above it. A z-index 0 layer *inside* <body> would paint
-   over every block that is not itself positioned, and most of Astra's pages
+   over every block that is not itself positioned, and most of Hastra's pages
    have those. Body's background is cleared only once the scene has been
-   mounted (html.astra-kage), so a page where it never mounts keeps its own.
+   mounted (html.hastra-kage), so a page where it never mounts keeps its own.
    ═══════════════════════════════════════════════════════════════════════ */
 
-#astra-kage-scene {
+#hastra-kage-scene {
   position: fixed; inset: 0; width: 100%; height: 100%;
   z-index: 0; pointer-events: none;
   display: block; border: 0; margin: 0; padding: 0;
   background: transparent; color-scheme: normal;
   opacity: 0; transition: opacity 1.4s cubic-bezier(.16,1,.3,1);
 }
-#astra-kage-scene.is-live { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { #astra-kage-scene { transition: none; } }
+#hastra-kage-scene.is-live { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #hastra-kage-scene { transition: none; } }
 
 /* obsidian night; a warm afternoon by day */
-html.astra-atmos { background: #05070a; }
-html.astra-atmos[data-theme="light"] { background: #f6ecd2; }
-html.astra-kage body { position: relative; z-index: 1; }
-html.astra-atmos body,
-html.astra-atmos[data-theme] body {
+html.hastra-atmos { background: #05070a; }
+html.hastra-atmos[data-theme="light"] { background: #f6ecd2; }
+html.hastra-kage body { position: relative; z-index: 1; }
+html.hastra-atmos body,
+html.hastra-atmos[data-theme] body {
   background-color: transparent !important;
   background-image: none !important;
 }
 /* viewport containment: the scene is fixed, so nothing it or the cloth
    bleed does may widen the document or add a second scrollbar */
-html.astra-atmos, html.astra-atmos body { overflow-x: clip; }
+html.hastra-atmos, html.hastra-atmos body { overflow-x: clip; }
 
 /* WebGL unavailable: the same sky, flat */
-html.astra-atmos-static body {
+html.hastra-atmos-static body {
   background:
     radial-gradient(8vw 8vw at 78% 16%, rgba(224,35,28,.6), rgba(120,20,16,.18) 60%, transparent 72%),
     linear-gradient(#05070a, #0b1018) fixed !important;
 }
-html.astra-atmos-static[data-theme="light"] body {
+html.hastra-atmos-static[data-theme="light"] body {
   background:
     radial-gradient(9vw 9vw at 75% 22%, rgba(255,245,180,.95), rgba(254,215,102,.45) 45%, transparent 75%),
     linear-gradient(#7eb4e8, #fde68a 60%, #fffbeb) fixed !important;
@@ -144,74 +144,74 @@ html:not([data-theme="light"]) .portal-surface-scrim .badge { color: #e2ecf8; }
 }
 
 /* a card mid-flex follows its spring, not a transition */
-.astra-flex { transition-property: background-color, border-color, box-shadow, color, opacity !important; will-change: transform; }
+.hastra-flex { transition-property: background-color, border-color, box-shadow, color, opacity !important; will-change: transform; }
 
 /* ── The kinetic handover seal (assets/js/handover-seal.js) ─────────── */
-.astra-seal {
+.hastra-seal {
   position: fixed; left: 0; top: 0; z-index: 900; width: 118px; height: 118px;
   padding: 0; border: 0; background: none; cursor: grab; touch-action: none;
   -webkit-tap-highlight-color: transparent; will-change: transform;
 }
-.astra-seal.is-carried { cursor: grabbing; }
-.astra-seal:focus-visible { outline: none; }
-.astra-seal:focus-visible .astra-seal-body { box-shadow: 0 0 0 3px #d1e4fa, 0 0 0 6px rgba(var(--accent-rgb),.6); }
-.astra-seal-body {
+.hastra-seal.is-carried { cursor: grabbing; }
+.hastra-seal:focus-visible { outline: none; }
+.hastra-seal:focus-visible .hastra-seal-body { box-shadow: 0 0 0 3px #d1e4fa, 0 0 0 6px rgba(var(--accent-rgb),.6); }
+.hastra-seal-body {
   position: absolute; inset: 0; border-radius: 50%; display: block;
   transform-style: preserve-3d; transition: box-shadow .3s ease;
   filter: drop-shadow(0 14px 22px rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(224,35,28,.35));
 }
-.astra-seal-body svg { width: 100%; height: 100%; display: block; }
-.astra-seal-ring { font: 600 7.4px/1 'Onest', system-ui, sans-serif; letter-spacing: .12em; fill: rgba(255,233,226,.88); }
-.astra-seal-sheen {
+.hastra-seal-body svg { width: 100%; height: 100%; display: block; }
+.hastra-seal-ring { font: 600 7.4px/1 'Onest', system-ui, sans-serif; letter-spacing: .12em; fill: rgba(255,233,226,.88); }
+.hastra-seal-sheen {
   position: absolute; inset: 9%; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
   background: radial-gradient(40% 32% at var(--sx, 50%) var(--sy, 40%), rgba(255,255,255,.55), rgba(255,255,255,0) 70%);
 }
-.astra-seal-tick {
+.hastra-seal-tick {
   position: absolute; right: 8px; top: 8px; width: 24px; height: 24px; border-radius: 50%;
   display: grid; place-items: center; font: 700 13px/1 system-ui, sans-serif; color: #04150e;
   background: #34d399; box-shadow: 0 0 0 2px #05070a, 0 4px 12px rgba(52,211,153,.5);
 }
-[data-theme="light"] .astra-seal-tick { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(16,185,129,.4); }
-[data-theme="light"] .astra-seal-body { filter: drop-shadow(0 12px 20px rgba(15,23,42,.28)) drop-shadow(0 0 14px rgba(224,35,28,.22)); }
-.astra-seal-panel {
+[data-theme="light"] .hastra-seal-tick { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(16,185,129,.4); }
+[data-theme="light"] .hastra-seal-body { filter: drop-shadow(0 12px 20px rgba(15,23,42,.28)) drop-shadow(0 0 14px rgba(224,35,28,.22)); }
+.hastra-seal-panel {
   position: fixed; z-index: 901; width: min(340px, calc(100vw - 24px)); padding: 16px 18px 14px;
   border-radius: 14px; color: #e2ecf8; font-family: var(--font-sans, 'Onest', system-ui, sans-serif);
   background: rgba(10, 14, 18, 0.94); border: 1px solid rgba(223, 231, 224, 0.15);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 30px 70px -24px rgba(0,0,0,.8), 0 0 30px -10px rgba(224,35,28,.4);
 }
-.astra-seal-panel[hidden] { display: none; }
-.astra-seal-k { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #ff8a70; }
-.astra-seal-t { margin: 4px 0 10px; font-size: 16px; font-weight: 600; color: #fff; }
-.astra-seal-panel dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 12.5px; }
-.astra-seal-panel dt { color: #98a4b3; }
-.astra-seal-panel dd { margin: 0; color: #e2ecf8; }
-.astra-seal-h { margin-top: 12px; font-size: 11px; color: #98a4b3; }
-.astra-seal-h code { display: block; margin-top: 4px; padding: 8px 10px; border-radius: 8px; word-break: break-all;
+.hastra-seal-panel[hidden] { display: none; }
+.hastra-seal-k { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #ff8a70; }
+.hastra-seal-t { margin: 4px 0 10px; font-size: 16px; font-weight: 600; color: #fff; }
+.hastra-seal-panel dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 12.5px; }
+.hastra-seal-panel dt { color: #98a4b3; }
+.hastra-seal-panel dd { margin: 0; color: #e2ecf8; }
+.hastra-seal-h { margin-top: 12px; font-size: 11px; color: #98a4b3; }
+.hastra-seal-h code { display: block; margin-top: 4px; padding: 8px 10px; border-radius: 8px; word-break: break-all;
   font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #d1e4fa; background: rgba(0,0,0,.35); }
-.astra-seal-close { margin-top: 12px; height: 30px; padding: 0 14px; border-radius: 100px; cursor: pointer;
+.hastra-seal-close { margin-top: 12px; height: 30px; padding: 0 14px; border-radius: 100px; cursor: pointer;
   font: 600 10.5px/1 var(--font-sans, 'Onest', sans-serif); letter-spacing: .12em; text-transform: uppercase;
   color: #e2ecf8; background: transparent; border: 1px solid rgba(223,231,224,.25); }
-.astra-seal-close:hover { background: rgba(223,231,224,.08); }
-[data-theme="light"] .astra-seal-panel { color: #0f172a; background: rgba(255,255,255,.96); border-color: #cbd5e1; box-shadow: 0 30px 70px -24px rgba(15,23,42,.35); }
-[data-theme="light"] .astra-seal-t { color: #0f172a; }
-[data-theme="light"] .astra-seal-k { color: #c81e17; }
-[data-theme="light"] .astra-seal-panel dt, [data-theme="light"] .astra-seal-h { color: #64748b; }
-[data-theme="light"] .astra-seal-panel dd { color: #1e293b; }
-[data-theme="light"] .astra-seal-h code { color: #312e81; background: #f1f5f9; }
-[data-theme="light"] .astra-seal-close { color: #0f172a; border-color: #cbd5e1; }
+.hastra-seal-close:hover { background: rgba(223,231,224,.08); }
+[data-theme="light"] .hastra-seal-panel { color: #0f172a; background: rgba(255,255,255,.96); border-color: #cbd5e1; box-shadow: 0 30px 70px -24px rgba(15,23,42,.35); }
+[data-theme="light"] .hastra-seal-t { color: #0f172a; }
+[data-theme="light"] .hastra-seal-k { color: #c81e17; }
+[data-theme="light"] .hastra-seal-panel dt, [data-theme="light"] .hastra-seal-h { color: #64748b; }
+[data-theme="light"] .hastra-seal-panel dd { color: #1e293b; }
+[data-theme="light"] .hastra-seal-h code { color: #312e81; background: #f1f5f9; }
+[data-theme="light"] .hastra-seal-close { color: #0f172a; border-color: #cbd5e1; }
 
 /* ── Reveal grammar (landing engine) ──────────────────────────────────────
-   Hidden only once the director has run (html.astra-rv), so a page whose
+   Hidden only once the director has run (html.hastra-rv), so a page whose
    script never loads is never left blank. */
-html.astra-rv [data-rv] { opacity: 0; }
-html.astra-rv [data-rv="up"] { transform: translate3d(0, 26px, 0); }
-html.astra-rv [data-rv].rv-in {
+html.hastra-rv [data-rv] { opacity: 0; }
+html.hastra-rv [data-rv="up"] { transform: translate3d(0, 26px, 0); }
+html.hastra-rv [data-rv].rv-in {
   opacity: 1; transform: none;
   transition: opacity .9s cubic-bezier(.16,1,.3,1), transform 1.05s cubic-bezier(.16,1,.3,1);
 }
 /* a word-split header carries its motion in the words, not the block */
-html.astra-rv [data-rv].word-reveal { opacity: 1; transform: none; }
+html.hastra-rv [data-rv].word-reveal { opacity: 1; transform: none; }
 .word-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
 .word-reveal .word {
   display: inline-block; opacity: 0; transform: translate3d(0, 112%, 0);
@@ -221,5 +221,5 @@ html.astra-rv [data-rv].word-reveal { opacity: 1; transform: none; }
 .word-reveal.rv-in .word { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  html.astra-rv [data-rv], .word-reveal .word { opacity: 1 !important; transform: none !important; transition: none !important; }
+  html.hastra-rv [data-rv], .word-reveal .word { opacity: 1 !important; transform: none !important; transition: none !important; }
 }

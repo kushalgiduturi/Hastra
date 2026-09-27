@@ -97,7 +97,7 @@
       {
         selector: '#vulnClassSelect',
         title: 'Vulnerability class dropdown',
-        text: 'For security bugs, classify the finding (SQLi, XSS, CSRF, auth bypass…) and Astra suggests the matching CWE ID for you.'
+        text: 'For security bugs, classify the finding (SQLi, XSS, CSRF, auth bypass…) and Hastra suggests the matching CWE ID for you.'
       },
       {
         selector: '#sec-bugs-reported',

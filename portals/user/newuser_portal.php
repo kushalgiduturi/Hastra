@@ -7,8 +7,9 @@ verify_session($conn, ["client", "pending_employee"]);
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welcome · Astra</title>
+<title>Welcome · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -382,14 +383,14 @@ verify_session($conn, ["client", "pending_employee"]);
 <!-- TOPNAV -->
 <nav class="topnav">
   <div class="nav-left">
-    <a href="<?= get_base_url() ?>portals/index" class="nav-brand-link" title="All pages for your role">
+    <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
     <div class="nav-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
-    <span class="nav-title">Astra</span>
+    <span class="nav-title">Hastra</span>
     </a>
     <div class="nav-divider"></div>
-    <a class="nav-badge" href="<?= get_base_url() ?>portals/user/newuser_portal">New User</a>
+    <a class="nav-badge" href="<?= get_base_url() ?>workspace/user/newuser-portal">New User</a>
   </div>
   <div class="nav-right">
     <span class="nav-user">Signed in as <span><?= htmlspecialchars($_SESSION["user_name"]) ?></span></span>
@@ -397,7 +398,7 @@ verify_session($conn, ["client", "pending_employee"]);
       <span class="theme-icon"></span>
       <span class="theme-label"></span>
     </button>
-    <a href="<?= get_base_url() ?>auth/logout" class="btn-logout">
+    <a href="<?= get_base_url() ?>signout" class="btn-logout">
       <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
       Logout
     </a>

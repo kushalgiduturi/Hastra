@@ -240,8 +240,9 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Milestone Sign-Off · Astra</title>
+<title>Milestone Sign-Off · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -279,7 +280,7 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
 </head>
 <body>
 <div class="main">
-  <a class="back" href="<?= get_base_url() ?>portals/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : ($nav_path === 'client' ? 'client_portal' : 'employee_portal') ?>">&larr; Back</a>
+  <a class="back" href="<?= get_base_url() ?>workspace/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : ($nav_path === 'client' ? 'client_portal' : 'employee_portal') ?>">&larr; Back</a>
   <h1>Milestone Sign-Off</h1>
   <p class="lede">A milestone only reads as complete once both the project lead and the client stakeholder have cryptographically signed it. Neither signature alone is enough.</p>
 

@@ -14,14 +14,15 @@ $ready   = astra_security_ready($conn);
 $ctx     = $ready ? astra_security_context($conn, $user_id) : null;
 $homes   = ['client' => 'client/client_portal', 'employee' => 'emlpoyee/employee_portal',
             'sysadmin' => 'sysadmin/sysadmin_portal', 'admin' => 'admin/admin_portal'];
-$back    = get_base_url() . 'portals/' . ($homes[$role] ?? 'admin/admin_portal');
+$back    = get_base_url() . 'workspace/' . ($homes[$role] ?? 'admin/admin_portal');
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scan Center · Astra</title>
+<title>Scan Center · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">

@@ -43,7 +43,7 @@ t('single-view dossier: first open decrypts, second open is refused and shredded
     $token = astra_dossier_create($GLOBALS['conn'], F::$project, F::$u['admin']['id'], 'SECRET-' . F::$suffix, 1, 60, $e, gov_released_milestone());
     expect($token, $e ?? 'create failed');
     $row = q1("SELECT * FROM ephemeral_dossiers WHERE token_bindex = ?", [astra_blind_index($token)]);
-    expect(str_starts_with($row['encrypted_payload'], 'astra:v1:'), 'payload not encrypted at rest');
+    expect(str_starts_with($row['encrypted_payload'], 'hastra:v1:'), 'payload not encrypted at rest');
     $s = as_user('client');
     $a = cgi('POST', 'portals/deliveries/terminal.php', ['session' => $s, 'accept' => 'application/json',
         'post' => ['csrf_token' => csrf_of($s), 'action' => 'handshake', 'token' => $token]]);
@@ -182,7 +182,7 @@ t('attendance: no secret -> 401', function () {
     expect_eq($r['status'], 401, 'status'); expect_clean($r);
 });
 t('attendance: wrong secret -> 403', function () {
-    $r = cgi('POST', 'api/attendance_sync.php', ['body' => '[]', 'content_type' => 'application/json', 'headers' => ['X-Astra-Webhook-Secret' => 'nope']]);
+    $r = cgi('POST', 'api/attendance_sync.php', ['body' => '[]', 'content_type' => 'application/json', 'headers' => ['X-Hastra-Webhook-Secret' => 'nope']]);
     expect_eq($r['status'], 403, 'status');
 });
 t('attendance: valid secret inserts, and a resend updates without duplicates', function () {
@@ -190,7 +190,7 @@ t('attendance: valid secret inserts, and a resend updates without duplicates', f
     q("UPDATE companies SET attendance_webhook_secret = ? WHERE id = ?", [$secret, F::$internal_company]);
     $day = date('Y-m-d', strtotime('-3 days'));
     $body = json_encode([['email' => F::$u['employee']['email'], 'work_date' => $day, 'check_in' => '09:12', 'status' => 'present']]);
-    $opt = ['body' => $body, 'content_type' => 'application/json', 'headers' => ['X-Astra-Webhook-Secret' => $secret]];
+    $opt = ['body' => $body, 'content_type' => 'application/json', 'headers' => ['X-Hastra-Webhook-Secret' => $secret]];
     $a = cgi('POST', 'api/attendance_sync.php', $opt);
     $b = cgi('POST', 'api/attendance_sync.php', $opt);
     expect_clean($a); expect_clean($b);
@@ -205,10 +205,10 @@ t('payment webhook: signed request settles an escrow invoice and releases it', f
     $ts = (string)time();
     $sig = 'sha256=' . hash_hmac('sha256', "$ts.$body", $key);
     $bad = cgi('POST', 'api/payment_webhook.php', ['body' => $body, 'content_type' => 'application/json',
-        'headers' => ['X-Astra-Timestamp' => $ts, 'X-Astra-Signature' => 'sha256=' . str_repeat('0', 64)]]);
+        'headers' => ['X-Hastra-Timestamp' => $ts, 'X-Hastra-Signature' => 'sha256=' . str_repeat('0', 64)]]);
     expect_eq($bad['status'], 401, 'bad signature status');
     $r = cgi('POST', 'api/payment_webhook.php', ['body' => $body, 'content_type' => 'application/json',
-        'headers' => ['X-Astra-Timestamp' => $ts, 'X-Astra-Signature' => $sig]]);
+        'headers' => ['X-Hastra-Timestamp' => $ts, 'X-Hastra-Signature' => $sig]]);
     expect_clean($r);
     expect_eq($r['status'], 200, 'status');
     expect_eq(qv("SELECT status FROM invoices WHERE id = ?", [$inv['id']]), 'paid', 'invoice');

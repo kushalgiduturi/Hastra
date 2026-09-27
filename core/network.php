@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — client IP resolution.
+// Hastra — client IP resolution.
 //
 // astra_get_client_ip() is the single source of truth for "what is the
 // visitor's IP" wherever that matters for security decisions (VPN gating,
@@ -28,7 +28,7 @@ function astra_is_public_ip($ip) {
 // Resolves the visitor's IP address for security-sensitive checks.
 //
 // Header precedence: Cloudflare's CF-Connecting-IP (only trustworthy when
-// Astra actually sits behind Cloudflare), then the leftmost address in
+// Hastra actually sits behind Cloudflare), then the leftmost address in
 // X-Forwarded-For (the original client, as set by the nearest proxy in the
 // chain — later hops append, they don't rewrite), then REMOTE_ADDR.
 //

@@ -1,6 +1,6 @@
 <?php
 // tests/runner.php
-// End-to-end audit suite for Astra. No external dependencies.
+// End-to-end audit suite for Hastra. No external dependencies.
 //
 //   C:\xampp\php\php.exe tests\runner.php            run everything
 //   C:\xampp\php\php.exe tests\runner.php --only=crypto   run tests whose id contains "crypto"

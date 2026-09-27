@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   Cloth cards: the landing engine's WebGL2 fabric, hung behind Astra's deliverable cards.
+   Cloth cards: the landing engine's WebGL2 fabric, hung behind Hastra's deliverable cards.
 
    The simulation, both shader passes and the option set are the landing engine's
    createCloth(), itself Canvas UI's Cloth, unchanged: a 96 x 96 height
@@ -23,8 +23,8 @@
    ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  if (window.__astraCloth) return;
-  window.__astraCloth = true;
+  if (window.__hastraCloth) return;
+  window.__hastraCloth = true;
   const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const COARSE = matchMedia('(hover: none)').matches;
   const CLOTH_MAX = 8;
@@ -346,7 +346,7 @@ function createCloth(output, plate, options) {
     }
   }
 
-  /* Astra: the backing follows the theme, so it is read per draw */
+  /* Hastra: the backing follows the theme, so it is read per draw */
   const backingNow = () => typeof config.backing === 'function' ? config.backing()
     : config.backing === 'auto' ? [.02, .026, .035] : config.backing;
 
@@ -524,7 +524,7 @@ function createCloth(output, plate, options) {
     if (!live.length) return;
     new MutationObserver(() => live.forEach(c => c.refresh()))
       .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    window.AstraCloth = { count: live.length };
+    window.HastraCloth = { count: live.length };
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

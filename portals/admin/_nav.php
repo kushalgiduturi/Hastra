@@ -12,14 +12,14 @@ $__is_solo        = astra_is_solo_company($__admin_company);
 ?>
 <nav class="topnav">
   <div class="nav-left">
-    <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="astra-sidebar" aria-label="Open menu">
+    <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
-    <a href="<?= get_base_url() ?>portals/index" class="nav-brand-link" title="All pages for your role">
-      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
-      <span class="nav-title">Astra</span>
+    <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
+      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg></div>
+      <span class="nav-title">Hastra</span>
     </a>
-    <a class="nav-badge" href="<?= get_base_url() ?>portals/admin/admin_portal">Admin</a>
+    <a class="nav-badge" href="<?= get_base_url() ?>workspace/admin/">Admin</a>
   </div>
   <?php $__company_logo = astra_session_company_logo($conn); if ($__company_logo): ?>
   <div class="nav-center-logo"><img src="<?= htmlspecialchars($__company_logo) ?>" alt="Company logo"></div>
@@ -30,37 +30,37 @@ $__is_solo        = astra_is_solo_company($__admin_company);
       <span class="theme-label"></span>
     </button>
     <span class="nav-user">Signed in as <span><?= htmlspecialchars($_SESSION["user_name"]) ?></span></span>
-    <a href="<?= get_base_url() ?>portals/user/profile" class="nav-avatar" title="My Profile"><?= strtoupper(substr($_SESSION["user_name"], 0, 1)) ?></a>
+    <a href="<?= get_base_url() ?>workspace/user/profile" class="nav-avatar" title="My Profile"><?= strtoupper(substr($_SESSION["user_name"], 0, 1)) ?></a>
   </div>
 </nav>
 <?php
 render_sidebar(
   [
     ['label' => 'Core Delivery', 'links' => [
-      ['key' => 'projects',      'label' => 'Projects',                 'href' => get_base_url() . 'portals/admin/project_portal',  'current' => $nav_current === 'projects'],
-      ['key' => 'requirements',  'label' => 'Requirements & Deliveries','href' => get_base_url() . 'portals/admin/requirements',    'current' => $nav_current === 'requirements'],
-      ['key' => 'deployment',    'label' => 'Deployments',              'href' => get_base_url() . 'portals/admin/deployments',      'current' => $nav_current === 'deployments'],
+      ['key' => 'projects',      'label' => 'Projects',                 'href' => get_base_url() . 'workspace/admin/project-portal',  'current' => $nav_current === 'projects'],
+      ['key' => 'requirements',  'label' => 'Requirements & Deliveries','href' => get_base_url() . 'workspace/admin/requirements',    'current' => $nav_current === 'requirements'],
+      ['key' => 'deployment',    'label' => 'Deployments',              'href' => get_base_url() . 'workspace/admin/deployments',      'current' => $nav_current === 'deployments'],
     ]],
     ['label' => 'Governance', 'links' => $__is_solo ? [] : [
-      ['key' => 'team',          'label' => 'Team Roster',              'href' => get_base_url() . 'portals/admin/directory',        'current' => $nav_current === 'directory'],
-      ['key' => 'attendance',    'label' => 'Attendance Matrix & Logs', 'href' => get_base_url() . 'portals/admin/attendance',       'current' => $nav_current === 'attendance'],
-      ['key' => 'leave',         'label' => 'Leave Management & Requests', 'href' => get_base_url() . 'portals/admin/leave_management', 'current' => $nav_current === 'leave'],
+      ['key' => 'team',          'label' => 'Team Roster',              'href' => get_base_url() . 'workspace/admin/directory',        'current' => $nav_current === 'directory'],
+      ['key' => 'attendance',    'label' => 'Attendance Matrix & Logs', 'href' => get_base_url() . 'workspace/admin/attendance',       'current' => $nav_current === 'attendance'],
+      ['key' => 'leave',         'label' => 'Leave Management & Requests', 'href' => get_base_url() . 'workspace/admin/leave-management', 'current' => $nav_current === 'leave'],
     ]],
     ['label' => 'System Security', 'links' => [
-      ['key' => 'security', 'label' => 'Security & Activity Log', 'href' => get_base_url() . 'portals/admin/security', 'current' => $nav_current === 'security'],
+      ['key' => 'security', 'label' => 'Security & Activity Log', 'href' => get_base_url() . 'workspace/admin/security', 'current' => $nav_current === 'security'],
     ]],
   ],
   [
-    ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'portals/user/profile', 'tag' => 'a'],
+    ['key' => 'profile', 'label' => 'Settings / Profile', 'href' => get_base_url() . 'workspace/user/profile', 'tag' => 'a'],
     ['key' => 'help',    'label' => 'Help / Onboarding Guide', 'tag' => 'button', 'extra_class' => 'tour-restart-btn'],
-    ['key' => 'logout',  'label' => 'Logout', 'href' => get_base_url() . 'auth/logout', 'extra_class' => 'logout'],
+    ['key' => 'logout',  'label' => 'Logout', 'href' => get_base_url() . 'signout', 'extra_class' => 'logout'],
   ]
 );
 ?>
 <?php
 $__dock_items = [
-  ['key' => 'dashboard', 'label' => 'Admin Portal', 'href' => get_base_url() . 'portals/admin/admin_portal', 'current' => $nav_current === 'dashboard'],
-  ['key' => 'projects',  'label' => 'Projects',     'href' => get_base_url() . 'portals/admin/project_portal', 'current' => $nav_current === 'projects'],
+  ['key' => 'dashboard', 'label' => 'Admin Portal', 'href' => get_base_url() . 'workspace/admin/', 'current' => $nav_current === 'dashboard'],
+  ['key' => 'projects',  'label' => 'Projects',     'href' => get_base_url() . 'workspace/admin/project-portal', 'current' => $nav_current === 'projects'],
 ];
 render_dock($__dock_items); astra_consent_banner();
 ?>

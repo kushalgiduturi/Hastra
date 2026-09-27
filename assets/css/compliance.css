@@ -1,4 +1,4 @@
-/* Astra — compliance surfaces: legal footer, "Continue with Google", the
+/* Hastra — compliance surfaces: legal footer, "Continue with Google", the
    SSO divider, the cookie-consent bar, consent placeholders and the policy
    document layout. Uses AuthKit tokens where a page loads them, and the
    core/theme.css tokens as fallbacks, so it follows the light/dark toggle. */

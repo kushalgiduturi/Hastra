@@ -4,7 +4,7 @@ secure_session_start();
 $msg = "";
 
 if (!isset($_SESSION["otp_email"])) {
-    header("Location: login");
+    header("Location: signin");
     exit();
 }
 
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_SESSION["otp_attempts"] > 5) {
         session_unset();
         session_destroy();
-        header("Location: login");
+        header("Location: signin");
         exit();
     }
 
@@ -61,12 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["login_country"] = $login_geo["country"];
 
         switch ($user["role"]) {
-          case "sysadmin":         header("Location: " . get_base_url() . "portals/sysadmin/sysadmin_portal");  break;
-          case "admin":            header("Location: " . get_base_url() . "portals/admin/admin_portal");        break;
-          case "employee":         header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal");  break;
-          case "pending_employee": header("Location: " . get_base_url() . "portals/user/newuser_portal");       break;
-          case "client": header("Location: " . get_base_url() . "portals/client/client_portal"); break;
-          default:                 header("Location: " . get_base_url() . "portals/user/newuser_portal");       break;
+          case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/");  break;
+          case "admin":            header("Location: " . get_base_url() . "workspace/admin/");        break;
+          case "employee":         header("Location: " . get_base_url() . "workspace/employee/");  break;
+          case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");       break;
+          case "client": header("Location: " . get_base_url() . "workspace/client/"); break;
+          default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");       break;
         }
         exit();
     } else {
@@ -79,8 +79,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Two-Step Verification · Astra</title>
+<title>Two-Step Verification · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -486,10 +487,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Two-Step Verification</div>
     </div>
   </div>
@@ -518,7 +519,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?= $_SESSION["otp_attempts"] ?> / 5 ATTEMPTS USED
   </div>
 
-  <form method="POST" action="otp" id="otpForm">
+  <form method="POST" action="verify" id="otpForm">
     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
     <input type="hidden" name="otp" id="otpHidden">
 
@@ -548,7 +549,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <div class="footer-links">
     <span>Didn't receive it?</span>
-    <a href="login">Go back & resend</a>
+    <a href="signin">Go back & resend</a>
   </div>
 
 </div>

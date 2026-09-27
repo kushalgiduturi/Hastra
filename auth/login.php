@@ -10,12 +10,12 @@ require '../PHPMailer/Exception.php';
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
-        case "sysadmin":         header("Location: " . get_base_url() . "portals/sysadmin/sysadmin_portal"); break;
-        case "admin":            header("Location: " . get_base_url() . "portals/admin/admin_portal");       break;
-        case "employee":         header("Location: " . get_base_url() . "portals/emlpoyee/employee_portal"); break;
-        case "pending_employee": header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
-        case "client": header("Location: " . get_base_url() . "portals/client/client_portal"); break;      break;
-        default:                 header("Location: " . get_base_url() . "portals/user/newuser_portal");      break;
+        case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/"); break;
+        case "admin":            header("Location: " . get_base_url() . "workspace/admin/");       break;
+        case "employee":         header("Location: " . get_base_url() . "workspace/employee/"); break;
+        case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
+        case "client": header("Location: " . get_base_url() . "workspace/client/"); break;      break;
+        default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
     }
     exit();
 }
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ip_inspect = astra_inspect_ip($client_ip, $conn);
 
     if ($ip_inspect["is_vpn"]) {
-        $ip_error = "VPN or Proxy connection detected. Please disable your VPN to continue into the Astra platform.";
+        $ip_error = "VPN or Proxy connection detected. Please disable your VPN to continue into the Hastra platform.";
         log_activity($conn, null, "login_blocked_vpn", $ip_inspect["isp"] ?? "Unknown ISP", $client_ip);
     } else {
         $ip_error = check_ip_limit($conn);
@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         log_activity($conn, $user["id"], "login_otp_sent",$user["name"]);
                         $_SESSION["otp_email"] = $email;
-                        header("Location: otp");
+                        header("Location: verify");
                         exit();
 
                     } catch (Exception $e) {
@@ -149,8 +149,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login · Astra</title>
+<title>Login · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -198,7 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      for every visitor, every time.
 
      Layers, back to front:
-       #astra-kage-scene   the shared temple world (assets/js/kage-scene.js)
+       #hastra-kage-scene   the shared temple world (assets/js/kage-scene.js)
        #temple-hand-stage  stage 1: the hand rising out of it on video
        #crack-particles    stage 2a: the spark burst at the fracture
        .auth-wrapper        stage 2b: the login card
@@ -374,16 +375,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     pointer-events: none;
   }
   .card.revealed::after {
-    animation: astraShockwave 1.1s cubic-bezier(.16, 1, .3, 1) forwards;
+    animation: hastraShockwave 1.1s cubic-bezier(.16, 1, .3, 1) forwards;
   }
-  @keyframes astraShockwave {
+  @keyframes hastraShockwave {
     0%   { box-shadow: 0 0 0 0 var(--accent-glow); opacity: .9; }
     55%  { opacity: .4; }
     100% { box-shadow: 0 0 0 70px transparent; opacity: 0; }
   }
 
-  /* Inside the card: icon pops in, then "Astra" projects outward from it
-     — the exact same astraTextIntro/astraIconPop keyframes the portal nav
+  /* Inside the card: icon pops in, then "Hastra" projects outward from it
+     — the exact same hastraTextIntro/hastraIconPop keyframes the portal nav
      bars use once per session (core/theme.js) — then the rest of the form
      fades up. This page opts out of that automatic trigger
      (<body data-intro-manual>) and fires the identical animation itself,
@@ -394,10 +395,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     opacity: 0;
   }
   .card.revealed .brand-icon {
-    animation: astraIconPop .45s .3s cubic-bezier(.34,1.56,.64,1) forwards;
+    animation: hastraIconPop .45s .3s cubic-bezier(.34,1.56,.64,1) forwards;
   }
   .card.revealed .brand-text .title {
-    animation: astraTextIntro .6s .6s cubic-bezier(.16,1,.3,1) forwards;
+    animation: hastraTextIntro .6s .6s cubic-bezier(.16,1,.3,1) forwards;
   }
   .card.revealed h2,
   .card.revealed .subtitle,
@@ -405,7 +406,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .card.revealed form,
   .card.revealed .footer-links,
   .card.revealed .sys-row {
-    animation: astraFadeUp .55s 1s cubic-bezier(.16,1,.3,1) forwards;
+    animation: hastraFadeUp .55s 1s cubic-bezier(.16,1,.3,1) forwards;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -868,10 +869,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      opted out via <body data-cursor-off>): a visible pointer ring plus a
      camera-space-styled wisp trail, restored here specifically per a later
      request — every other page keeps the plain, simplified motes-only
-     trail. #astra-wisp-mesh is the trail's own canvas, z-index 10 between
+     trail. #hastra-wisp-mesh is the trail's own canvas, z-index 10 between
      the hand stage and the card; .cur-dot is the ring, z-index 80, always
      on top. Both are pointer-events:none — see requirement 3. ── */
-  #astra-wisp-mesh { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+  #hastra-wisp-mesh { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
   .cur-dot {
     position: fixed; z-index: 80; top: 0; left: 0; width: 26px; height: 26px; margin: -13px 0 0 -13px;
     border: 1px solid rgba(223, 231, 224, 0.42); border-radius: 50%; pointer-events: none;
@@ -884,7 +885,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     background: rgba(223, 231, 224, 0.07); border-color: rgba(223, 231, 224, 0.6);
   }
   @media (hover: hover) and (pointer: fine) { .cur-dot { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { .cur-dot, #astra-wisp-mesh { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .cur-dot, #hastra-wisp-mesh { display: none; } }
 
 </style>
 </head>
@@ -932,7 +933,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!-- this page's own cursor engine (see the <style> block and the script
      near the end of the page): the wisp trail's canvas, and the ring -->
-<canvas id="astra-wisp-mesh" aria-hidden="true"></canvas>
+<canvas id="hastra-wisp-mesh" aria-hidden="true"></canvas>
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
 
 <div class="auth-wrapper">
@@ -943,19 +944,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="brand-icon">
       <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
+          <linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="var(--accent-bright)"/>
             <stop offset="1" stop-color="var(--purple, var(--accent-bright))"/>
           </linearGradient>
         </defs>
-        <!-- Peaked "A" -->
-        <path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/>
-        <!-- Four-point spark at the apex -->
-        <path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/>
+        <!-- Torii-post H frame -->
+        <path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/>
+        <!-- Integrated core spark -->
+        <path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/>
       </svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Secure Access Portal</div>
     </div>
   </div>
@@ -972,7 +973,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <!-- ── Enterprise Workspace panel ── -->
       <div class="login-panel" id="panel-enterprise" role="tabpanel" aria-labelledby="toggleEnterprise">
         <h2>Sign In</h2>
-        <p class="subtitle">Enter your workspace credentials to access Astra.</p>
+        <p class="subtitle">Enter your workspace credentials to access Hastra.</p>
         <div class="divider"></div>
 
         <?php if ($msg && ($active_portal === 'enterprise' || $session_notice)): ?>
@@ -984,7 +985,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php astra_google_button('link'); astra_sso_divider(); ?>
 
-        <form method="POST" action="login" class="loginForm" autocomplete="on">
+        <form method="POST" action="signin" class="loginForm" autocomplete="on">
           <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
           <input type="hidden" name="portal" value="enterprise">
 
@@ -1016,7 +1017,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <input type="checkbox" name="remember_me">
               <span>Remember me</span>
             </label>
-            <a href="forgot" class="forgot-link">Forgot password?</a>
+            <a href="forgot-password" class="forgot-link">Forgot password?</a>
           </div>
 
           <div class="recaptcha-wrap">
@@ -1028,7 +1029,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="footer-links">
           <span>New organization?</span>
-          <a href="register?track=enterprise">Set up your workspace</a>
+          <a href="signup?track=enterprise">Set up your workspace</a>
         </div>
       </div>
 
@@ -1047,7 +1048,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php astra_google_button('link'); astra_sso_divider(); ?>
 
-        <form method="POST" action="login" class="loginForm" autocomplete="on">
+        <form method="POST" action="signin" class="loginForm" autocomplete="on">
           <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
           <input type="hidden" name="portal" value="client">
 
@@ -1079,7 +1080,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <input type="checkbox" name="remember_me">
               <span>Remember me</span>
             </label>
-            <a href="forgot" class="forgot-link">Forgot password?</a>
+            <a href="forgot-password" class="forgot-link">Forgot password?</a>
           </div>
 
           <div class="recaptcha-wrap">
@@ -1091,7 +1092,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="footer-links">
           <span>New client company?</span>
-          <a href="register">Create your workspace</a>
+          <a href="signup">Create your workspace</a>
         </div>
       </div>
 
@@ -1223,7 +1224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (REDUCE || COARSE) return;
 
   const dot = document.getElementById('cursor');
-  const canvas = document.getElementById('astra-wisp-mesh');
+  const canvas = document.getElementById('hastra-wisp-mesh');
   if (!dot || !canvas) return;
   const cx = canvas.getContext('2d');
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -1436,13 +1437,13 @@ function renderRecaptcha() {
     fresh.className = 'recaptcha-slot';
     slot.replaceWith(fresh);
     recaptchaWidgetIds[key] = window.grecaptcha.render(fresh, {
-      sitekey: '6LcjNg4tAAAAALrE033V1uMvYdaDs4jCQ8qboPIL',
+      sitekey: '6LfuhdEtAAAAAOHipza25gYF5igkq4TV2iagaCAN',
       theme: currentSiteTheme()
     });
   });
 }
 window.onRecaptchaApiLoad = renderRecaptcha;
-document.addEventListener('astra:themechange', function() {
+document.addEventListener('hastra:themechange', function() {
   // The reCAPTCHA client doesn't reliably repaint the new theme on the
   // first re-render right after a live theme toggle — a follow-up render
   // shortly after consistently fixes it, so do both.

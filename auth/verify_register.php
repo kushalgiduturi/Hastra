@@ -213,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         mysqli_stmt_bind_param($delete_pending, "i", $pending["id"]);
                         mysqli_stmt_execute($delete_pending);
                         unset($_SESSION["verify_email"], $_SESSION["verify_otp_attempts"]);
-                        $msg   = htmlspecialchars($company_name) . " was registered on Astra while you were verifying. Ask its IT Manager to add you to the team.";
+                        $msg   = htmlspecialchars($company_name) . " was registered on Hastra while you were verifying. Ask its IT Manager to add you to the team.";
                         $stage = "email";
                     } elseif ($new_user_id) {
                         if (!empty($pending['terms_accepted_at']) && db_column_exists($conn, 'users', 'terms_accepted_at')) {
@@ -272,8 +272,9 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verify Email · Astra</title>
+<title>Verify Email · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -788,10 +789,10 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Email Verification</div>
     </div>
   </div>
@@ -805,7 +806,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     </div>
     <h3>Email Verified!</h3>
     <p>Your account is now active.<br>You can log in with your email and password.</p>
-    <a href="login" class="btn-login">
+    <a href="signin" class="btn-login">
       <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5z"/></svg>
       Go to Login
     </a>
@@ -837,7 +838,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     <?= $_SESSION["verify_otp_attempts"] ?? 0 ?> / 5 ATTEMPTS USED
   </div>
 
-  <form method="POST" action="verify_register" id="otpForm">
+  <form method="POST" action="verify-email" id="otpForm">
     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
     <input type="hidden" name="action" value="verify_otp">
     <input type="hidden" name="otp" id="otpHidden">
@@ -856,7 +857,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
   <div class="resend-link">
     Didn't get it?
-    <form method="POST" action="verify_register" style="display:inline;">
+    <form method="POST" action="verify-email" style="display:inline;">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="action" value="resend_otp">
       <button type="submit">Resend OTP</button>
@@ -870,7 +871,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     </button>
   </div>
   <div class="footer-links">
-    <a href="login">Back to Login</a>
+    <a href="signin">Back to Login</a>
   </div>
 
   <?php else: ?>
@@ -887,7 +888,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
   </div>
   <?php endif; ?>
 
-  <form method="POST" action="verify_register">
+  <form method="POST" action="verify-email">
     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
     <input type="hidden" name="action" value="send_otp">
 
@@ -910,7 +911,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
   </div>
   <div class="footer-links">
     <span>Already verified?</span>
-    <a href="login">Back to Login</a>
+    <a href="signin">Back to Login</a>
   </div>
 
   <?php endif; ?>

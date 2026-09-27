@@ -22,7 +22,7 @@ foreach (REG_TRACKS as $flow => [$account_type, $role]) {
             'country' => 'India', 'company_name' => $org, 'company_size' => '11-50',
             'leave_cycle' => 'monthly', 'monthly_general_leaves' => 2, 'monthly_sick_leaves' => 1, 'annual_leave_allowance' => 18]]);
         expect_clean($r, 'register');
-        expect(str_contains((string)$r['location'], 'verify_register'), 'no redirect to verification: ' . substr(trim(visible_text($r['body'])), 0, 200));
+        expect(str_contains((string)$r['location'], 'verify-email'), 'no redirect to verification: ' . substr(trim(visible_text($r['body'])), 0, 200));
 
         $pending = q1("SELECT * FROM pending_registrations WHERE email = ? OR email_bindex = ?", [$email, astra_blind_index($email)]);
         expect($pending !== null, 'no pending_registrations row');
@@ -37,7 +37,7 @@ foreach (REG_TRACKS as $flow => [$account_type, $role]) {
 
         $u = q1("SELECT * FROM users WHERE email_bindex = ?", [astra_blind_index($email)]);
         expect($u !== null, 'no users row after verification');
-        expect(str_starts_with($u['email'], 'astra:v1:') && str_starts_with($u['name'], 'astra:v1:') && str_starts_with((string)$u['phone_number'], 'astra:v1:'),
+        expect(str_starts_with($u['email'], 'hastra:v1:') && str_starts_with($u['name'], 'hastra:v1:') && str_starts_with((string)$u['phone_number'], 'hastra:v1:'),
                'users PII not encrypted');
         expect_eq(astra_db_decrypt($u['email']), $email, 'decrypted email');
         expect_eq($u['role'], $role, 'role');
@@ -46,7 +46,7 @@ foreach (REG_TRACKS as $flow => [$account_type, $role]) {
         $c = q1("SELECT * FROM companies WHERE id = ?", [$u['company_id']]);
         expect($c !== null, 'no company linked');
         expect_eq($c['account_type'], $account_type, 'companies.account_type');
-        expect(str_starts_with((string)$c['email_domain'], 'astra:v1:'), 'company domain not encrypted');
+        expect(str_starts_with((string)$c['email_domain'], 'hastra:v1:'), 'company domain not encrypted');
         expect($c['domain_bindex'] !== null, 'no domain blind index');
         expect(!q1("SELECT 1 FROM pending_registrations WHERE id = ?", [$pending['id']]), 'pending row not removed');
         if ($flow === 'enterprise_full') expect(!empty($c['attendance_webhook_secret']), 'no attendance webhook secret generated');
@@ -60,7 +60,7 @@ t('duplicate email is refused', function () {
         'csrf_token' => csrf_of($s), 'accept_terms' => '1', 'flow' =>'client_individual', 'name' => 'Dup', 'email' => F::$u['admin']['email'],
         'phone_number' => '+919876500001', 'password' => FIX_PASSWORD, 'confirm' => FIX_PASSWORD, 'country' => 'India']]);
     expect_clean($r);
-    expect(!str_contains((string)$r['location'], 'verify_register'), 'duplicate accepted');
+    expect(!str_contains((string)$r['location'], 'verify-email'), 'duplicate accepted');
 });
 t('weak password is refused with a specific message', function () {
     $s = astra_test_session([]);

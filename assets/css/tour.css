@@ -2,13 +2,13 @@
    Spotlight onboarding tour — reuses the theme's own CSS variables
    (core/theme.css) so it always matches the active dark/light theme. */
 
-.astra-tour-root {
+.hastra-tour-root {
   position: fixed;
   inset: 0;
   z-index: 9000;
 }
 
-body.astra-tour-open {
+body.hastra-tour-open {
   overflow: hidden;
 }
 
@@ -16,7 +16,7 @@ body.astra-tour-open {
    so the real element underneath stays fully visible and interactive.
    Clicking a panel aborts the tour (see assets/js/tour.js) — the cursor
    says so. */
-.astra-tour-mask {
+.hastra-tour-mask {
   position: fixed;
   z-index: 1;
   background: rgba(4, 8, 20, 0.72);
@@ -26,12 +26,12 @@ body.astra-tour-open {
   cursor: pointer;
 }
 
-[data-theme="light"] .astra-tour-mask {
+[data-theme="light"] .hastra-tour-mask {
   background: rgba(15, 23, 42, 0.55);
 }
 
 /* Glowing ring traced around the highlighted element. */
-.astra-tour-ring {
+.hastra-tour-ring {
   position: fixed;
   z-index: 1;
   border-radius: 8px;
@@ -39,20 +39,20 @@ body.astra-tour-open {
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18), 0 0 26px 4px rgba(var(--accent-rgb), 0.45);
   pointer-events: none;
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
-  animation: astraTourPulse 2.2s ease-in-out infinite;
+  animation: hastraTourPulse 2.2s ease-in-out infinite;
 }
 
-@keyframes astraTourPulse {
+@keyframes hastraTourPulse {
   0%, 100% { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18), 0 0 26px 4px rgba(var(--accent-rgb), 0.45); }
   50%      { box-shadow: 0 0 0 5px rgba(var(--accent-rgb), 0.28), 0 0 34px 8px rgba(var(--accent-rgb), 0.6); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .astra-tour-ring { animation: none; }
+  .hastra-tour-ring { animation: none; }
 }
 
 /* ── Popover card ─────────────────────────────────────────────────────── */
-.astra-tour-popover {
+.hastra-tour-popover {
   position: fixed;
   z-index: 2;
   width: 320px;
@@ -68,7 +68,7 @@ body.astra-tour-open {
   cursor: default;
 }
 
-.astra-tour-popover::before {
+.hastra-tour-popover::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -77,14 +77,14 @@ body.astra-tour-open {
   border-radius: 8px 8px 0 0;
 }
 
-.astra-tour-popover-head {
+.hastra-tour-popover-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
-.astra-tour-step-label {
+.hastra-tour-step-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 10.5px;
   letter-spacing: 0.09em;
@@ -92,7 +92,7 @@ body.astra-tour-open {
   color: var(--accent-bright);
 }
 
-.astra-tour-close {
+.hastra-tour-close {
   background: none;
   border: none;
   color: var(--text-dim);
@@ -103,9 +103,9 @@ body.astra-tour-open {
   border-radius: 3px;
   transition: color 0.15s, background 0.15s;
 }
-.astra-tour-close:hover { color: var(--text); background: var(--hover-bg); }
+.hastra-tour-close:hover { color: var(--text); background: var(--hover-bg); }
 
-.astra-tour-title {
+.hastra-tour-title {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.005em;
@@ -113,26 +113,26 @@ body.astra-tour-open {
   color: var(--text);
 }
 
-.astra-tour-text {
+.hastra-tour-text {
   font-size: 12.5px;
   line-height: 1.55;
   color: var(--text-dim);
   margin-bottom: 1rem;
 }
 
-.astra-tour-actions {
+.hastra-tour-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.astra-tour-nav-btns {
+.hastra-tour-nav-btns {
   display: flex;
   gap: 6px;
 }
 
-.astra-tour-btn {
+.hastra-tour-btn {
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
@@ -144,27 +144,27 @@ body.astra-tour-open {
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
-.astra-tour-btn-ghost {
+.hastra-tour-btn-ghost {
   background: none;
   border-color: transparent;
   color: var(--text-dim);
   padding-left: 0;
 }
-.astra-tour-btn-ghost:hover { color: var(--text); text-decoration: underline; }
+.hastra-tour-btn-ghost:hover { color: var(--text); text-decoration: underline; }
 
-.astra-tour-btn-secondary {
+.hastra-tour-btn-secondary {
   background: var(--input-bg);
   border-color: var(--border-dim);
   color: var(--text);
 }
-.astra-tour-btn-secondary:hover { background: var(--hover-bg); border-color: var(--border); }
+.hastra-tour-btn-secondary:hover { background: var(--hover-bg); border-color: var(--border); }
 
-.astra-tour-btn-primary {
+.hastra-tour-btn-primary {
   background: linear-gradient(135deg, var(--accent-bright), var(--accent));
   color: #fff;
   box-shadow: 0 4px 14px -4px var(--accent-glow);
 }
-.astra-tour-btn-primary:hover { transform: translateY(-1px); }
+.hastra-tour-btn-primary:hover { transform: translateY(-1px); }
 
 /* ── "?" restart trigger, styled like the existing nav icon buttons ─────── */
 .tour-restart-btn {
@@ -191,5 +191,5 @@ body.astra-tour-open {
 }
 
 @media (max-width: 560px) {
-  .astra-tour-popover { width: calc(100vw - 24px); }
+  .hastra-tour-popover { width: calc(100vw - 24px); }
 }

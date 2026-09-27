@@ -21,8 +21,9 @@ $ledger_anchor = astra_audit_anchor_read();
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Portal · Astra</title>
+<title>Admin Portal · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -90,43 +91,43 @@ $ledger_anchor = astra_audit_anchor_read();
   </div>
 
   <div class="section-nav">
-    <a class="section-nav-card" id="tour-requirements" href="<?= get_base_url() ?>portals/admin/requirements">
+    <a class="section-nav-card" id="tour-requirements" href="<?= get_base_url() ?>workspace/admin/requirements">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 9H7v-2h5v2zm3-4H7v-2h7v2z"/></svg></span>
       <span class="section-nav-label">Requirement Review</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/admin/deployments">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/admin/deployments">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg></span>
       <span class="section-nav-label">Deployment Approvals</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/admin/testing">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/admin/testing">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8z"/></svg></span>
       <span class="section-nav-label">Testing &amp; Bugs</span>
     </a>
-    <a class="section-nav-card" id="tour-delivery" href="<?= get_base_url() ?>portals/admin/delivery">
+    <a class="section-nav-card" id="tour-delivery" href="<?= get_base_url() ?>workspace/admin/delivery">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zM18 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></span>
       <span class="section-nav-label">Delivery</span>
     </a>
-    <a class="section-nav-card" id="tour-billing" href="<?= get_base_url() ?>portals/admin/billing">
+    <a class="section-nav-card" id="tour-billing" href="<?= get_base_url() ?>workspace/admin/billing">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></span>
       <span class="section-nav-label">Billing</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/admin/create_employee">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/admin/create-employee">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 4a4 4 0 110 8 4 4 0 010-8zm0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/></svg></span>
       <span class="section-nav-label">Create Employee</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/admin/directory">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/admin/directory">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></span>
       <span class="section-nav-label">User Directory</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/projects/signoff">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/projects/signoff">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="section-nav-label">Milestone Sign-Off</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/deliveries/dossier">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/deliveries/dossier">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></span>
       <span class="section-nav-label">Ephemeral Dossiers</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/security/scan-center">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
       <span class="section-nav-label">Scan Center</span>
     </a>
@@ -140,7 +141,7 @@ $ledger_anchor = astra_audit_anchor_read();
       <div class="ledger-meta">Last verified: block <?= (int)$ledger_anchor['chain_index'] ?> · <?= htmlspecialchars(date('d M Y, H:i', strtotime($ledger_anchor['verified_at'] ?? 'now'))) ?></div>
       <?php endif; ?>
     </div>
-    <form method="POST" action="admin_portal">
+    <form method="POST" action="./">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="action" value="verify_ledger">
       <button type="submit" class="ledger-btn">Verify Audit Ledger</button>

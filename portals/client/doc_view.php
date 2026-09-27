@@ -1,6 +1,6 @@
 <?php
 // portals/client/doc_view.php
-// The approved project documentation, rendered inside Astra.
+// The approved project documentation, rendered inside Hastra.
 //   Project Manager / IT Manager: once the project is delivered.
 //   Teammate:                     once it is delivered AND its invoice is paid.
 include __DIR__ . '/../../core/db.php';
@@ -33,14 +33,14 @@ function client_doc_project($conn, $project_id, array $member_ids) {
 }
 
 if (!docs_schema_ready($conn)) {
-    $error = "Documentation inside Astra isn't switched on yet. Ask the Astra sysadmin to run the database migration.";
+    $error = "Documentation inside Hastra isn't switched on yet. Ask the Hastra sysadmin to run the database migration.";
 } elseif (!$project_id || !($project = client_doc_project($conn, $project_id, $ctx['member_ids']))) {
     $error = "This documentation isn't available to you. The project may not be delivered yet.";
 } elseif (!client_can($ctx, 'view_deliveries') && !$project['is_paid']) {
     $project = null;
     $error   = "This documentation unlocks for your team once the project's invoice is paid.";
 } elseif (!($doc = approved_doc($conn, $project_id))) {
-    $error = "Astra hasn't published documentation for this project yet.";
+    $error = "Hastra hasn't published documentation for this project yet.";
 }
 
 $body = $doc ? sanitize_doc_html($doc['body_html']) : '';
@@ -50,8 +50,9 @@ $live = $project ? safe_url($project['deployment_link']) : '';
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $project ? htmlspecialchars($project['project_code'] . ' documentation') : 'Documentation' ?> · Astra</title>
+<title><?= $project ? htmlspecialchars($project['project_code'] . ' documentation') : 'Documentation' ?> · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -72,7 +73,7 @@ $live = $project ? safe_url($project['deployment_link']) : '';
 <?php $nav_current = 'docs'; include __DIR__ . '/_nav.php'; ?>
 
 <div class="main">
-  <a class="back-link nav-link" href="<?= get_base_url() ?>portals/client/docs.php">← All documentation</a>
+  <a class="back-link nav-link" href="<?= get_base_url() ?>workspace/client/docs">← All documentation</a>
 
   <?php if ($error): ?>
   <section class="section">

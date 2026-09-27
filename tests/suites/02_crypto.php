@@ -3,7 +3,7 @@
 T::group('Crypto');
 
 foreach ([
-    'ASCII'   => 'Hello, Astra 123',
+    'ASCII'   => 'Hello, Hastra 123',
     'Unicode' => "Priya Nair · ₹45,000 · मुंबई · 🚀",
     'JSON'    => json_encode(['k' => 'v', 'n' => [1, 2, 3], 'q' => "quote\"s"]),
     'Long'    => str_repeat('x', 10000),
@@ -22,11 +22,11 @@ t('empty string passes through unencrypted', function () {
     expect_eq(astra_db_decrypt(null), null, 'astra_db_decrypt(null)');
 });
 
-t('envelope is astra:v1: + version byte + 12-byte IV + 16-byte tag + ciphertext', function () {
+t('envelope is hastra:v1: + version byte + 12-byte IV + 16-byte tag + ciphertext', function () {
     $plain = 'envelope-check';
     $ct = astra_encrypt($plain);
-    expect(str_starts_with($ct, 'astra:v1:'), 'missing astra:v1: prefix: ' . substr($ct, 0, 12));
-    $raw = base64_decode(substr($ct, 9), true);
+    expect(str_starts_with($ct, 'hastra:v1:'), 'missing hastra:v1: prefix: ' . substr($ct, 0, 12));
+    $raw = base64_decode(substr($ct, 10), true);
     expect($raw !== false, 'payload is not valid base64');
     expect_eq(strlen($raw), 1 + 12 + 16 + strlen($plain), 'decoded length (GCM adds no padding)');
     expect_eq(ord($raw[0]), ASTRA_ACTIVE_KEY_VERSION, 'key version byte');
@@ -38,17 +38,17 @@ t('fresh random IV per encryption (same plaintext, different ciphertext)', funct
 
 t('tampered ciphertext is rejected (returns null, never garbage)', function () {
     $ct  = astra_encrypt('tamper-me-please');
-    $raw = base64_decode(substr($ct, 9), true);
+    $raw = base64_decode(substr($ct, 10), true);
     foreach ([29, 5, 20] as $pos) {                 // ciphertext body, IV, tag
         $bad = $raw; $bad[$pos] = chr(ord($bad[$pos]) ^ 0x01);
-        $r = astra_decrypt('astra:v1:' . base64_encode($bad));
+        $r = astra_decrypt('hastra:v1:' . base64_encode($bad));
         expect($r === null, "flipping byte $pos returned " . var_export($r, true));
     }
 });
 
 t('truncated / malformed envelopes are rejected', function () {
-    expect(astra_decrypt('astra:v1:' . base64_encode('short')) === null, 'short payload accepted');
-    expect(astra_decrypt('astra:v1:@@not-base64@@') === null, 'bad base64 accepted');
+    expect(astra_decrypt('hastra:v1:' . base64_encode('short')) === null, 'short payload accepted');
+    expect(astra_decrypt('hastra:v1:@@not-base64@@') === null, 'bad base64 accepted');
 });
 
 t('blind index: deterministic HMAC-SHA256, case and whitespace normalised', function () {
@@ -184,6 +184,6 @@ t('trusted domestic IP proceeds to the credential check', function () {
         'csrf_token' => csrf_of($s), 'portal' => 'enterprise', 'email' => F::$u['admin']['email'],
         'password' => FIX_PASSWORD, 'g-recaptcha-response' => 'test-pass']]);
     expect_clean($r, 'login');
-    expect(str_contains((string)$r['location'], 'otp'), 'did not reach OTP step: status ' . $r['status']);
+    expect(str_contains((string)$r['location'], 'verify'), 'did not reach OTP step: status ' . $r['status']);
     expect(mail_code_to(F::$u['admin']['email']) !== null, 'no OTP email captured');
 });

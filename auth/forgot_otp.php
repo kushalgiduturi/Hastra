@@ -4,7 +4,7 @@ secure_session_start();
 $msg = "";
 
 if (!isset($_SESSION["reset_email"])) {
-    header("Location: forgot");
+    header("Location: forgot-password");
     exit();
 }
 
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_SESSION["reset_otp_attempts"] > 5) {
         unset($_SESSION["reset_email"]);
         unset($_SESSION["reset_otp_attempts"]);
-        header("Location: forgot");
+        header("Location: forgot-password");
         exit();
     }
 
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["reset_verified"]     = true;
         $_SESSION["reset_otp_attempts"] = 0;
 
-        header("Location: reset");
+        header("Location: reset-password");
         exit();
     } else {
         $remaining = 5 - $_SESSION["reset_otp_attempts"];
@@ -52,8 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reset Password OTP · Astra</title>
+<title>Reset Password OTP · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -490,10 +491,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Password Recovery</div>
     </div>
   </div>
@@ -534,7 +535,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?= $_SESSION["reset_otp_attempts"] ?> / 5 ATTEMPTS USED
   </div>
 
-  <form method="POST" action="forgot_otp.php" id="otpForm">
+  <form method="POST" action="reset-code" id="otpForm">
     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
     <input type="hidden" name="otp" id="otpHidden">
 
@@ -562,7 +563,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <div class="footer-links">
     <span>Didn't get it?</span>
-    <a href="forgot.php">Resend OTP</a>
+    <a href="forgot-password">Resend OTP</a>
   </div>
 
 </div>

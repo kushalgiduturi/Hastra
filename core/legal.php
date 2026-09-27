@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — shared compliance fragments: the legal footer, the cookie-consent
+// Hastra — shared compliance fragments: the legal footer, the cookie-consent
 // banner and the "Continue with Google" button. Every public page renders
 // these through the functions below so the wording stays identical.
 
@@ -62,10 +62,10 @@ function astra_google_button(string $mode = 'link', string $label = 'Continue wi
        . '</svg>';
     $text = '<span>' . htmlspecialchars($label) . '</span>';
     if ($mode === 'submit') {
-        echo '<button type="submit" class="btn-google-sso" formaction="' . get_base_url() . 'auth/google_auth.php" formnovalidate'
+        echo '<button type="submit" class="btn-google-sso" formaction="' . get_base_url() . 'auth/google_auth" formnovalidate'
            . ' name="action" value="register" data-google-sso aria-label="Sign up with your Google account">' . $g . $text . '</button>';
     } else {
-        echo '<a href="' . get_base_url() . 'auth/google_auth.php?action=login" class="btn-google-sso" role="button"'
+        echo '<a href="' . get_base_url() . 'auth/google_auth?action=login" class="btn-google-sso" role="button"'
            . ' aria-label="Sign in with your Google account">' . $g . $text . '</a>';
     }
 }
@@ -81,18 +81,18 @@ function astra_google_error_message(): string {
         'expired'          => 'That Google sign-in attempt expired. Please try again.',
         'cancelled'        => 'Google sign-in was cancelled.',
         'verify_failed'    => 'We couldn\'t verify your Google account. Please try again.',
-        'vpn'              => 'VPN or Proxy connection detected. Please disable your VPN to continue into the Astra platform.',
+        'vpn'              => 'VPN or Proxy connection detected. Please disable your VPN to continue into the Hastra platform.',
         'ip_locked'        => 'Too many attempts from your network. Please try again later.',
         'locked'           => 'This account is temporarily locked. Try again later.',
-        'google_mismatch'  => 'This Astra account is linked to a different Google account.',
-        'no_account'       => 'There\'s no Astra account for that Google email yet. Choose a track below to create one.',
+        'google_mismatch'  => 'This Hastra account is linked to a different Google account.',
+        'no_account'       => 'There\'s no Hastra account for that Google email yet. Choose a track below to create one.',
         'terms_required'   => 'Please accept the Terms and Conditions and acknowledge the Privacy Policy to continue.',
         'bad_track'        => 'Choose a registration track first.',
         'company_required' => 'Enter your organization\'s name before continuing with Google.',
         'size_required'    => 'Choose your company\'s size before continuing with Google.',
         'country_required' => 'Enter your country before continuing with Google.',
         'too_long'         => 'One of the workspace fields is too long.',
-        'company_taken'    => 'That organization is already registered on Astra. Ask its admin to add you to the team.',
+        'company_taken'    => 'That organization is already registered on Hastra. Ask its admin to add you to the team.',
         'create_failed'    => 'Your Google account was verified but the workspace couldn\'t be created. Please contact support.',
     ];
     return $m[$_GET['google_error'] ?? ''] ?? '';

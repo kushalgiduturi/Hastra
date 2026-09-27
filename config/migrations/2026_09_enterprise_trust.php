@@ -98,7 +98,7 @@ function astra_migrate_enterprise_trust($conn, callable $out) {
         $run("ALTER TABLE pending_registrations ADD COLUMN email_bindex VARCHAR(64) NULL AFTER email", "added pending_registrations.email_bindex");
     }
     if ($table_exists('pending_registrations')) {
-        $rows = mysqli_query($conn, "SELECT id, name, email, phone_number FROM pending_registrations WHERE email NOT LIKE 'astra:%'");
+        $rows = mysqli_query($conn, "SELECT id, name, email, phone_number FROM pending_registrations WHERE email NOT LIKE 'hastra:%'");
         $upd = mysqli_prepare($conn, "UPDATE pending_registrations SET name = ?, email = ?, phone_number = ?, email_bindex = ? WHERE id = ?");
         $n = 0;
         while ($r = mysqli_fetch_assoc($rows)) {

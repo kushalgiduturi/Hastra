@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $mail->send();
 
                 $_SESSION["reset_email"] = $email;
-                header("Location: forgot_otp");
+                header("Location: reset-code");
                 exit();
 
             } catch (Exception $e) {
@@ -75,8 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forgot Password · Astra</title>
+<title>Forgot Password · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -503,10 +504,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
     </div>
     <div class="brand-text">
-      <div class="title">Astra</div>
+      <div class="title">Hastra</div>
       <div class="sub">Password Recovery</div>
     </div>
   </div>
@@ -544,7 +545,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <?php endif; ?>
 
-  <form method="POST" action="forgot.php">
+  <form method="POST" action="forgot-password">
     <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
 
     <div class="field">
@@ -569,7 +570,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <div class="footer-links">
     <span>Remembered it?</span>
-    <a href="login.php">Back to Login</a>
+    <a href="signin">Back to Login</a>
   </div>
 
 </div>

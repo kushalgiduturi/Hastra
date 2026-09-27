@@ -58,8 +58,9 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deployment Approvals · Astra</title>
+<title>Deployment Approvals · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -169,7 +170,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
           <?php else: ?>No draft yet. Generate one from the <?= !empty($proj['repo_url']) ? 'repository' : 'project records' ?>, review it, then approve it.<?php endif; ?>
           <?php if (!empty($proj['repo_url']) && safe_url($proj['repo_url'])): ?><br>Repository: <a href="<?= htmlspecialchars($proj['repo_url']) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);"><?= htmlspecialchars($proj['repo_url']) ?></a><?php endif; ?>
         </span>
-        <a href="doc_editor.php?project=<?= (int)$proj['id'] ?>" style="color:var(--cyan);border:1px solid rgba(34,211,238,0.3);padding:5px 12px;border-radius:3px;text-decoration:none;font-weight:600;">Open documentation editor</a>
+        <a href="doc-editor?project=<?= (int)$proj['id'] ?>" style="color:var(--cyan);border:1px solid rgba(34,211,238,0.3);padding:5px 12px;border-radius:3px;text-decoration:none;font-weight:600;">Open documentation editor</a>
       </div>
       <?php endif; ?>
       <form method="POST" action="deployments">

@@ -1,4 +1,4 @@
-// Astra — Scan Center client (portals/security/scan_center.php).
+// Hastra — Scan Center client (portals/security/scan_center.php).
 // Findings contain attacker-influenced text (file names from uploaded
 // archives, ZAP evidence, URLs), so every dynamic value goes into the page
 // with textContent / el(), never innerHTML.
@@ -159,7 +159,7 @@
   function metrics(p) { $('mScanned').textContent = p.scanned ?? 0; $('mSkipped').textContent = p.skipped ?? 0; $('mIssues').textContent = p.issues_found ?? 0; $('mTotal').textContent = p.total ?? 0; }
 
   function runStream(scanId, label) {
-    stage('running', 'Scanning ' + label); ring(0); $('ticker').replaceChildren(); tick('> Astra SAST engine started', 'ok');
+    stage('running', 'Scanning ' + label); ring(0); $('ticker').replaceChildren(); tick('> Hastra SAST engine started', 'ok');
     const es = new EventSource(cfg.api + 'stream_scan.php?scan_id=' + encodeURIComponent(scanId));
     let lastIssues = 0, finished = false;
     es.addEventListener('progress', (e) => {

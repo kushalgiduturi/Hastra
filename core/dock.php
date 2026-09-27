@@ -7,7 +7,7 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 //
 // Usage from a portal's _nav.php:
 //   $items = [
-//     ['key' => 'dashboard', 'label' => 'Sysadmin Portal', 'href' => get_base_url().'portals/sysadmin/sysadmin_portal', 'current' => $nav_current === 'dashboard'],
+//     ['key' => 'dashboard', 'label' => 'Sysadmin Portal', 'href' => get_base_url().'workspace/sysadmin/', 'current' => $nav_current === 'dashboard'],
 //     ...
 //   ];
 //   render_dock($items);
@@ -43,14 +43,14 @@ function dock_icon($key) {
 // ['key' => string, 'label' => string, 'href' => string, 'current' => bool]
 function render_dock(array $items) {
     if (empty($items)) return;
-    echo '<div class="astra-dock-wrap"><nav class="astra-dock" aria-label="Quick navigation">';
+    echo '<div class="hastra-dock-wrap"><nav class="hastra-dock" aria-label="Quick navigation">';
     foreach ($items as $item) {
         $current = !empty($item['current']);
-        $cls = 'astra-dock-item' . ($current ? ' is-current' : '');
+        $cls = 'hastra-dock-item' . ($current ? ' is-current' : '');
         echo '<a href="' . htmlspecialchars($item['href']) . '" class="' . $cls . '" aria-label="' . htmlspecialchars($item['label']) . '"'
            . ($current ? ' aria-current="page"' : '') . '>'
            . dock_icon($item['key'])
-           . '<span class="astra-dock-tooltip">' . htmlspecialchars($item['label']) . '</span>'
+           . '<span class="hastra-dock-tooltip">' . htmlspecialchars($item['label']) . '</span>'
            . '</a>';
     }
     echo '</nav></div>';
@@ -84,7 +84,7 @@ function render_sidebar(array $sections, array $account_links) {
     if ($conn) render_profile_barrier($conn);
 
     echo '<div id="sidebar-overlay" class="sidebar-backdrop"></div>';
-    echo '<aside id="astra-sidebar" class="sidebar-drawer" aria-label="Navigation">';
+    echo '<aside id="hastra-sidebar" class="sidebar-drawer" aria-label="Navigation">';
     echo '<div class="sidebar-head">'
        . '<span class="nav-title">Menu</span>'
        . '<button type="button" id="sidebar-close" class="sidebar-close" aria-label="Close menu">'

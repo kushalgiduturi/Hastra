@@ -9,7 +9,7 @@ $scope_ids     = id_list($ctx['member_ids']);
 $is_it_manager = client_can($ctx, 'manage_team');
 $can_submit    = client_can($ctx, 'submit_requirement');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "portals/client/docs");
+    header("Location: " . get_base_url() . "workspace/client/docs");
     exit();
 }
 
@@ -100,8 +100,9 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Submit Requirement · Astra</title>
+<title>Submit Requirement · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -253,10 +254,10 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
       <?php if (!$can_submit): ?>
       <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">
         Only your company's Project Manager can submit new requirements.
-        <?php if ($is_it_manager): ?>You can make someone a Project Manager on the <a href="<?= get_base_url() ?>portals/client/team" style="color:var(--accent-bright);">Team</a> page.<?php endif; ?>
+        <?php if ($is_it_manager): ?>You can make someone a Project Manager on the <a href="<?= get_base_url() ?>workspace/client/team" style="color:var(--accent-bright);">Team</a> page.<?php endif; ?>
       </p>
       <?php else: ?>
-      <form method="POST" action="submit_requirement" id="reqForm">
+      <form method="POST" action="submit-requirement" id="reqForm">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
 
         <?php if (!empty($my_completed_projects)): ?>

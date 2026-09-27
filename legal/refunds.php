@@ -1,9 +1,9 @@
 <?php
 require __DIR__ . '/_layout.php';
-legal_page_start('refunds', 'Refund Policy', 'Billing cycles, refunds, disputes and non-refundable items on Astra.');
+legal_page_start('refunds', 'Refund Policy', 'Billing cycles, refunds, disputes and non-refundable items on Hastra.');
 ?>
-<p>This policy covers two kinds of payment: fees for using Astra itself, and <strong>milestone escrow settlements</strong> that a
-  client pays a delivery organization through Astra. It does not reduce any right you have under consumer law.</p>
+<p>This policy covers two kinds of payment: fees for using Hastra itself, and <strong>milestone escrow settlements</strong> that a
+  client pays a delivery organization through Hastra. It does not reduce any right you have under consumer law.</p>
 
 <h2 id="cycles">1. Billing cycles</h2>
 <table>
@@ -16,21 +16,21 @@ legal_page_start('refunds', 'Refund Policy', 'Billing cycles, refunds, disputes 
   </tbody>
 </table>
 
-<h2 id="platform">2. Refunds of Astra fees</h2>
+<h2 id="platform">2. Refunds of Hastra fees</h2>
 <ul>
-  <li><strong>First subscription:</strong> if Astra is not right for you, ask within 14 days of your first payment for a full refund of that payment.</li>
+  <li><strong>First subscription:</strong> if Hastra is not right for you, ask within 14 days of your first payment for a full refund of that payment.</li>
   <li><strong>Annual plans:</strong> after the first 14 days, cancelling stops renewal; unused months are not refunded unless the law or your enterprise agreement requires it.</li>
   <li><strong>Service failures:</strong> if we miss the availability target in the <a href="terms#sla">Terms</a> and your agreement provides service credits, credits are applied to the next invoice.</li>
   <li><strong>Billing errors</strong> (duplicate or incorrect charges) are always refunded in full.</li>
 </ul>
 
 <h2 id="escrow">3. Milestone escrow settlements</h2>
-<p>The delivery organization, not Astra, is the seller of the work paid for through a milestone invoice. Refund requests for
-  work are decided between the client and the delivery organization under their contract. Astra supports that process:</p>
+<p>The delivery organization, not Hastra, is the seller of the work paid for through a milestone invoice. Refund requests for
+  work are decided between the client and the delivery organization under their contract. Hastra supports that process:</p>
 <ul>
   <li><strong>Before the client signs the milestone:</strong> the invoice may be cancelled, and any payment received is returned to the client through the payment provider.</li>
   <li><strong>After payment but before dual sign-off:</strong> the deliverable stays locked. If the parties agree to cancel, or a dispute is decided in the client's favour, the payment is refunded and the milestone reopened.</li>
-  <li><strong>After dual sign-off and release:</strong> the milestone is final on Astra. Any further remedy is a matter between the parties under their contract.</li>
+  <li><strong>After dual sign-off and release:</strong> the milestone is final on Hastra. Any further remedy is a matter between the parties under their contract.</li>
 </ul>
 
 <h2 id="non-refundable">4. Non-refundable items</h2>

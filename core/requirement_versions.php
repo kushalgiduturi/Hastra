@@ -1,6 +1,6 @@
 <?php
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
-// Astra — requirement version snapshots and the scope-drift diff engine.
+// Hastra — requirement version snapshots and the scope-drift diff engine.
 //
 // Every time a client edits a requirement that's already been through review,
 // the state it had before the edit is preserved as a requirement_versions row

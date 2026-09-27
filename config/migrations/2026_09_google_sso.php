@@ -1,9 +1,9 @@
 <?php
-// Astra — Google sign-in and recorded consent (Sep 2026)
+// Hastra — Google sign-in and recorded consent (Sep 2026)
 //
 // Run it either way:
 //   • Sysadmin portal → "Database migration" page (portals/sysadmin/migrate.php)
-//   • C:\xampp\php\php.exe C:\xampp\htdocs\login\config\migrations\2026_09_google_sso.php
+//   • C:\xampp\php\php.exe C:\xampp\htdocs\Hastra\config\migrations\2026_09_google_sso.php
 //
 // users.google_id_bindex  HMAC blind index of Google's stable account id
 //                         ("sub"), same scheme as email_bindex, so the raw id

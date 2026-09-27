@@ -8,7 +8,7 @@ $ctx           = client_context($conn, (int)$_SESSION["user_id"]);
 $scope_ids     = id_list($ctx['member_ids']);
 $can_comment   = client_can($ctx, 'comment');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "portals/client/docs");
+    header("Location: " . get_base_url() . "workspace/client/docs");
     exit();
 }
 
@@ -119,8 +119,9 @@ $project_status_labels = [
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Projects · Astra</title>
+<title>My Projects · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -362,7 +363,7 @@ $project_status_labels = [
           <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
               <span class="proj-code"><?= htmlspecialchars($proj['project_code']) ?></span>
-              <a href="<?= get_base_url() ?>portals/client/project_view?id=<?= (int)$proj['id'] ?>" onclick="event.stopPropagation()"
+              <a href="<?= get_base_url() ?>workspace/client/project-view?id=<?= (int)$proj['id'] ?>" onclick="event.stopPropagation()"
                  style="font-size:11px;color:var(--accent-bright);text-decoration:none;">Handover status</a>
               <span class="badge badge-<?= $proj['status'] ?>">
                 <?= htmlspecialchars($project_status_labels[$proj['status']] ?? $proj['status']) ?>
@@ -486,7 +487,7 @@ $project_status_labels = [
 
             <!-- Post comment form -->
             <?php if ($can_comment): ?>
-            <form method="POST" action="my_projects">
+            <form method="POST" action="my-projects">
               <input type="hidden" name="csrf_token"  value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="action"      value="post_comment">
               <input type="hidden" name="project_id"  value="<?= $proj['id'] ?>">

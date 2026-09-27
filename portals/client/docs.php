@@ -34,8 +34,9 @@ $company_name = $ctx['company']['company_name'] ?? 'Your company';
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documentation · Astra</title>
+<title>Documentation · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -47,7 +48,7 @@ $company_name = $ctx['company']['company_name'] ?? 'Your company';
 <div class="main">
   <div class="page-header">
     <h1>Project documentation</h1>
-    <p>Final documentation for <?= htmlspecialchars($company_name) ?>'s projects. A project appears here once Astra has delivered it and its invoice is paid.</p>
+    <p>Final documentation for <?= htmlspecialchars($company_name) ?>'s projects. A project appears here once Hastra has delivered it and its invoice is paid.</p>
   </div>
 
   <section class="section">
@@ -65,7 +66,7 @@ $company_name = $ctx['company']['company_name'] ?? 'Your company';
           <div class="doc-meta">Delivered <?= htmlspecialchars(date('d M Y', strtotime($d['delivered_at']))) ?></div>
         </div>
         <div class="doc-links">
-          <?php if ($d['has_doc']): ?><a class="btn primary" href="<?= get_base_url() ?>portals/client/doc_view.php?project=<?= (int)$d['id'] ?>">Open documentation</a><?php endif; ?>
+          <?php if ($d['has_doc']): ?><a class="btn primary" href="<?= get_base_url() ?>workspace/client/doc-view?project=<?= (int)$d['id'] ?>">Open documentation</a><?php endif; ?>
           <?php if ($doc): ?><a class="btn<?= $d['has_doc'] ? '' : ' primary' ?>" href="<?= htmlspecialchars($doc) ?>" target="_blank" rel="noopener noreferrer"><?= $d['has_doc'] ? 'External docs' : 'Open documentation' ?></a><?php endif; ?>
           <?php if ($live): ?><a class="btn" href="<?= htmlspecialchars($live) ?>" target="_blank" rel="noopener noreferrer">Live app</a><?php endif; ?>
           <?php if (!$doc && !$live && !$d['has_doc']): ?><span class="you">No link was provided. Ask your Project Manager.</span><?php endif; ?>
@@ -86,8 +87,8 @@ $company_name = $ctx['company']['company_name'] ?? 'Your company';
       <div class="doc-row">
         <div class="doc-title"><span class="code-chip"><?= htmlspecialchars($w['project_code']) ?></span><?= htmlspecialchars($w['title']) ?></div>
         <div class="doc-links">
-          <?php if ($w['has_doc']): ?><a class="btn" href="<?= get_base_url() ?>portals/client/doc_view.php?project=<?= (int)$w['id'] ?>">Preview documentation</a><?php endif; ?>
-          <a class="btn" href="<?= get_base_url() ?>portals/client/client_portal">Pay in Projects</a>
+          <?php if ($w['has_doc']): ?><a class="btn" href="<?= get_base_url() ?>workspace/client/doc-view?project=<?= (int)$w['id'] ?>">Preview documentation</a><?php endif; ?>
+          <a class="btn" href="<?= get_base_url() ?>workspace/client/">Pay in Projects</a>
         </div>
       </div>
       <?php endforeach; ?>

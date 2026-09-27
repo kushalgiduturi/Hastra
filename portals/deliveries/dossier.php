@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
                 // The token rides in the URL fragment, which browsers never
                 // send to the server, so it stays out of access logs.
                 $link      = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
-                           . get_base_url() . 'portals/deliveries/terminal#t=' . $token_out;
+                           . get_base_url() . 'workspace/deliveries/terminal#t=' . $token_out;
                 $window    = round($expires_min / 60, 1) . "h";
                 $msg       = $proj['escrow_status'] === 'released'
                            ? "Dossier created for {$proj['project_code']} ({$proj['milestone_name']}). It opens {$max_views} time(s) and expires in $window. The link won't be shown again:"
@@ -108,8 +108,9 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ephemeral Dossier · Astra</title>
+<title>Ephemeral Dossier · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -152,7 +153,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
 </head>
 <body>
 <div class="main">
-  <a class="back" href="<?= get_base_url() ?>portals/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : ($nav_path === 'client' ? 'client_portal' : 'employee_portal') ?>">&larr; Back</a>
+  <a class="back" href="<?= get_base_url() ?>workspace/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : ($nav_path === 'client' ? 'client_portal' : 'employee_portal') ?>">&larr; Back</a>
   <h1>Ephemeral Dossier</h1>
   <p class="lede">Single-view (or few-view), time-boxed handover of sensitive material. Once its view limit or expiry is reached, the stored ciphertext is overwritten with random noise, leaving nothing to decrypt afterward.</p>
 
@@ -192,7 +193,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
       Opening it counts as one view.
     </p>
     <?php endif; ?>
-    <a class="btn" style="display:inline-block;text-decoration:none;" href="<?= get_base_url() ?>portals/deliveries/terminal#t=<?= htmlspecialchars($token) ?>">Open in the handover terminal</a>
+    <a class="btn" style="display:inline-block;text-decoration:none;" href="<?= get_base_url() ?>workspace/deliveries/terminal#t=<?= htmlspecialchars($token) ?>">Open in the handover terminal</a>
   </div>
   <?php endif; ?>
 

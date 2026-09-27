@@ -97,8 +97,9 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Employee Portal · Astra</title>
+<title>Employee Portal · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -193,12 +194,12 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   </div>
 
   <div class="section-nav">
-    <a class="section-nav-card" id="tour-my-tasks-card" href="<?= get_base_url() ?>portals/emlpoyee/my_tasks">
+    <a class="section-nav-card" id="tour-my-tasks-card" href="<?= get_base_url() ?>workspace/employee/my-tasks">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg></span>
       <span class="section-nav-label">My Tasks</span>
     </a>
     <?php if ($is_lead): ?>
-    <a class="section-nav-card" id="tour-team-lead-card" href="<?= get_base_url() ?>portals/emlpoyee/team_lead">
+    <a class="section-nav-card" id="tour-team-lead-card" href="<?= get_base_url() ?>workspace/employee/team-lead">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>
       <span class="section-nav-label">My Projects (Team Lead)</span>
     </a>
@@ -208,11 +209,11 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
       <span class="section-nav-label">Request Leave</span>
     </a>
     <?php if ($is_lead): ?>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/projects/signoff">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/projects/signoff">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="section-nav-label">Milestone Sign-Off</span>
     </a>
-    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+    <a class="section-nav-card" href="<?= get_base_url() ?>workspace/security/scan-center">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
       <span class="section-nav-label">Scan Center</span>
     </a>
@@ -229,7 +230,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
     <div class="alert <?= $leave_msg_type ?>"><span><?= htmlspecialchars($leave_msg) ?></span></div>
     <?php endif; ?>
 
-    <form method="POST" action="employee_portal">
+    <form method="POST" action="./">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="action" value="request_leave">
 
@@ -255,7 +256,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
       <!-- Range picker: fills start_date / end_date below and fires their
            change events, so updateLeaveSpan() runs as if they were typed. -->
       <div class="leave-cal-wrap">
-        <div class="astra-calendar-root" id="leaveCalendar" data-mode="range"
+        <div class="hastra-calendar-root" id="leaveCalendar" data-mode="range"
              data-bind-start="#start_date" data-bind-end="#end_date"></div>
       </div>
 

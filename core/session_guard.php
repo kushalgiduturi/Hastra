@@ -105,7 +105,7 @@ function astra_session_kill(string $reason_code): void {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'error' => $reason_code, 'message' => 'Your session ended. Sign in again.']);
     } else {
-        header('Location: ' . get_base_url() . 'auth/login?error=' . urlencode($reason_code));
+        header('Location: ' . get_base_url() . 'signin?error=' . urlencode($reason_code));
     }
     exit();
 }

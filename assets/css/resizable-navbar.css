@@ -1,14 +1,14 @@
-/* Astra — Resizable Scroll-Reactive Floating Navbar (vanilla CSS/JS, no
+/* Hastra — Resizable Scroll-Reactive Floating Navbar (vanilla CSS/JS, no
    build step). Ported from a motion/react + Tailwind spec to plain markup;
    assets/js/resizable-navbar.js toggles `.scrolled-navbar` on
-   `<nav class="astra-resizable-nav">` past 100px of scroll — everything
+   `<nav class="hastra-resizable-nav">` past 100px of scroll — everything
    here is just the two states that class switches between.
 
    position:fixed means this nav is out of normal document flow; index.php
    compensates with `padding-top: 76px` on whatever sits right below it
    (the hero) so content doesn't jump underneath on load. */
 
-.astra-resizable-nav {
+.hastra-resizable-nav {
   position: fixed;
   top: 0;
   left: 50%;
@@ -46,7 +46,7 @@
    The capsule sizes to its contents (brand + links + actions) but never
    below 860px, so the three groups always have breathing room and can't
    be squeezed into each other. */
-.astra-resizable-nav.scrolled-navbar {
+.hastra-resizable-nav.scrolled-navbar {
   width: fit-content;
   min-width: 860px;
   max-width: 1100px;
@@ -66,7 +66,7 @@
 }
 
 @media (max-width: 1023.98px) {
-  .astra-resizable-nav.scrolled-navbar { width: calc(100% - 2rem); min-width: 0; }
+  .hastra-resizable-nav.scrolled-navbar { width: calc(100% - 2rem); min-width: 0; }
 }
 
 /* ── Brand ── */

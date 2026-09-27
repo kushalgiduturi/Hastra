@@ -1,5 +1,5 @@
 // assets/js/tour.js
-// Zero-dependency spotlight tour engine for Astra. Reads its step list from
+// Zero-dependency spotlight tour engine for Hastra. Reads its step list from
 // window.ASTRA_TOUR_CONFIGS (assets/js/tour-config.js), keyed by the current
 // page's <body data-tour-page="...">. State is cached in localStorage and
 // backed by api/tour_status.php so a finished/skipped tour never runs again
@@ -58,25 +58,25 @@
   // ── DOM scaffold (built once, reused across steps) ───────────────────────
   function buildScaffold() {
     var wrap = document.createElement('div');
-    wrap.className = 'astra-tour-root';
+    wrap.className = 'hastra-tour-root';
     wrap.innerHTML =
-      '<div class="astra-tour-mask astra-tour-mask-top"></div>' +
-      '<div class="astra-tour-mask astra-tour-mask-bottom"></div>' +
-      '<div class="astra-tour-mask astra-tour-mask-left"></div>' +
-      '<div class="astra-tour-mask astra-tour-mask-right"></div>' +
-      '<div class="astra-tour-ring"></div>' +
-      '<div class="astra-tour-popover" role="dialog" aria-modal="true">' +
-        '<div class="astra-tour-popover-head">' +
-          '<span class="astra-tour-step-label"></span>' +
-          '<button type="button" class="astra-tour-close" aria-label="Close tour">&times;</button>' +
+      '<div class="hastra-tour-mask hastra-tour-mask-top"></div>' +
+      '<div class="hastra-tour-mask hastra-tour-mask-bottom"></div>' +
+      '<div class="hastra-tour-mask hastra-tour-mask-left"></div>' +
+      '<div class="hastra-tour-mask hastra-tour-mask-right"></div>' +
+      '<div class="hastra-tour-ring"></div>' +
+      '<div class="hastra-tour-popover" role="dialog" aria-modal="true">' +
+        '<div class="hastra-tour-popover-head">' +
+          '<span class="hastra-tour-step-label"></span>' +
+          '<button type="button" class="hastra-tour-close" aria-label="Close tour">&times;</button>' +
         '</div>' +
-        '<h3 class="astra-tour-title"></h3>' +
-        '<p class="astra-tour-text"></p>' +
-        '<div class="astra-tour-actions">' +
-          '<button type="button" class="astra-tour-btn astra-tour-btn-ghost" data-action="skip">Skip tour</button>' +
-          '<div class="astra-tour-nav-btns">' +
-            '<button type="button" class="astra-tour-btn astra-tour-btn-secondary" data-action="back">Back</button>' +
-            '<button type="button" class="astra-tour-btn astra-tour-btn-primary" data-action="next">Next</button>' +
+        '<h3 class="hastra-tour-title"></h3>' +
+        '<p class="hastra-tour-text"></p>' +
+        '<div class="hastra-tour-actions">' +
+          '<button type="button" class="hastra-tour-btn hastra-tour-btn-ghost" data-action="skip">Skip tour</button>' +
+          '<div class="hastra-tour-nav-btns">' +
+            '<button type="button" class="hastra-tour-btn hastra-tour-btn-secondary" data-action="back">Back</button>' +
+            '<button type="button" class="hastra-tour-btn hastra-tour-btn-primary" data-action="next">Next</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -92,16 +92,16 @@
 
     var els = {
       root: wrap,
-      top: wrap.querySelector('.astra-tour-mask-top'),
-      bottom: wrap.querySelector('.astra-tour-mask-bottom'),
-      left: wrap.querySelector('.astra-tour-mask-left'),
-      right: wrap.querySelector('.astra-tour-mask-right'),
-      ring: wrap.querySelector('.astra-tour-ring'),
-      popover: wrap.querySelector('.astra-tour-popover'),
-      stepLabel: wrap.querySelector('.astra-tour-step-label'),
-      title: wrap.querySelector('.astra-tour-title'),
-      text: wrap.querySelector('.astra-tour-text'),
-      close: wrap.querySelector('.astra-tour-close'),
+      top: wrap.querySelector('.hastra-tour-mask-top'),
+      bottom: wrap.querySelector('.hastra-tour-mask-bottom'),
+      left: wrap.querySelector('.hastra-tour-mask-left'),
+      right: wrap.querySelector('.hastra-tour-mask-right'),
+      ring: wrap.querySelector('.hastra-tour-ring'),
+      popover: wrap.querySelector('.hastra-tour-popover'),
+      stepLabel: wrap.querySelector('.hastra-tour-step-label'),
+      title: wrap.querySelector('.hastra-tour-title'),
+      text: wrap.querySelector('.hastra-tour-text'),
+      close: wrap.querySelector('.hastra-tour-close'),
       skipBtn: wrap.querySelector('[data-action="skip"]'),
       backBtn: wrap.querySelector('[data-action="back"]'),
       nextBtn: wrap.querySelector('[data-action="next"]')
@@ -116,7 +116,7 @@
     // itself) aborts the tour, so a mispositioned or unreachable popover can
     // never trap the page behind an unclickable overlay.
     wrap.addEventListener('click', function (e) {
-      if (e.target && e.target.classList && e.target.classList.contains('astra-tour-mask')) {
+      if (e.target && e.target.classList && e.target.classList.contains('hastra-tour-mask')) {
         finish('skipped');
       }
     });
@@ -141,12 +141,12 @@
     state.onResize = null;
     state.onKeydown = null;
 
-    document.body.classList.remove('astra-tour-open');
+    document.body.classList.remove('hastra-tour-open');
 
     // Safety net: nuke any stray overlay nodes even if state.els got out of
     // sync with the DOM (e.g. start() was re-entered mid-teardown).
     try {
-      var stray = document.querySelectorAll('.astra-tour-root');
+      var stray = document.querySelectorAll('.hastra-tour-root');
       for (var i = 0; i < stray.length; i++) {
         if (stray[i].parentNode) stray[i].parentNode.removeChild(stray[i]);
       }
@@ -218,7 +218,7 @@
 
     pop.style.top = top + 'px';
     pop.style.left = left + 'px';
-    pop.className = 'astra-tour-popover astra-tour-popover-' + placement;
+    pop.className = 'hastra-tour-popover hastra-tour-popover-' + placement;
     pop.style.visibility = 'visible';
   }
 
@@ -256,12 +256,12 @@
           if (!state.els) return; // tour may have been closed during the scroll
           positionFor(el);
         } catch (e) {
-          console.warn('Astra tour: could not position a step, so the tour is closing to avoid getting stuck.', e);
+          console.warn('Hastra tour: could not position a step, so the tour is closing to avoid getting stuck.', e);
           finish('skipped');
         }
       }, SCROLL_SETTLE_DELAY);
     } catch (e) {
-      console.warn('Astra tour: a step failed to render, so the tour is closing to avoid getting stuck.', e);
+      console.warn('Hastra tour: a step failed to render, so the tour is closing to avoid getting stuck.', e);
       finish('skipped');
     }
   }
@@ -303,7 +303,7 @@
       state.active = active;
       state.index = 0;
       state.els = buildScaffold();
-      document.body.classList.add('astra-tour-open');
+      document.body.classList.add('hastra-tour-open');
 
       state.onResize = debounce(function () {
         try {
@@ -321,7 +321,7 @@
 
       renderStep();
     } catch (e) {
-      console.warn('Astra tour: failed to start. Cleaning up so the page stays usable.', e);
+      console.warn('Hastra tour: failed to start. Cleaning up so the page stays usable.', e);
       teardownScaffold();
     }
   }
@@ -344,7 +344,7 @@
       cacheSet(key, null);
       start(key, configs[key]);
     } catch (e) {
-      console.warn('Astra tour: restart failed.', e);
+      console.warn('Hastra tour: restart failed.', e);
     }
   }
 
@@ -374,12 +374,12 @@
         if (status === 'completed' || status === 'skipped') { cacheSet(key, status); return; }
         waitForProfileBarrier(function () {
           window.setTimeout(function () {
-            try { start(key, configs[key]); } catch (e) { console.warn('Astra tour: auto-start failed.', e); }
+            try { start(key, configs[key]); } catch (e) { console.warn('Hastra tour: auto-start failed.', e); }
           }, AUTO_START_DELAY);
         });
       });
     } catch (e) {
-      console.warn('Astra tour: init failed. The page works normally without the guided tour.', e);
+      console.warn('Hastra tour: init failed. The page works normally without the guided tour.', e);
     }
   }
 
@@ -403,7 +403,7 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
-  window.AstraTour = { start: start, restart: restart, init: init };
+  window.HastraTour = { start: start, restart: restart, init: init };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

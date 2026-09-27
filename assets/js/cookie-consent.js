@@ -1,23 +1,24 @@
-/* Astra — cookie consent and third-party embed guard.
+/* Hastra — cookie consent and third-party embed guard.
  *
- * State lives in localStorage under astra_consent_state:
+ * State lives in localStorage under hastra_consent_state:
  *   { v: 1, essential: true, analytics: bool, thirdparty: bool, ts: ISO }
  *
  * Nothing non-essential runs before a stored "yes":
  *   <script type="text/plain" data-consent="analytics" data-src="…">  activated on consent
  *   <img|iframe data-consent="thirdparty" data-consent-src="…">       loaded on consent, or
  *       replaced by a "Click to load external asset" placeholder that loads that one item
- *   AstraConsent.whenAllowed('thirdparty', fn)                           for script-driven lookups
+ *   HastraConsent.whenAllowed('thirdparty', fn)                           for script-driven lookups
  */
 (function () {
   'use strict';
-  var KEY = 'astra_consent_state';
+  var KEY = 'hastra_consent_state';
+  var LEGACY_KEY = 'astra_consent_state'; // pre-rename key, read once for migration
   var CATS = ['analytics', 'thirdparty'];
   var listeners = [];
 
   function read() {
     try {
-      var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+      var s = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem(LEGACY_KEY) || 'null');
       return s && s.v === 1 ? s : null;
     } catch (e) { return null; }
   }
@@ -81,11 +82,11 @@
     write(c);
     bar.hidden = true;
     apply();
-    document.dispatchEvent(new CustomEvent('astra:consent', { detail: state }));
+    document.dispatchEvent(new CustomEvent('hastra:consent', { detail: state }));
   }
 
   function init() {
-    bar = document.getElementById('astra-consent');
+    bar = document.getElementById('hastra-consent');
     if (bar) {
       bar.addEventListener('click', function (e) {
         var btn = e.target.closest('[data-consent-action]');
@@ -99,7 +100,7 @@
     apply();
   }
 
-  window.AstraConsent = {
+  window.HastraConsent = {
     get: function () { return state; },
     allows: allows,
     open: show,

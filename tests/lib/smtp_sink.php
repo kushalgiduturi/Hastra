@@ -16,7 +16,7 @@ $n = 0;
 while ($c = @stream_socket_accept($server, -1)) {
     stream_set_timeout($c, 10);
     $say = fn(string $l) => fwrite($c, $l . "\r\n");
-    $say('220 astra-test-sink ESMTP');
+    $say('220 hastra-test-sink ESMTP');
     $data = null;
     while (($line = fgets($c)) !== false) {
         if ($data !== null) {
@@ -30,7 +30,7 @@ while ($c = @stream_socket_accept($server, -1)) {
             continue;
         }
         $cmd = strtoupper(substr(trim($line), 0, 4));
-        if ($cmd === 'EHLO' || $cmd === 'HELO') { $say('250-astra-test-sink'); $say('250 8BITMIME'); }
+        if ($cmd === 'EHLO' || $cmd === 'HELO') { $say('250-hastra-test-sink'); $say('250 8BITMIME'); }
         elseif ($cmd === 'DATA') { $data = ''; $say('354 End data with <CR><LF>.<CR><LF>'); }
         elseif ($cmd === 'QUIT') { $say('221 Bye'); break; }
         else $say('250 OK');

@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'ackno
     verify_csrf_token();
     $can_ack = $user_role === 'admin' || ($user_role === 'client' && client_can(client_context($conn, $user_id), 'submit_requirement'));
     if (!$can_ack) {
-        $msg = "Only your company's Project Manager (or an Astra admin) can acknowledge a revision.";
+        $msg = "Only your company's Project Manager (or an Hastra admin) can acknowledge a revision.";
     } elseif (astra_reqver_acknowledge($conn, $req_id, $user_id, $error)) {
         $msg = "Revision acknowledged. It's now the active version feeding project creation.";
         $msg_type = "success";
@@ -104,8 +104,9 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Requirement Revisions · Astra</title>
+<title>Requirement Revisions · Hastra</title>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -143,7 +144,7 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
 </head>
 <body>
 <div class="main">
-  <a class="back" href="<?= get_base_url() ?>portals/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : 'my_requirements' ?>">&larr; Back</a>
+  <a class="back" href="<?= get_base_url() ?>workspace/<?= $nav_path ?>/<?= $nav_path === 'admin' ? 'admin_portal' : 'my_requirements' ?>">&larr; Back</a>
   <h1>Requirement Revisions</h1>
   <p class="lede"><?= htmlspecialchars($req['requirement_id']) ?>: <?= htmlspecialchars($req['requirement_title']) ?></p>
 
@@ -175,7 +176,7 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
       $picker_options = $versions;
       $picker_options[] = $live_version; // selectable in both dropdowns, labeled "current"
     ?>
-    <form method="GET" action="requirements_diff" class="ver-picker">
+    <form method="GET" action="requirements-diff" class="ver-picker">
       <input type="hidden" name="req_id" value="<?= $req_id ?>">
       Compare v<select name="from" onchange="this.form.submit()">
         <?php foreach ($picker_options as $v): $n = (int)$v['version_number']; ?>
@@ -215,7 +216,7 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
     <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">
       This revision hasn't been acknowledged yet, so <?= htmlspecialchars($req['requirement_id']) ?> cannot be turned into a project until a PM signs off on it.
     </p>
-    <form method="POST" action="requirements_diff">
+    <form method="POST" action="requirements-diff">
       <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
       <input type="hidden" name="action" value="acknowledge">
       <input type="hidden" name="req_id" value="<?= $req_id ?>">

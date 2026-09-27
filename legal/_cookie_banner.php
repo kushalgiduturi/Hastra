@@ -5,11 +5,11 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 // so it stays until one of the three choices is made.
 $b = get_base_url();
 ?>
-<section id="astra-consent" class="consent-bar" role="region" aria-labelledby="consent-title" hidden>
+<section id="hastra-consent" class="consent-bar" role="region" aria-labelledby="consent-title" hidden>
   <div class="consent-in">
     <div class="consent-copy">
       <h2 id="consent-title">Your privacy choices</h2>
-      <p>Astra uses essential cookies to keep you signed in and to protect forms. With your permission we also allow
+      <p>Hastra uses essential cookies to keep you signed in and to protect forms. With your permission we also allow
         analytics and third-party content such as logo lookups. See the <a href="<?= $b ?>legal/cookies">Cookie Policy</a>
         and <a href="<?= $b ?>legal/privacy">Privacy Policy</a>.</p>
     </div>

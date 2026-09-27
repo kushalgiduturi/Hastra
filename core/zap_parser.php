@@ -37,7 +37,7 @@ function astra_zap_parse_json(string $raw): array {
     if ($api !== null) return astra_zap_parse_api($api);
     $sites = $doc['site'] ?? null;
     if ($sites === null) {
-        throw new InvalidArgumentException("This JSON isn't a format ZAP produces that Astra recognises. Accepted: Traditional JSON, Traditional JSON Plus, "
+        throw new InvalidArgumentException("This JSON isn't a format ZAP produces that Hastra recognises. Accepted: Traditional JSON, Traditional JSON Plus, "
             . "SARIF JSON, and the alert list from ZAP's API (/JSON/core/view/alerts/). XML: Traditional XML.");
     }
     if (isset($sites['@name'])) $sites = [$sites];
