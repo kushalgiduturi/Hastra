@@ -1,0 +1,27 @@
+# Secrets / encryption keys
+config/*.key
+config/audit_chain.anchor
+config/anthropic.key
+
+# DB backups / dumps
+config/backups/
+*.sql
+# schema_v2.sql / v3_advanced_governance.sql are reference schemas, not
+# dumps — keep them tracked
+!schema_v2.sql
+!config/migrations/v3_advanced_governance.sql
+!config/migrations/v4_enterprise_trust.sql
+!config/migrations/v5_security_scanner.sql
+
+# User-uploaded content
+uploads/
+
+# Stale/manual backups
+_backup_*/
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store
+
+# Test runner output (results, captured mail, logs)
+tests/.results/

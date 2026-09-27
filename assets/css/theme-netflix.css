@@ -1,0 +1,271 @@
+/* Hastra — Netflix "developer series" design tokens for the signed-in portals.
+   Loaded by core/theme.js only on portal/dashboard pages, which get
+   html.nf-portal. Ported from Netflix_portfolio-main (About/Expertise/
+   Projects/Contact/CustomCursor). Dark: cinema black + crimson. Light:
+   clean white + cobalt. */
+
+:root,
+html.dark,
+[data-theme="dark"] {
+  --bg-canvas: #050505;
+  --bg-surface: #0b0b0b;
+  --bg-card: rgba(20, 20, 20, 0.95);
+  --bg-card-hover: rgba(28, 28, 28, 0.98);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(229, 9, 20, 0.5);
+  --accent-primary: #E50914;
+  --accent-primary-rgb: 229, 9, 20;
+  --accent-glow: rgba(229, 9, 20, 0.35);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  /* the source uses .4; .55 keeps small helper text at WCAG AA (5.6:1 on #141414) */
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --text-ghost: rgba(255, 255, 255, 0.05);
+  --badge-bg: rgba(229, 9, 20, 0.1);
+  --badge-border: rgba(229, 9, 20, 0.3);
+  --badge-text: #ef4444;
+  --spotlight-color: rgba(229, 9, 20, 0.18);
+  --ambient-glow: rgba(229, 9, 20, 0.1);
+  --shadow-card: 0 25px 50px rgba(0, 0, 0, 0.5);
+  --chip-bg: rgba(255, 255, 255, 0.05);
+  --gradient-headline: linear-gradient(90deg, #ef4444, #e11d48 50%, #b91c1c);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+html.light,
+[data-theme="light"] {
+  --bg-canvas: #f8fafc;
+  --bg-surface: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-hover: rgba(248, 250, 252, 1);
+  --border-subtle: #e2e8f0;
+  --border-accent: rgba(37, 99, 235, 0.5);
+  --accent-primary: #2563eb;
+  --accent-primary-rgb: 37, 99, 235;
+  --accent-glow: rgba(37, 99, 235, 0.25);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-ghost: rgba(15, 23, 42, 0.05);
+  --badge-bg: rgba(37, 99, 235, 0.08);
+  --badge-border: rgba(37, 99, 235, 0.25);
+  --badge-text: #2563eb;
+  --spotlight-color: rgba(37, 99, 235, 0.12);
+  --ambient-glow: rgba(59, 130, 246, 0.1);
+  --shadow-card: 0 25px 50px rgba(15, 23, 42, 0.12);
+  --chip-bg: rgba(15, 23, 42, 0.04);
+  --gradient-headline: linear-gradient(90deg, #2563eb, #3b82f6 50%, #1d4ed8);
+}
+
+/* ── Legacy tokens → Netflix tokens, so every portal page's own inline styles
+   (var(--navy), var(--text), var(--accent)…) adopt the palette without edits.
+   html.nf-portal outranks core/theme.css's :root / [data-theme] blocks. ── */
+html.nf-portal {
+  --accent-glow: rgba(229, 9, 20, 0.35);
+  --navy: var(--bg-canvas);
+  --navy-deep: #000;
+  --navy-mid: #101010;
+  --navy-card: #141414;
+  --topnav-bg: rgba(5, 5, 5, 0.82);
+  --text: var(--text-primary);
+  --text-dim: var(--text-secondary);
+  --border: var(--border-accent);
+  --border-dim: var(--border-subtle);
+  --accent: #E50914;
+  --accent-bright: #ef4444;
+  --accent-dim: #b20710;
+  --accent-rgb: 229, 9, 20;
+  --accent-soft: var(--badge-bg);
+  --hover-bg: rgba(229, 9, 20, 0.08);
+  --input-bg: transparent;
+  --grid-line: transparent;
+  --section-header-bg: transparent;
+  --purple: var(--text-muted);
+  --color-void-violet: var(--accent-primary);
+  --surface-deep-glass: var(--bg-card);
+  --color-glass-edge: var(--border-subtle);
+  --color-ice-highlight: var(--text-primary);
+  --color-frost-glow: var(--text-secondary);
+  --color-moon-mist: var(--text-secondary);
+  --color-fog-veil: var(--text-muted);
+}
+html.nf-portal[data-theme="light"] {
+  --accent-glow: rgba(37, 99, 235, 0.25);
+  --navy-deep: #eef2f7;
+  --navy-mid: #f1f5f9;
+  --navy-card: #ffffff;
+  --topnav-bg: rgba(255, 255, 255, 0.85);
+  --accent: #2563eb;
+  --accent-bright: #2563eb;
+  --accent-dim: #1d4ed8;
+  --accent-rgb: 37, 99, 235;
+  --hover-bg: rgba(37, 99, 235, 0.06);
+}
+
+/* ── Canvas ── */
+html.nf-portal, html.nf-portal body {
+  background: var(--bg-canvas) !important;
+  color: var(--text-primary);
+}
+html.nf-portal body {
+  background-image:
+    radial-gradient(500px 500px at 8% 22%, var(--ambient-glow), transparent 70%),
+    radial-gradient(500px 500px at 92% 88%, var(--ambient-glow), transparent 70%) !important;
+  background-attachment: fixed !important;
+  background-size: auto !important;
+}
+html.nf-portal ::selection { background: var(--accent-primary); color: #fff; }
+
+/* ── Top bar: cinema glass ── */
+html.nf-portal .topnav {
+  background: var(--topnav-bg) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%);
+  border-bottom: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+}
+html.nf-portal .topnav .nav-title {
+  font-weight: 900 !important; letter-spacing: .14em !important; text-transform: uppercase;
+  color: var(--accent-primary) !important;
+}
+html.nf-portal .nav-badge {
+  font-family: var(--font-mono) !important; font-size: 10px !important; font-weight: 700 !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important;
+  color: var(--badge-text) !important; background: var(--badge-bg) !important;
+  border: 1px solid var(--badge-border) !important; border-radius: 4px !important;
+}
+html.nf-portal .nav-user { color: var(--text-muted) !important; }
+html.nf-portal .nav-user span { color: var(--text-primary) !important; }
+html.nf-portal .nav-avatar {
+  background: var(--accent-primary) !important; color: #fff !important; border: 0 !important;
+  box-shadow: 0 0 16px var(--accent-glow) !important;
+}
+html.nf-portal .btn-theme-toggle {
+  font-family: var(--font-mono) !important; font-size: 10.5px !important; letter-spacing: .12em !important; text-transform: uppercase !important;
+  background: var(--chip-bg) !important; color: var(--text-secondary) !important;
+  border: 1px solid var(--border-subtle) !important; border-radius: 4px !important;
+}
+html.nf-portal .btn-theme-toggle:hover { border-color: var(--border-accent) !important; color: var(--text-primary) !important; }
+
+/* ── Page header: episode headline ── */
+html.nf-portal .page-header { margin-bottom: 2.4rem !important; }
+html.nf-portal .page-header::before {
+  content: 'HASTRA ORIGINALS  |  NOW STREAMING';
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 5px 12px 5px 22px;
+  font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
+  color: var(--badge-text); background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 4px;
+  background-image: radial-gradient(circle at 11px 50%, var(--accent-primary) 3px, transparent 3.5px);
+}
+html.nf-portal .page-header h1 {
+  font-size: clamp(28px, 4vw, 44px) !important; font-weight: 900 !important; letter-spacing: -.03em !important;
+  line-height: 1.05 !important; text-transform: uppercase;
+  background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: var(--accent-primary);
+  filter: drop-shadow(0 0 26px var(--accent-glow));
+}
+html.nf-portal .page-header p { color: var(--text-secondary) !important; font-size: 14px !important; font-weight: 300; margin-top: 8px; }
+
+/* ── Text ── */
+html.nf-portal h2, html.nf-portal h3, html.nf-portal h4 { color: var(--text-primary); }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) strong { color: var(--text-primary); }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) a:not([class]) { color: var(--accent-primary); }
+html.nf-portal code, html.nf-portal .mono { font-family: var(--font-mono); }
+
+/* ── Forms (Contact.jsx): underline fields, accent on focus ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) input:is([type="text"], [type="email"], [type="tel"], [type="password"], [type="number"], [type="date"], [type="datetime-local"], [type="url"], [type="search"], [type="month"], [type="time"], :not([type])),
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) select,
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) textarea,
+html.nf-portal .modal-overlay :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) {
+  background: transparent !important;
+  border: 0 !important; border-bottom: 1px solid var(--border-subtle) !important; border-radius: 0 !important;
+  color: var(--text-primary) !important; box-shadow: none !important;
+  padding: 10px 2px !important; font-weight: 500;
+  transition: border-color .3s ease !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) select { padding-right: 22px !important; cursor: pointer; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) select option { background: var(--navy-card); color: var(--text-primary); }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(input, select, textarea):focus {
+  outline: none !important; border-bottom-color: var(--accent-primary) !important;
+  box-shadow: 0 1px 0 0 var(--accent-primary) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(input, textarea)::placeholder { color: var(--text-muted) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) label:not(.sc-drop, .consent-check, .checkbox-wrap) {
+  font-family: var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted);
+}
+html.nf-portal input[type="checkbox"], html.nf-portal input[type="radio"] { accent-color: var(--accent-primary); }
+
+/* ── Actions: high-impact pills ── */
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(
+  button[type="submit"], .primary, .btn.primary, .btn-primary, .btn-submit, .btn-save, .btn-save-review, .btn-save-policy,
+  .btn-save-attendance, .btn-create, .btn-deploy, .btn-update-status, .btn-action, .btn-report, .action-btn.approve, .ledger-btn),
+html.nf-portal .modal-btn-confirm {
+  background: var(--accent-primary) !important; background-image: none !important;
+  color: #fff !important; border: 1px solid var(--accent-primary) !important; border-radius: 6px !important;
+  font-family: var(--font-sans) !important; font-weight: 700 !important; font-size: 11.5px !important;
+  letter-spacing: .12em !important; text-transform: uppercase !important;
+  padding: 12px 26px !important; min-height: 40px;
+  box-shadow: 0 0 20px var(--accent-glow) !important; filter: none !important;
+  transition: transform .3s ease, box-shadow .3s ease, background-color .3s ease !important;
+}
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(
+  button[type="submit"], .primary, .btn.primary, .btn-primary, .btn-submit, .btn-save, .btn-save-review, .btn-save-policy,
+  .btn-save-attendance, .btn-create, .btn-deploy, .btn-update-status, .btn-action, .btn-report, .action-btn.approve, .ledger-btn):hover:not(:disabled),
+html.nf-portal .modal-btn-confirm:hover {
+  transform: scale(1.05); box-shadow: 0 0 30px var(--accent-glow) !important;
+  background: var(--accent-dim) !important; border-color: var(--accent-dim) !important;
+}
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(
+  .btn:not(.primary), .modal-btn-cancel, .btn-clear, .btn-expand, .btn-more, .btn-toggle-add, .small, .action-btn.close, .sc-btn.ghost, .pv-btn),
+html.nf-portal .modal-btn-cancel {
+  background: var(--chip-bg) !important; color: var(--text-primary) !important;
+  border: 1px solid var(--border-subtle) !important; border-radius: 6px !important;
+  font-family: var(--font-mono) !important; font-size: 11px !important; font-weight: 600 !important;
+  letter-spacing: .1em !important; text-transform: uppercase !important;
+  transition: border-color .3s ease, color .3s ease, transform .3s ease !important;
+}
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(
+  .btn:not(.primary), .modal-btn-cancel, .btn-clear, .btn-expand, .btn-more, .btn-toggle-add, .small, .action-btn.close, .sc-btn.ghost, .pv-btn):hover,
+html.nf-portal .modal-btn-cancel:hover { border-color: var(--border-accent) !important; color: var(--badge-text) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.danger, .btn-delete, .btn-delete-req, .btn-delete-task, .btn-remove-row, .btn-remove-member, .action-btn.reject) {
+  background: transparent !important; color: #ef4444 !important; border: 1px solid rgba(239, 68, 68, .45) !important;
+  border-radius: 6px !important; font-family: var(--font-mono) !important; letter-spacing: .08em !important; text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) :is(.danger, .btn-delete, .btn-delete-req, .btn-delete-task, .btn-remove-row, .btn-remove-member, .action-btn.reject) { color: #b91c1c !important; border-color: rgba(185, 28, 28, .4) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.danger, .btn-delete, .btn-delete-req, .btn-delete-task, .btn-remove-row, .btn-remove-member, .action-btn.reject):hover { background: rgba(239, 68, 68, .1) !important; }
+
+/* tabs */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .tab-btn {
+  font-family: var(--font-mono) !important; font-size: 11px !important; letter-spacing: .12em !important; text-transform: uppercase !important;
+  color: var(--text-muted) !important; background: transparent !important; border: 0 !important; border-bottom: 2px solid transparent !important; border-radius: 0 !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .tab-btn.active, html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .tab-btn:hover { color: var(--text-primary) !important; border-bottom-color: var(--accent-primary) !important; }
+
+/* ── Alerts ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .alert {
+  border-radius: 12px !important; border: 1px solid var(--badge-border) !important; background: var(--badge-bg) !important;
+  color: var(--text-primary) !important; font-size: 13px;
+}
+
+/* ── Modals ── */
+html.nf-portal .modal-overlay { background: rgba(0, 0, 0, .72) !important; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+html.nf-portal[data-theme="light"] .modal-overlay { background: rgba(15, 23, 42, .35) !important; }
+html.nf-portal .modal-overlay > :is(.modal, .modal-box, .modal-card, div:first-child) {
+  background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; border-radius: 24px !important;
+  box-shadow: var(--shadow-card) !important; color: var(--text-primary) !important;
+}
+
+/* ── Sidebar drawer & dock pick up the palette ── */
+html.nf-portal .sidebar-drawer { background: var(--bg-surface) !important; border-right: 1px solid var(--border-subtle) !important; }
+html.nf-portal .sidebar-link.current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
+html.nf-portal .hastra-dock { background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; }
+html.nf-portal .hastra-dock-item.is-current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
+
+/* ── Scrollbars ── */
+html.nf-portal { scrollbar-color: rgba(var(--accent-primary-rgb), .45) var(--bg-canvas); }
+
+/* decorative bleeds (cloth canvases, glows) never create a sideways scroll */
+html.nf-portal, html.nf-portal body { overflow-x: clip; }
+
+/* ── Brand mark: crimson on cinema black, cobalt on daylight white ── */
+html.nf-portal[data-theme="dark"] .hastra-primary-fill { fill: url(#hastra-crimson) !important; }
+html.nf-portal[data-theme="light"] .hastra-primary-fill { fill: url(#hastra-cobalt) !important; }

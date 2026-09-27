@@ -1,0 +1,68 @@
+Options -Indexes
+DirectoryIndex index.php auth/login.php
+
+RewriteEngine On
+RewriteBase /Hastra/
+
+# Never serve version control, dotfiles, backup copies of the code, or the
+# test suite. .git/ would expose the whole repository history (including
+# config/config.php), and _backup_*/ holds old, executable copies of
+# portal pages that predate later security fixes.
+RewriteRule (^|/)\.(?!well-known/) - [R=404,L]
+RewriteRule ^(_backup_|tests(/|$)) - [R=404,L]
+
+# Addresses never show ".php": a browser asking for page.php is redirected to
+# page (and index.php to its folder). Only pages are redirected (auth/,
+# portals/, legal/ and the root pages), never partials (_*.php), api/ or the
+# internal core/, config/, tools/ files, which must keep answering 404
+# directly. GET/HEAD only, so a form post is never turned into a redirect.
+# The /Hastra/ prefix must match RewriteBase above.
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/)?)index\.php[\s?] [NC]
+RewriteRule ^ %1 [R=301,L]
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# ── Short addresses → the files behind them (internal: the address bar keeps
+# the short form). core/db.php redirects old-style addresses to these.
+RewriteRule ^signin/?$ auth/login.php [L]
+RewriteRule ^signup/?$ auth/register.php [L]
+RewriteRule ^verify/?$ auth/otp.php [L]
+RewriteRule ^verify-email/?$ auth/verify_register.php [L]
+RewriteRule ^forgot-password/?$ auth/forgot.php [L]
+RewriteRule ^reset-code/?$ auth/forgot_otp.php [L]
+RewriteRule ^reset-password/?$ auth/reset.php [L]
+RewriteRule ^set-password/?$ auth/set_password.php [L]
+RewriteRule ^signout/?$ auth/logout.php [L]
+RewriteRule ^workspace/?$ portals/index.php [L]
+RewriteRule ^workspace/employee/?$ portals/emlpoyee/employee_portal.php [L]
+RewriteRule ^workspace/(admin|client|sysadmin)/?$ portals/$1/$1_portal.php [L]
+# page names use hyphens in the address and underscores on disk
+RewriteRule ^(workspace/[a-z]+/[a-z_]*)-([a-z-]+)$ $1_$2 [N=10]
+RewriteCond %{DOCUMENT_ROOT}/Hastra/portals/emlpoyee/$1.php -f
+RewriteRule ^workspace/employee/([a-z_]+)$ portals/emlpoyee/$1.php [L]
+RewriteCond %{DOCUMENT_ROOT}/Hastra/portals/$1.php -f
+RewriteRule ^workspace/([a-z]+/[a-z_]+)$ portals/$1.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+<FilesMatch "^(PHPMailer|SMTP|Exception)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(ini|log|sh|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://www.google.com https://www.recaptcha.net; img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; connect-src 'self' https://www.google.com https://www.gstatic.com; form-action 'self' https://accounts.google.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
+    # Don't advertise the PHP version on every response.
+    Header always unset X-Powered-By
+</IfModule>

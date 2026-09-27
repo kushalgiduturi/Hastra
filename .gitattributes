@@ -1,0 +1,3 @@
+# The landing engine bundle is hash-pinned (tests/suites/10_visual_architecture.php):
+# never let git rewrite its line endings.
+landing-pages/** -text

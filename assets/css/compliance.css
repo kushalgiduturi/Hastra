@@ -1,0 +1,198 @@
+/* Hastra — compliance surfaces: legal footer, "Continue with Google", the
+   SSO divider, the cookie-consent bar, consent placeholders and the policy
+   document layout. Uses AuthKit tokens where a page loads them, and the
+   core/theme.css tokens as fallbacks, so it follows the light/dark toggle. */
+
+/* Fallback tokens for pages that don't load core/theme.css (the landing host).
+   :where() has zero specificity, so the real theme always wins where present. */
+:where(:root) {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --accent: #e02e3c; --accent-bright: #ff4655; --accent-dim: #a3202c; --accent-rgb: 224,46,60;
+  --text: #eef0f4; --text-dim: #8b93a3; --navy-card: #12161f; --border: rgba(224,46,60,.22); --border-dim: #1f2633;
+}
+:where([data-theme="light"]) {
+  --accent: #0265dc; --accent-bright: #1668d0; --accent-dim: #024fac; --accent-rgb: 2,101,220;
+  --text: #0f172a; --text-dim: #3d4756; --navy-card: #ffffff; --border: rgba(2,101,220,.22); --border-dim: #d0d7de;
+}
+
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ── Continue with Google ── */
+.btn-google-sso {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 44px; padding: 10px 16px;
+  border-radius: var(--radius-control, 6px);
+  border: 1px solid var(--color-glass-edge, var(--border-dim));
+  background: rgba(199, 211, 234, 0.06);
+  color: var(--color-ice-highlight, var(--text)) !important;
+  font: 600 14px/1.2 var(--font-sans); letter-spacing: .01em;
+  text-decoration: none; cursor: pointer;
+  transition: background .15s, border-color .15s, transform .15s;
+}
+.btn-google-sso:hover { background: rgba(199, 211, 234, 0.12); border-color: rgba(var(--accent-rgb), .45); transform: translateY(-1px); }
+.btn-google-sso .google-icon { flex: none; background: #fff; border-radius: 50%; padding: 2px; width: 22px; height: 22px; }
+/* auth cards style every submit button as the primary action with !important;
+   the Google button is a neutral secondary action whichever element it is */
+.btn-google-sso, .card .btn-google-sso, [data-theme] .card .btn-google-sso {
+  background: rgba(199, 211, 234, 0.06) !important; border: 1px solid var(--color-glass-edge, var(--border-dim)) !important;
+  color: var(--color-ice-highlight, var(--text)) !important; box-shadow: none !important;
+  border-radius: var(--radius-control, 6px) !important; text-transform: none !important;
+  font: 600 14px/1.2 var(--font-sans) !important; letter-spacing: .01em !important;
+}
+.btn-google-sso:hover, .card .btn-google-sso:hover, [data-theme] .card .btn-google-sso:hover {
+  background: rgba(199, 211, 234, 0.12) !important; border-color: rgba(var(--accent-rgb), .45) !important;
+}
+[data-theme="light"] .btn-google-sso, [data-theme="light"] .card .btn-google-sso { background: #fff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+[data-theme="light"] .btn-google-sso:hover, [data-theme="light"] .card .btn-google-sso:hover { background: #f8fafc !important; }
+
+.sso-divider {
+  display: flex; align-items: center; gap: 12px; margin: 14px 0;
+  color: var(--color-fog-veil, var(--text-dim)); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;
+}
+.sso-divider::before, .sso-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-glass-edge, var(--border-dim)) 30%, rgba(var(--accent-rgb), .35));
+}
+.sso-divider::after { background: linear-gradient(270deg, transparent, var(--color-glass-edge, var(--border-dim)) 30%, rgba(var(--accent-rgb), .35)); }
+
+/* ── consent checkbox on forms ── */
+.consent-check, .card label.consent-check {
+  display: flex !important; gap: 10px; align-items: flex-start; margin: 4px 0 14px !important;
+  font-size: 13px !important; font-weight: 400 !important; line-height: 1.5 !important;
+  color: var(--color-moon-mist, var(--text-dim)) !important;
+  text-transform: none !important; letter-spacing: normal !important;
+}
+.consent-check input { flex: none; width: 17px; height: 17px; margin-top: 1px; accent-color: var(--accent); }
+.consent-check a { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── legal footer ── */
+.legal-foot { font-size: 11.5px; line-height: 1.6; color: var(--color-fog-veil, var(--text-dim)); }
+.legal-foot--card { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--color-glass-edge, var(--border-dim)); text-align: center; }
+.legal-foot--page { max-width: 880px; margin: 48px auto 0; padding: 24px 20px 32px; border-top: 1px solid var(--border-dim); }
+/* under a centred auth card: the page stacks card and footer vertically */
+body:has(> .legal-foot--below) { flex-direction: column; }
+.legal-foot--below {
+  position: relative; z-index: 2; max-width: 560px; margin: 18px auto 0; padding: 10px 16px; text-align: center;
+  border-radius: 12px; background: rgba(5, 6, 15, .72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+[data-theme="light"] .legal-foot--below { background: rgba(255, 255, 255, .82); }
+.legal-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-bottom: 6px; }
+.legal-links a, .legal-linkbtn, .legal-entity a {
+  color: var(--color-moon-mist, var(--text-dim)); text-decoration: underline; text-underline-offset: 2px;
+  background: none; border: 0; padding: 0; font: inherit; cursor: pointer;
+}
+.legal-links a:hover, .legal-linkbtn:hover, .legal-entity a:hover { color: var(--accent-bright); }
+.legal-entity { font-style: normal; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 12px; }
+
+/* ── cookie consent bar ── */
+.consent-bar {
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 2147483000;
+  max-width: 1080px; margin: 0 auto;
+  background: var(--surface-deep-glass, var(--navy-card));
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border: 1px solid var(--color-glass-edge, var(--border));
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  color: var(--color-frost-glow, var(--text));
+  font-family: var(--font-sans);
+}
+.consent-bar[hidden] { display: none; }
+.consent-in { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px 24px; padding: 18px 22px; align-items: center; }
+.consent-copy h2 { font-size: 15px; font-weight: 700; margin: 0 0 4px; color: var(--color-ice-highlight, var(--text)); }
+.consent-copy p { font-size: 13px; line-height: 1.55; margin: 0; color: var(--color-moon-mist, var(--text-dim)); }
+.consent-copy a { color: var(--accent-bright); }
+.consent-toggles { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.consent-toggle { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; text-transform: none; letter-spacing: normal; color: inherit; }
+.consent-toggle small { display: block; font-size: 11.5px; color: var(--color-fog-veil, var(--text-dim)); }
+.consent-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.consent-switch {
+  flex: none; position: relative; width: 36px; height: 20px; border-radius: 999px;
+  background: rgba(157, 167, 186, .35); transition: background .2s;
+}
+.consent-switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+}
+.consent-toggle input:checked + .consent-switch { background: var(--accent); }
+.consent-toggle input:checked + .consent-switch::after { transform: translateX(16px); }
+.consent-toggle input:focus-visible + .consent-switch { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+.consent-toggle.is-locked { cursor: default; opacity: .85; }
+.consent-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.consent-btn {
+  min-height: 40px; padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  font: 600 13px var(--font-sans);
+  border: 1px solid var(--color-glass-edge, var(--border-dim)); background: transparent;
+  color: var(--color-ice-highlight, var(--text));
+}
+.consent-btn:hover { border-color: var(--accent-bright); }
+.consent-btn--primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.consent-btn--primary:hover { background: var(--accent-dim); }
+@media (max-width: 760px) {
+  .consent-in { grid-template-columns: 1fr; padding: 16px; }
+  .consent-actions { justify-content: stretch; }
+  .consent-btn { flex: 1 1 auto; }
+}
+
+/* ── consent placeholder for blocked embeds ── */
+.consent-ph {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px;
+  border: 1px dashed var(--color-glass-edge, var(--border-dim)); border-radius: 8px;
+  background: rgba(199, 211, 234, .04); color: var(--color-moon-mist, var(--text-dim));
+  font: 500 12.5px var(--font-sans); cursor: pointer;
+}
+.consent-ph:hover { border-color: var(--accent-bright); color: var(--color-ice-highlight, var(--text)); }
+
+/* ── policy documents (legal/*.php) ── */
+.legal-page { min-height: 100vh; background: var(--color-midnight-canvas, var(--navy)); color: var(--color-frost-glow, var(--text)); font-family: var(--font-sans); }
+.legal-top {
+  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px clamp(16px, 4vw, 40px);
+  background: var(--surface-deep-glass, var(--topnav-bg)); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-glass-edge, var(--border-dim));
+}
+.legal-brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-weight: 700; letter-spacing: .02em; }
+.legal-brand svg { width: 26px; height: 26px; }
+.legal-top nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.legal-top nav a {
+  padding: 7px 12px; border-radius: 999px; font-size: 13px; color: var(--color-moon-mist, var(--text-dim)); text-decoration: none;
+}
+.legal-top nav a:hover { color: var(--color-ice-highlight, var(--text)); background: rgba(199, 211, 234, .06); }
+.legal-top nav a[aria-current="page"] { background: var(--accent); color: #fff; }
+.legal-theme {
+  min-height: 36px; padding: 6px 12px; border-radius: 999px; cursor: pointer; font: 600 12px var(--font-sans);
+  border: 1px solid var(--color-glass-edge, var(--border-dim)); background: transparent; color: inherit;
+}
+.legal-doc {
+  max-width: 880px; margin: 36px auto 0; padding: clamp(24px, 4vw, 48px);
+  background: var(--surface-deep-glass, var(--navy-card)); border: 1px solid var(--color-glass-edge, var(--border-dim));
+  border-radius: var(--radius-card, 16px); box-shadow: var(--shadow-modal, none);
+  line-height: 1.7; font-size: 15px;
+}
+.legal-doc h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin: 0 0 6px; color: var(--color-ice-highlight, var(--text)); }
+.legal-doc .legal-meta { color: var(--color-fog-veil, var(--text-dim)); font-size: 13px; margin: 0 0 22px; }
+.legal-doc h2 { font-size: 19px; margin: 34px 0 10px; color: var(--color-ice-highlight, var(--text)); scroll-margin-top: 80px; }
+.legal-doc h3 { font-size: 15.5px; margin: 20px 0 6px; color: var(--color-ice-highlight, var(--text)); }
+.legal-doc p, .legal-doc li { color: var(--color-frost-glow, var(--text)); }
+.legal-doc ul, .legal-doc ol { padding-left: 1.3em; }
+.legal-doc li { margin: 4px 0; }
+.legal-doc a { color: var(--accent-bright); }
+.legal-doc code { font-family: 'Share Tech Mono', ui-monospace, monospace; font-size: .92em; padding: 1px 5px; border-radius: 4px; background: rgba(199, 211, 234, .08); }
+.legal-doc .legal-note {
+  border-left: 3px solid var(--accent); padding: 10px 14px; margin: 16px 0; border-radius: 0 8px 8px 0;
+  background: rgba(var(--accent-rgb), .07);
+}
+.legal-doc table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+.legal-doc th, .legal-doc td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--color-glass-edge, var(--border-dim)); }
+.legal-doc th { color: var(--color-ice-highlight, var(--text)); font-weight: 600; }
+.legal-toc { margin: 0 0 8px; padding: 14px 18px; border-radius: 10px; background: rgba(199, 211, 234, .04); border: 1px solid var(--color-glass-edge, var(--border-dim)); }
+.legal-toc ol { margin: 0; }
+@media print {
+  .legal-top, .consent-bar { display: none !important; }
+  .legal-doc { box-shadow: none; border: 0; }
+}
+
+/* the login card scrolls internally on short screens */
+#auth-card { scrollbar-width: thin; scrollbar-color: rgba(199, 211, 234, .28) transparent; }

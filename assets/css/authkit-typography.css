@@ -1,0 +1,63 @@
+/* Hastra — AuthKit typography lockup: eyebrow + Skywash heading + subtitle.
+   Rendered via render_authkit_heading() (core/authkit.php). */
+
+.authkit-lockup {
+  text-align: center;
+  max-width: 640px;
+  /* Matches .section-head's own 3rem bottom margin (index.php) — this
+     replaces that class site by site, so the gap before whatever content
+     grid follows (feature cards, the showcase, the hierarchy flow) needs to
+     stay the same or every converted section visibly tightens up next to
+     the ones that haven't been converted yet. */
+  margin: 0 auto 3rem;
+}
+
+.authkit-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  margin: 0 0 18px;
+}
+
+.authkit-eyebrow-label {
+  flex: none;
+  font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-moon-mist);
+  white-space: nowrap;
+}
+
+.authkit-eyebrow-line {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 24px;
+  background: linear-gradient(90deg, transparent, rgba(186, 215, 247, 0.12), transparent);
+}
+
+.authkit-heading {
+  margin: 0 0 14px;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  background: var(--gradient-skywash);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.authkit-subtitle {
+  margin: 0 auto;
+  max-width: 640px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-moon-mist);
+}
+
+@media (max-width: 560px) {
+  .authkit-heading { font-size: 32px; }
+  .authkit-eyebrow-label { font-size: 12px; letter-spacing: 0.08em; }
+}

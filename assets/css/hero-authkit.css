@@ -1,0 +1,302 @@
+/* Hastra — landing hero (vanilla port of the Lightswind hero10 layout onto
+   AuthKit tokens). Markup lives in index.php inside <section class="h10">.
+
+   Dark theme uses the exact AuthKit values; [data-theme="light"] gives every
+   part, including the product mockup, its own light palette.
+
+   Overflow: the section clips horizontally (overflow-x: clip) so the
+   spotlight and the floating stage can never create a sideways scrollbar,
+   and every inner block is capped at the 1200px container. */
+
+.h10 {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  /* Top padding clears the fixed navbar (60px bar + breathing room). */
+  padding: 6.5rem 1.5rem 4.5rem;
+  text-align: center;
+  overflow-x: clip;
+}
+
+/* ── Spotlight: a conic seam fanning straight down from the top centre ── */
+.h10-beam {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: conic-gradient(from 180deg at 50% 0%,
+    transparent 168deg,
+    rgba(186, 215, 247, 0.10) 176deg,
+    rgba(216, 236, 248, 0.28) 180deg,
+    rgba(186, 215, 247, 0.10) 184deg,
+    transparent 192deg);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  animation: h10BeamPulse 7s ease-in-out infinite;
+}
+@keyframes h10BeamPulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+.h10 > :not(.h10-beam) { position: relative; z-index: 1; }
+
+/* ── Display heading: Skywash gradient fill ── */
+.h10-title {
+  max-width: 900px;
+  margin: 0 auto 1.3rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(2.25rem, 4.2vw + 1rem, 4rem); /* 48px at ~770px wide, 64px from ~1140px */
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  background: var(--gradient-skywash, linear-gradient(0deg, #d8ecf8 0%, #98c0ef 100%));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+
+/* ── Direct benefit subheading ── */
+.h10-sub {
+  max-width: 680px;
+  margin: 0 auto 2.2rem;
+  font-size: 17px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #e2ecf8;
+  text-wrap: pretty;
+}
+
+/* ── Action lockup ── */
+.h10-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2.2rem;
+}
+.h10-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.h10-btn-primary {
+  color: #ffffff;
+  background: var(--accent);
+}
+.h10-btn-primary:hover {
+  background: var(--accent-dim);
+  box-shadow: 0 10px 28px -10px rgba(var(--accent-rgb), 0.7);
+  transform: translateY(-1px);
+}
+.h10-btn-primary svg { width: 15px; height: 15px; fill: currentColor; }
+.h10-btn-ghost {
+  color: #ffffff;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
+}
+.h10-btn-ghost:hover { background: rgba(186, 214, 247, 0.08); }
+.h10-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ── Trust row (AES-256 / 2FA / 100%) ── */
+.h10-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 2.4rem;
+  margin: 0 0 3.2rem;
+  padding: 0;
+  list-style: none;
+}
+.h10-stat-num {
+  display: block;
+  font-family: 'Share Tech Mono', ui-monospace, monospace;
+  font-size: 22px;
+  color: #d8ecf8;
+  font-variant-numeric: tabular-nums;
+}
+.h10-stat-lbl {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
+/* ── Visual stage: floating deep-glass product mockup ── */
+.h10-stage {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: left;
+  background: rgba(5, 6, 15, 0.97);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 0 0 1px rgba(186, 215, 247, 0.12),
+    var(--shadow-modal, 0 30px 80px rgba(0, 0, 0, 0.6));
+  overflow: hidden;
+  animation: h10Float 9s ease-in-out infinite;
+}
+@keyframes h10Float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.h10-chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(186, 215, 247, 0.10);
+  font-size: 12px;
+  color: #cbd5e1;
+}
+.h10-chrome-dots { display: flex; gap: 6px; flex: none; }
+.h10-chrome-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(186, 215, 247, 0.18); }
+.h10-chrome-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h10-chrome-title b { color: #e2ecf8; font-weight: 600; }
+.h10-chrome-lock {
+  margin-left: auto;
+  flex: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: #6fe3a3;
+}
+
+.h10-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 1px;
+  background: rgba(186, 215, 247, 0.08); /* shows as the hairline between panes */
+}
+.h10-pane { padding: 18px 20px; background: rgba(5, 6, 15, 0.97); min-width: 0; }
+.h10-pane-label {
+  margin: 0 0 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #9fb2cc;
+}
+
+/* Pipeline */
+.h10-pipe { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.h10-pipe li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #e2ecf8; }
+.h10-pipe .st {
+  flex: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.2);
+  color: #9fb2cc;
+}
+.h10-pipe .done .st { background: rgba(111, 227, 163, 0.14); box-shadow: inset 0 0 0 1px rgba(111, 227, 163, 0.5); color: #6fe3a3; }
+.h10-pipe .active .st { background: var(--accent); box-shadow: none; color: #fff; }
+.h10-pipe .meta { margin-left: auto; font-size: 11px; color: #9fb2cc; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.h10-sign {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(199, 211, 234, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.10);
+  font-size: 12px;
+  color: #cbd5e1;
+}
+.h10-sign-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.h10-sign-row span:last-child { font-family: 'Share Tech Mono', monospace; font-size: 11px; }
+.h10-sign .ok { color: #6fe3a3; }
+.h10-sign .wait { color: #f2c46d; }
+
+/* Audit feed */
+.h10-feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.h10-feed li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(186, 215, 247, 0.07);
+  font-size: 12.5px;
+  color: #e2ecf8;
+}
+.h10-feed li:last-child { border-bottom: 0; }
+.h10-feed time { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #9fb2cc; font-variant-numeric: tabular-nums; }
+.h10-feed .what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h10-feed .what small { color: #9fb2cc; font-size: 11px; }
+.h10-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: #c7d3ea;
+  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.16);
+  white-space: nowrap;
+}
+.h10-tag.enc { color: var(--accent-bright); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
+
+/* ── Responsive ── */
+@media (max-width: 760px) {
+  .h10 { padding: 5.5rem 1rem 3.5rem; }
+  .h10-body { grid-template-columns: minmax(0, 1fr); }
+  .h10-sub { font-size: 16px; }
+  .h10-feed li { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px; }
+  .h10-feed .what { white-space: normal; }
+}
+@media (max-width: 420px) {
+  .h10-actions { flex-direction: column; align-items: stretch; }
+  .h10-btn { justify-content: center; }
+  .h10-chrome-lock { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .h10-beam, .h10-stage { animation: none; }
+}
+
+/* ── Light theme ── */
+[data-theme="light"] .h10-beam {
+  background: conic-gradient(from 180deg at 50% 0%,
+    transparent 168deg, rgba(26, 86, 160, 0.06) 176deg, rgba(26, 86, 160, 0.16) 180deg,
+    rgba(26, 86, 160, 0.06) 184deg, transparent 192deg);
+}
+[data-theme="light"] .h10-sub { color: #33475b; }
+[data-theme="light"] .h10-btn-ghost { color: #0f1b2e; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.18); }
+[data-theme="light"] .h10-btn-ghost:hover { background: rgba(15, 23, 42, 0.05); }
+[data-theme="light"] .h10-stat-num { color: #0f2a4a; }
+[data-theme="light"] .h10-stat-lbl { color: #4b5b73; }
+
+/* Mockup: slate surface, crisp hairlines, dark text. Status colours are
+   darkened so they keep their contrast on white. */
+[data-theme="light"] .h10-stage {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #d0d7de, 0 24px 60px -24px rgba(15, 27, 46, 0.28);
+}
+[data-theme="light"] .h10-chrome { border-bottom-color: #d0d7de; color: #52627a; }
+[data-theme="light"] .h10-chrome-dots i { background: rgba(15, 27, 46, 0.18); }
+[data-theme="light"] .h10-chrome-title b { color: #0f1b2e; }
+[data-theme="light"] .h10-chrome-lock { color: #15803d; }
+[data-theme="light"] .h10-body { background: #d0d7de; }
+[data-theme="light"] .h10-pane { background: #ffffff; }
+[data-theme="light"] .h10-pane-label { color: #5b6b82; }
+[data-theme="light"] .h10-pipe li { color: #0f1b2e; }
+[data-theme="light"] .h10-pipe .st { color: #5b6b82; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.22); }
+[data-theme="light"] .h10-pipe .done .st { background: rgba(21, 128, 61, 0.10); box-shadow: inset 0 0 0 1px rgba(21, 128, 61, 0.45); color: #15803d; }
+[data-theme="light"] .h10-pipe .meta { color: #5b6b82; }
+[data-theme="light"] .h10-sign { background: #f1f5f9; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.10); color: #33475b; }
+[data-theme="light"] .h10-sign .ok { color: #15803d; }
+[data-theme="light"] .h10-sign .wait { color: #b45309; }
+[data-theme="light"] .h10-feed li { color: #0f1b2e; border-bottom-color: rgba(15, 27, 46, 0.08); }
+[data-theme="light"] .h10-feed time,
+[data-theme="light"] .h10-feed .what small { color: #5b6b82; }
+[data-theme="light"] .h10-tag { color: #33475b; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.18); }
+[data-theme="light"] .h10-tag.enc { color: var(--accent-dim); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.45); }

@@ -1,0 +1,23 @@
+/* core/doc_content.css — typography for project documentation (editor + viewer) */
+.doc-content { font-family: var(--font-sans); font-size: 15px; line-height: 1.7; color: var(--text); max-width: 78ch; }
+.doc-content h1 { font-size: 28px; line-height: 1.2; margin: 0 0 0.6em; font-weight: 700; letter-spacing: -0.01em; }
+.doc-content h2 { font-size: 20px; margin: 1.8em 0 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-dim); font-weight: 600; }
+.doc-content h3 { font-size: 16px; margin: 1.4em 0 0.4em; font-weight: 600; }
+.doc-content h4 { font-size: 14px; margin: 1.2em 0 0.3em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-dim); }
+.doc-content p { margin: 0 0 0.9em; }
+.doc-content ul, .doc-content ol { margin: 0 0 1em; padding-left: 1.4em; }
+.doc-content li { margin: 0.2em 0; }
+.doc-content a { color: var(--accent-bright); }
+.doc-content code { font-family: 'Share Tech Mono', ui-monospace, Consolas, monospace; font-size: 0.92em; background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 3px; padding: 0.05em 0.35em; }
+.doc-content pre { background: var(--navy-deep); border: 1px solid var(--border-dim); border-radius: 4px; padding: 0.9em 1em; overflow-x: auto; margin: 0 0 1em; }
+.doc-content pre code { background: none; border: 0; padding: 0; white-space: pre; }
+.doc-content blockquote { margin: 0 0 1em; padding: 0.4em 1em; border-left: 3px solid var(--accent-bright); color: var(--text-dim); }
+.doc-content table { border-collapse: collapse; width: 100%; margin: 0 0 1.2em; font-size: 13px; display: block; overflow-x: auto; }
+.doc-content th, .doc-content td { border: 1px solid var(--border-dim); padding: 6px 10px; text-align: left; vertical-align: top; }
+.doc-content th { background: var(--section-header-bg); font-weight: 600; }
+.doc-content hr { border: 0; border-top: 1px solid var(--border-dim); margin: 1.6em 0; }
+@media print {
+  .doc-content { color: #000; max-width: none; }
+  .doc-content a { color: #000; }
+  .doc-content pre, .doc-content code, .doc-content th { background: none; }
+}
