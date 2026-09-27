@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '84');
+    define('ASSET_VERSION', '100');
 }
 
 header_remove('X-Powered-By'); // don't advertise the PHP version
@@ -300,6 +300,8 @@ function astra_pretty_path(string $script): ?string {
         return "workspace/$dir/" . str_replace('_', '-', $m[2]);
     }
     if (preg_match('~^legal/([a-z][a-z_]*)\.php$~', $script, $m)) return 'legal/' . $m[1];
+    if ($script === 'labs/index.php') return 'labs/';
+    if (preg_match('~^labs/((?:api/)?[a-z][a-z_]*)\.php$~', $script, $m)) return 'labs/' . $m[1];
     return null;
 }
 (function () {

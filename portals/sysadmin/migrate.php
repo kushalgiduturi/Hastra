@@ -21,6 +21,7 @@ require __DIR__ . '/../../config/migrations/2026_09_advanced_governance.php';
 require __DIR__ . '/../../config/migrations/2026_09_enterprise_trust.php';
 require __DIR__ . '/../../config/migrations/2026_09_security_scanner.php';
 require __DIR__ . '/../../config/migrations/2026_09_google_sso.php';
+require __DIR__ . '/../../config/migrations/2026_09_labs.php';
 
 const BACKUP_DIR        = __DIR__ . '/../../config/backups';
 const BACKUP_VALID_SECS = 3600;
@@ -73,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_enterprise_trust($conn, $out);
             astra_migrate_security_scanner($conn, $out);
             astra_migrate_google_sso($conn, $out);
+            astra_migrate_labs($conn, $out);
             $ran = "Dry run"; $result = 'ok';
         } elseif ($action === "apply") {
             if (!$backup_fresh) throw new RuntimeException("Take a backup first (step 1). Backups older than an hour don't count.");
@@ -92,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_enterprise_trust($conn, $out);
             astra_migrate_security_scanner($conn, $out);
             astra_migrate_google_sso($conn, $out);
+            astra_migrate_labs($conn, $out);
             $ran = "Apply"; $result = 'ok';
             // Your own ID may have moved — keep this session pointing at it.
             // (Matched via the blind index, not email = ?, since email may

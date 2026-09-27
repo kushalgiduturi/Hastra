@@ -18,10 +18,10 @@ RewriteRule ^(_backup_|tests(/|$)) - [R=404,L]
 # directly. GET/HEAD only, so a form post is never turned into a redirect.
 # The /Hastra/ prefix must match RewriteBase above.
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
-RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/)?)index\.php[\s?] [NC]
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/|labs/)?)index\.php[\s?] [NC]
 RewriteRule ^ %1 [R=301,L]
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
-RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal|labs)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
 RewriteRule ^ %1 [R=301,L]
 
 # ── Short addresses → the files behind them (internal: the address bar keeps
