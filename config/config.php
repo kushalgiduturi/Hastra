@@ -15,7 +15,10 @@ define('APP_NAME', 'Astra');
 define('MAIL_NAME', 'Astra');
 
 // ── reCAPTCHA ─────────────────────────────────────────────────────────────────
-define('RECAPTCHA_SECRET', '6LcjNg4tAAAAAJNVlYxvCELqmb9D_4an_EVsTqAq');
+// The secret lives outside the code: ASTRA_RECAPTCHA_SECRET in the environment,
+// or config/recaptcha.key (one line, git-ignored like every config/*.key).
+define('RECAPTCHA_SECRET', getenv('ASTRA_RECAPTCHA_SECRET')
+    ?: (is_file(__DIR__ . '/recaptcha.key') ? trim((string) file_get_contents(__DIR__ . '/recaptcha.key')) : ''));
 
 
 // ── App-wide constants ────────────────────────────────────────────────────────
