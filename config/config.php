@@ -60,6 +60,6 @@ define('LEGAL_TERMS_VERSION', '2026-09-26');
 // register GOOGLE_REDIRECT_URI as an authorised redirect URI. The secret is
 // read from config/google_oauth.key (one line) so it stays out of this file.
 // Leave GOOGLE_CLIENT_ID empty to disable the feature.
-define('GOOGLE_CLIENT_ID', getenv('ASTRA_GOOGLE_CLIENT_ID') ?: '920806944315-8fuaqb9tei1l7ui9tjklpubu61fr0sae.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_ID', getenv('ASTRA_GOOGLE_CLIENT_ID') ?: '31608737749-n985in8ems791du3d6fd9o7dafkil53m.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET_FILE', __DIR__ . '/google_oauth.key');
 define('GOOGLE_REDIRECT_URI', 'http://localhost/Hastra/auth/google_auth.php');
