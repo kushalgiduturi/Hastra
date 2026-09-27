@@ -1453,5 +1453,7 @@ document.addEventListener('hastra:themechange', function() {
 </script>
 
 <?php astra_consent_banner(); ?>
+<!-- the ten-rings bracelets on the hand (assets/js/shang-chi-rings.js) -->
+<script type="module" src="<?= get_base_url() ?>assets/js/login-rings.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>

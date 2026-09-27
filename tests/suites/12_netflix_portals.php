@@ -57,16 +57,16 @@ t('precision cursor: 12px dot, 48px trailing ring, 600px glow, off on touch', fu
     expect(!str_contains($js, 'cursor: none'), 'the system cursor must stay visible');
 });
 
-t('theme.js gives portals the Netflix stack, and only portals', function () {
+t('theme.js gives portals (and Hastra Labs) the Netflix stack, and nothing else', function () {
     $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
-    expect(str_contains($js, "const nf = /\\/(portals|workspace)\\/|\\/dashboard(\\.php)?$/.test(location.pathname);"), 'portal detection changed');
+    expect(str_contains($js, "const nf = /\\/(portals|workspace|labs)\\/|\\/dashboard(\\.php)?$/.test(location.pathname);"), 'portal detection changed');
     expect(str_contains($js, "['theme-netflix', 'netflix-bento']"), 'portal stylesheets not loaded');
     expect(str_contains($js, "? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']"), 'portal script stack changed');
     expect(str_contains($js, ": ['landing-host', 'kage-scene', 'hybrid-hand-cursor'"), 'non-portal pages lost their scene');
-    foreach (['/Hastra/workspace/admin/', '/Hastra/workspace/client/my-projects', '/Hastra/portals/projects/signoff', '/Hastra/dashboard.php'] as $p)
-        expect(preg_match('~/(portals|workspace)/|/dashboard(\.php)?$~', $p) === 1, "$p would not be themed");
+    foreach (['/Hastra/workspace/admin/', '/Hastra/workspace/client/my-projects', '/Hastra/portals/projects/signoff', '/Hastra/dashboard.php', '/Hastra/labs/', '/Hastra/labs/crypto'] as $p)
+        expect(preg_match('~/(portals|workspace|labs)/|/dashboard(\.php)?$~', $p) === 1, "$p would not be themed");
     foreach (['/Hastra/signin', '/Hastra/', '/Hastra/legal/privacy', '/Hastra/signup'] as $p)
-        expect(preg_match('~/(portals|workspace)/|/dashboard(\.php)?$~', $p) === 0, "$p would be themed");
+        expect(preg_match('~/(portals|workspace|labs)/|/dashboard(\.php)?$~', $p) === 0, "$p would be themed");
 });
 
 t('portal routes and role guards are untouched', function () {

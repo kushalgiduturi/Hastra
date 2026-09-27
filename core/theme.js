@@ -187,7 +187,7 @@
     // netflix-bento.css): a boxless UI over the temple world with its cyber
     // layer, laser-beam controls and the dot-plus-ring cursor.
     // Loaded here, in <head>, so the first paint is already themed.
-    const nf = /\/(portals|workspace)\/|\/dashboard(\.php)?$/.test(location.pathname);
+    const nf = /\/(portals|workspace|labs)\/|\/dashboard(\.php)?$/.test(location.pathname);
     if (nf) {
       document.documentElement.classList.add('nf-portal');
       ['theme-netflix', 'netflix-bento'].forEach(function(name) {

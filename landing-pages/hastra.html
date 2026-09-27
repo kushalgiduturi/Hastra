@@ -1104,6 +1104,9 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
 </script>
 <!-- the pointer engine: petals and cryptographic sparks, above the document -->
 <script src="../assets/js/hybrid-hand-cursor.js" defer></script>
+<!-- Hastra Labs showcase: bump ?v= when either file changes (this page is static) -->
+<link rel="stylesheet" href="../assets/css/labs-showcase.css?v=2">
+<script type="module" src="../assets/js/labs-showcase.js?v=2"></script>
 </head>
 <body data-layout-hero="b" data-layout-story="b" data-layout-gallery="b"
       data-layout-curriculum="b" data-layout-footer="b">
@@ -1136,6 +1139,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     <a class="nav-link" href="#security" data-cursor><span>Security</span><span class="alt">Security</span></a>
     <a class="nav-link" href="#governance" data-cursor><span>Governance</span><span class="alt">Governance</span></a>
     <a class="nav-link" href="#ledger" data-cursor><span>Audit Ledger</span><span class="alt">Audit Ledger</span></a>
+    <a class="nav-link" href="../labs/" target="_top" data-cursor><span>Free Labs</span><span class="alt">Free Labs</span></a>
   </nav>
   <div class="nav-actions">
     <!-- the host page owns the theme; this frame only asks it to switch -->
@@ -1179,6 +1183,84 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
   </div>
 
   <div class="word-fb" aria-hidden="true">HASTRA</div>
+</section>
+
+<!-- ============================================================ labs showcase
+     Hastra Labs, announced right under the hero counters: a live ten-rings
+     centrepiece (assets/js/shang-chi-rings.js) and three open columns, each
+     powering its own ring group. Behaviour: assets/js/labs-showcase.js. -->
+<section class="hx-show" id="labs-showcase" aria-labelledby="hx-title">
+  <div class="hx-inner">
+    <header class="hx-head">
+      <div>
+        <span class="hx-badge"><span class="hx-ping" aria-hidden="true"></span>[ New Labs release // Season 2026 ]</span>
+        <h2 class="hx-title" id="hx-title">Hastra Cyber Arsenal &amp; <em>Student Hub</em></h2>
+      </div>
+      <p class="hx-sub">Enterprise Cryptographic Armor, Interactive SOC/SIEM Labs, and Adaptive AI Syllabus Mastery — now live for all
+        community &amp; student tiers. Free, no enterprise account, and everything sensitive stays in your browser.</p>
+    </header>
+
+    <div class="hx-stage">
+      <div class="hx-rings">
+        <canvas class="hx-back" aria-hidden="true"></canvas>
+        <canvas class="hx-front" role="img" aria-label="Ten engraved power rings linked in a circle, turning slowly"></canvas>
+      </div>
+      <div class="hx-legend" role="group" aria-label="Power the rings">
+        <button type="button" data-group="0" aria-pressed="false" data-cursor><i></i>Rings 1–3 · Defense matrix</button>
+        <button type="button" data-group="1" aria-pressed="false" data-cursor><i></i>Rings 4–6 · Threat intelligence</button>
+        <button type="button" data-group="2" aria-pressed="false" data-cursor><i></i>Rings 7–10 · Knowledge flow</button>
+      </div>
+    </div>
+
+    <div class="hx-grid">
+      <article class="hx-item" data-group="0" aria-labelledby="hx-f1">
+        <div class="hx-top"><span class="hx-kicker">Module 01 // Crypto</span><span class="hx-state">[ PQC active ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/><circle cx="12" cy="16" r="1.6"/><path d="M12 17.6V19"/></svg></span>
+        <h3 id="hx-f1">Multi-Engine Quantum &amp; File Armor</h3>
+        <p>Encrypt text or any file with AES-256-GCM, ChaCha20, RSA-4096, X25519, ML-KEM or the X-Wing hybrid, sign with ML-DSA, and hash
+          passwords and machine tokens with the engine each one needs.</p>
+        <ul class="hx-tags"><li>NIST FIPS 203 (ML-KEM-1024)</li><li>FIPS 204 (ML-DSA-87)</li><li>AES-256-GCM</li><li>Argon2id</li></ul>
+        <div class="hx-preview">
+          <label for="hx-hash-in">Live preview · text → SHA-256</label>
+          <input type="text" id="hx-hash-in" value="Hastra" autocomplete="off" spellcheck="false">
+          <output class="hx-hash" id="hx-hash-out" for="hx-hash-in" aria-live="polite"></output>
+        </div>
+        <a class="ring-power-beam" href="../labs/crypto" target="_top" data-cursor>Open Crypto Vault
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="hx-item" data-group="1" aria-labelledby="hx-f2">
+        <div class="hx-top"><span class="hx-kicker">Module 02 // Intel</span><span class="hx-state">[ SOC lab ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18.5 5.5M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
+        <h3 id="hx-f2">Threat Intelligence &amp; SOC Lab Suite</h3>
+        <p>Normalize STIX, TAXII and MISP feeds, score behavioural risk, size a 15M-EPS pipeline across storage tiers, and stitch three clouds
+          into one incident timeline.</p>
+        <ul class="hx-tags"><li>STIX 2.1 / TAXII 2.1</li><li>UEBA Risk Math</li><li>15M EPS Scaling</li><li>Multi-Cloud SIEM</li></ul>
+        <div class="hx-preview">
+          <label for="hx-geo">Live preview · impossible-travel signal: <span id="hx-geo-v"></span></label>
+          <input type="range" class="hx-range" id="hx-geo" min="0" max="100" value="70">
+          <div class="hx-score"><span>Composite UEBA risk <b id="hx-score" aria-live="polite">0</b></span><span class="hx-tier" id="hx-tier" data-tone="ok">Normal</span></div>
+        </div>
+        <a class="ring-power-beam is-ghost" href="../labs/siem" target="_top" data-cursor>Launch SIEM Lab
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="hx-item" data-group="2" aria-labelledby="hx-f3">
+        <div class="hx-top"><span class="hx-kicker">Module 03 // Academics</span><span class="hx-state">[ Video tutor ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span>
+        <h3 id="hx-f3">Student Syllabus Accelerator &amp; Video Tutor</h3>
+        <p>Drop in PDF or Word syllabi: every unit and topic gets its most-viewed tutorial, a skip that slides in the next best, and a
+          forecast of your finish date.</p>
+        <ul class="hx-tags"><li>Multi-PDF/DOCX Extraction</li><li>YouTube Top-Ranked Videos</li><li>Animated Dislike Swapper</li><li>Adaptive Pacing Forecast</li></ul>
+        <div class="hx-preview">
+          <div class="hx-vbox"><button type="button" class="hx-vnext" data-cursor>👎 Next best</button></div>
+          <span class="hx-demo-note">Preview only — the study hub ranks real tutorials by views.</span>
+        </div>
+        <a class="ring-power-beam" href="../labs/syllabus" target="_top" data-cursor>Access Study Hub
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================ 01 architecture -->
@@ -3396,6 +3478,212 @@ function applyWordTheme() {
     m.material.fog = !d;
     m.material.needsUpdate = true;
   });
+  applyHaloTheme();
+}
+
+/* ------------------------------------------------ the ten rings halo
+   Ten engraved metal rings linked in a circle directly behind the HASTRA
+   letters, as in the film's title: real torus meshes, each tilted alternately about
+   its radial axis so neighbours genuinely pass through one another (the
+   depth buffer does the weaving), the circle turning, every ring spinning
+   (visible through its engraving), runes pulsing, and lightning crackling
+   between neighbours with sparks thrown off the arcs.
+   Sized from the laid-out word (layoutHalo), so it frames the letters at
+   every aspect; fades in with the word's rise and out with it as the camera
+   closes. Night: gunmetal with electric-cyan runes. Day: polished brass with
+   amber runes and cobalt / amber arcs. No violet (the no-purple rule). */
+const HALO = { group: null, rings: [], arcs: null, sparks: null, spin: 0, nextArc: 0, pulseT: 0, R: 1, r: 1 };
+const HALO_N = 10;
+function haloTextures() {
+  // engraving (colour) and runes (emission), u = around the ring, v = around the tube
+  const W = 1024, H = 64, rnd = mulberry32(1010);
+  const c = cvs(W, H), x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#7d8794'); g.addColorStop(.28, '#e2e8ef'); g.addColorStop(.5, '#aab4c0'); g.addColorStop(.78, '#58626e'); g.addColorStop(1, '#2a3038');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.lineCap = 'round';
+  for (let i = 0; i < 520; i++) {          // filigree cuts
+    const px = rnd() * W, py = H * (.3 + rnd() * .4), len = 4 + rnd() * 14, a = (rnd() - .5) * 1.4;
+    x.strokeStyle = `rgba(10,12,16,${.35 + rnd() * .4})`; x.lineWidth = .8 + rnd() * 1.4;
+    x.beginPath(); x.moveTo(px, py);
+    x.quadraticCurveTo(px + len * .5, py + (rnd() - .5) * 10, px + Math.cos(a) * len, py + Math.sin(a) * len); x.stroke();
+  }
+  for (let i = 0; i < 260; i++) { x.fillStyle = `rgba(255,255,255,${.2 + rnd() * .35})`; x.fillRect(rnd() * W, H * (.25 + rnd() * .5), 1.2, 1.2); }
+  const r = cvs(W, H), y = r.getContext('2d');
+  y.fillStyle = '#000'; y.fillRect(0, 0, W, H);
+  y.strokeStyle = '#fff'; y.lineCap = 'round';
+  for (let k = 0; k < 28; k++) {          // rune glyphs along the band's centre
+    const cx = (k + .5) * W / 28, cy = H / 2, s = 7 + rnd() * 3;
+    y.lineWidth = 1.6;
+    y.beginPath();
+    for (let j = 0; j < 3; j++) {
+      const ax = cx + (rnd() - .5) * s * 2, ay = cy + (rnd() - .5) * s * 1.6;
+      j ? y.lineTo(ax, ay) : y.moveTo(ax, ay);
+    }
+    y.stroke();
+  }
+  const tMap = tx(c), tRune = tx(r);
+  [tMap, tRune].forEach(t => { t.wrapS = THREE.RepeatWrapping; t.repeat.set(3, 1); });
+  return { tMap, tRune };
+}
+function haloEnvironment() {
+  // a small studio-style reflection map, so the metal reads as metal
+  const c = cvs(256, 128), x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 128);
+  g.addColorStop(0, '#dfe8f0'); g.addColorStop(.35, '#56606c'); g.addColorStop(.5, '#141820'); g.addColorStop(1, '#05070a');
+  x.fillStyle = g; x.fillRect(0, 0, 256, 128);
+  x.fillStyle = 'rgba(255,255,255,.9)'; x.fillRect(40, 18, 60, 10); x.fillRect(170, 24, 40, 8);
+  const t = new THREE.CanvasTexture(c);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  const pm = new THREE.PMREMGenerator(renderer);
+  const env = pm.fromEquirectangular(t).texture;
+  pm.dispose(); t.dispose();
+  return env;
+}
+function buildRingHalo() {
+  const { tMap, tRune } = haloTextures();
+  const env = haloEnvironment();
+  const group = new THREE.Group();
+  // unit geometry: ring radius 1, tube .1 — layoutHalo scales the group
+  const geo = new THREE.TorusGeometry(1, .1, LOW ? 12 : 20, LOW ? 64 : 112);
+  for (let i = 0; i < HALO_N; i++) {
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0x111622, metalness: .92, roughness: .3, envMap: env, envMapIntensity: 1.7,
+      map: tMap, emissiveMap: tRune, emissive: 0x00f2fe, emissiveIntensity: 1.8,
+      transparent: true, opacity: 0, depthWrite: true,
+    });
+    const pivot = new THREE.Group();            // sits on the circle, faces along the radius
+    const m = new THREE.Mesh(geo, mat);
+    m.renderOrder = 10;
+    m.layers.set(2);
+    pivot.add(m);
+    group.add(pivot);
+    HALO.rings.push({ pivot, mesh: m, a: i / HALO_N * Math.PI * 2, tilt: (i % 2 ? 1 : -1) * .38, spin: mulberry32(i + 50)() * 6 });
+  }
+  // lightning between neighbours: 10 arcs × 7 segments, rebuilt every 80–120 ms
+  const SEG = 7;
+  const aGeo = new THREE.BufferGeometry();
+  aGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(HALO_N * SEG * 2 * 3), 3));
+  HALO.arcs = new THREE.LineSegments(aGeo, new THREE.LineBasicMaterial({ color: 0x9ff7ff, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  HALO.arcs.renderOrder = 11; HALO.arcs.layers.set(2); HALO.arcs.frustumCulled = false;
+  HALO.arcs.userData.SEG = SEG;
+  group.add(HALO.arcs);
+  // sparks thrown off the arcs
+  const NS = LOW ? 60 : 140;
+  const sGeo = new THREE.BufferGeometry();
+  sGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NS * 3), 3));
+  HALO.sparks = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xbff9ff, size: .09, map: tx(texGlow('rgba(255,255,255,1)', 'rgba(180,250,255,.4)')),
+    transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, sizeAttenuation: true }));
+  HALO.sparks.renderOrder = 11; HALO.sparks.layers.set(2); HALO.sparks.frustumCulled = false;
+  HALO.sparks.userData.p = Array.from({ length: NS }, () => ({ x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, life: 0, age: 1 }));
+  group.add(HALO.sparks);
+  group.visible = false;
+  scene.add(group);
+  HALO.group = group;
+  applyHaloTheme();
+}
+// Called from layoutWord(): centre the circle on the letters, size it to the frame.
+function layoutHalo(frameW, frameH, cy, capH) {
+  if (!HALO.group) return;
+  /* The circle's half-height (.85R squish + one ring radius .44R = 1.29R)
+     spans about two cap heights, so it frames the letters like a title halo;
+     the frame caps keep it off the headline copy and inside the gutters. */
+  const R = Math.min(capH * 2 / 1.29, frameW * .29, frameH * .232);
+  HALO.R = R; HALO.r = R * .44;
+  HALO.group.position.set(0, cy, WORD_Z - 1.2);
+  HALO.rings.forEach(k => {
+    k.pivot.position.set(Math.cos(k.a) * R, Math.sin(k.a) * R * .85, 0);
+    k.pivot.rotation.set(0, 0, 0);
+    // alternate tilt about the radial axis: neighbours pierce each other and link
+    k.pivot.setRotationFromAxisAngle(new THREE.Vector3(Math.cos(k.a), Math.sin(k.a) * .85, 0).normalize(), k.tilt);
+    k.mesh.scale.setScalar(HALO.r);
+  });
+  HALO.sparks.material.size = R * .012;
+}
+function applyHaloTheme() {
+  if (!HALO.group) return;
+  const d = isDay();
+  HALO.rings.forEach(k => {
+    const m = k.mesh.material;
+    m.color.set(d ? 0xc49b39 : 0x111622);
+    m.emissive.set(d ? 0xf59e0b : 0x00f2fe);
+    m.roughness = d ? .22 : .3;
+    m.envMapIntensity = d ? 1.2 : 1.7;
+    m.fog = !d;
+    m.needsUpdate = true;
+  });
+  HALO.arcs.material.color.set(d ? 0x2563eb : 0x9ff7ff);
+  HALO.arcs.material.blending = d ? THREE.NormalBlending : THREE.AdditiveBlending;
+  HALO.sparks.material.color.set(d ? 0xf59e0b : 0xbff9ff);
+  HALO.sparks.material.blending = d ? THREE.NormalBlending : THREE.AdditiveBlending;
+  HALO.arcs.material.needsUpdate = HALO.sparks.material.needsUpdate = true;
+}
+const _hv = new THREE.Vector3(), _hw = new THREE.Vector3();
+function haloRim(k, toward) {
+  // the point on ring k's rim facing another ring's centre, in halo space
+  _hv.copy(toward).sub(k.pivot.position).normalize().multiplyScalar(HALO.r);
+  return k.pivot.position.clone().add(_hv);
+}
+function updateHalo(dt, opacity) {
+  if (!HALO.group) return;
+  HALO.group.visible = opacity > .004;
+  if (!HALO.group.visible) return;
+  HALO.spin += dt * .24;                               // the whole circle turns
+  HALO.group.rotation.z = HALO.spin * .6;
+  HALO.pulseT += dt;
+  const t = HALO.pulseT;
+  HALO.rings.forEach((k, i) => {
+    k.spin += dt * .9;                                  // each ring on its own axis
+    k.mesh.rotation.z = k.spin;
+    const ringPulse = Math.sin(t * 3.5 + i * .6) * .5 + .5;
+    k.mesh.material.emissiveIntensity = (isDay() ? .5 : 1) * (1.2 + ringPulse * 1.8);
+    k.mesh.material.opacity = opacity;
+  });
+  // lightning: re-cut every 80–120 ms, ~half the gaps live at a time
+  const pos = HALO.arcs.geometry.attributes.position, SEG = HALO.arcs.userData.SEG;
+  if (t > HALO.nextArc && !REDUCE) {
+    HALO.nextArc = t + .08 + Math.random() * .04;
+    let o = 0;
+    for (let i = 0; i < HALO_N; i++) {
+      const a = HALO.rings[i], b = HALO.rings[(i + 1) % HALO_N];
+      const live = Math.random() < .55;
+      const p0 = haloRim(a, b.pivot.position), p1 = haloRim(b, a.pivot.position);
+      let prev = p0;
+      for (let s = 1; s <= SEG; s++) {
+        const f = s / SEG;
+        const q = s === SEG ? p1 : p0.clone().lerp(p1, f).add(_hw.set((Math.random() - .5), (Math.random() - .5), (Math.random() - .5) * .6).multiplyScalar(HALO.r * .28));
+        const A = live ? prev : p0, B = live ? q : p0;   // a dead gap collapses to a point
+        pos.array.set([A.x, A.y, A.z, B.x, B.y, B.z], o); o += 6;
+        prev = q;
+      }
+      if (live) emitHaloSparks(p0.clone().lerp(p1, .5), 2);
+    }
+    pos.needsUpdate = true;
+  }
+  const pulse = Math.sin(t * 4) * .5 + .5;
+  HALO.arcs.material.opacity = REDUCE ? 0 : opacity * (.55 + pulse * .45);
+  // sparks
+  const sp = HALO.sparks.geometry.attributes.position, P = HALO.sparks.userData.p;
+  for (let i = 0; i < P.length; i++) {
+    const q = P[i];
+    if (q.age < q.life) {
+      q.age += dt; q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt; q.vy -= HALO.R * .4 * dt;
+    }
+    const alive = q.age < q.life;
+    sp.array[i * 3] = alive ? q.x : 0; sp.array[i * 3 + 1] = alive ? q.y : -1e5; sp.array[i * 3 + 2] = alive ? q.z : 0;
+  }
+  sp.needsUpdate = true;
+  HALO.sparks.material.opacity = REDUCE ? 0 : opacity;
+}
+function emitHaloSparks(at, n) {
+  const P = HALO.sparks.userData.p;
+  for (let i = 0, j = 0; i < P.length && j < n; i++) {
+    if (P[i].age < P[i].life) continue;
+    const v = HALO.R * (.25 + Math.random() * .5), a = Math.random() * Math.PI * 2;
+    Object.assign(P[i], { x: at.x, y: at.y, z: at.z, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vz: (Math.random() - .5) * v * .5, life: .25 + Math.random() * .35, age: 0 });
+    j++;
+  }
 }
 
 /* --------------------------------------------------------- atmospherics */
@@ -4519,6 +4807,9 @@ function layoutWord() {
   WORD.group.scale.setScalar(s);
   WORD.group.position.set(-WORD.ink.cx * s, base.y, WORD_Z);
   WORD.rise = WORD.ink.asc * s * 1.25;
+  /* the ten rings frame the letters: centred on their cap-height middle */
+  const fw = R.x - L.x;
+  layoutHalo(fw, fw / (vpW() / vpH()), base.y + WORD.ink.asc * s * .5, WORD.ink.asc * s);
 }
 
 /* =================================================== 11 · page wiring */
@@ -4751,7 +5042,8 @@ function wireNav() {
      one link per section in matching order. With five links over four chapters
      every entry past the third lit for its neighbour: standing in Afterlight
      highlighted Stories. Reading the destination cannot drift. */
-  const linkSec = links.map(l => SECS.indexOf(document.querySelector(l.getAttribute('href'))));
+  /* Links that leave the page (../labs/) point at no chapter: -1, never a selector. */
+  const linkSec = links.map(l => { const h = l.getAttribute('href') || ''; return h.startsWith('#') ? SECS.indexOf(document.querySelector(h)) : -1; });
   window.addEventListener('scroll', () => {
     const y = scrollY;
     nav.classList.toggle('stuck', y > 40);
@@ -5020,6 +5312,8 @@ function updateWorld(dt) {
       g.material.opacity = e * (1 - near * .96);
       g.visible = g.material.opacity > .004;
     });
+    /* the rings appear with the word and dissolve with it */
+    updateHalo(dt, easeOut(clamp(WORD.reveal / 1.1, 0, 1)) * (1 - near * .98));
   }
   /* the cut-out layers dissolve as the camera reaches them, so the path can
      walk straight through the garden instead of steering around the veil */
@@ -5140,7 +5434,7 @@ const JOBS = [
     buildMaple(75, 16.5, -6.0, .88);
   }],
   ['Painting the near grass', () => buildForeground()],
-  ['Cutting the word', () => { if (!BG) buildWordmark(); }],
+  ['Cutting the word', () => { if (!BG) { buildWordmark(); buildRingHalo(); } }],
   ['Raising the mist', () => { buildAtmosphere(); buildLeafFall(); buildWisps(); }],
   ['Polishing the water', () => {
     initPost(); if (!BG) { buildCards(); buildCardCloth(); }
