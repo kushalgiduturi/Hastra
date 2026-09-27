@@ -10,6 +10,7 @@ require __DIR__ . '/../PHPMailer/SMTP.php';
 require __DIR__ . '/../PHPMailer/Exception.php';
 
 $msg = "";
+if ($_SERVER["REQUEST_METHOD"] === "GET") $msg = htmlspecialchars(astra_google_error_message());
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
@@ -58,7 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $annual_leave = max(0, min(90, (int)($_POST["annual_leave_allowance"] ?? 18)));
     $existing_co  = $company_name !== "" ? find_company_by_name($conn, $company_name) : null;
 
-    if ($name === "" || $email === "" || $phone === "" || $password === "" || $confirm === "") {
+    if (($_POST["accept_terms"] ?? "") !== "1") {
+        $msg = "Please accept the Terms and Conditions and acknowledge the Privacy Policy to continue.";
+    } elseif ($name === "" || $email === "" || $phone === "" || $password === "" || $confirm === "") {
         $msg = "All required fields must be filled.";
     } elseif ($needs_org_name && $company_name === "") {
         $msg = $flow === 'enterprise_solo' ? "Enter your studio or developer name." : "Enter your organization's name.";
@@ -93,8 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
 
-        $stmt2 = mysqli_prepare($conn, "SELECT id FROM pending_registrations WHERE email = ?");
-        mysqli_stmt_bind_param($stmt2, "s", $email);
+        [$pcol, $pval] = pending_reg_key($conn, $email);
+        $stmt2 = mysqli_prepare($conn, "SELECT id FROM pending_registrations WHERE $pcol = ?");
+        mysqli_stmt_bind_param($stmt2, "s", $pval);
         mysqli_stmt_execute($stmt2);
         mysqli_stmt_store_result($stmt2);
 
@@ -114,6 +118,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $cols = ['name', 'email', 'phone_number', 'password', 'role', 'company_name'];
             $vals = [$name, $email, $phone, $hashed, $role, $company_name];
             $types = 'ssssss';
+            if (pending_reg_encrypted($conn)) {
+                // PII encrypted at rest until the account is verified.
+                $vals[0] = astra_db_encrypt($name);
+                $vals[1] = astra_db_encrypt($email);
+                $vals[2] = astra_db_encrypt($phone);
+                $cols[] = 'email_bindex'; $vals[] = astra_blind_index($email); $types .= 's';
+            }
 
             if (onboarding_schema_ready($conn)) {
                 $cols[] = 'company_size'; $vals[] = $company_size; $types .= 's';
@@ -132,11 +143,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $cols[] = 'flow'; $vals[] = $flow; $types .= 's';
                 $cols[] = 'country'; $vals[] = $country; $types .= 's';
             }
+            if (db_column_exists($conn, 'pending_registrations', 'terms_version')) {
+                $cols[] = 'terms_version'; $vals[] = LEGAL_TERMS_VERSION; $types .= 's';
+            }
             $cols[] = 'otp'; $vals[] = $otp; $types .= 's';
 
             $placeholders = implode(', ', array_fill(0, count($cols), '?'));
-            $sql = "INSERT INTO pending_registrations (" . implode(', ', $cols) . ", otp_expiry)
-                    VALUES ($placeholders, DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
+            $terms_col = db_column_exists($conn, 'pending_registrations', 'terms_accepted_at');
+            $sql = "INSERT INTO pending_registrations (" . implode(', ', $cols) . ", otp_expiry" . ($terms_col ? ", terms_accepted_at" : "") . ")
+                    VALUES ($placeholders, DATE_ADD(NOW(), INTERVAL 10 MINUTE)" . ($terms_col ? ", NOW()" : "") . ")";
             $pend_insert = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($pend_insert, $types, ...$vals);
 
@@ -162,8 +177,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit();
 
                 } catch (Exception $e) {
-                    $del = mysqli_prepare($conn, "DELETE FROM pending_registrations WHERE email = ?");
-                    mysqli_stmt_bind_param($del, "s", $email);
+                    $del = mysqli_prepare($conn, "DELETE FROM pending_registrations WHERE $pcol = ?");
+                    mysqli_stmt_bind_param($del, "s", $pval);
                     mysqli_stmt_execute($del);
                     $msg = "Could not send verification email. Please try again.";
                 }
@@ -180,11 +195,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register · Astra</title>
+<?php astra_compliance_css(); ?>
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/astra-select.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
-<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
-<script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
@@ -601,7 +616,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .card input[type="email"]:focus, .card input[type="password"]:focus,
   .card input[type="text"]:focus, .card input[type="tel"]:focus {
     border-color: var(--color-void-violet) !important;
-    box-shadow: 0 0 0 3px rgba(102, 58, 243, 0.18) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18) !important;
   }
 
   .card button[type="submit"], .card .btn-login, .card .btn-send,
@@ -613,12 +628,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
-    box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.5) !important;
+    box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.5) !important;
     transition: transform .15s, box-shadow .15s, background .15s !important;
   }
   .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
   .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
-    background: #7548f5 !important;
+    background: var(--accent-dim) !important;
     transform: translateY(-1px);
   }
 
@@ -771,17 +786,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .logo-status { font-size: 12px; color: var(--text-dim); margin-top: 8px; min-height: 16px; }
 
-  /* The registration-sheet styles above (tabs, steps, dropzone, buttons) are
-     written against the legacy --accent palette. Re-pointing those variables
-     at AuthKit void-violet inside the card keeps them on-palette in both
-     themes without rewriting every rule. */
-  .card, [data-theme="light"] .card {
-    --accent: #663af3;
-    --accent-bright: #7548f5;
-    --accent-rgb: 102,58,243;
-    --accent-glow: rgba(102,58,243,0.28);
-    --accent-soft: rgba(102,58,243,0.10);
-  }
 </style>
 </head>
 <body>
@@ -800,7 +804,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="sheet-side">
     <div class="brand">
       <div class="brand-icon">
-        <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+        <svg viewBox="0 0 48 48" role="img" aria-label="Astra star brandmark logo"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
       </div>
       <div class="brand-text">
         <div class="title">Astra</div>
@@ -829,8 +833,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="sheet-main">
 
     <?php if ($msg): ?>
-    <div class="alert error">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    <div class="alert error" role="alert">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
       <span><?= $msg ?></span>
     </div>
     <?php endif; ?>
@@ -883,7 +887,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="field" data-flows="client_company,enterprise_full">
           <label for="company_size">Company Size</label>
-          <select name="company_size" id="company_size">
+          <select name="company_size" id="company_size" data-ax-select>
             <option value="" disabled <?= empty($_POST['company_size']) ? 'selected' : '' ?>>Choose size</option>
             <?php foreach (COMPANY_SIZES as $val => $label): ?>
             <option value="<?= $val ?>" <?= ($_POST['company_size'] ?? '') === $val ? 'selected' : '' ?>><?= $label ?></option>
@@ -905,23 +909,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="field" data-flows="enterprise_full">
           <label for="leave_cycle">Employee Leave Policy</label>
-          <select name="leave_cycle" id="leave_cycle">
+          <select name="leave_cycle" id="leave_cycle" data-ax-select>
             <option value="monthly">Monthly allowance</option>
             <option value="yearly_rollover">Annual pool</option>
           </select>
         </div>
         <div class="row-3" data-flows="enterprise_full">
           <div class="field">
-            <label for="monthly_general_leaves">General / month</label>
-            <input type="number" name="monthly_general_leaves" id="monthly_general_leaves" min="0" max="30" value="1">
+            <div class="ax-range-head"><label for="monthly_general_leaves">General / month</label><output for="monthly_general_leaves">1</output></div>
+            <input type="range" class="ax-range" name="monthly_general_leaves" id="monthly_general_leaves" min="0" max="30" step="1" value="1">
           </div>
           <div class="field">
-            <label for="monthly_sick_leaves">Sick / month</label>
-            <input type="number" name="monthly_sick_leaves" id="monthly_sick_leaves" min="0" max="30" value="1">
+            <div class="ax-range-head"><label for="monthly_sick_leaves">Sick / month</label><output for="monthly_sick_leaves">1</output></div>
+            <input type="range" class="ax-range" name="monthly_sick_leaves" id="monthly_sick_leaves" min="0" max="30" step="1" value="1">
           </div>
           <div class="field">
-            <label for="annual_leave_allowance">Annual total</label>
-            <input type="number" name="annual_leave_allowance" id="annual_leave_allowance" min="0" max="90" value="18">
+            <div class="ax-range-head"><label for="annual_leave_allowance">Annual total</label><output for="annual_leave_allowance">18</output></div>
+            <input type="range" class="ax-range" name="annual_leave_allowance" id="annual_leave_allowance" min="0" max="90" step="1" value="18">
           </div>
         </div>
         <p class="logo-status" data-flows="enterprise_full" style="margin-top:-0.6rem;">A biometric attendance webhook secret is generated automatically. Find it under Attendance once you're signed in.</p>
@@ -936,6 +940,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2 id="step2Heading">Your account</h2>
         <p class="subtitle" id="step2Subtitle">You'll sign in with this email once your company is set up.</p>
         <div class="divider"></div>
+
+        <label class="consent-check">
+          <input type="checkbox" name="accept_terms" id="accept_terms" value="1" required>
+          <span>I accept the <a href="<?= get_base_url() ?>legal/terms" target="_blank" rel="noopener">Terms and Conditions</a> and acknowledge the <a href="<?= get_base_url() ?>legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+        </label>
+
+        <?php astra_google_button('submit', 'Sign up with Google'); astra_sso_divider(); ?>
 
         <div class="row-2">
           <div class="field">
@@ -959,7 +970,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="password" id="password"
                    maxlength="128" required placeholder="••••••••••••"
                    oninput="checkPassword(this.value)">
-            <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')">
+            <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')" aria-label="Show or hide password">
               <svg id="eye1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
                 <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
@@ -983,7 +994,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="confirm" id="confirm"
                    maxlength="128" required placeholder="••••••••••••"
                    oninput="checkMatch()">
-            <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')">
+            <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')" aria-label="Show or hide password confirmation">
               <svg id="eye2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
                 <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
@@ -1002,8 +1013,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 
     <div style="display:flex; align-items:center; justify-content:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid rgba(255,255,255,0.07);">
-      <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
-        <span class="theme-icon"></span>
+      <button type="button" id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle" aria-label="Switch between light and dark theme">
+        <span class="theme-icon" aria-hidden="true"></span>
         <span class="theme-label"></span>
       </button>
     </div>
@@ -1011,6 +1022,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <span>Already have an account?</span>
       <a href="login">Sign in</a>
     </div>
+    <?php astra_legal_footer('card'); ?>
   </div>
 
 </div>
@@ -1073,6 +1085,11 @@ const phoneIti = window.intlTelInput(phoneInput, {
 });
 
 document.getElementById('registerForm').addEventListener('submit', function (e) {
+  if (e.submitter && e.submitter.hasAttribute('data-google-sso')) {
+    const terms = document.getElementById('accept_terms');
+    if (!terms.checked) { e.preventDefault(); terms.reportValidity(); terms.focus(); }
+    return;
+  }
   if (phoneInput.value.trim() !== '') {
     phoneInput.value = phoneIti.getNumber(); // E.164, e.g. +919876543210
   }
@@ -1239,12 +1256,23 @@ function updateNavPreview(url) {
 }
 
 let logoSearchSeq = 0;
+let logoLookupOnce = false;   // one-off permission from the placeholder button
 function searchLogos(domain) {
   logoSearchSeq++;
   const seq = logoSearchSeq;
   logoTiles.innerHTML = '';
   logoStatus.textContent = '';
   if (!domain) { logoFinderLbl.classList.remove('searching'); return; }
+  if (!logoLookupOnce && !(window.AstraConsent && AstraConsent.allows('thirdparty'))) {
+    const ph = document.createElement('button');
+    ph.type = 'button';
+    ph.className = 'consent-ph';
+    ph.textContent = 'Click to load external asset: logo suggestions from Clearbit, Google and DuckDuckGo';
+    ph.addEventListener('click', function () { logoLookupOnce = true; searchLogos(domain); });
+    logoTiles.appendChild(ph);
+    logoStatus.textContent = 'Logo lookups contact third-party services, so they wait for your permission. You can also upload your logo below.';
+    return;
+  }
 
   logoFinderLbl.classList.add('searching');
   const candidates = [
@@ -1264,7 +1292,7 @@ function searchLogos(domain) {
       tile.type = 'button';
       tile.className = 'logo-tile';
       const img = document.createElement('img');
-      img.src = src; img.alt = 'Logo option';
+      img.src = src; img.alt = 'Suggested logo for ' + domain;
       tile.appendChild(img);
       tile.addEventListener('click', function () { selectLogo(src, tile); });
       logoTiles.appendChild(tile);
@@ -1339,5 +1367,7 @@ function handleLogoFile(file) {
 }
 </script>
 
+<script src="<?= get_base_url() ?>assets/js/astra-select.js?v=<?= ASSET_VERSION ?>"></script>
+<?php astra_consent_banner(); ?>
 </body>
 </html>

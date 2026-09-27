@@ -315,8 +315,8 @@ if ($employees) {
   .cal-popover[hidden] { display: none; }
   .cal-popover .astra-calendar-root { box-shadow: var(--shadow-modal, 0 20px 50px rgba(0,0,0,0.5)); }
   /* Column picked in the calendar */
-  table.grid .day-focus { background: rgba(102, 58, 243, 0.14); }
-  table.grid th.day-focus { color: #fff; background: var(--color-void-violet, #663af3); }
+  table.grid .day-focus { background: rgba(var(--accent-rgb), 0.14); }
+  table.grid th.day-focus { color: #fff; background: var(--color-void-violet, var(--accent)); }
   .month-label { font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.05em; min-width: 110px; text-align: center; }
 
   .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }

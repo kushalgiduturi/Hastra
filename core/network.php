@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'network.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — client IP resolution.
 //
 // astra_get_client_ip() is the single source of truth for "what is the
@@ -73,6 +73,28 @@ function astra_get_client_ip(): string {
 // of — i.e. local development hitting the app directly over loopback with no
 // proxy headers set. astra_inspect_ip() uses this to skip reputation checks
 // entirely rather than gambling on whatever fallback IP got invented above.
+// Server-side reCAPTCHA check. Returns false on any network or parse
+// failure (previously an unreachable Google endpoint left $result null and
+// the property read raised a PHP warning).
+// The function_exists guard lets tests/lib/bootstrap.php, loaded only via
+// the CLI flag -d auto_prepend_file, substitute a deterministic stub. No web
+// request can reach that code path.
+if (!function_exists('astra_verify_recaptcha')) {
+    function astra_verify_recaptcha(string $response): bool {
+        if ($response === '') return false;
+        $ctx = stream_context_create(['http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query(['secret' => RECAPTCHA_SECRET, 'response' => $response]),
+            'timeout' => 5,
+        ]]);
+        $raw = @file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $ctx);
+        if ($raw === false) return false;
+        $data = json_decode($raw, true);
+        return is_array($data) && !empty($data['success']);
+    }
+}
+
 function astra_is_local_request(): bool {
     if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']) || !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         return false;

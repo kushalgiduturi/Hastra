@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'backup.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — pure-PHP database backup (no mysqldump needed).
 // Shared by portals/sysadmin/migrate.php (manual, in-browser) and
 // tools/backup_db.php (headless, for cron / Task Scheduler).

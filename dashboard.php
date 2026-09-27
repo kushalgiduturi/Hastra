@@ -33,7 +33,9 @@ if (!isset($_SESSION["user_id"])) {
     font-family: var(--font-sans);
     padding: 1.5rem;
     position: relative;
-    overflow: hidden;
+    /* Horizontal only: the decorative glow is position:fixed and never makes
+       the page taller, so the card must stay scrollable on short screens. */
+    overflow-x: hidden;
     transition: var(--transition);
   }
 
@@ -289,7 +291,7 @@ if (!isset($_SESSION["user_id"])) {
         <defs>
           <linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="var(--accent-bright)"/>
-            <stop offset="1" stop-color="var(--purple, #a78bfa)"/>
+            <stop offset="1" stop-color="var(--purple, var(--accent-bright))"/>
           </linearGradient>
         </defs>
         <path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/>

@@ -62,6 +62,10 @@ $logged_in_name   = $logged_in_data["name"] ?? $_SESSION["user_name"];
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></span>
       <span class="section-nav-label">Activity Logs</span>
     </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
+      <span class="section-nav-label">Scan Center</span>
+    </a>
   </div>
 
 </div>

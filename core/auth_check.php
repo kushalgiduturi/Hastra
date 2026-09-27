@@ -6,7 +6,7 @@
 // user who hasn't picked a gender yet, blocking interaction with the
 // dashboard underneath until they do. api/complete_profile.php is the
 // endpoint the modal's JS posts to.
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'auth_check.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 
 function astra_profile_barrier_needed($conn, $user_id) {
     $stmt = mysqli_prepare($conn, "SELECT gender, profile_updated FROM users WHERE id = ?");

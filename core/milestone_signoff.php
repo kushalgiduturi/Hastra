@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'milestone_signoff.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — dual-key cryptographic milestone sign-off.
 //
 // A milestone (e.g. "Final Delivery") needs two independent signatures before

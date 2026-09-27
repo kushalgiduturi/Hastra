@@ -139,16 +139,16 @@
 }
 .arn-btn-ghost:hover { background: rgba(186, 214, 247, 0.12); }
 
-/* Primary CTA — Void Violet pill (Register) */
+/* Primary CTA — theme accent pill (Register) */
 .arn-btn-primary {
   font-size: 13px; font-weight: 600; color: #fff; text-decoration: none;
-  background: var(--color-void-violet, #663af3);
+  background: var(--color-void-violet, var(--accent));
   padding: 9px 18px; border-radius: var(--radius-pill, 999px);
   transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 .arn-btn-primary:hover {
-  background: #7548f5;
-  box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.6);
+  background: var(--accent-dim);
+  box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.6);
   transform: translateY(-1px);
 }
 

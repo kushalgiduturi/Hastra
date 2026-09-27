@@ -3,6 +3,14 @@ DirectoryIndex index.php auth/login.php
 
 RewriteEngine On
 RewriteBase /login/
+
+# Never serve version control, dotfiles, backup copies of the code, or the
+# test suite. .git/ would expose the whole repository history (including
+# config/config.php), and _backup_*/ holds old, executable copies of
+# portal pages that predate later security fixes.
+RewriteRule (^|/)\.(?!well-known/) - [R=404,L]
+RewriteRule ^(_backup_|tests(/|$)) - [R=404,L]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
@@ -18,7 +26,9 @@ RewriteRule ^([^\.]+)$ $1.php [NC,L]
 </FilesMatch>
 
 <IfModule mod_headers.c>
-    Header always set X-Frame-Options "DENY"
+    Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; frame-src https://www.google.com https://www.recaptcha.net; img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; connect-src 'self' https://www.google.com https://www.gstatic.com;"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://www.google.com https://www.recaptcha.net; img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; connect-src 'self' https://www.google.com https://www.gstatic.com; form-action 'self' https://accounts.google.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
+    # Don't advertise the PHP version on every response.
+    Header always unset X-Powered-By
 </IfModule>

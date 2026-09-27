@@ -509,7 +509,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
   .card input[type="email"]:focus, .card input[type="password"]:focus,
   .card input[type="text"]:focus, .card input[type="tel"]:focus {
     border-color: var(--color-void-violet) !important;
-    box-shadow: 0 0 0 3px rgba(102, 58, 243, 0.18) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18) !important;
   }
 
   .card button[type="submit"], .card .btn-login, .card .btn-send,
@@ -521,12 +521,12 @@ $is_success = ($msg === "success" || $msg === "success_pending");
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
-    box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.5) !important;
+    box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.5) !important;
     transition: transform .15s, box-shadow .15s, background .15s !important;
   }
   .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
   .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
-    background: #7548f5 !important;
+    background: var(--accent-dim) !important;
     transform: translateY(-1px);
   }
 
@@ -545,7 +545,7 @@ $is_success = ($msg === "success" || $msg === "success_pending");
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
     </div>
     <div class="brand-text">
       <div class="title">Astra</div>
@@ -690,5 +690,6 @@ function checkMatch() {
 }
 </script>
 
+<?php astra_legal_footer('below'); astra_consent_banner(); ?>
 </body>
 </html>

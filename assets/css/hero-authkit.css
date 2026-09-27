@@ -1,8 +1,8 @@
 /* Astra — landing hero (vanilla port of the Lightswind hero10 layout onto
    AuthKit tokens). Markup lives in index.php inside <section class="h10">.
 
-   Dark theme uses the exact AuthKit values; [data-theme="light"] swaps in
-   the light tokens from theme-authkit.css so nothing turns pale-on-white.
+   Dark theme uses the exact AuthKit values; [data-theme="light"] gives every
+   part, including the product mockup, its own light palette.
 
    Overflow: the section clips horizontally (overflow-x: clip) so the
    spotlight and the floating stage can never create a sideways scrollbar,
@@ -40,32 +40,6 @@
   50%      { opacity: 1; }
 }
 .h10 > :not(.h10-beam) { position: relative; z-index: 1; }
-
-/* ── Eyebrow badge (monospace dot capsule) ── */
-.h10-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
-  margin-bottom: 1.6rem;
-  padding: 6px 14px;
-  font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11.5px;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: #c7d3ea;
-  background: rgba(199, 211, 234, 0.06);
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
-}
-.h10-badge-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #6fe3a3;
-  box-shadow: 0 0 0 3px rgba(111, 227, 163, 0.18);
-}
 
 /* ── Display heading: Skywash gradient fill ── */
 .h10-title {
@@ -115,11 +89,11 @@
 }
 .h10-btn-primary {
   color: #ffffff;
-  background: #663af3;
+  background: var(--accent);
 }
 .h10-btn-primary:hover {
-  background: #7548f5;
-  box-shadow: 0 10px 28px -10px rgba(102, 58, 243, 0.7);
+  background: var(--accent-dim);
+  box-shadow: 0 10px 28px -10px rgba(var(--accent-rgb), 0.7);
   transform: translateY(-1px);
 }
 .h10-btn-primary svg { width: 15px; height: 15px; fill: currentColor; }
@@ -129,7 +103,7 @@
   box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
 }
 .h10-btn-ghost:hover { background: rgba(186, 214, 247, 0.08); }
-.h10-btn:focus-visible { outline: 2px solid #663af3; outline-offset: 3px; }
+.h10-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ── Trust row (AES-256 / 2FA / 100%) ── */
 .h10-stats {
@@ -226,7 +200,7 @@
   color: #9fb2cc;
 }
 .h10-pipe .done .st { background: rgba(111, 227, 163, 0.14); box-shadow: inset 0 0 0 1px rgba(111, 227, 163, 0.5); color: #6fe3a3; }
-.h10-pipe .active .st { background: #663af3; box-shadow: none; color: #fff; }
+.h10-pipe .active .st { background: var(--accent); box-shadow: none; color: #fff; }
 .h10-pipe .meta { margin-left: auto; font-size: 11px; color: #9fb2cc; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .h10-sign {
@@ -270,7 +244,7 @@
   box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.16);
   white-space: nowrap;
 }
-.h10-tag.enc { color: #b8a6ff; box-shadow: inset 0 0 0 1px rgba(102, 58, 243, 0.5); }
+.h10-tag.enc { color: var(--accent-bright); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.5); }
 
 /* ── Responsive ── */
 @media (max-width: 760px) {
@@ -279,7 +253,6 @@
   .h10-sub { font-size: 16px; }
   .h10-feed li { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px; }
   .h10-feed .what { white-space: normal; }
-  .h10-badge { font-size: 10px; letter-spacing: 0.08em; text-wrap: balance; border-radius: 14px; }
 }
 @media (max-width: 420px) {
   .h10-actions { flex-direction: column; align-items: stretch; }
@@ -296,11 +269,34 @@
     transparent 168deg, rgba(26, 86, 160, 0.06) 176deg, rgba(26, 86, 160, 0.16) 180deg,
     rgba(26, 86, 160, 0.06) 184deg, transparent 192deg);
 }
-[data-theme="light"] .h10-badge { color: var(--color-moon-mist, #4b5b73); background: rgba(15, 23, 42, 0.04); box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.12); }
 [data-theme="light"] .h10-sub { color: #33475b; }
 [data-theme="light"] .h10-btn-ghost { color: #0f1b2e; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.18); }
 [data-theme="light"] .h10-btn-ghost:hover { background: rgba(15, 23, 42, 0.05); }
 [data-theme="light"] .h10-stat-num { color: #0f2a4a; }
 [data-theme="light"] .h10-stat-lbl { color: #4b5b73; }
-/* The mockup stays a dark product window on the light page, like a
-   screenshot, so its internal colours don't need a second palette. */
+
+/* Mockup: slate surface, crisp hairlines, dark text. Status colours are
+   darkened so they keep their contrast on white. */
+[data-theme="light"] .h10-stage {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #d0d7de, 0 24px 60px -24px rgba(15, 27, 46, 0.28);
+}
+[data-theme="light"] .h10-chrome { border-bottom-color: #d0d7de; color: #52627a; }
+[data-theme="light"] .h10-chrome-dots i { background: rgba(15, 27, 46, 0.18); }
+[data-theme="light"] .h10-chrome-title b { color: #0f1b2e; }
+[data-theme="light"] .h10-chrome-lock { color: #15803d; }
+[data-theme="light"] .h10-body { background: #d0d7de; }
+[data-theme="light"] .h10-pane { background: #ffffff; }
+[data-theme="light"] .h10-pane-label { color: #5b6b82; }
+[data-theme="light"] .h10-pipe li { color: #0f1b2e; }
+[data-theme="light"] .h10-pipe .st { color: #5b6b82; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.22); }
+[data-theme="light"] .h10-pipe .done .st { background: rgba(21, 128, 61, 0.10); box-shadow: inset 0 0 0 1px rgba(21, 128, 61, 0.45); color: #15803d; }
+[data-theme="light"] .h10-pipe .meta { color: #5b6b82; }
+[data-theme="light"] .h10-sign { background: #f1f5f9; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.10); color: #33475b; }
+[data-theme="light"] .h10-sign .ok { color: #15803d; }
+[data-theme="light"] .h10-sign .wait { color: #b45309; }
+[data-theme="light"] .h10-feed li { color: #0f1b2e; border-bottom-color: rgba(15, 27, 46, 0.08); }
+[data-theme="light"] .h10-feed time,
+[data-theme="light"] .h10-feed .what small { color: #5b6b82; }
+[data-theme="light"] .h10-tag { color: #33475b; box-shadow: inset 0 0 0 1px rgba(15, 27, 46, 0.18); }
+[data-theme="light"] .h10-tag.enc { color: var(--accent-dim); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.45); }

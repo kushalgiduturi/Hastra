@@ -185,7 +185,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 
 <?php $nav_current = ''; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main">
+<div class="main portal-surface-scrim">
 
   <div class="page-header">
     <h1>Employee Portal</h1>
@@ -211,6 +211,10 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
     <a class="section-nav-card" href="<?= get_base_url() ?>portals/projects/signoff">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
       <span class="section-nav-label">Milestone Sign-Off</span>
+    </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
+      <span class="section-nav-label">Scan Center</span>
     </a>
     <?php endif; ?>
   </div>

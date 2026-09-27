@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'ephemeral_dossier.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — ephemeral, self-destructing deliverable dossiers.
 //
 // A dossier is a one-shot (or few-shot) encrypted payload — handover

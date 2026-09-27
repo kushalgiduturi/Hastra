@@ -126,7 +126,7 @@
   transition: transform 6s ease-in-out, border-color 0.3s ease;
   animation: scChipFloat 7s ease-in-out infinite;
 }
-.sc-chip.violet { border-color: rgba(102, 58, 243, 0.4); }
+.sc-chip.violet { border-color: rgba(var(--accent-rgb), 0.4); }
 .sc-chip .sc-chip-tag {
   display: block;
   margin-top: 5px;
@@ -162,7 +162,7 @@
 .sc-id-card .sc-id-row { display: flex; align-items: center; gap: 9px; }
 .sc-id-avatar {
   width: 30px; height: 30px; border-radius: 9999px;
-  background: linear-gradient(135deg, var(--color-void-violet, #663af3), var(--color-frost-glow, #d1e4fa));
+  background: linear-gradient(135deg, var(--color-void-violet, var(--accent)), var(--color-frost-glow, #d1e4fa));
   flex: none;
 }
 .sc-id-name { font-size: 12.5px; font-weight: 600; color: var(--color-ice-highlight, #fff); }
@@ -224,7 +224,7 @@
   height: 2px;
   min-width: 40px;
   position: relative;
-  background: linear-gradient(90deg, rgba(102, 58, 243, 0.15), rgba(102, 58, 243, 0.6), rgba(102, 58, 243, 0.15));
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.6), rgba(var(--accent-rgb), 0.15));
   margin: 0 -4px;
   top: -18px;
 }
@@ -235,8 +235,8 @@
   width: 8px; height: 8px;
   margin: -4px 0 0 -4px;
   border-radius: 50%;
-  background: var(--color-void-violet, #663af3);
-  box-shadow: 0 0 12px 3px rgba(102, 58, 243, 0.7);
+  background: var(--color-void-violet, var(--accent));
+  box-shadow: 0 0 12px 3px rgba(var(--accent-rgb), 0.7);
   animation: scPulseAcross 2.6s ease-in-out infinite;
 }
 @keyframes scPulseAcross {

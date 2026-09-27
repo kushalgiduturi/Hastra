@@ -71,7 +71,7 @@ if ($dcheck_row && ((int)$dcheck_row['inv_count'] > 0 || (int)$dcheck_row['del_c
 
 <?php $nav_current = 'projects'; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main">
+<div class="main portal-surface-scrim">
 
   <div class="page-header">
     <h1><?= htmlspecialchars($ctx['company']['company_name'] ?? 'Client Portal') ?></h1>
@@ -108,6 +108,10 @@ if ($dcheck_row && ((int)$dcheck_row['inv_count'] > 0 || (int)$dcheck_row['del_c
     <a class="section-nav-card" href="<?= get_base_url() ?>portals/client/requirements_diff">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></span>
       <span class="section-nav-label">Requirement Revisions</span>
+    </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
+      <span class="section-nav-label">Scan Center</span>
     </a>
   </div>
 

@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'requirement_versions.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — requirement version snapshots and the scope-drift diff engine.
 //
 // Every time a client edits a requirement that's already been through review,

@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'onboarding.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/onboarding.php
 // Enterprise onboarding: client roles, roster parsing, staging validation,
 // activation invites. Loaded by core/db.php.
@@ -373,4 +373,24 @@ function validate_staging_rows($conn, array $rows, array $company) {
         }
     }
     return $rows;
+}
+
+// ── Pending registrations: PII encrypted at rest ────────────────────────────
+// name / email / phone_number are stored encrypted, like users; rows are
+// found by email_bindex. Before the v4 migration adds that column, these
+// fall back to the old plaintext behaviour so registration keeps working.
+function pending_reg_encrypted($conn, bool $refresh = false): bool {
+    static $ready = null;
+    if ($ready === null || $refresh) $ready = db_column_exists($conn, 'pending_registrations', 'email_bindex');
+    return $ready;
+}
+// [column, value] to look a pending row up by email.
+function pending_reg_key($conn, string $email): array {
+    return pending_reg_encrypted($conn) ? ['email_bindex', astra_blind_index($email)] : ['email', $email];
+}
+function pending_reg_decrypt(?array &$row): void {
+    if (!$row) return;
+    foreach (['name', 'email', 'phone_number'] as $c) {
+        if (isset($row[$c])) $row[$c] = astra_db_decrypt($row[$c]);
+    }
 }

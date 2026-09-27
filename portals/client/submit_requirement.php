@@ -43,6 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $msg = "Only your company's Project Manager can submit requirements.";
     } elseif (!$related_ok) {
         $msg = "Change requests can only be raised against your company's completed projects.";
+    } elseif (($_POST["accept_terms"] ?? "") !== "1") {
+        $msg = "Please accept the Terms and Conditions and acknowledge the Privacy Policy to submit.";
     } elseif ($project_title === "" || $requirement_title === "" || $description === "") {
         $msg = "Project title, requirement title and description are required.";
     } elseif ($budget_min !== null && $budget_max !== null && $budget_min > $budget_max) {
@@ -217,6 +219,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
   }
   .btn-submit:hover { background: var(--accent-dim); box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3); }
 </style>
+<?php astra_compliance_css(); ?>
 </head>
 <body>
 
@@ -237,7 +240,7 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
     <div class="section-body">
 
       <?php if ($msg): ?>
-      <div class="alert <?= $msg_type ?>">
+      <div class="alert <?= $msg_type ?>" role="<?= $msg_type === 'success' ? 'status' : 'alert' ?>">
         <?php if ($msg_type === 'success'): ?>
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
         <?php else: ?>
@@ -311,6 +314,11 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
             <input type="date" name="deadline" id="deadline">
           </div>
         </div>
+
+        <label class="consent-check">
+          <input type="checkbox" name="accept_terms" value="1" required>
+          <span>I accept the <a href="<?= get_base_url() ?>legal/terms" target="_blank" rel="noopener">Terms and Conditions</a> and acknowledge the <a href="<?= get_base_url() ?>legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+        </label>
 
         <button type="submit" class="btn-submit">Submit Requirement</button>
       </form>

@@ -358,7 +358,7 @@ $project_status_labels = [
       <div class="proj-card">
 
         <!-- Header (clickable to expand) -->
-        <div class="proj-card-header" onclick="toggleProj(<?= $proj['id'] ?>)">
+        <div class="proj-card-header" role="button" tabindex="0" aria-label="Show or hide project details" onclick="toggleProj(<?= $proj['id'] ?>)">
           <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
               <span class="proj-code"><?= htmlspecialchars($proj['project_code']) ?></span>

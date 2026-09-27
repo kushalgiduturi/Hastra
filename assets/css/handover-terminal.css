@@ -62,15 +62,15 @@
   background: rgba(199, 211, 234, 0.06); box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.12);
   color: #e2ecf8; font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.04em;
 }
-.ht-row input:focus { outline: none; box-shadow: inset 0 0 0 1px #663af3, 0 0 0 3px rgba(102, 58, 243, 0.2); }
+.ht-row input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px rgba(var(--accent-rgb), 0.2); }
 .ht-hint { margin: 10px 0 0; font-size: 12px; color: #9fb2cc; }
 
 .ht-btn {
   padding: 10px 20px; border: 0; border-radius: 999px; cursor: pointer;
-  background: #663af3; color: #fff; font: inherit; font-size: 13px; font-weight: 600;
+  background: var(--accent); color: #fff; font: inherit; font-size: 13px; font-weight: 600;
   transition: background 0.15s ease;
 }
-.ht-btn:hover { background: #7548f5; }
+.ht-btn:hover { background: var(--accent-dim); }
 .ht-btn:disabled { opacity: 0.5; cursor: progress; }
 .ht-btn:focus-visible { outline: 2px solid #d1e4fa; outline-offset: 3px; }
 .ht-btn-ghost { background: transparent; color: #e2ecf8; box-shadow: inset 0 0 0 1px rgba(186, 215, 247, 0.2); padding: 7px 14px; font-size: 12px; }
@@ -100,7 +100,7 @@
 @keyframes htBlink { 50% { opacity: 0; } }
 
 /* ── Revealed payload ── */
-.ht-payload { margin: 0 20px 20px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(102, 58, 243, 0.45); background: rgba(102, 58, 243, 0.05); }
+.ht-payload { margin: 0 20px 20px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.45); background: rgba(var(--accent-rgb), 0.05); }
 .ht-payload-bar {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
   padding: 10px 12px; border-bottom: 1px solid rgba(186, 215, 247, 0.10);

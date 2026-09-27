@@ -611,7 +611,7 @@ function format_bytes($bytes) {
       <?php foreach ($lead_full as $proj): ?>
       <div class="project-block">
 
-        <div class="project-block-header" onclick="toggleProject(<?= $proj['project_id'] ?>)">
+        <div class="project-block-header" role="button" tabindex="0" aria-label="Show or hide project tasks" onclick="toggleProject(<?= $proj['project_id'] ?>)">
           <div class="project-block-left">
             <span class="project-code-badge"><?= htmlspecialchars($proj['project_code']) ?></span>
             <span class="project-block-title"><?= htmlspecialchars($proj['title']) ?></span>

@@ -332,7 +332,7 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
     <p style="color:var(--text-dim);font-size:13px;">No milestone sign-offs yet.</p>
     <?php endif; ?>
     <?php foreach ($rows as $row): ?>
-    <div class="card">
+    <div class="card" data-cloth="certificate">
       <div class="card-top">
         <div>
           <strong><?= htmlspecialchars($row['milestone_name']) ?></strong>
@@ -396,5 +396,22 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
     <?php endforeach; ?>
   </div>
 </div>
+<?php
+/* the kinetic handover seal (assets/js/handover-seal.js) carries the latest
+   sign-off: what was handed over, where it stands, and its signature hash */
+$seal = $rows[0] ?? null;
+$seal_rows = $seal ? [
+    ['Project', $seal['_project']['project_code'] . ': ' . $seal['_project']['title']],
+    ['Status', $status_labels[$seal['status']] ?? $seal['status']],
+    ['Lead signed', $seal['pm_signed_at'] ? date('d M Y, H:i', strtotime($seal['pm_signed_at'])) : '-'],
+    ['Client signed', $seal['client_signed_at'] ? date('d M Y, H:i', strtotime($seal['client_signed_at'])) : 'Not yet'],
+] : [['Status', 'No milestone has been signed yet']];
+?>
+<div hidden data-handover-seal
+     data-seal-title="<?= htmlspecialchars($seal ? $seal['milestone_name'] : 'Milestone handover') ?>"
+     data-seal-kind="Milestone sign-off"
+     data-seal-hash="<?= htmlspecialchars($seal['pm_signature_hash'] ?? '') ?>"
+     data-seal-verified="<?= $seal && ($seal['_verify']['pm_valid'] ?? null) ? '1' : '0' ?>"
+     data-seal-rows="<?= htmlspecialchars(json_encode($seal_rows)) ?>"></div>
 </body>
 </html>

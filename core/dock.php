@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'dock.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/dock.php
 // Shared floating "magnification dock" quick-nav, used alongside each
 // portal's top nav bar. Renders a small pill of icon links that grow when
@@ -35,7 +35,8 @@ function dock_icon($key) {
         'logout' => '<svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>',
     ];
     $default = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>';
-    return $icons[$key] ?? $default;
+    // icons are decorative: every dock/sidebar entry carries its own text name
+    return str_replace('<svg ', '<svg aria-hidden="true" focusable="false" ', $icons[$key] ?? $default);
 }
 
 // Renders the floating dock. $items is a list of
@@ -46,7 +47,7 @@ function render_dock(array $items) {
     foreach ($items as $item) {
         $current = !empty($item['current']);
         $cls = 'astra-dock-item' . ($current ? ' is-current' : '');
-        echo '<a href="' . htmlspecialchars($item['href']) . '" class="' . $cls . '"'
+        echo '<a href="' . htmlspecialchars($item['href']) . '" class="' . $cls . '" aria-label="' . htmlspecialchars($item['label']) . '"'
            . ($current ? ' aria-current="page"' : '') . '>'
            . dock_icon($item['key'])
            . '<span class="astra-dock-tooltip">' . htmlspecialchars($item['label']) . '</span>'

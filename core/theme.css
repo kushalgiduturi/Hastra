@@ -50,7 +50,7 @@
   --blue:        #1d4ed8;
   --blue-bright: #0265dc;
   --accent:        #0265dc;
-  --accent-bright: #1a7ae8;
+  --accent-bright: #1668d0; /* 5.35:1 on white, AA for text */
   --accent-dim:    #024fac;
   --accent-rgb:    2,101,220;
   --accent-glow:   rgba(2,101,220,0.22);
@@ -125,6 +125,11 @@ body.astra-intro-run .brand-text .sub {
    so its sections (Role Management, Requirements, Testing, …) are
    each their own clickable jump-card instead of a plain scroll. ── */
 html { scroll-behavior: smooth; }
+
+/* ── Keyboard focus: one visible ring everywhere (WCAG 2.4.7). Uses the theme
+   accent so it reads on both canvases; mouse clicks don't show it. ── */
+*:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .section[id], .card[id] { scroll-margin-top: 76px; }
 .section-nav {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

@@ -27,7 +27,8 @@
   --gradient-skywash: linear-gradient(0deg, #d8ecf8 0%, #98c0ef 100%);
 
   /* ── Accent — primary submit action on authentication cards only ─── */
-  --color-void-violet: #663af3;
+  /* historical name, no longer violet: follows the theme accent (red / blue) */
+  --color-void-violet: var(--accent);
 
   /* ── Hairline borders ─────────────────────────────────────────────── */
   --color-glass-edge: rgba(186, 215, 247, 0.12);
@@ -65,7 +66,7 @@
   --color-ice-highlight: #0f1b2e; /* headings */
   --color-frost-glow:    #33475b; /* body / icons */
   --color-moon-mist:     #4b5b73; /* secondary labels */
-  --color-fog-veil:      #7c8aa0; /* muted helper text */
+  --color-fog-veil:      #5f6c82; /* muted helper text (5.3:1 on white) */
 
   --gradient-skywash: linear-gradient(0deg, #0f2a4a 0%, #1a56a0 100%);
 

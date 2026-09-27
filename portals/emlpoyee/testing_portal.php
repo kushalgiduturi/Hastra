@@ -837,7 +837,7 @@ foreach ($qa_projects as $pid => $info) {
 
 <?php $nav_current = 'testing'; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main">
+<div class="main portal-surface-scrim">
 
   <div class="page-header">
     <h1>Testing & QA</h1>

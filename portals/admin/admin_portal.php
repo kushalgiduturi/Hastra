@@ -58,10 +58,10 @@ $ledger_anchor = astra_audit_anchor_read();
   .ledger-desc { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
   .ledger-meta { font-size: 11.5px; color: #9fb2cc; margin-top: 6px; font-family: 'Share Tech Mono', monospace; }
   .ledger-btn {
-    background: #663af3; color: #fff; border: 0; border-radius: 999px; padding: 10px 20px;
+    background: var(--accent); color: #fff; border: 0; border-radius: 999px; padding: 10px 20px;
     font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
   }
-  .ledger-btn:hover { background: #7548f5; }
+  .ledger-btn:hover { background: var(--accent-dim); }
   .ledger-btn:focus-visible { outline: 2px solid #d1e4fa; outline-offset: 3px; }
   .ledger-ok {
     flex-basis: 100%; display: inline-flex; align-items: center; gap: 10px; width: fit-content;
@@ -82,7 +82,7 @@ $ledger_anchor = astra_audit_anchor_read();
 
 <?php $nav_current = 'dashboard'; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main">
+<div class="main portal-surface-scrim">
 
   <div class="page-header">
     <h1>Admin Portal</h1>
@@ -125,6 +125,10 @@ $ledger_anchor = astra_audit_anchor_read();
     <a class="section-nav-card" href="<?= get_base_url() ?>portals/deliveries/dossier">
       <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></span>
       <span class="section-nav-label">Ephemeral Dossiers</span>
+    </a>
+    <a class="section-nav-card" href="<?= get_base_url() ?>portals/security/scan_center">
+      <span class="section-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6z"/></svg></span>
+      <span class="section-nav-label">Scan Center</span>
     </a>
   </div>
 

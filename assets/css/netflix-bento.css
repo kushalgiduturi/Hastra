@@ -1,0 +1,377 @@
+/* Astra — boxless portal UI over the temple world.
+
+   No container surfaces: sections, metric cards, nested frames and table
+   rows are transparent, borderless and shadowless, and sit directly on the
+   3-D scene (#astra-kage-scene + assets/js/kage-cyber.js). Structure comes
+   from floating hairlines, typographic scale and spacing only. Legibility
+   comes from one fixed veil between the scene and the page, not from boxes.
+
+   Controls that are active, focused or processing trace a moving laser beam
+   around their edge (the @property --beam-angle section below). Modals keep
+   a surface: a dialog floating over live 3-D needs one to be readable. */
+
+/* ── The veil: dims the world evenly so text reads anywhere on it ── */
+html.nf-portal.astra-kage body::before {
+  /* core/theme.css uses body::before for a small fading glow; the veil takes
+     the element over, so its size, offset, fade and animation are reset */
+  content: ''; position: fixed; inset: 0 !important; z-index: -1; pointer-events: none;
+  width: auto !important; height: auto !important; transform: none !important;
+  opacity: 1 !important; animation: none !important; border-radius: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 5, .5) 0, rgba(5, 5, 5, .22) 26%, rgba(5, 5, 5, .5) 46%, rgba(5, 5, 5, .5) 68%, rgba(5, 5, 5, .38) 82%, rgba(5, 5, 5, .6) 100%),
+    linear-gradient(90deg, rgba(5, 5, 5, .42), rgba(5, 5, 5, 0) 55%, rgba(5, 5, 5, .25));
+}
+/* by day the world is frosted rather than dimmed: a soft blur keeps the
+   temple's colours but melts its hard edges, and an even wash of paper
+   light lets plain dark type read anywhere without halos */
+html.nf-portal.astra-kage[data-theme="light"] body::before {
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, .78) 0, rgba(248, 250, 252, .6) 28%, rgba(248, 250, 252, .64) 72%, rgba(248, 250, 252, .8) 100%);
+}
+/* the page sits in its own stacking layer, so a backdrop blur cannot reach
+   the scene frame; the frame itself is softened instead */
+html.nf-portal[data-theme="light"] #astra-kage-scene { filter: blur(7px) saturate(1.2); transform: scale(1.04); }
+html.nf-portal:not([data-theme="light"]) :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: 0 1px 3px rgba(0, 0, 0, .75); }
+/* clean type by day: the frosted wash does the work */
+html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: none; }
+html.nf-portal:not([data-theme="light"]) :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: 0 1px 2px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .8), 0 0 22px rgba(0, 0, 0, .5); }
+/* gradient-clipped headlines get no shadow: it would show through the clip */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .page-header h1, html.nf-portal .workspace-index h1 { text-shadow: none !important; }
+
+/* ── Boxless: every container surface goes away ── */
+html.nf-portal .main.portal-surface-scrim,
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.netflix-bento-card, .card, .panel, .box, .table-card-wrapper, .section, .section-body, .section-header,
+  .stat-card, .stat, .ledger, .bug-card, .section-nav-card, .filters, .filter-bar, .toolbar, .company-block, .company-head,
+  .tbl-wrap, .table-wrap, .table-responsive, .table-container, .project-card, .proj-card, .proj-card-header, .project-block,
+  .project-block-header, .req-card, .req-box, .task-card, .member-row, .team-member, .welcome-card, .snap-card, .steps-box,
+  .role-form, .review-form, .create-task-form, .file-section, .form-card, .notice, .empty-state, .add-member-row, .emp-col,
+  .webhook-hint, .form-grid, .events, .snap-card, .step, .steps, .result, .ctrl,
+  .sc-drop, .sc-matrix, .sc-metrics, .sc-filters, .sc-endpoints, .sc-stage, .sc-table-wrap, .sc-table, .sc-tenant, .sc-notice, .sc-ring-wrap,
+  .ht-terminal, .ht-receipt, .ht-payload, .ht-head, .ht-console, .ht-row),
+html.nf-portal .dash-card,
+html.nf-portal body > .card {
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  outline: none;
+}
+/* the plate is gone but the page keeps its gutters */
+html.nf-portal .main.portal-surface-scrim { padding-left: clamp(1rem, 3vw, 2rem) !important; padding-right: clamp(1rem, 3vw, 2rem) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.section, .stat-card, .bug-card, .section-nav-card, .card, .ledger) { position: relative; overflow: visible !important; transform: none !important; }
+
+/* ── Floating hairlines ── */
+:root { --hairline: rgba(255, 255, 255, .08); --hairline-accent: rgba(229, 9, 20, .2); }
+[data-theme="light"] { --hairline: rgba(15, 23, 42, .09); --hairline-accent: rgba(37, 99, 235, .22); }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section { margin-bottom: 3rem !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-header {
+  padding: 0 0 .9rem !important; margin-bottom: 1.2rem;
+  border-bottom: 1px solid var(--hairline-accent) !important;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-body { padding-left: 0 !important; padding-right: 0 !important; }
+/* a short accent tick where a card's top edge used to be */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section > .section-header::after {
+  content: ''; position: absolute; left: 0; bottom: -1px; width: 96px; height: 1px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section > .section-header { position: relative; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .company-block { padding: 1.2rem 0 !important; border-top: 1px solid var(--hairline) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.bug-card, .task-card, .req-card, .project-card, .proj-card, .project-block, .member-row, .team-member) {
+  padding: 1.1rem 0 !important; border-bottom: 1px solid var(--hairline) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.filters, .filter-bar, .toolbar) { padding: .4rem 0 !important; border-bottom: 1px solid var(--hairline) !important; }
+
+/* ── Metric counters: type on the world, no capsule ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.stats-row, .stat-grid, .stats-grid) { counter-reset: nf-stat; gap: 2.2rem !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card {
+  counter-increment: nf-stat; padding: .2rem 0 .2rem 1.1rem !important; min-height: 0;
+  border-left: 1px solid var(--hairline-accent) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card::before {
+  content: ''; position: absolute; left: -1px; top: 0; width: 1px; height: 22px; background: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card .stat-label {
+  font-family: var(--font-mono) !important; font-size: 11px !important; font-weight: 700 !important;
+  letter-spacing: .16em !important; text-transform: uppercase !important; color: var(--badge-text) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card .stat-value {
+  font-size: clamp(30px, 3.4vw, 44px) !important; font-weight: 900 !important; letter-spacing: -.035em !important;
+  color: var(--text-primary) !important; font-variant-numeric: tabular-nums; line-height: 1.05 !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card > *:first-child::after {
+  content: counter(nf-stat, decimal-leading-zero);
+  position: absolute; top: -6px; right: 0; z-index: -1;
+  font: 900 46px/1 var(--font-mono); color: var(--text-ghost); pointer-events: none;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .stat-card:hover .stat-value { color: var(--accent-primary) !important; }
+
+/* ── Section headings: "EPISODE 0N" chip, bold title ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) { counter-reset: nf-ep; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section { counter-increment: nf-ep; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section > .section-header::before {
+  content: 'EPISODE ' counter(nf-ep, decimal-leading-zero);
+  order: -1; flex: none; display: inline-flex; align-items: center;
+  padding: 4px 10px 4px 20px; border-radius: 4px;
+  font: 700 10.5px/1 var(--font-mono); letter-spacing: .16em;
+  color: var(--badge-text); background: var(--badge-bg); border: 1px solid var(--badge-border);
+  background-image: radial-gradient(circle at 10px 50%, var(--accent-primary) 2.6px, transparent 3.1px);
+  text-shadow: none;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-title {
+  font-weight: 900 !important; letter-spacing: -.01em !important; color: var(--text-primary) !important; font-size: 17px !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-title svg { fill: var(--accent-primary) !important; }
+
+/* ── Quick-nav: icon + label on a hairline ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav { gap: .4rem 2rem !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-card {
+  padding: .8rem 0 !important; border-bottom: 1px solid var(--hairline) !important;
+  transition: border-color .3s ease !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-card:hover { border-bottom-color: var(--accent-primary) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-icon {
+  background: var(--badge-bg) !important; color: var(--accent-primary) !important;
+  border: 1px solid var(--badge-border); border-radius: 10px !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-label { font-weight: 700 !important; color: var(--text-primary) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-card:hover .section-nav-label { color: var(--accent-primary) !important; }
+
+/* ── Metadata badges (Projects.jsx episode tags) ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.badge, .type-badge, .sev-badge, .project-code-badge, .status-badge, .role-badge, .tag, .pill) {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono) !important; font-size: 10.5px !important; font-weight: 700 !important;
+  letter-spacing: .1em !important; text-transform: uppercase !important;
+  padding: 4px 10px !important; border-radius: 4px !important; text-shadow: none;
+  color: var(--badge-text) !important; background: var(--badge-bg) !important; border: 1px solid var(--badge-border) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.badge, .status-badge, .sev-badge)::before {
+  content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; box-shadow: 0 0 0 0 currentColor;
+  animation: nf-ping 1.6s cubic-bezier(0, 0, .2, 1) infinite;
+}
+@keyframes nf-ping {
+  0%        { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 60%, transparent); }
+  80%, 100% { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* ── Tables: floating divider lines, no row cards, no outer card ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table {
+  border-collapse: collapse !important; border-spacing: 0 !important; width: 100%;
+  background: transparent !important; font-size: 13px;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table thead th {
+  background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--hairline-accent) !important;
+  font: 700 10.5px/1.2 var(--font-mono) !important; letter-spacing: .16em !important; text-transform: uppercase !important;
+  color: var(--text-muted) !important; padding: 8px 11px !important; text-align: left;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr { position: relative; background: transparent !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody td {
+  background: transparent !important; color: var(--text-secondary) !important;
+  border: 0 !important; border-bottom: 1px solid var(--hairline) !important; border-radius: 0 !important;
+  padding: 13px 11px !important; vertical-align: middle; transition: color .3s ease;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody td:first-child {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; color: var(--badge-text) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table :is(td, th):is(.num, .text-right, .right, [align="right"]),
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table td:last-child { font-variant-numeric: tabular-nums; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table td :is(.mono, code, time) { font-family: var(--font-mono); color: var(--text-muted); }
+/* hover: the divider under the row lights as a moving gradient line */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr td:first-child::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  background-size: 200% 100%; opacity: 0; transition: opacity .3s ease; pointer-events: none;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr:hover td:first-child::after { opacity: 1; animation: nf-line 1.6s linear infinite; }
+@keyframes nf-line { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr:hover td { color: var(--text-primary) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr td:first-child { position: static; }
+/* a row with unsaved changes (roles page): a warm wash, not a box */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr.changed td { background: linear-gradient(90deg, var(--badge-bg), transparent 70%) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr:only-child td[colspan] { font-family: var(--font-sans); color: var(--text-muted) !important; text-align: center; }
+
+/* ── List items read as episode lines ── */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .bug-title { font-weight: 800 !important; color: var(--text-primary) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .bug-card:hover .bug-title { color: var(--accent-primary) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .bug-meta, html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .bug-code { font-family: var(--font-mono) !important; color: var(--text-muted) !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .empty-state { font-family: var(--font-mono); letter-spacing: .08em; color: var(--text-muted) !important; }
+
+/* ═══ Laser border beam ═════════════════════════════════════════════════
+   A conic gradient turning around the control's edge. Buttons draw it in a
+   ::before ring masked to the border; <select>s can't host pseudo-elements,
+   so theirs is painted into the border box behind a padding-box fill. */
+@property --beam-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes beam-rotate { 0% { --beam-angle: 0deg; } 100% { --beam-angle: 360deg; } }
+
+html.nf-portal { --beam-a: #E50914; --beam-b: #ff5a3c; --beam-fill: rgba(10, 10, 10, .92); }
+html.nf-portal[data-theme="light"] { --beam-a: #2563eb; --beam-b: #60a5fa; --beam-fill: rgba(255, 255, 255, .96); }
+
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(.btn-beam, button, .btn, a.btn, .tab-btn.active, .company-chip.active, .btn.active) { position: relative; }
+html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) :is(
+  .btn-beam, .btn-save-all, .btn.active, .tab-btn.active, .company-chip.active, button.is-processing,
+  button:not(.cell-btn, .btn-delete-file, .sc-x, .close, .eye-btn, .hamburger-btn):is(:hover, :focus-visible, :active),
+  .btn:hover, .btn:focus-visible, .btn:active)::before,
+html.nf-portal .main:has(tr.changed) .btn-save::before,
+html.nf-portal .modal-btn-confirm:hover::before {
+  content: '';
+  position: absolute; inset: -1.5px; z-index: 1;
+  border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--beam-angle), transparent 0%, transparent 60%, var(--beam-a) 85%, var(--beam-b) 95%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: beam-rotate 2s linear infinite;
+  pointer-events: none;
+}
+/* processing / pending saves turn faster */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) button.is-processing::before,
+html.nf-portal .main:has(tr.changed) .btn-save::before { animation-duration: 1.1s; }
+/* the primary pills keep their solid fill; the beam rides just outside it */
+html.nf-portal .main:has(tr.changed) .btn-save { box-shadow: 0 0 26px var(--accent-glow) !important; }
+
+/* role dropdowns and status selects: the beam in the border box */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.role-select, .status-select, select):is(:focus, .updating),
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) tr.changed :is(.role-select, .status-select) {
+  border: 1.5px solid transparent !important; border-radius: 6px !important; padding: 7px 26px 7px 10px !important;
+  background:
+    linear-gradient(var(--beam-fill), var(--beam-fill)) padding-box,
+    conic-gradient(from var(--beam-angle), var(--hairline-accent) 0%, var(--hairline-accent) 60%, var(--beam-a) 85%, var(--beam-b) 95%, var(--hairline-accent) 100%) border-box !important;
+  background-clip: padding-box, border-box !important; background-origin: padding-box, border-box !important;
+  animation: beam-rotate 2s linear infinite;
+  box-shadow: 0 0 18px var(--accent-glow) !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) tr.changed :is(.role-select, .status-select) { animation-duration: 1.1s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.nf-portal :is(:is(.main, .wrap, .sc-body, .ht-body), .modal-overlay, .modal) *::before,
+  html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(select, .role-select, .status-select) { animation: none !important; }
+  html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) table tbody tr:hover td:first-child::after { animation: none; }
+}
+
+/* ── Precision cursor (assets/js/netflix-cursor.js) ── */
+#nf-cursor-dot, #nf-cursor-ring, #nf-cursor-glow {
+  position: fixed; top: 0; left: 0; pointer-events: none; opacity: 0; will-change: transform;
+  transition: opacity .3s ease;
+}
+#nf-cursor-dot {
+  z-index: 2147483001; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-primary); box-shadow: 0 0 15px var(--accent-primary);
+  transition: opacity .3s ease, width .15s ease, height .15s ease;
+}
+#nf-cursor-dot.is-down { box-shadow: 0 0 22px var(--accent-primary), 0 0 0 4px var(--accent-glow); }
+#nf-cursor-ring {
+  z-index: 2147483001; width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--border-accent); -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+}
+#nf-cursor-ring::after {
+  content: ''; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--accent-primary);
+  opacity: 0; transform: scale(.6); transition: opacity .25s ease, transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+#nf-cursor-ring.is-hot::after { opacity: .9; transform: scale(1.35); }
+#nf-cursor-glow {
+  z-index: 0; width: 600px; height: 600px; border-radius: 50%; filter: blur(100px);
+  background: radial-gradient(circle, rgba(var(--accent-primary-rgb), .2) 0%, rgba(var(--accent-primary-rgb), .06) 45%, transparent 75%);
+}
+html.nf-cursor-on #nf-cursor-dot, html.nf-cursor-on #nf-cursor-ring { opacity: 1; }
+html.nf-cursor-on #nf-cursor-glow { opacity: 1; }
+html[data-theme="light"].nf-cursor-on #nf-cursor-glow { opacity: .7; }
+@media (hover: none) and (pointer: coarse) { #nf-cursor-dot, #nf-cursor-ring, #nf-cursor-glow { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { #nf-cursor-dot, #nf-cursor-ring, #nf-cursor-glow { display: none !important; } }
+
+/* ── Workspace index (portals/index.php): boxless too ── */
+html.nf-portal .dash-card { position: relative; padding: 1.2rem 0 !important; border-bottom: 1px solid var(--hairline) !important; transition: border-color .3s ease !important; }
+html.nf-portal .dash-card:hover { border-bottom-color: var(--accent-primary) !important; }
+html.nf-portal .dash-card:hover :is(h2, h3) { color: var(--accent-primary) !important; }
+html.nf-portal .dash-icon { background: var(--badge-bg) !important; color: var(--accent-primary) !important; border: 1px solid var(--badge-border); border-radius: 12px !important; }
+html.nf-portal .role-chip {
+  font-family: var(--font-mono) !important; letter-spacing: .16em !important; border-radius: 4px !important;
+  color: var(--badge-text) !important; background: var(--badge-bg) !important; border: 1px solid var(--badge-border) !important;
+}
+html.nf-portal .workspace-index h1 {
+  font-weight: 900 !important; letter-spacing: -.03em !important;
+  background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 26px var(--accent-glow));
+}
+html.nf-portal .workspace-index { text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }
+html.nf-portal[data-theme="light"] .workspace-index { text-shadow: none; }
+
+/* ── Pages with their own layout (security, migration, Scan Center,
+   handover terminal, dashboard.php): the same hairline structure ── */
+html.nf-portal :is(.snap-card, .ctrl, .step, .sc-drop, .sc-metrics, .sc-matrix, .sc-endpoints, .sc-stage, .ht-receipt, .ht-payload, .ht-console) {
+  padding-left: 0 !important; padding-right: 0 !important;
+  border-bottom: 1px solid var(--hairline) !important;
+}
+html.nf-portal :is(.sc-drop) { border: 1px dashed var(--hairline-accent) !important; border-radius: 12px !important; padding: 1.2rem !important; }
+html.nf-portal :is(.ht-terminal, .ht-head) { border-bottom: 1px solid var(--hairline-accent) !important; }
+html.nf-portal .sc-table :is(th, td) { background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--hairline) !important; }
+html.nf-portal .sc-table th { border-bottom-color: var(--hairline-accent) !important; }
+html.nf-portal body > .card { position: relative; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+html.nf-portal[data-theme="light"] body > .card { text-shadow: 0 1px 2px rgba(255, 255, 255, .85); }
+/* drawers and toasts are dialogs: they keep a readable surface */
+html.nf-portal :is(.sc-drawer-panel, .sc-toast) {
+  background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important;
+  -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+}
+/* the security and migration pages title with a bare <h1> + .lede */
+html.nf-portal .wrap > h1 {
+  font-size: clamp(28px, 4vw, 44px) !important; font-weight: 900 !important; letter-spacing: -.03em !important;
+  line-height: 1.05 !important; text-transform: uppercase; text-shadow: none !important;
+  background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 26px var(--accent-glow));
+}
+html.nf-portal .wrap > h1::before {
+  content: 'ASTRA ORIGINALS  |  NOW STREAMING';
+  display: block; width: max-content; margin-bottom: 14px; padding: 5px 12px 5px 22px;
+  font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
+  -webkit-text-fill-color: var(--badge-text); color: var(--badge-text);
+  background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 4px;
+  background-image: radial-gradient(circle at 11px 50%, var(--accent-primary) 3px, transparent 3.5px);
+}
+html.nf-portal .wrap > .lede { color: var(--text-secondary) !important; }
+/* bare page titles (Scan Center, Dossier, Sign-Off, Handover Terminal) */
+html.nf-portal :is(.sc-header h1, .main > h1, .ht-main h1) {
+  font-size: clamp(28px, 4vw, 44px) !important; font-weight: 900 !important; letter-spacing: -.03em !important;
+  line-height: 1.05 !important; text-transform: uppercase; text-shadow: none !important;
+  background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: var(--accent-primary) !important;
+  filter: drop-shadow(0 0 26px var(--accent-glow));
+}
+html.nf-portal .sc-header { background: transparent !important; border: none !important; box-shadow: none !important; }
+
+/* section headers read left to right: chip, title … count / actions */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-header { justify-content: flex-start !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-header > .section-title { margin-right: auto; }
+
+/* view-director splits plain headings into animated .word spans; a
+   background-clip:text gradient on the heading does not paint through
+   those layered children, so each word carries the gradient itself */
+html.nf-portal :is(.page-header h1, .wrap > h1, .sc-header h1, .main > h1, .ht-main h1, .workspace-index h1) .word {
+  background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Fewer lines: rules only where they separate data ──
+   Kept: table rows, list rows (bugs, tasks, members), one line under each
+   section heading. Removed: filter strips, search/tool bars, company block
+   edges, quick-nav links (they underline on hover instead). */
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) :is(.company-index, .filters, .filter-bar, .user-search, .toolbar, .company-block, .sc-filters, .controls) {
+  border: none !important; box-shadow: none !important;
+}
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .company-block { padding-top: 1.6rem !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-card,
+html.nf-portal .dash-card { border-bottom-color: transparent !important; }
+html.nf-portal :is(.main, .wrap, .sc-body, .ht-body) .section-nav-card:hover,
+html.nf-portal .dash-card:hover { border-bottom-color: var(--accent-primary) !important; }
+
+/* by day, small tags and filter chips sit on solid paper so their fine
+   text survives the dark timber behind them (controls, not containers) */
+html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) :is(.badge, .type-badge, .sev-badge, .project-code-badge, .status-badge, .role-badge, .tag, .pill) {
+  background: rgba(255, 255, 255, .92) !important; text-shadow: none !important;
+}
+html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) :is(.company-chip, .role-filter button, .sc-sev) {
+  background: rgba(255, 255, 255, .86) !important; text-shadow: none !important;
+}
+html.nf-portal[data-theme="light"] :is(.main, .wrap, .sc-body, .ht-body) .company-chip.active { background: #dbeafe !important; }

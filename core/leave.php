@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'leave.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — leave quota enforcement.
 //
 // 'maternity' and 'unpaid' are unlimited (maternity is gated separately by
@@ -46,4 +46,34 @@ function astra_leave_balance($conn, int $user_id, array $company, string $leave_
     $used = (float)mysqli_fetch_row(mysqli_stmt_get_result($stmt))[0];
 
     return ['limit' => $limit, 'used' => $used, 'remaining' => max(0, $limit - $used)];
+}
+
+// Marks every day of an approved leave request as on_leave in attendance.
+// Days a manager set by hand (is_overridden = 1) are left alone, as are days
+// that already have a recorded status (for example a biometric check-in that
+// morning), so approval never silently rewrites real attendance.
+// Returns the number of days written.
+function astra_leave_apply_to_attendance($conn, array $leave, int $approver_id): int {
+    $start = DateTime::createFromFormat('Y-m-d', $leave['start_date']);
+    $end   = DateTime::createFromFormat('Y-m-d', $leave['end_date']);
+    if (!$start || !$end || $end < $start) return 0;
+    $company_id = (int)($leave['company_id'] ?? 0);
+    if (!$company_id) {
+        $q = mysqli_prepare($conn, "SELECT company_id FROM users WHERE id = ?");
+        mysqli_stmt_bind_param($q, "i", $leave['user_id']);
+        mysqli_stmt_execute($q);
+        $company_id = (int)(mysqli_fetch_row(mysqli_stmt_get_result($q))[0] ?? 0);
+    }
+    $note = 'Approved leave #' . (int)$leave['id'];
+    $ins = mysqli_prepare($conn,
+        "INSERT IGNORE INTO attendance (user_id, company_id, work_date, status, source, overridden_by, notes)
+         VALUES (?, ?, ?, 'on_leave', 'manual_manager', ?, ?)");
+    $n = 0;
+    for ($d = clone $start; $d <= $end; $d->modify('+1 day')) {
+        $day = $d->format('Y-m-d');
+        mysqli_stmt_bind_param($ins, "iisis", $leave['user_id'], $company_id, $day, $approver_id, $note);
+        mysqli_stmt_execute($ins);
+        $n += mysqli_stmt_affected_rows($ins);
+    }
+    return $n;
 }

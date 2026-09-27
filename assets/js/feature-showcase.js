@@ -17,6 +17,21 @@ const GATEWAY_MARKERS = [
   { location: [12.9716, 77.5946],   size: 0.05 }, // Bengaluru
 ];
 
+// Theme palettes. Dark: steel-navy sphere with a faint glow. Light: a pale
+// slate sphere that reads on a white card. Markers take the theme accent: red by night, blue by day.
+function getGlobeConfig(isLight) {
+  return {
+    dark: isLight ? 0 : 1,
+    diffuse: isLight ? 1.8 : 1.2,
+    mapBrightness: isLight ? 10 : 6,
+    baseColor: isLight ? [0.92, 0.94, 0.97] : [0.1, 0.12, 0.18],
+    markerColor: isLight ? [0.008, 0.396, 0.863] : [0.878, 0.18, 0.235],
+    glowColor: isLight ? [0.85, 0.88, 0.94] : [0.08, 0.1, 0.16],
+  };
+}
+// core/theme.js sets data-theme on <html>.
+const isLightTheme = () => document.documentElement.getAttribute('data-theme') === 'light';
+
 function initShowcaseGlobe() {
   const canvas = document.getElementById('showcaseGlobe');
   if (!canvas || canvas.dataset.globeInit === '1') return;
@@ -27,30 +42,38 @@ function initShowcaseGlobe() {
   let pointerDown = false;
   let pointerX = 0;
   let dragPhi = 0;
+  let globe = null;
+  let light = isLightTheme();
 
-  const globe = createGlobe(canvas, {
-    devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-    width: width * 2,
-    height: width * 2,
-    phi: 0,
-    theta: 0.28,
-    dark: 1,
-    diffuse: 1.2,
-    mapSamples: 16000,
-    mapBrightness: 6,
-    // AuthKit palette — deep steel navy base, void-violet markers, faint glow.
-    baseColor: [0.1, 0.12, 0.18],
-    markerColor: [0.4, 0.23, 0.95],
-    glowColor: [0.08, 0.1, 0.16],
-    opacity: 0.9,
-    markers: GATEWAY_MARKERS,
-    onRender: (state) => {
-      if (!pointerDown) phi += 0.0032;
-      state.phi = phi + dragPhi;
-      state.width = width * 2;
-      state.height = width * 2;
-    },
+  // cobe fixes its palette at creation, so a theme change rebuilds the
+  // globe. phi / dragPhi live out here, so the rotation carries straight on.
+  function build() {
+    if (globe) globe.destroy();
+    globe = createGlobe(canvas, {
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      width: width * 2,
+      height: width * 2,
+      phi: phi + dragPhi,
+      theta: 0.28,
+      mapSamples: 16000,
+      opacity: 0.9,
+      markers: GATEWAY_MARKERS,
+      ...getGlobeConfig(light),
+      onRender: (state) => {
+        if (!pointerDown) phi += 0.0032;
+        state.phi = phi + dragPhi;
+        state.width = width * 2;
+        state.height = width * 2;
+      },
+    });
+  }
+  build();
+
+  const themeObserver = new MutationObserver(() => {
+    const next = isLightTheme();
+    if (next !== light) { light = next; build(); }
   });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   canvas.style.opacity = '0';
   requestAnimationFrame(() => { canvas.style.transition = 'opacity 0.6s ease'; canvas.style.opacity = '1'; });
@@ -77,7 +100,8 @@ function initShowcaseGlobe() {
   window.addEventListener('resize', onResize);
 
   function teardown() {
-    globe.destroy();
+    themeObserver.disconnect();
+    if (globe) globe.destroy();
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('resize', onResize);

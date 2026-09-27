@@ -39,3 +39,24 @@ define('ANTHROPIC_KEY_FILE', __DIR__ . '/anthropic.key');
 define('DOC_AI_MODEL', 'claude-sonnet-4-5');
 
 define('PRIMARY_SYSADMIN_EMAIL', 'kushalgiduturi@gmail.com');
+
+// ── Legal entity (shown in every public footer and the policy documents) ─────
+// The person or company operating Astra. Leave LEGAL_ADDRESS or
+// LEGAL_COMPANY_ID empty ('') and that line is simply left out everywhere.
+define('LEGAL_ENTITY_NAME',   'Kushal Giduturi');
+define('LEGAL_ADDRESS',       '');
+define('LEGAL_COMPANY_ID',    '');
+define('LEGAL_SUPPORT_EMAIL', 'kushalgiduturi@gmail.com');
+define('LEGAL_EFFECTIVE_DATE', '2026-09-26');
+// Bump when the Terms or Privacy Policy change materially; stored with each
+// user's recorded acceptance so it is clear which text they agreed to.
+define('LEGAL_TERMS_VERSION', '2026-09-26');
+
+// ── Google OAuth 2.0 (Sign in with Google) ────────────────────────────────────
+// Create an OAuth client (type "Web application") in Google Cloud Console and
+// register GOOGLE_REDIRECT_URI as an authorised redirect URI. The secret is
+// read from config/google_oauth.key (one line) so it stays out of this file.
+// Leave GOOGLE_CLIENT_ID empty to disable the feature.
+define('GOOGLE_CLIENT_ID', getenv('ASTRA_GOOGLE_CLIENT_ID') ?: '920806944315-8fuaqb9tei1l7ui9tjklpubu61fr0sae.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET_FILE', __DIR__ . '/google_oauth.key');
+define('GOOGLE_REDIRECT_URI', 'http://localhost/login/auth/google_auth.php');

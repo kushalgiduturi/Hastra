@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'tours.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/tours.php  (P18)
 // Persisted "has this user seen the onboarding tour for this page" state.
 // Backs api/tour_status.php; the browser caches the answer in localStorage

@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'authkit.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/authkit.php
 // Render helpers for the AuthKit "Frosted Glass Cathedral at Midnight"
 // design system (assets/css/theme-authkit.css + authkit-ambient.css +

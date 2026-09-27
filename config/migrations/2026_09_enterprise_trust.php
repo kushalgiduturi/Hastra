@@ -91,6 +91,47 @@ function astra_migrate_enterprise_trust($conn, callable $out) {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", "created user_sessions");
     }
 
+    $out("== enterprise trust: pending registrations PII");
+    if ($table_exists('pending_registrations') && !$col('pending_registrations', 'email_bindex')) {
+        if ($has_index('pending_registrations', 'email')) $run("ALTER TABLE pending_registrations DROP INDEX email", "dropped the plaintext unique index on pending_registrations.email");
+        $run("ALTER TABLE pending_registrations MODIFY name TEXT NOT NULL, MODIFY email TEXT NOT NULL, MODIFY phone_number TEXT NULL", "widened pending_registrations name/email/phone_number for ciphertext");
+        $run("ALTER TABLE pending_registrations ADD COLUMN email_bindex VARCHAR(64) NULL AFTER email", "added pending_registrations.email_bindex");
+    }
+    if ($table_exists('pending_registrations')) {
+        $rows = mysqli_query($conn, "SELECT id, name, email, phone_number FROM pending_registrations WHERE email NOT LIKE 'astra:%'");
+        $upd = mysqli_prepare($conn, "UPDATE pending_registrations SET name = ?, email = ?, phone_number = ?, email_bindex = ? WHERE id = ?");
+        $n = 0;
+        while ($r = mysqli_fetch_assoc($rows)) {
+            $en = astra_db_encrypt($r['name']); $ee = astra_db_encrypt($r['email']);
+            $ep = astra_db_encrypt($r['phone_number']); $bi = astra_blind_index($r['email']);
+            mysqli_stmt_bind_param($upd, "ssssi", $en, $ee, $ep, $bi, $r['id']);
+            mysqli_stmt_execute($upd);
+            $n++;
+        }
+        $out($n ? "   encrypted $n pending registration(s)" : "   no plaintext pending registrations");
+        if (!$has_index('pending_registrations', 'uq_pending_email_bindex')) {
+            $run("ALTER TABLE pending_registrations ADD UNIQUE KEY uq_pending_email_bindex (email_bindex)", "added unique index on pending_registrations.email_bindex");
+        }
+        pending_reg_encrypted($conn, true);
+    }
+
+    // Honeytoken descriptions seeded before the no-dash copy rule. (Old log
+    // rows that quote them stay as written: they're sealed in the ledger.)
+    if ($table_exists('honeytokens')) {
+        $emd = "\u{2014}";
+        $n = 0;
+        foreach (mysqli_fetch_all(mysqli_query($conn, "SELECT id, description FROM honeytokens"), MYSQLI_ASSOC) as $h) {
+            if (!str_contains((string)$h['description'], $emd)) continue;
+            $fixed = str_replace(' ' . $emd . ' ', ', ', $h['description']);
+            $fixed = str_replace($emd, ', ', $fixed);
+            $u = mysqli_prepare($conn, "UPDATE honeytokens SET description = ? WHERE id = ?");
+            mysqli_stmt_bind_param($u, "si", $fixed, $h['id']);
+            mysqli_stmt_execute($u);
+            $n++;
+        }
+        if ($n) $out("   rewrote $n honeytoken description(s) without em dashes");
+    }
+
     $out("== enterprise trust: payment webhook key");
     $key_path = __DIR__ . '/../astra_payment_webhook.key';
     $existed  = is_file($key_path);

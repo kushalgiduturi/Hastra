@@ -51,6 +51,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "revie
         if (mysqli_stmt_execute($upd) && mysqli_stmt_affected_rows($upd) > 0) {
             $msg      = "Leave request " . $new_status . ".";
             $msg_type = "success";
+            if ($new_status === "approved") {
+                $lq = mysqli_prepare($conn, "SELECT * FROM leave_requests WHERE id = ?");
+                mysqli_stmt_bind_param($lq, "i", $leave_id);
+                mysqli_stmt_execute($lq);
+                $days = astra_leave_apply_to_attendance($conn, mysqli_fetch_assoc(mysqli_stmt_get_result($lq)), $admin_id);
+                if ($days) $msg .= " $days day(s) marked On Leave in attendance.";
+            }
         } else {
             $msg = "That request was already reviewed.";
         }

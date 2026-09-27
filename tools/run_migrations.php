@@ -32,6 +32,8 @@ require __DIR__ . '/../config/migrations/2026_09_account_type.php';
 require __DIR__ . '/../config/migrations/2026_09_user_pii.php';
 require __DIR__ . '/../config/migrations/2026_09_advanced_governance.php';
 require __DIR__ . '/../config/migrations/2026_09_enterprise_trust.php';
+require __DIR__ . '/../config/migrations/2026_09_security_scanner.php';
+require __DIR__ . '/../config/migrations/2026_09_google_sso.php';
 
 $reindex = in_array('--reindex', $argv, true);
 
@@ -51,6 +53,8 @@ try {
     astra_migrate_user_pii($conn, $out);
     astra_migrate_advanced_governance($conn, $out);
     astra_migrate_enterprise_trust($conn, $out);
+    astra_migrate_security_scanner($conn, $out);
+    astra_migrate_google_sso($conn, $out);
     echo "\nDone." . ($reindex ? "" : " (companies ran in list-only mode; pass --reindex to move users)") . "\n";
 } catch (Throwable $e) {
     fwrite(STDERR, "\n!! " . $e->getMessage() . "\n");

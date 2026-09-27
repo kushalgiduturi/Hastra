@@ -106,6 +106,18 @@
     updateButton(saved);
   }
 
+  // ── Keyboard parity for custom controls: anything given a button/radio/tab
+  // role without being a native control answers Enter and Space like one.
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const el = e.target;
+    if (!el || !el.matches || el.isContentEditable) return;
+    if (!el.matches('[role="button"], [role="radio"], [role="tab"], [role="switch"], [role="menuitem"]')) return;
+    if (el.matches('button, a[href], input, select, textarea, summary')) return;
+    e.preventDefault();
+    el.click();
+  });
+
   // ── Smooth page-to-page transitions ──────────────────────────────────────
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
@@ -126,7 +138,7 @@
   // Forms: fade out on submit too (skip AJAX-only forms that already use fetch)
   document.addEventListener('submit', function(e) {
     const form = e.target;
-    if (form.dataset.noTransition) return;
+    if (e.defaultPrevented || form.dataset.noTransition) return;
     document.body.classList.add('fade-out');
   });
 
@@ -152,5 +164,63 @@
   } else {
     runBrandIntro();
   }
+
+  // ── Atmosphere stack: the shared 3-D scene, the pointer engine, cloth
+  // cards, the handover seal and the view director ──
+  // Mounted from here because this is the one script every page loads, so
+  // no portal has to list more tags. The version query is read off this
+  // script's own URL, so the stack busts caches with ASSET_VERSION.
+  //   <body data-atmosphere-off>        nothing at all (the landing page host)
+  //   <body data-atmosphere-scene-off>  the pointer engine and reveals, no scene
+  (function mountAtmosphere() {
+    const me = document.currentScript;
+    if (!me || !me.src || window.top !== window.self) return;
+    let url;
+    try { url = new URL(me.src, location.href); } catch (err) { return; }
+    const base = url.href.replace(/core\/theme\.js.*$/, '');
+    const v = url.searchParams.get('v');
+    const q = v ? '?v=' + encodeURIComponent(v) : '';
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = base + 'assets/css/astra-atmosphere.css' + q;
+    document.head.appendChild(css);
+    // Signed-in portals wear the Netflix design system (theme-netflix.css +
+    // netflix-bento.css): a boxless UI over the temple world with its cyber
+    // layer, laser-beam controls and the dot-plus-ring cursor.
+    // Loaded here, in <head>, so the first paint is already themed.
+    const nf = /\/(portals\/|dashboard(\.php)?$)/.test(location.pathname);
+    if (nf) {
+      document.documentElement.classList.add('nf-portal');
+      ['theme-netflix', 'netflix-bento'].forEach(function(name) {
+        const l = document.createElement('link');
+        l.rel = 'stylesheet'; l.href = base + 'assets/css/' + name + '.css' + q;
+        document.head.appendChild(l);
+      });
+    }
+    function go() {
+      const b = document.body;
+      if (!b || b.hasAttribute('data-atmosphere-off')) return;
+      const noScene = b.hasAttribute('data-atmosphere-scene-off');
+      // portals: the temple world behind a boxless UI, with the cyber layer
+      // (kage-cyber) added to it and the Netflix spotlight + cursor on top.
+      // No cloth-cards: its fabric plates are container surfaces.
+      const stack = nf
+        ? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']
+        : ['landing-host', 'kage-scene', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director'];
+      stack.forEach(function(name) {
+        if ((name === 'landing-host' || name === 'kage-scene' || name === 'kage-cyber') && noScene) return;
+        // a page carrying its own dedicated cursor engine (auth/login.php's
+        // richer camera-space wisp trail) opts out of the shared simple one
+        if (name === 'hybrid-hand-cursor' && b.hasAttribute('data-cursor-off')) return;
+        if (name === 'cloth-cards' && !document.querySelector('[data-cloth]')) return;
+        if (name === 'handover-seal' && !document.querySelector('[data-handover-seal]')) return;
+        const s = document.createElement('script');
+        s.src = base + 'assets/js/' + name + '.js' + q;
+        s.async = false;                 // keep order: the scene needs the host, the director the rig
+        b.appendChild(s);
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+    else go();
+  })();
 
 })();

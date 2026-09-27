@@ -39,7 +39,7 @@ body:has(> .authkit-beam) {
   background: radial-gradient(
     ellipse 45% 100% at 50% 0%,
     rgba(186, 215, 247, 0.22) 0%,
-    rgba(102, 58, 243, 0.12) 35%,
+    rgba(var(--accent-rgb), 0.12) 35%,
     rgba(186, 215, 247, 0.05) 70%,
     transparent 100%
   );

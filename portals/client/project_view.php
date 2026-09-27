@@ -62,7 +62,7 @@ if ($projects && astra_escrow_ready($conn)) {
     background: var(--color-glass-edge, rgba(186, 215, 247, 0.16));
   }
   .pv-stage:last-child::before { display: none; }
-  .pv-stage.done::before { background: #663af3; }
+  .pv-stage.done::before { background: var(--accent); }
   .pv-dot {
     position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -71,7 +71,7 @@ if ($projects && astra_escrow_ready($conn)) {
     box-shadow: inset 0 0 0 1px var(--color-glass-edge, rgba(186, 215, 247, 0.3));
   }
   .pv-dot::after { content: counter(stage); }
-  .pv-stage.done .pv-dot { background: #663af3; color: #fff; box-shadow: none; }
+  .pv-stage.done .pv-dot { background: var(--accent); color: #fff; box-shadow: none; }
   .pv-stage.done .pv-dot::after { content: '✓'; }
   .pv-stage.blocked .pv-dot { box-shadow: inset 0 0 0 1px #f87171; color: #f87171; }
   .pv-label { margin-top: 8px; font-size: 12.5px; font-weight: 600; color: var(--color-ice-highlight, var(--text)); }
@@ -80,8 +80,8 @@ if ($projects && astra_escrow_ready($conn)) {
   .pv-stage.blocked .pv-state { color: #f87171; }
 
   .pv-foot { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 12.5px; color: var(--color-moon-mist, var(--text-dim)); }
-  .pv-btn { background: #663af3; color: #fff; text-decoration: none; border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; }
-  .pv-btn:hover { background: #7548f5; }
+  .pv-btn { background: var(--accent); color: #fff; text-decoration: none; border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 600; }
+  .pv-btn:hover { background: var(--accent-dim); }
   @media (max-width: 560px) {
     .pv-stages { grid-template-columns: 1fr; gap: 12px; }
     .pv-stage::before { display: none; }

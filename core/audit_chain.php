@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'audit_chain.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/audit_chain.php
 // Tamper-evident audit ledger. Every row written to `logs` carries:
 //   chain_index    1, 2, 3, ... with no gaps

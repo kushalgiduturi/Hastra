@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'audit.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/audit.php  (P17)
 // • Live status for the sysadmin's security transparency dashboard
 // • Company-scoped CSV export of the activity log for an IT Manager

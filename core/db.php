@@ -1,24 +1,25 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'db.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 
 require __DIR__ . '/../config/config.php';
 
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '23');
+    define('ASSET_VERSION', '82');
 }
 
-header("X-Frame-Options: DENY");
+header_remove('X-Powered-By'); // don't advertise the PHP version
+header("X-Frame-Options: SAMEORIGIN");
 header("X-Content-Type-Options: nosniff");
 header("Content-Security-Policy: default-src 'self'; "
      . "script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; "
      . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
      . "font-src 'self' https://fonts.gstatic.com; "
      . "img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; "
-     . "frame-src https://www.google.com; "
+     . "frame-src 'self' https://www.google.com; "
      . "connect-src 'self'; "
-     . "object-src 'none'; base-uri 'self'; frame-ancestors 'none'");
+     . "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://accounts.google.com");
 
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 mysqli_query($conn, "SET time_zone = '+05:30'");
@@ -27,12 +28,16 @@ if (!$conn) {
 }
 
 
+function astra_is_https(): bool {
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443;
+}
+
 function secure_session_start() {
     if (session_status() === PHP_SESSION_NONE) {
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => astra_is_https(),
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
@@ -178,6 +183,7 @@ function is_private_ip($ip) {
 }
 
 function get_public_ip() {
+    if (defined('ASTRA_OFFLINE')) return null;
     $services = [
         'https://api.ipify.org',
         'https://ipecho.net/plain',
@@ -196,7 +202,7 @@ function get_public_ip() {
 }
 
 function get_geo($ip) {
-    if (!$ip || is_private_ip($ip)) return null;
+    if (!$ip || is_private_ip($ip) || defined('ASTRA_OFFLINE')) return null;
     $url      = "http://ip-api.com/json/" . $ip . "?fields=status,city,regionName,country,lat,lon,isp";
     $response = @file_get_contents($url);
     if (!$response) return null;
@@ -248,6 +254,7 @@ require_once __DIR__ . '/crypto.php';
 require_once __DIR__ . '/audit_chain.php';
 require_once __DIR__ . '/session_guard.php';
 require_once __DIR__ . '/escrow.php';
+require_once __DIR__ . '/security_scans.php';
 require_once __DIR__ . '/network.php';
 require_once __DIR__ . '/geo_security.php';
 require_once __DIR__ . '/company.php';
@@ -265,6 +272,8 @@ require_once __DIR__ . '/canary.php';
 require_once __DIR__ . '/ephemeral_dossier.php';
 require_once __DIR__ . '/milestone_signoff.php';
 require_once __DIR__ . '/requirement_versions.php';
+require_once __DIR__ . '/google_oauth.php';
+require_once __DIR__ . '/legal.php';
 require_once __DIR__ . '/auth_check.php';
 
 // Enforced on every single request, after every helper above has loaded but

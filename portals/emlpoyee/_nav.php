@@ -3,7 +3,7 @@
 // $nav_current to be set by the including page ('my_tasks' | 'team_lead' |
 // 'testing' | 'deployment') before this is included. Computes $is_lead /
 // $has_qa_access itself.
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === '_nav.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 $nav_current = $nav_current ?? '';
 
 $__nav_user_id = (int)$_SESSION["user_id"];
@@ -31,7 +31,7 @@ $has_qa_access = mysqli_stmt_num_rows($__qa_check) > 0;
       <span></span><span></span><span></span>
     </button>
     <a href="<?= get_base_url() ?>portals/index" class="nav-brand-link" title="All pages for your role">
-      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
+      <div class="nav-icon"><svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg></div>
       <span class="nav-title">Astra</span>
     </a>
     <a class="nav-badge <?= $is_lead ? 'lead' : '' ?>" href="<?= get_base_url() ?>portals/emlpoyee/employee_portal"><?= $is_lead ? 'Team Lead' : 'Employee' ?></a>
@@ -40,8 +40,8 @@ $has_qa_access = mysqli_stmt_num_rows($__qa_check) > 0;
   <div class="nav-center-logo"><img src="<?= htmlspecialchars($__company_logo) ?>" alt="Company logo"></div>
   <?php endif; ?>
   <div class="nav-right">
-    <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle">
-      <span class="theme-icon"></span>
+    <button type="button" id="themeToggleBtn" onclick="toggleTheme()" class="btn-theme-toggle" aria-label="Switch between light and dark theme">
+      <span class="theme-icon" aria-hidden="true"></span>
       <span class="theme-label"></span>
     </button>
     <span class="nav-user">Signed in as <span><?= htmlspecialchars($_SESSION["user_name"]) ?></span></span>
@@ -90,5 +90,5 @@ if ($has_qa_access) {
 if ($is_lead) {
   $__dock_items[] = ['key' => 'deployment', 'label' => 'Deployment', 'href' => get_base_url() . 'portals/emlpoyee/deployment_portal', 'current' => ($nav_current ?? '') === 'deployment'];
 }
-render_dock($__dock_items);
+render_dock($__dock_items); astra_consent_banner();
 ?>

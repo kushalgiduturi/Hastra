@@ -163,7 +163,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   <?php endif; ?>
 
   <?php if ($revealed): ?>
-  <div class="section">
+  <div class="section" data-cloth="dossier">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">
       <?= htmlspecialchars($revealed['project_code']) ?>: <?= htmlspecialchars($revealed['project_title']) ?>
     </div>
@@ -177,7 +177,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   </div>
 
   <?php elseif ($peek): ?>
-  <div class="section">
+  <div class="section" data-cloth="dossier">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">
       <?= htmlspecialchars($peek['project_code']) ?>: <?= htmlspecialchars($peek['project_title']) ?>
     </div>
@@ -223,7 +223,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   </div>
 
   <?php if ($existing_dossiers): ?>
-  <div class="section">
+  <div class="section" data-cloth="dossier">
     <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">Recent dossiers</div>
     <table>
       <thead><tr><th>Project</th><th>Views</th><th>Expires</th><th>Status</th></tr></thead>
@@ -242,5 +242,30 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   <?php endif; ?>
   <?php endif; ?>
 </div>
+<?php
+/* the kinetic handover seal (assets/js/handover-seal.js): the dossier in
+   hand, or the state of the recent ones */
+$seal_d = $revealed ?: ($peek ?: null);
+if ($seal_d) {
+    $seal_title = $seal_d['project_code'] . ': ' . $seal_d['project_title'];
+    $seal_rows = [
+        ['Views', (int)$seal_d['view_count'] . ' of ' . (int)$seal_d['max_views']],
+        ['Expiry', !empty($seal_d['expires_at']) ? date('d M Y, H:i', strtotime($seal_d['expires_at'])) : 'After release'],
+        ['State', !empty($revealed['shredded_now']) ? 'Shredded' : 'Sealed'],
+    ];
+} else {
+    $all = $existing_dossiers ?? [];
+    $shred = count(array_filter($all, fn($d) => !empty($d['is_shredded'])));
+    $seal_title = 'Ephemeral dossiers';
+    $seal_rows = [['Recent', (string)count($all)], ['Live', (string)(count($all) - $shred)], ['Shredded', (string)$shred]];
+}
+$seal_rows[] = ['Shredding', 'Overwritten with random noise at the last view'];
+?>
+<div hidden data-handover-seal
+     data-seal-title="<?= htmlspecialchars($seal_title) ?>"
+     data-seal-kind="Zero-knowledge handover"
+     data-seal-hash=""
+     data-seal-verified="1"
+     data-seal-rows="<?= htmlspecialchars(json_encode($seal_rows)) ?>"></div>
 </body>
 </html>

@@ -11,6 +11,7 @@ config/backups/
 !schema_v2.sql
 !config/migrations/v3_advanced_governance.sql
 !config/migrations/v4_enterprise_trust.sql
+!config/migrations/v5_security_scanner.sql
 
 # User-uploaded content
 uploads/
@@ -21,3 +22,6 @@ _backup_*/
 # OS / editor cruft
 Thumbs.db
 .DS_Store
+
+# Test runner output (results, captured mail, logs)
+tests/.results/

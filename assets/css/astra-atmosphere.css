@@ -1,0 +1,225 @@
+/* Accent fallbacks for pages without core/theme.css; :where() has zero
+   specificity, so the real theme always wins where it is loaded. */
+:where(:root) { --accent: #e02e3c; --accent-bright: #ff4655; --accent-dim: #a3202c; --accent-rgb: 224,46,60; }
+:where([data-theme="light"]) { --accent: #0265dc; --accent-bright: #1668d0; --accent-dim: #024fac; --accent-rgb: 2,101,220; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Astra atmosphere: the layers around the shared 3-D scene.
+
+      0  #astra-kage-scene  the landing world (assets/js/kage-scene.js),
+                            fixed, the root's first child, outside <body>
+      1  body               lifted to its own stacking layer, transparent
+    top  #astra-hand        the pointer's petals and sparks, pointer-transparent
+
+   The scene sits at z-index 0 as its own layer outside <body>, and <body>
+   takes z-index 1 above it. A z-index 0 layer *inside* <body> would paint
+   over every block that is not itself positioned, and most of Astra's pages
+   have those. Body's background is cleared only once the scene has been
+   mounted (html.astra-kage), so a page where it never mounts keeps its own.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+#astra-kage-scene {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+  display: block; border: 0; margin: 0; padding: 0;
+  background: transparent; color-scheme: normal;
+  opacity: 0; transition: opacity 1.4s cubic-bezier(.16,1,.3,1);
+}
+#astra-kage-scene.is-live { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #astra-kage-scene { transition: none; } }
+
+/* obsidian night; a warm afternoon by day */
+html.astra-atmos { background: #05070a; }
+html.astra-atmos[data-theme="light"] { background: #f6ecd2; }
+html.astra-kage body { position: relative; z-index: 1; }
+html.astra-atmos body,
+html.astra-atmos[data-theme] body {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+/* viewport containment: the scene is fixed, so nothing it or the cloth
+   bleed does may widen the document or add a second scrollbar */
+html.astra-atmos, html.astra-atmos body { overflow-x: clip; }
+
+/* WebGL unavailable: the same sky, flat */
+html.astra-atmos-static body {
+  background:
+    radial-gradient(8vw 8vw at 78% 16%, rgba(224,35,28,.6), rgba(120,20,16,.18) 60%, transparent 72%),
+    linear-gradient(#05070a, #0b1018) fixed !important;
+}
+html.astra-atmos-static[data-theme="light"] body {
+  background:
+    radial-gradient(9vw 9vw at 75% 22%, rgba(255,245,180,.95), rgba(254,215,102,.45) 45%, transparent 75%),
+    linear-gradient(#7eb4e8, #fde68a 60%, #fffbeb) fixed !important;
+}
+
+/* ── Dashboard plates: charred-cypress glass by night, rice paper by day ──
+   One plate per page (the .main column) rather than one per table: every
+   backdrop-filter re-samples a scene that repaints each frame, so the count
+   of them is what costs. */
+.portal-surface-scrim {
+  background: rgba(10, 14, 18, 0.88);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid rgba(223, 231, 224, 0.15);
+  border-radius: 16px;
+}
+.main.portal-surface-scrim { margin-top: 1.25rem; margin-bottom: 2rem; }
+@media (max-width: 720px) { .main.portal-surface-scrim { border-radius: 0; border-left: 0; border-right: 0; } }
+[data-theme="light"] .portal-surface-scrim {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: #cbd5e1;
+  box-shadow: 0 24px 60px -30px rgba(15, 27, 46, .30);
+}
+
+/* crisp enterprise type on the plate */
+html:not([data-theme="light"]) .portal-surface-scrim h1,
+html:not([data-theme="light"]) .portal-surface-scrim h2,
+html:not([data-theme="light"]) .portal-surface-scrim h3,
+html:not([data-theme="light"]) .portal-surface-scrim strong { color: #ffffff; }
+html:not([data-theme="light"]) .portal-surface-scrim,
+html:not([data-theme="light"]) .portal-surface-scrim td,
+html:not([data-theme="light"]) .portal-surface-scrim th,
+html:not([data-theme="light"]) .portal-surface-scrim .section-nav-label,
+html:not([data-theme="light"]) .portal-surface-scrim .badge { color: #e2ecf8; }
+[data-theme="light"] .portal-surface-scrim h1,
+[data-theme="light"] .portal-surface-scrim h2,
+[data-theme="light"] .portal-surface-scrim h3 { color: #0b1220; }
+
+/* the cards on the plate: inset bone hairlines, an ember glow on hover */
+.portal-surface-scrim .section-nav-card,
+.portal-surface-scrim .stat-card {
+  background: rgba(16, 21, 26, 0.72);
+  border: 1px solid rgba(223, 231, 224, 0.15);
+  box-shadow: inset 0 1px 0 rgba(223, 231, 224, 0.06);
+}
+.portal-surface-scrim .section-nav-card:hover,
+.portal-surface-scrim .section-nav-card:focus-visible {
+  border-color: rgba(224, 35, 28, 0.55);
+  box-shadow: inset 0 1px 0 rgba(223, 231, 224, 0.08), 0 12px 30px -16px rgba(224, 35, 28, 0.65), 0 0 0 1px rgba(var(--accent-rgb), 0.18);
+}
+.portal-surface-scrim .section-nav-icon { background: rgba(224, 35, 28, 0.12); color: #ff6a4d; }
+[data-theme="light"] .portal-surface-scrim .section-nav-card,
+[data-theme="light"] .portal-surface-scrim .stat-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: #cbd5e1 !important;
+}
+[data-theme="light"] .portal-surface-scrim .section-nav-card:hover {
+  border-color: rgba(224, 35, 28, 0.45) !important;
+  box-shadow: 0 14px 28px -14px rgba(224, 35, 28, 0.35), 0 0 0 1px rgba(var(--accent-rgb), 0.12) !important;
+}
+[data-theme="light"] .portal-surface-scrim .section-nav-icon { background: rgba(224, 35, 28, 0.08); color: #c81e17; }
+
+/* primary actions: the theme accent, with a soft ember glow */
+.portal-surface-scrim button[type="submit"],
+.portal-surface-scrim .btn-primary,
+.portal-surface-scrim .ledger-btn,
+.portal-surface-scrim .modal-btn-confirm,
+.modal-btn-confirm {
+  background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 55%, var(--accent-dim) 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(var(--accent-rgb), 0.45) !important;
+  box-shadow: 0 10px 26px -12px rgba(var(--accent-rgb), 0.85), 0 0 18px -6px rgba(var(--accent-rgb), 0.45);
+  transition: box-shadow .3s ease, filter .3s ease, transform .2s ease;
+}
+.portal-surface-scrim button[type="submit"]:hover,
+.portal-surface-scrim .btn-primary:hover,
+.portal-surface-scrim .ledger-btn:hover,
+.modal-btn-confirm:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 14px 32px -12px rgba(var(--accent-rgb), 0.95), 0 0 26px -4px rgba(var(--accent-rgb), 0.55);
+}
+
+/* ── Cloth hosts ─────────────────────────────────────────────────────────
+   The fabric hangs at -1 inside the card's own stacking context: above the
+   card's cleared background, under every piece of the card's content. */
+.cloth-host { position: relative; isolation: isolate; overflow: visible; }
+.cloth-out { position: absolute; z-index: -1; pointer-events: none; display: block; }
+.on-cloth,
+[data-theme="light"] .on-cloth,
+[data-theme="light"] .section.on-cloth {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* a card mid-flex follows its spring, not a transition */
+.astra-flex { transition-property: background-color, border-color, box-shadow, color, opacity !important; will-change: transform; }
+
+/* ── The kinetic handover seal (assets/js/handover-seal.js) ─────────── */
+.astra-seal {
+  position: fixed; left: 0; top: 0; z-index: 900; width: 118px; height: 118px;
+  padding: 0; border: 0; background: none; cursor: grab; touch-action: none;
+  -webkit-tap-highlight-color: transparent; will-change: transform;
+}
+.astra-seal.is-carried { cursor: grabbing; }
+.astra-seal:focus-visible { outline: none; }
+.astra-seal:focus-visible .astra-seal-body { box-shadow: 0 0 0 3px #d1e4fa, 0 0 0 6px rgba(var(--accent-rgb),.6); }
+.astra-seal-body {
+  position: absolute; inset: 0; border-radius: 50%; display: block;
+  transform-style: preserve-3d; transition: box-shadow .3s ease;
+  filter: drop-shadow(0 14px 22px rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(224,35,28,.35));
+}
+.astra-seal-body svg { width: 100%; height: 100%; display: block; }
+.astra-seal-ring { font: 600 7.4px/1 'Onest', system-ui, sans-serif; letter-spacing: .12em; fill: rgba(255,233,226,.88); }
+.astra-seal-sheen {
+  position: absolute; inset: 9%; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(40% 32% at var(--sx, 50%) var(--sy, 40%), rgba(255,255,255,.55), rgba(255,255,255,0) 70%);
+}
+.astra-seal-tick {
+  position: absolute; right: 8px; top: 8px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; font: 700 13px/1 system-ui, sans-serif; color: #04150e;
+  background: #34d399; box-shadow: 0 0 0 2px #05070a, 0 4px 12px rgba(52,211,153,.5);
+}
+[data-theme="light"] .astra-seal-tick { box-shadow: 0 0 0 2px #fff, 0 4px 12px rgba(16,185,129,.4); }
+[data-theme="light"] .astra-seal-body { filter: drop-shadow(0 12px 20px rgba(15,23,42,.28)) drop-shadow(0 0 14px rgba(224,35,28,.22)); }
+.astra-seal-panel {
+  position: fixed; z-index: 901; width: min(340px, calc(100vw - 24px)); padding: 16px 18px 14px;
+  border-radius: 14px; color: #e2ecf8; font-family: var(--font-sans, 'Onest', system-ui, sans-serif);
+  background: rgba(10, 14, 18, 0.94); border: 1px solid rgba(223, 231, 224, 0.15);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 30px 70px -24px rgba(0,0,0,.8), 0 0 30px -10px rgba(224,35,28,.4);
+}
+.astra-seal-panel[hidden] { display: none; }
+.astra-seal-k { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #ff8a70; }
+.astra-seal-t { margin: 4px 0 10px; font-size: 16px; font-weight: 600; color: #fff; }
+.astra-seal-panel dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 12.5px; }
+.astra-seal-panel dt { color: #98a4b3; }
+.astra-seal-panel dd { margin: 0; color: #e2ecf8; }
+.astra-seal-h { margin-top: 12px; font-size: 11px; color: #98a4b3; }
+.astra-seal-h code { display: block; margin-top: 4px; padding: 8px 10px; border-radius: 8px; word-break: break-all;
+  font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #d1e4fa; background: rgba(0,0,0,.35); }
+.astra-seal-close { margin-top: 12px; height: 30px; padding: 0 14px; border-radius: 100px; cursor: pointer;
+  font: 600 10.5px/1 var(--font-sans, 'Onest', sans-serif); letter-spacing: .12em; text-transform: uppercase;
+  color: #e2ecf8; background: transparent; border: 1px solid rgba(223,231,224,.25); }
+.astra-seal-close:hover { background: rgba(223,231,224,.08); }
+[data-theme="light"] .astra-seal-panel { color: #0f172a; background: rgba(255,255,255,.96); border-color: #cbd5e1; box-shadow: 0 30px 70px -24px rgba(15,23,42,.35); }
+[data-theme="light"] .astra-seal-t { color: #0f172a; }
+[data-theme="light"] .astra-seal-k { color: #c81e17; }
+[data-theme="light"] .astra-seal-panel dt, [data-theme="light"] .astra-seal-h { color: #64748b; }
+[data-theme="light"] .astra-seal-panel dd { color: #1e293b; }
+[data-theme="light"] .astra-seal-h code { color: #312e81; background: #f1f5f9; }
+[data-theme="light"] .astra-seal-close { color: #0f172a; border-color: #cbd5e1; }
+
+/* ── Reveal grammar (landing engine) ──────────────────────────────────────
+   Hidden only once the director has run (html.astra-rv), so a page whose
+   script never loads is never left blank. */
+html.astra-rv [data-rv] { opacity: 0; }
+html.astra-rv [data-rv="up"] { transform: translate3d(0, 26px, 0); }
+html.astra-rv [data-rv].rv-in {
+  opacity: 1; transform: none;
+  transition: opacity .9s cubic-bezier(.16,1,.3,1), transform 1.05s cubic-bezier(.16,1,.3,1);
+}
+/* a word-split header carries its motion in the words, not the block */
+html.astra-rv [data-rv].word-reveal { opacity: 1; transform: none; }
+.word-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.word-reveal .word {
+  display: inline-block; opacity: 0; transform: translate3d(0, 112%, 0);
+  transition: transform .82s cubic-bezier(.16,1,.3,1), opacity .5s cubic-bezier(.16,1,.3,1);
+  transition-delay: var(--word-delay, 0ms);
+}
+.word-reveal.rv-in .word { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.astra-rv [data-rv], .word-reveal .word { opacity: 1 !important; transform: none !important; transition: none !important; }
+}

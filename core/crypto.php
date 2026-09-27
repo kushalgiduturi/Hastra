@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'crypto.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — application-level column encryption (AES-256-GCM, versioned envelope).
 //
 // Payload format
@@ -191,7 +191,7 @@ function astra_db_is_encrypted($value): bool {
 // or "admin", so a blind index there is equivalent to publishing the column.
 // Only high-entropy identifiers, where equality is the thing being searched
 // for anyway, may carry one:
-define('ASTRA_BINDEX_FIELDS', ['email_bindex', 'phone_bindex', 'domain_bindex', 'token_bindex']);
+define('ASTRA_BINDEX_FIELDS', ['email_bindex', 'phone_bindex', 'domain_bindex', 'token_bindex', 'google_id_bindex']);
 
 define('ASTRA_INDEX_KEY_FILE', __DIR__ . '/../config/astra_index.key');
 

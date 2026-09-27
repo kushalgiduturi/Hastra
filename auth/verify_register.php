@@ -30,11 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $msg = "Please enter a valid email address.";
         } else {
-            $check = mysqli_prepare($conn, "SELECT id, name FROM pending_registrations WHERE email = ?");
-            mysqli_stmt_bind_param($check, "s", $email);
+            [$pcol, $pval] = pending_reg_key($conn, $email);
+            $check = mysqli_prepare($conn, "SELECT id, name FROM pending_registrations WHERE $pcol = ?");
+            mysqli_stmt_bind_param($check, "s", $pval);
             mysqli_stmt_execute($check);
             $result  = mysqli_stmt_get_result($check);
             $pending = mysqli_fetch_assoc($result);
+            pending_reg_decrypt($pending);
 
             if (!$pending) {
                 // Check if already a verified user, to give a clearer message
@@ -52,8 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $otp = rand(100000, 999999);
 
-                $update = mysqli_prepare($conn, "UPDATE pending_registrations SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email = ?");
-                mysqli_stmt_bind_param($update, "ss", $otp, $email);
+                $update = mysqli_prepare($conn, "UPDATE pending_registrations SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE $pcol = ?");
+                mysqli_stmt_bind_param($update, "ss", $otp, $pval);
                 mysqli_stmt_execute($update);
 
                 $mail = new PHPMailer(true);
@@ -89,10 +91,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($email === "") {
             $msg = "Session expired. Please enter your email again.";
         } else {
-            $check = mysqli_prepare($conn, "SELECT id, name FROM pending_registrations WHERE email = ?");
-            mysqli_stmt_bind_param($check, "s", $email);
+            [$pcol, $pval] = pending_reg_key($conn, $email);
+            $check = mysqli_prepare($conn, "SELECT id, name FROM pending_registrations WHERE $pcol = ?");
+            mysqli_stmt_bind_param($check, "s", $pval);
             mysqli_stmt_execute($check);
             $pending = mysqli_fetch_assoc(mysqli_stmt_get_result($check));
+            pending_reg_decrypt($pending);
 
             if (!$pending) {
                 $msg   = "This registration no longer exists. Please register again.";
@@ -100,8 +104,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $otp = rand(100000, 999999);
 
-                $update = mysqli_prepare($conn, "UPDATE pending_registrations SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE email = ?");
-                mysqli_stmt_bind_param($update, "ss", $otp, $email);
+                $update = mysqli_prepare($conn, "UPDATE pending_registrations SET otp = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 10 MINUTE) WHERE $pcol = ?");
+                mysqli_stmt_bind_param($update, "ss", $otp, $pval);
                 mysqli_stmt_execute($update);
 
                 $mail = new PHPMailer(true);
@@ -147,11 +151,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 unset($_SESSION["verify_otp_attempts"]);
                 $msg = "Too many failed attempts. Please start over.";
             } else {
-                $stmt = mysqli_prepare($conn, "SELECT * FROM pending_registrations WHERE email = ? AND otp = ? AND otp_expiry > NOW()");
-                mysqli_stmt_bind_param($stmt, "ss", $email, $entered_otp);
+                [$pcol, $pval] = pending_reg_key($conn, $email);
+                $stmt = mysqli_prepare($conn, "SELECT * FROM pending_registrations WHERE $pcol = ? AND otp = ? AND otp_expiry > NOW()");
+                mysqli_stmt_bind_param($stmt, "ss", $pval, $entered_otp);
                 mysqli_stmt_execute($stmt);
                 $result  = mysqli_stmt_get_result($stmt);
                 $pending = mysqli_fetch_assoc($result);
+                pending_reg_decrypt($pending);
 
                 if ($pending) {
                     // Move from pending_registrations into users
@@ -210,6 +216,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $msg   = htmlspecialchars($company_name) . " was registered on Astra while you were verifying. Ask its IT Manager to add you to the team.";
                         $stage = "email";
                     } elseif ($new_user_id) {
+                        if (!empty($pending['terms_accepted_at']) && db_column_exists($conn, 'users', 'terms_accepted_at')) {
+                            $tc = mysqli_prepare($conn, "UPDATE users SET terms_accepted_at = ?, terms_version = ? WHERE id = ?");
+                            mysqli_stmt_bind_param($tc, "ssi", $pending['terms_accepted_at'], $pending['terms_version'], $new_user_id);
+                            mysqli_stmt_execute($tc);
+                        }
                         if ($company) {
                             $owner = mysqli_prepare($conn, "UPDATE companies SET user_id = ? WHERE id = ?");
                             mysqli_stmt_bind_param($owner, "ii", $new_user_id, $company["id"]);
@@ -740,7 +751,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
   .card input[type="email"]:focus, .card input[type="password"]:focus,
   .card input[type="text"]:focus, .card input[type="tel"]:focus {
     border-color: var(--color-void-violet) !important;
-    box-shadow: 0 0 0 3px rgba(102, 58, 243, 0.18) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18) !important;
   }
 
   .card button[type="submit"], .card .btn-login, .card .btn-send,
@@ -752,12 +763,12 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     font-weight: 600 !important;
     letter-spacing: .02em !important;
     text-transform: none !important;
-    box-shadow: 0 8px 24px -8px rgba(102, 58, 243, 0.5) !important;
+    box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.5) !important;
     transition: transform .15s, box-shadow .15s, background .15s !important;
   }
   .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
   .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
-    background: #7548f5 !important;
+    background: var(--accent-dim) !important;
     transform: translateY(-1px);
   }
 
@@ -777,7 +788,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
   <div class="brand">
     <div class="brand-icon">
-      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, #a78bfa)"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
+      <svg viewBox="0 0 48 48"><defs><linearGradient id="astraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#astraMark)" d="M24 3 L45 45 H34.4 L24 24.2 L13.6 45 H3 Z"/><path fill="url(#astraMark)" d="M24 14.5 L27.7 22 L35 25.5 L27.7 29 L24 36.5 L20.3 29 L13 25.5 L20.3 22 Z"/></svg>
     </div>
     <div class="brand-text">
       <div class="title">Astra</div>
@@ -952,5 +963,6 @@ if (boxes.length) {
 }
 </script>
 
+<?php astra_legal_footer('below'); astra_consent_banner(); ?>
 </body>
 </html>

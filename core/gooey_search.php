@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'gooey_search.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // core/gooey_search.php
 // Renders the vanilla-JS/CSS "Gooey Search" component (assets/css/
 // gooey-search.css, assets/js/gooey-search.js) — a small search field,

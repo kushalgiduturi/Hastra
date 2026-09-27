@@ -1,5 +1,5 @@
 <?php
-if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'geo_security.php') { http_response_code(404); exit(); }
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 // Astra — IP reputation / anti-VPN engine.
 //
 // astra_inspect_ip($ip) is the single entry point: it checks the ip_cache
@@ -65,6 +65,7 @@ const ASTRA_DATACENTER_ASN_KEYWORDS = [
 // caller can fail open (never block a login just because the reputation
 // provider is unreachable).
 function astra_query_ip_provider($ip) {
+    if (defined('ASTRA_OFFLINE')) return null; // tests: no outbound calls
     $url = "http://ip-api.com/json/" . rawurlencode($ip)
          . "?fields=status,message,country,city,isp,as,proxy,hosting,query";
     $context = stream_context_create(['http' => ['timeout' => 3]]);
