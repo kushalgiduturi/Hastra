@@ -75,24 +75,52 @@ export async function blindIndex(field: string, value: string, indexKeyB64: stri
   return bytesToB64(new Uint8Array(sig));
 }
 
-/** Argon2id password hashing (matches PHP's PASSWORD_ARGON2ID defaults closely). */
+// Password hashing: PBKDF2-HMAC-SHA256 via native Web Crypto, NOT Argon2id.
+//
+// The PHP app uses PASSWORD_ARGON2ID. The pilot originally ported that with
+// hash-wasm, but Cloudflare Workers disallow WebAssembly.compile() on bytes
+// at runtime (a security restriction — only WASM modules statically bundled
+// at deploy time are allowed), and hash-wasm only ships Argon2 as a
+// base64-embedded blob it compiles on the fly, with no standalone .wasm file
+// to import instead. Extracting and re-wiring that binary against
+// hash-wasm's internal calling convention is fragile and version-locked —
+// out of scope for the pilot. PBKDF2-SHA256 at a high iteration count is
+// OWASP's accepted fallback when Argon2id isn't available and needs no WASM.
+const PBKDF2_ITERATIONS = 600_000;
+const PBKDF2_SCHEME = "pbkdf2-sha256";
+
+async function pbkdf2Bits(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
+  const keyMaterial = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt: salt as BufferSource, iterations, hash: "SHA-256" },
+    keyMaterial,
+    256,
+  );
+  return new Uint8Array(bits);
+}
+
+function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
 export async function hashPassword(password: string): Promise<string> {
-  const { argon2id } = await import("hash-wasm");
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  return argon2id({
-    password,
-    salt,
-    parallelism: 1,
-    iterations: 3,
-    memorySize: 19456, // ~19 MiB, matches PHP's PASSWORD_ARGON2ID default
-    hashLength: 32,
-    outputType: "encoded",
-  });
+  const hash = await pbkdf2Bits(password, salt, PBKDF2_ITERATIONS);
+  return `${PBKDF2_SCHEME}$${PBKDF2_ITERATIONS}$${bytesToB64(salt)}$${bytesToB64(hash)}`;
 }
 
 export async function verifyPassword(password: string, encodedHash: string): Promise<boolean> {
-  const { argon2Verify } = await import("hash-wasm");
-  return argon2Verify({ password, hash: encodedHash });
+  const parts = encodedHash.split("$");
+  if (parts.length !== 4 || parts[0] !== PBKDF2_SCHEME) return false;
+  const [, iterationsStr, saltB64, hashB64] = parts;
+  const iterations = Number(iterationsStr);
+  if (!Number.isFinite(iterations) || iterations <= 0) return false;
+  const salt = b64ToBytes(saltB64);
+  const computed = await pbkdf2Bits(password, salt, iterations);
+  return timingSafeEqual(computed, b64ToBytes(hashB64));
 }
 
 /** A short numeric OTP, e.g. for email 2FA. */
