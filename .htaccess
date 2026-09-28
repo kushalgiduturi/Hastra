@@ -17,9 +17,24 @@ RewriteRule ^(_backup_|tests(/|$)) - [R=404,L]
 # internal core/, config/, tools/ files, which must keep answering 404
 # directly. GET/HEAD only, so a form post is never turned into a redirect.
 # The /Hastra/ prefix must match RewriteBase above.
+# mod_rewrite's own R=301 absolute-URL completion uses Apache's connection-
+# level scheme (mod_ssl), which is always "http" behind a TLS-terminating
+# proxy like Render's — SetEnvIf HTTPS=on (apache-hastra.conf) fixes PHP's
+# $_SERVER but not this. So when the trusted proxy says the original request
+# was HTTPS, build the absolute https:// target explicitly; only fall back
+# to the plain relative redirect (correct for local, unproxied HTTP) when it
+# doesn't.
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/|labs/)?)index\.php[\s?] [NC]
+RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
+RewriteRule ^ https://%{HTTP_HOST}/%1 [R=301,L]
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/|labs/)?)index\.php[\s?] [NC]
 RewriteRule ^ %1 [R=301,L]
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal|labs)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
+RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
+RewriteRule ^ https://%{HTTP_HOST}/%1 [R=301,L]
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal|labs)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
 RewriteRule ^ %1 [R=301,L]
