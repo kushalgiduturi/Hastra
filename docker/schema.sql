@@ -120,7 +120,8 @@ CREATE TABLE `deleted_users` (
   `role` varchar(50) DEFAULT NULL,
   `deleted_at` datetime NOT NULL,
   `deleted_by` int(11) NOT NULL,
-  `deleted_by_name` varchar(100) DEFAULT NULL
+  `deleted_by_name` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `deliveries`;
