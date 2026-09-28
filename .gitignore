@@ -13,6 +13,13 @@ config/backups/
 !config/migrations/v4_enterprise_trust.sql
 !config/migrations/v5_security_scanner.sql
 !docker/schema.sql
+!edge/supabase/migrations/*.sql
+
+# edge/ (Cloudflare Pages + Supabase pilot) build output / local secrets
+edge/node_modules/
+edge/dist/
+edge/.wrangler/
+edge/.dev.vars
 
 # User-uploaded content
 uploads/
