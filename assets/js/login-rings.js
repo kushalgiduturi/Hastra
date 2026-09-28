@@ -1,10 +1,13 @@
 /* Hastra — the rings on the sign-in hand (auth/login.php).
 
-   Five engraved rings worn as bracelets where the hand's wrist rises out of
-   the mist, each turning about the arm. The back canvas is slotted in under
-   the hand video and the front canvas over it (both inside
-   #temple-hand-stage), so every ring passes behind the wrist and comes back
-   around in front.
+   The same ten-rings-in-a-circle formation as the Labs showcase centrepiece
+   and the reference art (assets/js/shang-chi-rings.js, mode: 'circle'):
+   engraved gunmetal rings linked in a ring, each woven over one neighbour
+   and under the other, turning and tilting in space — centred on the
+   hand's wrist as it rises out of the mist, not stacked as bracelets along
+   the forearm. The back canvas is slotted in under the hand video and the
+   front canvas over it (both inside #temple-hand-stage), so the formation
+   passes behind the wrist and comes back around in front.
 
    Performance: the canvases cover only a box around the wrist, each on its
    own compositor layer. Full-viewport canvases here made the browser redo
@@ -30,20 +33,23 @@ if (stage && box && !off) {
   box.before(back);
   box.after(front);
 
-  // the wrist geometry in viewport space, and the canvas box around it
+  // the wrist geometry in viewport space, and the (square, circle-formation-
+  // sized) canvas box around it
   let geo = null;
   const layout = () => {
     const b = box.getBoundingClientRect();
     if (!b.width) return;
-    const R = b.width * 0.135, x = b.left + b.width * 0.465, y = b.top + b.height * 0.585, span = b.height * 0.24;
-    const L = Math.round(x - R * 2.6), T = Math.round(y - R * 1.6), W = Math.round(R * 5.2), H = Math.round(span + R * 3.2);
-    geo = { x: x - L, y: y - T, span, radius: R };
+    const x = b.left + b.width * 0.465, y = b.top + b.height * 0.585;
+    const F = b.width * 0.135 * 2.2;         // formation radius (was the bracelet ring radius)
+    const half = Math.round(F * 1.6);
+    const L = Math.round(x - half), T = Math.round(y - half), W = half * 2, H = half * 2;
+    geo = { x: x - L, y: y - T, radius: F };
     for (const c of [back, front]) Object.assign(c.style, { left: L + 'px', top: T + 'px', width: W + 'px', height: H + 'px' });
   };
   layout();
   addEventListener('resize', layout, { passive: true });
 
-  const rings = createPowerRings({ back, front, mode: 'arm', count: 5, startHidden: true, anchor: () => geo });
+  const rings = createPowerRings({ back, front, mode: 'circle', startHidden: true, anchor: () => geo });
 
   // The rings are the entrance's power-up: they charge in while the hand is
   // still rising, then discharge (sparks, 2.5× spin) the instant the card
