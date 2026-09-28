@@ -48,7 +48,7 @@ t('the wider CSP (wasm, blob workers, YouTube no-cookie) applies only under /lab
 });
 // LABS_CSP is a run of concatenated "…" literals; join them (no code is evaluated).
 function LABS_CSP_EXPECTED(): string {
-    preg_match('/const LABS_CSP = (.+?);\n/s', file_get_contents(ASTRA_ROOT . '/labs/_boot.php'), $m);
+    preg_match('/const LABS_CSP = (.+?);\r?\n/s', file_get_contents(ASTRA_ROOT . '/labs/_boot.php'), $m);
     preg_match_all('/"([^"]*)"/', $m[1] ?? '', $parts);
     return implode('', $parts[1]);
 }
