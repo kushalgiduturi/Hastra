@@ -21,12 +21,29 @@ header("Content-Security-Policy: default-src 'self'; "
      . "connect-src 'self'; "
      . "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://accounts.google.com");
 
-$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-mysqli_query($conn, "SET time_zone = '+05:30'");
+// A managed database (Aiven, PlanetScale, etc.) needs TLS and a non-default
+// port; local XAMPP leaves DB_SSL_CA empty and connects plainly as before.
+if (DB_SSL_CA !== '') {
+    $conn = mysqli_init();
+    mysqli_ssl_set($conn, null, null, DB_SSL_CA, null, null);
+    mysqli_real_connect($conn, DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, null, MYSQLI_CLIENT_SSL);
+} else {
+    $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+}
 if (!$conn) {
     die("Connection failed.");
 }
+mysqli_query($conn, "SET time_zone = '+05:30'");
 
+
+// SMTP credentials for every PHPMailer instance (called right after SMTPAuth
+// is set). Local development uses an unauthenticated catcher; a production
+// provider needs MAIL_AUTH with MAIL_USER / MAIL_PASS (config/config.php).
+function astra_mail_auth($mail): void {
+    if (!MAIL_AUTH) return;
+    $mail->Username = MAIL_USER;
+    $mail->Password = MAIL_PASS;
+}
 
 function astra_is_https(): bool {
     return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443;

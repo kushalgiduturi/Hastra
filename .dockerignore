@@ -1,0 +1,14 @@
+# Never ship: secrets, history, local data, tests, backups
+.git
+.env
+config/*.key
+config/backups
+uploads
+tests
+_backup_*
+Claude outputs
+.claude
+*.zip
+*.log
+login_broken
+docker-compose.yml

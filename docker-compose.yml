@@ -1,0 +1,63 @@
+# Hastra — production stack: app (PHP 8.2 + Apache), MariaDB, and Caddy for
+# automatic HTTPS (Let's Encrypt). Only Caddy is published to the internet;
+# the app and database are reachable on the private network only.
+#
+#   cp .env.example .env    # then fill it in
+#   docker compose up -d --build
+#
+# See DEPLOY.md.
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${HASTRA_DB_NAME}
+      MARIADB_USER: ${HASTRA_DB_USER}
+      MARIADB_PASSWORD: ${HASTRA_DB_PASS}
+      MARIADB_ROOT_PASSWORD: ${HASTRA_DB_ROOT_PASS}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-time-zone=+05:30"]
+    volumes:
+      - hastra-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  app:
+    build:
+      context: .
+      args:
+        HASTRA_BASE_PATH: ${HASTRA_BASE_PATH:-/}
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - hastra-keys:/data/keys          # encryption keys: BACK THIS UP
+      - hastra-uploads:/var/www/html/uploads
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      HASTRA_DOMAIN: ${HASTRA_DOMAIN}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  hastra-db:
+  hastra-keys:
+  hastra-uploads:
+  caddy-data:
+  caddy-config:

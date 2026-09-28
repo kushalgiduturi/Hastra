@@ -69,6 +69,10 @@ Plain PHP 8 and MySQL/MariaDB, no framework, no build step. Designed to run unde
 6. **Labs video ranking (optional).** Without a key, each syllabus topic links to YouTube's own most-viewed results. With a key (Google Cloud Console → enable *YouTube Data API v3* → create an API key, restricted to that API), topics show in-page view-ranked tutorials. Results are cached for 7 days and fresh lookups are capped at 90 a day, which stays inside the free 10,000-unit quota.
 7. Open `http://localhost/Hastra/` (enterprise) or `http://localhost/Hastra/labs/` (free tools).
 
+## Deployment
+
+Production runs as a Docker stack (app on PHP 8.2 + Apache, MariaDB, and Caddy for automatic HTTPS) on any Linux VPS. Every deployment setting comes from `.env` (see `.env.example`); local XAMPP needs none of it. Step-by-step instructions, including backups of the encryption keys, are in [DEPLOY.md](DEPLOY.md).
+
 ## Tests
 
 ```bash

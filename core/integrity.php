@@ -98,7 +98,7 @@ function bugs_have_cwe($conn) {
 const SECRET_PREFIX = 'enc:v1:';
 
 function secret_key_path() {
-    return defined('ASTRA_KEY_FILE') ? ASTRA_KEY_FILE : __DIR__ . '/../config/hastra.key';
+    return defined('ASTRA_KEY_FILE') ? ASTRA_KEY_FILE : __DIR__ . '/../config/astra.key';
 }
 
 // Loads the 32-byte key; creates it when $create is true and none exists.
@@ -134,7 +134,7 @@ function encrypt_secret($plain) {
     $key = secret_key(true);
     if (function_exists('openssl_encrypt') && in_array('aes-256-gcm', openssl_get_cipher_methods(), true)) {
         $iv  = random_bytes(12);
-        $ct  = openssl_encrypt($plain, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, 'hastra-credentials');
+        $ct  = openssl_encrypt($plain, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, 'astra-credentials');
         if ($ct === false) throw new RuntimeException("Encryption failed.");
         return SECRET_PREFIX . 'o:' . base64_encode($iv . $tag . $ct);
     }
@@ -155,7 +155,7 @@ function decrypt_secret($stored) {
     $raw  = base64_decode(substr($stored, strlen(SECRET_PREFIX) + 2), true);
     if ($raw === false) throw new RuntimeException("Encrypted value is damaged.");
     if ($kind === 'o') {
-        $plain = openssl_decrypt(substr($raw, 28), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, substr($raw, 0, 12), substr($raw, 12, 16), 'hastra-credentials');
+        $plain = openssl_decrypt(substr($raw, 28), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, substr($raw, 0, 12), substr($raw, 12, 16), 'astra-credentials');
     } elseif ($kind === 's' && function_exists('sodium_crypto_secretbox_open')) {
         $plain = sodium_crypto_secretbox_open(substr($raw, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES), substr($raw, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES), $key);
     } else {

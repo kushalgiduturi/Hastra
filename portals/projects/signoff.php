@@ -32,7 +32,7 @@ function signoff_send_otp($to, $otp) {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host        = MAIL_HOST;
-    $mail->SMTPAuth    = MAIL_AUTH;
+    $mail->SMTPAuth    = MAIL_AUTH; astra_mail_auth($mail);
     $mail->Port        = MAIL_PORT;
     $mail->SMTPSecure  = MAIL_SECURE;
     $mail->SMTPAutoTLS = false;

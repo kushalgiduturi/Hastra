@@ -39,13 +39,21 @@ function astra_is_public_ip($ip) {
 function astra_get_client_ip(): string {
     $candidates = [];
 
-    if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-        $candidates[] = trim($_SERVER['HTTP_CF_CONNECTING_IP']);
-    }
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        // "client, proxy1, proxy2, ..." — the client is always first.
-        $parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-        $candidates[] = trim($parts[0]);
+    // Forwarding headers are written by whoever sends the request, so they are
+    // only believed when the operator says a trusted proxy sets them
+    // (HASTRA_TRUST_FORWARDED=1, e.g. behind Cloudflare). Otherwise any
+    // visitor could claim any address and walk around rate limits, lockouts
+    // and the honeytoken IP blocks. The Docker image doesn't need this:
+    // Apache's mod_remoteip puts the real client address in REMOTE_ADDR.
+    if (getenv('HASTRA_TRUST_FORWARDED') === '1') {
+        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            $candidates[] = trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+        }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            // "client, proxy1, proxy2, ..." — the client is always first.
+            $parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $candidates[] = trim($parts[0]);
+        }
     }
     if (!empty($_SERVER['REMOTE_ADDR'])) {
         $candidates[] = trim($_SERVER['REMOTE_ADDR']);
