@@ -24,16 +24,16 @@ RewriteRule ^(_backup_|tests(/|$)) - [R=404,L]
 # was HTTPS, build the absolute https:// target explicitly; only fall back
 # to the plain relative redirect (correct for local, unproxied HTTP) when it
 # doesn't.
+RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/|labs/)?)index\.php[\s?] [NC]
-RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
 RewriteRule ^ https://%{HTTP_HOST}/%1 [R=301,L]
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:portals/|labs/)?)index\.php[\s?] [NC]
 RewriteRule ^ %1 [R=301,L]
+RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal|labs)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
-RewriteCond %{HTTP:X-Forwarded-Proto} ^https$
 RewriteRule ^ https://%{HTTP_HOST}/%1 [R=301,L]
 RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
 RewriteCond %{THE_REQUEST} \s/Hastra/((?:auth|portals|legal|labs)/(?:[\w-]+/)*[a-zA-Z][\w-]*|dashboard|download)\.php[\s?] [NC]
