@@ -416,7 +416,7 @@ CREATE TABLE `password_set_tokens` (
   `token_bindex` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_password_set_tokens_bindex` (`token_bindex`),
-  UNIQUE KEY `token` (`token`) USING HASH,
+  UNIQUE KEY `token` (`token`(255)),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
