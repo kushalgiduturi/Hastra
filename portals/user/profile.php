@@ -23,7 +23,7 @@ $user = mysqli_fetch_assoc(mysqli_stmt_get_result($fetch));
 
 if (!$user) {
     session_unset(); session_destroy();
-    header("Location: " . get_base_url() . "signin");
+    header("Location: " . APP_URL . "signin");
     exit();
 }
 $user['phone_number'] = astra_db_decrypt($user['phone_number']);

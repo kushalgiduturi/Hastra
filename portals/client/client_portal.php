@@ -10,7 +10,7 @@ $scope_ids     = id_list($ctx['member_ids']);
 $is_it_manager = client_can($ctx, 'manage_team');
 $can_submit    = client_can($ctx, 'submit_requirement');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "workspace/client/docs");
+    header("Location: " . APP_URL . "workspace/client/docs");
     exit();
 }
 

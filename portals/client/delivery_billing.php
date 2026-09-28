@@ -9,7 +9,7 @@ $scope_ids     = id_list($ctx['member_ids']);
 $can_pay       = client_can($ctx, 'pay_invoice');
 $can_security  = client_can($ctx, 'security_summary') && access_schema_ready($conn);
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "workspace/client/docs");
+    header("Location: " . APP_URL . "workspace/client/docs");
     exit();
 }
 

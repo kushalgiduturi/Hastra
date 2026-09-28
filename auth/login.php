@@ -10,12 +10,12 @@ require '../PHPMailer/Exception.php';
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
-        case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/"); break;
-        case "admin":            header("Location: " . get_base_url() . "workspace/admin/");       break;
-        case "employee":         header("Location: " . get_base_url() . "workspace/employee/"); break;
-        case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
-        case "client": header("Location: " . get_base_url() . "workspace/client/"); break;      break;
-        default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
+        case "sysadmin":         header("Location: " . APP_URL . "workspace/sysadmin/"); break;
+        case "admin":            header("Location: " . APP_URL . "workspace/admin/");       break;
+        case "employee":         header("Location: " . APP_URL . "workspace/employee/"); break;
+        case "pending_employee": header("Location: " . APP_URL . "workspace/user/newuser-portal");      break;
+        case "client": header("Location: " . APP_URL . "workspace/client/"); break;      break;
+        default:                 header("Location: " . APP_URL . "workspace/user/newuser-portal");      break;
     }
     exit();
 }
@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         log_activity($conn, $user["id"], "login_otp_sent",$user["name"]);
                         $_SESSION["otp_email"] = $email;
-                        header("Location: verify");
+                        header("Location: " . APP_URL . "verify");
                         exit();
 
                     } catch (Exception $e) {

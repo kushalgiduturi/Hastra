@@ -8,7 +8,7 @@ $ctx           = client_context($conn, (int)$_SESSION["user_id"]);
 $scope_ids     = id_list($ctx['member_ids']);
 $can_comment   = client_can($ctx, 'comment');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "workspace/client/docs");
+    header("Location: " . APP_URL . "workspace/client/docs");
     exit();
 }
 

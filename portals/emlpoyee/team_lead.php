@@ -25,7 +25,7 @@ while ($lp = mysqli_fetch_assoc($lead_projects_result)) {
 $is_lead = count($lead_projects) > 0;
 
 if (!$is_lead) {
-    header("Location: " . get_base_url() . "workspace/employee/");
+    header("Location: " . APP_URL . "workspace/employee/");
     exit();
 }
 

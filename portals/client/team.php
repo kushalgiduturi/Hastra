@@ -33,7 +33,7 @@ $flash = $_SESSION["team_flash"] ?? null;
 unset($_SESSION["team_flash"]);
 function team_redirect($type, $text) {
     $_SESSION["team_flash"] = ['type' => $type, 'text' => $text];
-    header("Location: " . get_base_url() . "workspace/client/team");
+    header("Location: " . APP_URL . "workspace/client/team");
     exit();
 }
 

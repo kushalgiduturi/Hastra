@@ -25,7 +25,7 @@ if (!access_schema_ready($conn)) {
     verify_csrf_token();
     $token = create_security_link($conn, (int)($_POST["delivery_id"] ?? 0), $user_id, $ctx['member_ids'], $error);
     if ($token) {
-        header("Location: " . get_base_url() . "workspace/client/security-view?t=" . $token);
+        header("Location: " . APP_URL . "workspace/client/security-view?t=" . $token);
         exit();
     }
 } else {

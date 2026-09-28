@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $mail->send();
 
                 $_SESSION["reset_email"] = $email;
-                header("Location: reset-code");
+                header("Location: " . APP_URL . "reset-code");
                 exit();
 
             } catch (Exception $e) {

@@ -14,11 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") $msg = htmlspecialchars(astra_google_e
 
 if (isset($_SESSION["user_id"])) {
     switch ($_SESSION["user_role"]) {
-        case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/"); break;
-        case "admin":            header("Location: " . get_base_url() . "workspace/admin/");       break;
-        case "employee":         header("Location: " . get_base_url() . "workspace/employee/"); break;
-        case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
-        default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");      break;
+        case "sysadmin":         header("Location: " . APP_URL . "workspace/sysadmin/"); break;
+        case "admin":            header("Location: " . APP_URL . "workspace/admin/");       break;
+        case "employee":         header("Location: " . APP_URL . "workspace/employee/"); break;
+        case "pending_employee": header("Location: " . APP_URL . "workspace/user/newuser-portal");      break;
+        default:                 header("Location: " . APP_URL . "workspace/user/newuser-portal");      break;
     }
     exit();
 }
@@ -173,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->send();
 
                     $_SESSION["verify_email"] = $email;
-                    header("Location: " . get_base_url() . "verify-email");
+                    header("Location: " . APP_URL . "verify-email");
                     exit();
 
                 } catch (Exception $e) {
