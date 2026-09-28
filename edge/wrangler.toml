@@ -1,0 +1,18 @@
+name = "hastra-edge"
+compatibility_date = "2026-09-28"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+# Secrets (set with `wrangler pages secret put <NAME>`, never committed):
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+#   HASTRA_DB_ENC_KEY        base64, 32 bytes — AES-256-GCM column key (v1)
+#   HASTRA_DB_INDEX_KEY      base64, 32 bytes — HMAC blind-index key
+#   HASTRA_SESSION_KEY       base64, 32 bytes — HMAC session-token signing key
+#   HASTRA_RECAPTCHA_SECRET
+#   HASTRA_GOOGLE_CLIENT_ID
+#   HASTRA_GOOGLE_CLIENT_SECRET
+#   HASTRA_MAIL_API_KEY      Brevo (or similar) transactional-email API key —
+#                            Workers can't speak raw SMTP, so mail goes over
+#                            HTTP; see functions/_lib/mail.ts
+#   HASTRA_MAIL_FROM / HASTRA_MAIL_NAME

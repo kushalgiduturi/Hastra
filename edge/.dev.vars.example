@@ -1,0 +1,18 @@
+# Local dev secrets for `wrangler pages dev`. Copy to .dev.vars (git-ignored)
+# and fill in. In production these are set with `wrangler pages secret put`.
+
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=
+
+# base64, 32 random bytes each — e.g. `openssl rand -base64 32`
+HASTRA_DB_ENC_KEY=
+HASTRA_DB_INDEX_KEY=
+HASTRA_SESSION_KEY=
+
+HASTRA_RECAPTCHA_SECRET=
+HASTRA_GOOGLE_CLIENT_ID=
+HASTRA_GOOGLE_CLIENT_SECRET=
+
+HASTRA_MAIL_API_KEY=
+HASTRA_MAIL_FROM=noreply@hastra.example
+HASTRA_MAIL_NAME=Hastra
