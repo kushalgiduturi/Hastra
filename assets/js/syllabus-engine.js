@@ -590,13 +590,17 @@ function targetOpts() {
 
 $('#syl-run').addEventListener('click', e => busy(e.currentTarget, async () => {
   const msg = $('#syl-msg');
+  const ac = new AbortController();
+  const reading = text => el('div', { class: 'lx-alert lx-alert--info' },
+    el('span', { text }), ' ',
+    el('button', { type: 'button', class: 'lx-vbtn', text: 'Stop', onclick: () => ac.abort() }));
   try {
     const opts = targetOpts();
     if (!pending.length) throw new Error('Add at least one PDF, DOCX or TXT syllabus (or try the demo).');
     const docs = [], warnings = [];
     for (const f of pending) {
-      msg.replaceChildren(el('div', { class: 'lx-alert lx-alert--info', text: `Reading ${f.name}…` }));
-      const d = await extractText(f);
+      msg.replaceChildren(reading(`Reading ${f.name}…`));
+      const d = await extractText(f, { signal: ac.signal });
       warnings.push(...d.warnings);
       docs.push(d);
     }
@@ -608,7 +612,10 @@ $('#syl-run').addEventListener('click', e => busy(e.currentTarget, async () => {
     pending = []; paintFiles();
     renderAll();
     $('#syl-banner').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch (err) { msg.replaceChildren(el('div', { class: 'lx-alert lx-alert--err', role: 'alert', text: err.message })); }
+  } catch (err) {
+    if (err.name === 'AbortError') msg.replaceChildren(el('div', { class: 'lx-alert lx-alert--warn', text: 'Stopped.' }));
+    else msg.replaceChildren(el('div', { class: 'lx-alert lx-alert--err', role: 'alert', text: err.message }));
+  }
 }));
 
 $('#syl-demo').addEventListener('click', e => busy(e.currentTarget, async () => {
