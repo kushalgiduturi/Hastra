@@ -99,7 +99,7 @@ function astra_migrate_crypto($conn, callable $out) {
 
     $out("");
     $out("== column encryption: deliveries.credentials_note");
-    $out("   already covered by the integrity migration (core/integrity.php, config/hastra.key), left untouched here");
+    $out("   already covered by the integrity migration (core/integrity.php, config/astra.key), left untouched here");
 }
 
 if ($__astra_crypto_cli) {

@@ -12,6 +12,7 @@ config/backups/
 !config/migrations/v3_advanced_governance.sql
 !config/migrations/v4_enterprise_trust.sql
 !config/migrations/v5_security_scanner.sql
+!docker/schema.sql
 
 # User-uploaded content
 uploads/
@@ -25,3 +26,6 @@ Thumbs.db
 
 # Test runner output (results, captured mail, logs)
 tests/.results/
+
+# Docker production settings (secrets)
+.env

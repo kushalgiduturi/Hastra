@@ -42,7 +42,7 @@ function astra_send_mail($to, $subject, $body) {
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
     $mail->isSMTP();
     $mail->Host        = MAIL_HOST;
-    $mail->SMTPAuth    = MAIL_AUTH;
+    $mail->SMTPAuth    = MAIL_AUTH; astra_mail_auth($mail);
     $mail->Port        = MAIL_PORT;
     $mail->SMTPSecure  = MAIL_SECURE;
     $mail->SMTPAutoTLS = false;

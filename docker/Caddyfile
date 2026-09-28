@@ -1,0 +1,14 @@
+# Hastra — reverse proxy with automatic HTTPS (Let's Encrypt).
+# HASTRA_DOMAIN comes from .env, e.g. hastra.example
+{$HASTRA_DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	reverse_proxy app:80
+}
+
+www.{$HASTRA_DOMAIN} {
+	redir https://{$HASTRA_DOMAIN}{uri} permanent
+}

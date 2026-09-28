@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                 try {
                     $mail->isSMTP();
                     $mail->Host        = MAIL_HOST;
-                    $mail->SMTPAuth    = MAIL_AUTH;
+                    $mail->SMTPAuth    = MAIL_AUTH; astra_mail_auth($mail);
                     $mail->Port        = MAIL_PORT;
                     $mail->SMTPSecure  = MAIL_SECURE;
                     $mail->SMTPAutoTLS = false;
