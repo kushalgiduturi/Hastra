@@ -71,7 +71,7 @@ function secure_session_start() {
             session_unset();
             session_destroy();
             if (basename($_SERVER["PHP_SELF"]) !== "login.php") {
-                header("Location: " . get_base_url() . "signin");
+                header("Location: " . APP_URL . "signin");
                 exit();
             }
         }
@@ -91,7 +91,7 @@ function get_base_url() {
 
 function verify_session($conn, $role = null) {
     if (!isset($_SESSION["user_id"])) {
-        header("Location: " . get_base_url() . "signin");
+        header("Location: " . APP_URL . "signin");
         exit();
     }
 
@@ -104,21 +104,21 @@ function verify_session($conn, $role = null) {
 
     if (!$user) {
         session_unset(); session_destroy();
-        header("Location: " . get_base_url() . "signin"); exit();
+        header("Location: " . APP_URL . "signin"); exit();
     }
 
     if ($role) {
         $allowed = is_array($role) ? $role : [$role];
         if (!in_array($user["role"], $allowed)) {
             session_unset(); session_destroy();
-            header("Location: " . get_base_url() . "signin"); exit();
+            header("Location: " . APP_URL . "signin"); exit();
         }
     }
 
     if (isset($_GET["id"]) && $_GET["id"] != $_SESSION["user_id"]) {
         session_unset();
         session_destroy();
-        header("Location: " . get_base_url() . "signin");
+        header("Location: " . APP_URL . "signin");
         exit();
     }
 }
@@ -333,7 +333,7 @@ function astra_pretty_path(string $script): ?string {
     $path = rawurldecode((string)parse_url($uri, PHP_URL_PATH));
     if ($path === $base . $pretty) return;
     $qs = (string)parse_url($uri, PHP_URL_QUERY);
-    header('Location: ' . $base . $pretty . ($qs !== '' ? '?' . $qs : ''), true, 301);
+    header('Location: ' . APP_URL . $pretty . ($qs !== '' ? '?' . $qs : ''), true, 301);
     exit();
 })();
 ?>
