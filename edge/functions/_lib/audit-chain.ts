@@ -1,10 +1,15 @@
 // Port of core/audit_chain.php: an HMAC-chained, tamper-evident activity log.
 // Each row's current_hash = HMAC-SHA256(indexKey, canonical JSON of
 // {chain_index, previous_hash, user_id, username, action, ip_address, timestamp,
-//  geo, severity, incident_type, details}). Appends are serialized through a
-// Postgres function (see supabase/migrations/0001_pilot_schema.sql,
-// append_audit_log) so chain_index stays gapless under concurrent writers —
-// the equivalent of MySQL's GET_LOCK in the PHP version.
+//  geo, severity, incident_type, details}).
+//
+// Appends are crash-safe by construction (see supabase/migrations/
+// 0003_atomic_audit_commit.sql): peek_audit_cursor() is read-only, and
+// commit_audit_log() re-locks the cursor and inserts the row in the same
+// Postgres transaction, aborting if the cursor moved since the peek. So
+// either both the row and the cursor advance together, or neither does —
+// there's no window where a failure between two separate calls can leave
+// the cursor pointing past a chain_index nothing was ever written for.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -55,41 +60,55 @@ function canonicalize(row: {
   });
 }
 
-/** Appends one entry to the chain via the atomic `append_audit_log` RPC. */
+const MAX_ATTEMPTS = 3;
+
+/** Appends one entry to the chain, retrying on a concurrent-writer conflict. */
 export async function appendAuditLog(db: SupabaseClient, indexKeyB64: string, entry: AuditEntryInput) {
   const timestamp = new Date().toISOString();
 
-  // Reserve the next chain_index + previous_hash atomically in Postgres,
-  // compute the hash here (keeps the HMAC key out of the database), then
-  // commit the row. Two round-trips, but the reservation step is what
-  // prevents a gap/race, not the hash computation.
-  const { data: reservation, error: reserveErr } = await db.rpc("reserve_audit_slot");
-  if (reserveErr) throw reserveErr;
-  const { chain_index, previous_hash } = reservation as { chain_index: number; previous_hash: string };
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    // PostgREST returns a table-returning function's result as an array of
+    // rows, even though it only ever produces exactly one here.
+    const { data: peeked, error: peekErr } = await db.rpc("peek_audit_cursor");
+    if (peekErr) throw peekErr;
+    const [{ chain_index, previous_hash }] = peeked as { chain_index: number; previous_hash: string }[];
 
-  const row = {
-    chain_index,
-    previous_hash,
-    user_id: entry.userId,
-    username: entry.username,
-    action: entry.action,
-    ip_address: entry.ipAddress,
-    timestamp,
-    geo: entry.geo,
-    severity: entry.severity,
-    incident_type: entry.incidentType,
-    details: entry.details,
-  };
-  const current_hash = await hmacHex(indexKeyB64, canonicalize(row));
+    const row = {
+      chain_index,
+      previous_hash,
+      user_id: entry.userId,
+      username: entry.username,
+      action: entry.action,
+      ip_address: entry.ipAddress,
+      timestamp,
+      geo: entry.geo,
+      severity: entry.severity,
+      incident_type: entry.incidentType,
+      details: entry.details,
+    };
+    const current_hash = await hmacHex(indexKeyB64, canonicalize(row));
 
-  const { error: insertErr } = await db.from("logs").insert({ ...row, current_hash });
-  if (insertErr) throw insertErr;
+    const { error: commitErr } = await db.rpc("commit_audit_log", {
+      p_expected_index: chain_index,
+      p_expected_prev: previous_hash,
+      p_user_id: entry.userId,
+      p_username: entry.username,
+      p_action: entry.action,
+      p_ip_address: entry.ipAddress,
+      p_timestamp: timestamp,
+      p_geo: entry.geo,
+      p_severity: entry.severity,
+      p_incident_type: entry.incidentType,
+      p_details: entry.details,
+      p_current_hash: current_hash,
+    });
 
-  // Advance the cursor's last_hash now that the row is durably committed.
-  const { error: commitErr } = await db.rpc("commit_audit_hash", { p_chain_index: chain_index, p_hash: current_hash });
-  if (commitErr) throw commitErr;
-
-  return { chain_index, current_hash };
+    if (!commitErr) return { chain_index, current_hash };
+    // Another writer committed between our peek and commit — retry with a
+    // fresh peek. Any other error propagates immediately.
+    if (!commitErr.message?.includes("audit_chain_conflict") || attempt === MAX_ATTEMPTS) throw commitErr;
+  }
+  throw new Error("appendAuditLog: exhausted retries under contention");
 }
 
 /** Walks the chain and verifies index contiguity + hash agreement. */
