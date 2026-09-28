@@ -4,7 +4,7 @@ secure_session_start();
 $msg = "";
 
 if (!isset($_SESSION["otp_email"])) {
-    header("Location: signin");
+    header("Location: " . APP_URL . "signin");
     exit();
 }
 
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_SESSION["otp_attempts"] > 5) {
         session_unset();
         session_destroy();
-        header("Location: signin");
+        header("Location: " . APP_URL . "signin");
         exit();
     }
 
@@ -61,12 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["login_country"] = $login_geo["country"];
 
         switch ($user["role"]) {
-          case "sysadmin":         header("Location: " . get_base_url() . "workspace/sysadmin/");  break;
-          case "admin":            header("Location: " . get_base_url() . "workspace/admin/");        break;
-          case "employee":         header("Location: " . get_base_url() . "workspace/employee/");  break;
-          case "pending_employee": header("Location: " . get_base_url() . "workspace/user/newuser-portal");       break;
-          case "client": header("Location: " . get_base_url() . "workspace/client/"); break;
-          default:                 header("Location: " . get_base_url() . "workspace/user/newuser-portal");       break;
+          case "sysadmin":         header("Location: " . APP_URL . "workspace/sysadmin/");  break;
+          case "admin":            header("Location: " . APP_URL . "workspace/admin/");        break;
+          case "employee":         header("Location: " . APP_URL . "workspace/employee/");  break;
+          case "pending_employee": header("Location: " . APP_URL . "workspace/user/newuser-portal");       break;
+          case "client": header("Location: " . APP_URL . "workspace/client/"); break;
+          default:                 header("Location: " . APP_URL . "workspace/user/newuser-portal");       break;
         }
         exit();
     } else {

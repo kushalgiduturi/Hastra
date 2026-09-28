@@ -7,7 +7,7 @@ $token = $_GET["token"] ?? "";
 $msg = "";
 
 if ($token === "") {
-    header("Location: " . get_base_url() . "signin");
+    header("Location: " . APP_URL . "signin");
     exit();
 }
 

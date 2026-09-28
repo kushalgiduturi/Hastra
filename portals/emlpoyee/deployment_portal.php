@@ -18,7 +18,7 @@ mysqli_stmt_execute($lead_check);
 mysqli_stmt_store_result($lead_check);
 
 if (mysqli_stmt_num_rows($lead_check) === 0) {
-    header("Location: " . get_base_url() . "workspace/employee/");
+    header("Location: " . APP_URL . "workspace/employee/");
     exit();
 }
 

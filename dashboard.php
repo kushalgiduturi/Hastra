@@ -3,7 +3,7 @@ include __DIR__ . '/core/db.php';
 secure_session_start();
 
 if (!isset($_SESSION["user_id"])) {
-    header("Location: " . get_base_url() . "signin");
+    header("Location: " . APP_URL . "signin");
     exit();
 }
 ?>

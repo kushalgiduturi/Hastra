@@ -27,7 +27,7 @@ $flash = $_SESSION["doc_flash"] ?? null;
 unset($_SESSION["doc_flash"]);
 function doc_redirect($project_id, $type, $text, $version = null) {
     $_SESSION["doc_flash"] = ['type' => $type, 'text' => $text];
-    header("Location: doc-editor?project=" . (int)$project_id . ($version ? "&v=" . (int)$version : ""));
+    header("Location: " . APP_URL . "workspace/admin/doc-editor?project=" . (int)$project_id . ($version ? "&v=" . (int)$version : ""));
     exit();
 }
 

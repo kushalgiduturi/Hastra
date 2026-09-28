@@ -4,7 +4,7 @@ secure_session_start();
 $msg = "";
 
 if (!isset($_SESSION["reset_email"])) {
-    header("Location: forgot-password");
+    header("Location: " . APP_URL . "forgot-password");
     exit();
 }
 
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_SESSION["reset_otp_attempts"] > 5) {
         unset($_SESSION["reset_email"]);
         unset($_SESSION["reset_otp_attempts"]);
-        header("Location: forgot-password");
+        header("Location: " . APP_URL . "forgot-password");
         exit();
     }
 
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["reset_verified"]     = true;
         $_SESSION["reset_otp_attempts"] = 0;
 
-        header("Location: reset-password");
+        header("Location: " . APP_URL . "reset-password");
         exit();
     } else {
         $remaining = 5 - $_SESSION["reset_otp_attempts"];

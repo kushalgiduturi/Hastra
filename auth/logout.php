@@ -9,6 +9,6 @@ if (isset($_SESSION["user_id"])) {
 
 session_unset();
 session_destroy();
-header("Location: signin");
+header("Location: " . APP_URL . "signin");
 exit();
 ?>

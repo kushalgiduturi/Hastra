@@ -5,7 +5,7 @@ $msg = "";
 
 // Must have verified OTP first
 if (!isset($_SESSION["reset_email"]) || !isset($_SESSION["reset_verified"])) {
-    header("Location: forgot-password");
+    header("Location: " . APP_URL . "forgot-password");
     exit();
 }
 

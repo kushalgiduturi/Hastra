@@ -2,7 +2,7 @@
 require __DIR__ . '/core/db.php';
 secure_session_start();
 if (isset($_SESSION["user_id"])) {
-    header("Location: " . get_base_url() . "workspace/");
+    header("Location: " . APP_URL . "workspace/");
     exit();
 }
 ?>

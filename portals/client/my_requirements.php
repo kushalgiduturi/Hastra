@@ -8,7 +8,7 @@ $ctx           = client_context($conn, (int)$_SESSION["user_id"]);
 $scope_ids     = id_list($ctx['member_ids']);
 $can_delete    = client_can($ctx, 'delete_requirement');
 if (!client_can($ctx, 'view_projects')) {
-    header("Location: " . get_base_url() . "workspace/client/docs");
+    header("Location: " . APP_URL . "workspace/client/docs");
     exit();
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                      WHERE id = ? AND user_id IN ($scope_ids)");
                 mysqli_stmt_bind_param($upd, "sssi", $requirement_title, $desc_enc, $feat_enc, $req_id);
                 if (mysqli_stmt_execute($upd)) {
-                    header("Location: " . get_base_url() . "workspace/client/requirements-diff?req_id=$req_id");
+                    header("Location: " . APP_URL . "workspace/client/requirements-diff?req_id=$req_id");
                     exit();
                 }
                 $msg = "Failed to save the revision.";
