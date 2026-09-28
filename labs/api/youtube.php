@@ -5,7 +5,7 @@
 //   → { mode: "ranked", query, searchUrl, videos: [{ id, title, channel, views, duration, published }] }
 //   → { mode: "link",   query, searchUrl, reason }     (no API key, quota spent, or the API failed)
 //
-// The query is "<topic> full tutorial engineering"; results come from the
+// The query is the topic name alone; results come from the
 // YouTube Data API v3 ordered by view count, re-sorted on the real
 // statistics.viewCount, with live streams, Shorts and non-embeddable videos
 // dropped. The API key stays on this server (env HASTRA_YOUTUBE_API_KEY or
@@ -19,7 +19,6 @@ const LABS_YT_KEEP          = 12;
 const LABS_YT_MIN_SECONDS   = 120;     // tutorials, not Shorts
 const LABS_YT_DAILY_FRESH   = 90;      // ~9,100 units/day incl. videos.list
 const LABS_YT_IP_FRESH_HOUR = 40;
-const LABS_YT_QUERY_SUFFIX  = ' full tutorial engineering';
 
 function labs_yt_key(): ?string {
     $k = getenv('HASTRA_YOUTUBE_API_KEY');
@@ -65,7 +64,7 @@ $topic = trim(preg_replace('/\s+/u', ' ', (string)$topic));
 $topic = mb_substr($topic, 0, 120);
 if (mb_strlen($topic) < 2) labs_json(['error' => 'topic'], 400);
 
-$query = $topic . LABS_YT_QUERY_SUFFIX;
+$query = $topic;
 $search_url = 'https://www.youtube.com/results?search_query=' . rawurlencode($query) . '&sp=CAM%253D'; // sorted by views
 $link = fn(string $reason) => labs_json(['mode' => 'link', 'query' => $query, 'searchUrl' => $search_url, 'reason' => $reason]);
 

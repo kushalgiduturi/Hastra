@@ -11,7 +11,7 @@
 
 export const MAX_DOC_BYTES = 25 * 1024 * 1024;
 
-export async function extractText(file) {
+export async function extractText(file, { signal } = {}) {
   if (file.size > MAX_DOC_BYTES) throw new Error(`${file.name} is larger than 25 MB.`);
   const name = file.name.toLowerCase();
   const kind = name.endsWith('.pdf') || file.type === 'application/pdf' ? 'pdf'
@@ -20,12 +20,13 @@ export async function extractText(file) {
     : name.endsWith('.doc') ? 'doc' : 'unknown';
   if (kind === 'doc') throw new Error(`${file.name}: legacy .doc files are not supported. Save it as .docx or PDF.`);
   if (kind === 'unknown') throw new Error(`${file.name}: unsupported type. Use PDF, DOCX or TXT.`);
+  signal?.throwIfAborted();
   const bytes = new Uint8Array(await file.arrayBuffer());
   let lines, pages = 1;
   const warnings = [];
   if (kind === 'txt') lines = decodeText(bytes).split(/\r?\n/);
   else if (kind === 'docx') lines = await docxLines(bytes);
-  else ({ lines, pages } = await pdfLines(bytes));
+  else ({ lines, pages } = await pdfLines(bytes, signal));
   lines = lines.map(l => l.replace(/ /g, ' ').replace(/[ \t]+/g, ' ').trim());
   const text = lines.join('\n');
   if (text.replace(/\s/g, '').length < 20) warnings.push(kind === 'pdf'
@@ -112,7 +113,7 @@ async function loadPdfJs() {
   pdfjs.GlobalWorkerOptions.workerSrc = import.meta.resolve('pdfjs-worker');
   return pdfjs;
 }
-async function pdfLines(bytes) {
+async function pdfLines(bytes, signal) {
   const lib = await loadPdfJs();
   const base = import.meta.resolve('pdfjs').replace(/build\/pdf\.min\.mjs$/, '');
   const task = lib.getDocument({ data: bytes, isEvalSupported: false, cMapUrl: base + 'cmaps/', cMapPacked: true,
@@ -121,6 +122,7 @@ async function pdfLines(bytes) {
   const lines = [];
   const pages = Math.min(pdf.numPages, 300);
   for (let n = 1; n <= pages; n++) {
+    if (signal?.aborted) { await (task.destroy?.() ?? pdf.destroy?.()); signal.throwIfAborted(); }
     const page = await pdf.getPage(n);
     const content = await page.getTextContent();
     const rows = [];

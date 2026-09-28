@@ -313,7 +313,7 @@ function labs_head(string $title, string $active, ?array $profile): void {
 <nav class="lx-tabs" aria-label="Labs tools">
   <?php foreach (LABS_TABS as $key => [$num, $label, $slug]): ?>
     <a class="lx-tab<?= $active === $key ? ' is-active btn-beam' : '' ?>" href="<?= $lb . $slug ?>"<?= $active === $key ? ' aria-current="page"' : '' ?>>
-      <span class="lx-tab-num"><?= $num ?> //</span> <?= labs_e($label) ?>
+      <span class="lx-tab-num"><?= $num ?></span> <?= labs_e($label) ?>
     </a>
   <?php endforeach; ?>
 </nav>
