@@ -1437,7 +1437,7 @@ function renderRecaptcha() {
     fresh.className = 'recaptcha-slot';
     slot.replaceWith(fresh);
     recaptchaWidgetIds[key] = window.grecaptcha.render(fresh, {
-      sitekey: '6LfuhdEtAAAAAOHipza25gYF5igkq4TV2iagaCAN',
+      sitekey: '6LcnT9QtAAAAAEpy2MXMWPwQ4ieSG7fhLDdcc5ma',
       theme: currentSiteTheme()
     });
   });
