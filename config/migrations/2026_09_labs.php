@@ -15,6 +15,9 @@
 //                    re-opened by a hundred students costs one API call.
 // labs_rate          Fixed-window request counters for the public endpoints
 //                    (keyed by blind index, never by a raw IP address).
+// labs_video_votes   Community like/dislike counts per (topic, video), so the
+//                    video other students found most useful for a topic rises
+//                    to the top for everyone, not just the device that liked it.
 
 $__astra_labs_cli = PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FILE__;
 if (!$__astra_labs_cli && !defined('ASTRA_MIGRATION_INCLUDE')) { http_response_code(404); exit(); }
@@ -61,6 +64,19 @@ function astra_migrate_labs($conn, callable $out) {
         hits          INT UNSIGNED NOT NULL DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     $out("   labs_rate ready");
+
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS labs_video_votes (
+        topic_hash   CHAR(64)     NOT NULL,
+        video_id     VARCHAR(20)  NOT NULL,
+        topic_text   VARCHAR(200) NOT NULL,
+        video_title  VARCHAR(300) NOT NULL,
+        likes        INT UNSIGNED NOT NULL DEFAULT 0,
+        dislikes     INT UNSIGNED NOT NULL DEFAULT 0,
+        updated_at   DATETIME     NOT NULL,
+        PRIMARY KEY (topic_hash, video_id),
+        KEY idx_labs_video_votes_topic_score (topic_hash, likes)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $out("   labs_video_votes ready");
     $out("   done");
 }
 

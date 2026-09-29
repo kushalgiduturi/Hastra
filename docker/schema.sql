@@ -319,6 +319,21 @@ CREATE TABLE `labs_video_cache` (
   KEY `idx_labs_video_fetched` (`fetched_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `labs_video_votes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `labs_video_votes` (
+  `topic_hash` char(64) NOT NULL,
+  `video_id` varchar(20) NOT NULL,
+  `topic_text` varchar(200) NOT NULL,
+  `video_title` varchar(300) NOT NULL,
+  `likes` int(10) unsigned NOT NULL DEFAULT 0,
+  `dislikes` int(10) unsigned NOT NULL DEFAULT 0,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`topic_hash`,`video_id`),
+  KEY `idx_labs_video_votes_topic_score` (`topic_hash`,`likes`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `leave_requests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
