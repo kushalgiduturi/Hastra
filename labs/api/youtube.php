@@ -131,20 +131,41 @@ function labs_ext_get_json(string $url): ?array {
     $json = is_string($body) ? json_decode($body, true) : null;
     return ($code === 200 && is_array($json)) ? $json : null;
 }
-// $context (the syllabus/course title, e.g. "Security Operations & SIEM
-// Engineering") is folded into the search text alone, never the YouTube
-// query, so a short jargon topic like "IOC normalization and refanging"
-// doesn't get matched to an unrelated page that happens to share one word
-// (seen in testing: it landed on a football federation's "normalisation
-// committee"). It only steers which Wikipedia page is picked, so a stale
-// cached video/description pair is never invalidated by it.
-function labs_wiki_summary(string $topic, string $context = ''): ?array {
-    $srsearch = $context !== '' ? "$context $topic" : $topic;
+// The significant (len >= 4, non-generic) words in a topic — used to check
+// that a Wikipedia match is actually about the topic asked, not just
+// something that shares one incidental word with it.
+function labs_wiki_significant_words(string $s): array {
+    preg_match_all('/[A-Za-z]{4,}/', $s, $m);
+    static $stop = ['this', 'that', 'with', 'from', 'into', 'onto', 'over', 'under', 'about', 'their', 'there',
+                     'which', 'while', 'using', 'than', 'then', 'also', 'more', 'most', 'less', 'least', 'such',
+                     'each', 'both', 'other', 'some', 'many', 'much', 'very', 'when', 'where'];
+    $out = [];
+    foreach ($m[0] as $w) { $lw = mb_strtolower($w); if (!in_array($lw, $stop, true)) $out[$lw] = true; }
+    return array_keys($out);
+}
+
+// A short, plain-English explanation of the exact topic asked — never a
+// broadened or context-substituted phrase — from Wikipedia's free public
+// search + summary APIs (no key needed). A search match is only trusted if
+// a strict majority of the topic's own significant words actually appear in
+// the matched page's title; otherwise it is discarded rather than shown as
+// if it explains the topic (seen in testing: a bare full-text search for
+// "IOC normalization and refanging" landed on an unrelated football
+// federation's "normalisation committee", which merely shared one word).
+// Best-effort throughout: any failure just means no description is shown.
+function labs_wiki_summary(string $topic): ?array {
     $search = labs_ext_get_json('https://en.wikipedia.org/w/api.php?' . http_build_query([
-        'action' => 'query', 'list' => 'search', 'srsearch' => $srsearch, 'format' => 'json', 'srlimit' => 1,
+        'action' => 'query', 'list' => 'search', 'srsearch' => $topic, 'format' => 'json', 'srlimit' => 1,
     ]));
     $title = $search['query']['search'][0]['title'] ?? null;
     if (!$title) return null;
+    $sig = labs_wiki_significant_words($topic);
+    if ($sig) {
+        $titleLower = mb_strtolower($title);
+        $hits = 0;
+        foreach ($sig as $w) if (preg_match('/\b' . preg_quote($w, '/') . '\b/u', $titleLower)) $hits++;
+        if ($hits < intdiv(count($sig), 2) + 1) return null;   // not actually about this topic
+    }
     $summary = labs_ext_get_json('https://en.wikipedia.org/api/rest_v1/page/summary/' . rawurlencode(str_replace(' ', '_', $title)));
     $extract = trim((string)($summary['extract'] ?? ''));
     if ($extract === '' || ($summary['type'] ?? '') === 'disambiguation') return null;
@@ -162,12 +183,6 @@ $topic = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $topic);
 $topic = trim(preg_replace('/\s+/u', ' ', (string)$topic));
 $topic = mb_substr($topic, 0, 120);
 if (mb_strlen($topic) < 2) labs_json(['error' => 'topic'], 400);
-
-// Optional syllabus/course title, used only to disambiguate the Wikipedia
-// description fallback below — never part of the YouTube search itself.
-$context = (string)($_GET['context'] ?? '');
-$context = trim(preg_replace('/\s+/u', ' ', preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $context)));
-$context = mb_substr($context, 0, 120);
 
 $query = $topic;
 $search_url = 'https://www.youtube.com/results?search_query=' . rawurlencode($query) . '&sp=CAM%3D'; // sorted by views
@@ -211,7 +226,10 @@ if (!$videos) {
         $wide = labs_yt_fetch($cand, $key, 6);
         if (!isset($wide['error']) && $wide['videos']) { $related = ['query' => $cand, 'videos' => $wide['videos']]; break; }
     }
-    $description = labs_wiki_summary($query, $context) ?? (isset($candidates[0]) ? labs_wiki_summary($candidates[0], $context) : null);
+    // The description answers the exact topic asked only — never a
+    // broadened or substituted phrase, even if that phrase is what found
+    // the related video above.
+    $description = labs_wiki_summary($query);
 }
 
 $payload = ['mode' => 'ranked', 'query' => $query, 'searchUrl' => $search_url, 'videos' => $videos,

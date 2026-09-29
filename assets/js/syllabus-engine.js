@@ -402,12 +402,7 @@ async function fetchRanked(topic) {
   if (results.has(topic)) return results.get(topic);
   const cacheKey = 'hlx-yt:' + topic;
   try { const c = JSON.parse(sessionStorage.getItem(cacheKey)); if (c) { results.set(topic, c); return c; } } catch { /* ignore */ }
-  // The course title only steers the Wikipedia fallback description if the
-  // exact topic has no video (disambiguates jargon like "IOC normalization");
-  // the YouTube search itself always stays the bare topic name.
-  const course = active()?.title || '';
-  const url = labsBase + 'api/youtube?topic=' + encodeURIComponent(topic) + (course ? '&context=' + encodeURIComponent(course) : '');
-  const r = await fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+  const r = await fetch(labsBase + 'api/youtube?topic=' + encodeURIComponent(topic), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
   if (r.status === 429) throw new Error('Too many lookups right now — try again in a few minutes.');
   const data = await r.json();
   if (!r.ok) throw new Error(data.error || 'lookup failed');
