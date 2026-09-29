@@ -9,7 +9,7 @@
    session, is mirrored to /labs/api/progress. Merging is per field with
    timestamps, so two devices can study the same syllabus without clobbering
    each other's checkmarks. */
-import { $, $$, el, svg, toast, busy, dropZone, download, labsBase, enc, toHex, fmtNum, fmtCompact, fmtDuration, syncGet, syncPut } from './labs-common.js';
+import { $, $$, el, svg, toast, busy, dropZone, download, labsBase, csrfToken, enc, toHex, fmtNum, fmtCompact, fmtDuration, syncGet, syncPut } from './labs-common.js';
 import { extractText } from './doc-extract.js';
 
 const STORE_KEY = 'hastra_labs_study_v1';
@@ -410,13 +410,32 @@ async function fetchRanked(topic) {
   try { sessionStorage.setItem(cacheKey, JSON.stringify(data)); } catch { /* full */ }
   return data;
 }
+// Community like/dislike consensus per topic — the video other students
+// found most useful rises to the top for everyone, not just the device
+// that liked it. Best-effort: never blocks or fails the ranked lookup.
+const communityPicks = new Map();          // topicKey → { id, title, likes, dislikes } | null
+async function fetchCommunityPick(topic) {
+  const k = topicKey(topic);
+  if (communityPicks.has(k)) return communityPicks.get(k);
+  try {
+    const r = await fetch(labsBase + 'api/vote?topic=' + encodeURIComponent(topic), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+    const data = await r.json();
+    communityPicks.set(k, data.pick || null);
+  } catch { communityPicks.set(k, null); }
+  return communityPicks.get(k);
+}
+function postVote(topic, videoId, videoTitle, action) {
+  fetch(labsBase + 'api/vote', { method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+    body: JSON.stringify({ topic, videoId, videoTitle, action }) }).catch(() => { /* best effort */ });
+}
 function pump() {
   if (scanStopped) return;
   while (inflight < MAX_INFLIGHT && queue.length) {
     const vbox = queue.shift();
     inflight++;
-    fetchRanked(vbox.dataset.topic)
-      .then(data => { vbox.dataset.loaded = '1'; showVideo(vbox, data, 0); })
+    Promise.all([fetchRanked(vbox.dataset.topic), fetchCommunityPick(vbox.dataset.topic)])
+      .then(([data]) => { vbox.dataset.loaded = '1'; showVideo(vbox, data, 0); })
       .catch(err => { vbox.dataset.loaded = ''; vbox.replaceChildren(el('div', { class: 'lx-vstate', text: err.message })); })
       .finally(() => { inflight--; pump(); paintScanControl(); });
   }
@@ -475,7 +494,9 @@ const ICON = {
   down: () => svg('svg', { viewBox: '0 0 24 24', width: 13, height: 13, fill: 'currentColor', 'aria-hidden': 'true' }, svg('path', { d: 'M22 3h-4v12h4V3zM2 14a2 2 0 0 0 2 2h6.3l-1 4.6v.3c0 .4.2.8.4 1.1l1.1 1 6.6-6.6c.4-.4.6-.9.6-1.4V5a2 2 0 0 0-2-2H7c-.8 0-1.5.5-1.8 1.2l-3 7.1c-.1.2-.2.5-.2.7v2z' })),
 };
 
-// The ranked list for a topic minus everything disliked, liked video first.
+// The ranked list for a topic minus everything disliked. Order of
+// precedence for what leads: this device's own like, then the community's
+// like/dislike consensus for the topic, then the raw view-count ranking.
 function candidates(topicText, topicId, data) {
   const s = active();
   const bad = new Set(state.disliked[topicKey(topicText)] || []);
@@ -483,6 +504,13 @@ function candidates(topicText, topicId, data) {
   const liked = s?.liked[topicId]?.id;
   const li = vids.findIndex(v => v.id === liked);
   if (li > 0) vids.unshift(vids.splice(li, 1)[0]);
+  else if (!liked) {
+    const pick = communityPicks.get(topicKey(topicText));
+    if (pick && !bad.has(pick.id)) {
+      const pi = vids.findIndex(v => v.id === pick.id);
+      if (pi > 0) vids.unshift(vids.splice(pi, 1)[0]);
+    }
+  }
   return vids;
 }
 
@@ -501,14 +529,16 @@ function showVideo(vbox, data, pos, direction = 0) {
     } else {
       if (s && v.duration) { s.durations[tid] = v.duration; }
       const liked = s?.liked[tid]?.id === v.id;
+      const communityPick = communityPicks.get(topicKey(topic));
+      const isCommunityPick = communityPick && communityPick.id === v.id;
       const poster = el('div', { class: 'lx-vposter' }, thirdPartyOK() ? el('img', { src: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' }) : '');
       card = el('div', { class: 'lx-vcard', 'data-video': v.id },
         poster,
-        el('span', { class: 'lx-vrank', text: `#${v.rank} most viewed` }),
+        el('span', { class: 'lx-vrank', text: isCommunityPick ? `★ Community pick · #${v.rank} most viewed` : `#${v.rank} most viewed` }),
         el('button', { class: 'lx-vplay', type: 'button', 'aria-label': `Play “${v.title}” (loads the youtube-nocookie.com player)`, onclick: () => play(card, v) }, ICON.play()),
         el('div', { class: 'lx-vmeta' }, el('b', { text: v.title }), el('span', { text: `${v.channel} · ${fmtCompact(v.views)} views · ${fmtDuration(v.duration)}` })),
         el('div', { class: 'lx-vactions' },
-          el('button', { class: 'lx-vbtn', type: 'button', 'aria-pressed': String(liked), onclick: e => like(e.currentTarget, tid, v) }, ICON.up(), liked ? 'Liked' : 'Like'),
+          el('button', { class: 'lx-vbtn', type: 'button', 'aria-pressed': String(liked), onclick: e => like(e.currentTarget, tid, v, topic) }, ICON.up(), liked ? 'Liked' : 'Like'),
           el('button', { class: 'lx-vbtn', type: 'button', onclick: () => dislike(vbox, data, v, pos) }, ICON.down(), 'Next best'),
           el('a', { class: 'lx-vbtn', href: `https://www.youtube.com/watch?v=${v.id}`, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Open on YouTube' }, '↗')));
     }
@@ -551,15 +581,17 @@ function swap(vbox, next) {
   setTimeout(go, 400);
 }
 function dislike(vbox, data, v, pos) {
-  const k = topicKey(vbox.dataset.topic);
+  const topic = vbox.dataset.topic;
+  const k = topicKey(topic);
   state.disliked[k] = [...new Set([...(state.disliked[k] || []), v.id])];
   const s = active();
   if (s?.liked[vbox.dataset.topicId]?.id === v.id) s.liked[vbox.dataset.topicId] = { id: null, ts: Date.now() };
   persist();
+  postVote(topic, v.id, v.title, 'dislike');
   swap(vbox, () => showVideo(vbox, data, pos, 1));   // same position now holds the next-best video
   toast('Skipped — it won’t be recommended for this topic again.');
 }
-function like(btn, tid, v) {
+function like(btn, tid, v, topic) {
   const s = active();
   if (!s) return;
   const on = s.liked[tid]?.id !== v.id;
@@ -567,6 +599,7 @@ function like(btn, tid, v) {
   btn.setAttribute('aria-pressed', String(on));
   btn.lastChild.textContent = on ? 'Liked' : 'Like';
   persist();
+  if (on) postVote(topic, v.id, v.title, 'like');
 }
 function play(card, v) {
   card.classList.add('is-playing');
