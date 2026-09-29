@@ -336,10 +336,12 @@ function renderBanner() {
     el('div', { class: 'lx-stack', style: { textAlign: 'right' } },
       el('span', { class: 'lx-badge lx-badge--' + f.tone, text: f.status }),
       el('div', { class: 'lx-row lx-row--end lx-noprint' },
+        el('span', { id: 'syl-scan-control' }),
         el('button', { class: 'lx-btn lx-btn--ghost lx-btn--sm', type: 'button', text: 'Report (.md)', onclick: () => exportReport('md') }),
         el('button', { class: 'lx-btn lx-btn--ghost lx-btn--sm', type: 'button', text: 'JSON', onclick: () => exportReport('json') }),
         el('button', { class: 'lx-btn lx-btn--ghost lx-btn--sm', type: 'button', text: 'Print / PDF', onclick: () => window.print() })))));
   $('#syl-target').value = s.target; $('#syl-hours').value = s.dailyHours; $('#syl-mult').value = s.multiplier;
+  paintScanControl();
 }
 
 function renderTree() {
@@ -393,6 +395,8 @@ const results = new Map();                  // topic text → api payload (this 
 const queue = [];
 let inflight = 0;
 const MAX_INFLIGHT = 2;
+let scanStopped = false;
+const stoppedBoxes = new Set();              // vboxes interrupted mid-scan, for Resume to re-enqueue
 
 async function fetchRanked(topic) {
   if (results.has(topic)) return results.get(topic);
@@ -407,14 +411,16 @@ async function fetchRanked(topic) {
   return data;
 }
 function pump() {
+  if (scanStopped) return;
   while (inflight < MAX_INFLIGHT && queue.length) {
     const vbox = queue.shift();
     inflight++;
     fetchRanked(vbox.dataset.topic)
       .then(data => { vbox.dataset.loaded = '1'; showVideo(vbox, data, 0); })
       .catch(err => { vbox.dataset.loaded = ''; vbox.replaceChildren(el('div', { class: 'lx-vstate', text: err.message })); })
-      .finally(() => { inflight--; pump(); });
+      .finally(() => { inflight--; pump(); paintScanControl(); });
   }
+  paintScanControl();
 }
 let io = null;
 function observeVideos() {
@@ -424,6 +430,42 @@ function observeVideos() {
     pump();
   }, { rootMargin: '300px 0px' });
   $$('.lx-vbox').forEach(v => io.observe(v));
+}
+
+// Stop/resume the video lookup scan: Stop empties the queue and freezes
+// pump() (in-flight requests still land, since aborting mid-fetch isn't
+// worth the complexity for a single small JSON request, but nothing new
+// starts); the interrupted boxes are tracked so Resume can re-queue them.
+function stopScan() {
+  scanStopped = true;
+  for (const vbox of queue.splice(0)) {
+    stoppedBoxes.add(vbox);
+    vbox.dataset.loaded = '';
+    vbox.replaceChildren(el('div', { class: 'lx-vstate', text: 'Stopped.' }));
+  }
+  paintScanControl();
+}
+function resumeScan() {
+  scanStopped = false;
+  for (const vbox of [...stoppedBoxes]) {
+    stoppedBoxes.delete(vbox);
+    vbox.dataset.loaded = 'pending';
+    vbox.replaceChildren(el('div', { class: 'lx-vstate lx-skeleton', text: 'Finding the most-viewed tutorial…' }));
+    queue.push(vbox);
+  }
+  pump();
+}
+function paintScanControl() {
+  const host = $('#syl-scan-control');
+  if (!host) return;
+  const busy = inflight > 0 || queue.length > 0;
+  if (scanStopped) {
+    host.replaceChildren(el('button', { class: 'lx-btn lx-btn--ghost lx-btn--sm', type: 'button', text: `Resume video lookups (${stoppedBoxes.size})`, onclick: resumeScan }));
+  } else if (busy) {
+    host.replaceChildren(el('button', { class: 'lx-btn lx-btn--ghost lx-btn--sm', type: 'button', text: 'Stop video lookups', onclick: stopScan }));
+  } else {
+    host.replaceChildren();
+  }
 }
 
 const thirdPartyOK = () => !!window.HastraConsent?.allows?.('thirdparty');
@@ -479,7 +521,11 @@ function showVideo(vbox, data, pos, direction = 0) {
     card = el('div', { class: 'lx-vcard' },
       el('div', { class: 'lx-vposter' }),
       el('span', { class: 'lx-vrank', text: 'Sorted by views' }),
-      el('div', { class: 'lx-vmeta', style: { bottom: '52px' } }, el('b', { text: data.query }), el('span', { text: data.reason === 'no_api_key' ? 'Ranked in-page videos need a YouTube API key on this server.' : 'Live ranking is resting (daily quota). Opens YouTube sorted by views.' })),
+      el('div', { class: 'lx-vmeta', style: { bottom: '52px' } }, el('b', { text: data.query }), el('span', { text: {
+        no_api_key: 'Ranked in-page videos need a YouTube API key on this server.',
+        daily_quota: 'Live ranking is resting (daily quota). Opens YouTube sorted by views.',
+        rate_limited: 'Too many lookups right now. Opens YouTube sorted by views.',
+      }[data.reason] || 'Ranked lookup failed on this server. Opens YouTube sorted by views.' })),
       el('div', { class: 'lx-vactions' },
         el('a', { class: 'lx-vbtn', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Open most-viewed ↗')));
   }
