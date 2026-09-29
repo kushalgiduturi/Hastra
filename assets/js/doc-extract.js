@@ -9,10 +9,10 @@
 
    Returns { text, lines[], kind, pages, warnings[] }. */
 
-export const MAX_DOC_BYTES = 25 * 1024 * 1024;
+export const MAX_DOC_BYTES = 5 * 1024 * 1024;
 
 export async function extractText(file, { signal } = {}) {
-  if (file.size > MAX_DOC_BYTES) throw new Error(`${file.name} is larger than 25 MB.`);
+  if (file.size > MAX_DOC_BYTES) throw new Error(`${file.name} is larger than 5 MB.`);
   const name = file.name.toLowerCase();
   const kind = name.endsWith('.pdf') || file.type === 'application/pdf' ? 'pdf'
     : name.endsWith('.docx') || file.type.includes('wordprocessingml') ? 'docx'
