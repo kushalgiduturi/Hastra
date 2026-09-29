@@ -402,7 +402,12 @@ async function fetchRanked(topic) {
   if (results.has(topic)) return results.get(topic);
   const cacheKey = 'hlx-yt:' + topic;
   try { const c = JSON.parse(sessionStorage.getItem(cacheKey)); if (c) { results.set(topic, c); return c; } } catch { /* ignore */ }
-  const r = await fetch(labsBase + 'api/youtube?topic=' + encodeURIComponent(topic), { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+  // The course title only steers the Wikipedia fallback description if the
+  // exact topic has no video (disambiguates jargon like "IOC normalization");
+  // the YouTube search itself always stays the bare topic name.
+  const course = active()?.title || '';
+  const url = labsBase + 'api/youtube?topic=' + encodeURIComponent(topic) + (course ? '&context=' + encodeURIComponent(course) : '');
+  const r = await fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
   if (r.status === 429) throw new Error('Too many lookups right now — try again in a few minutes.');
   const data = await r.json();
   if (!r.ok) throw new Error(data.error || 'lookup failed');
@@ -514,6 +519,17 @@ function candidates(topicText, topicId, data) {
   return vids;
 }
 
+// A compact, play-in-page card for a related-topic video (poster + play +
+// title/channel/views only — no rank badge, no like/dislike: it belongs to
+// a different, broader topic, so it isn't part of this topic's ranking).
+function miniPlayCard(v) {
+  const card = el('div', { class: 'lx-vcard', 'data-video': v.id },
+    el('div', { class: 'lx-vposter' }, thirdPartyOK() ? el('img', { src: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' }) : ''),
+    el('button', { class: 'lx-vplay', type: 'button', 'aria-label': `Play “${v.title}” (loads the youtube-nocookie.com player)`, onclick: () => play(card, v) }, ICON.play()),
+    el('div', { class: 'lx-vmeta' }, el('b', { text: v.title }), el('span', { text: `${v.channel} · ${fmtCompact(v.views)} views · ${fmtDuration(v.duration)}` })));
+  return card;
+}
+
 function showVideo(vbox, data, pos, direction = 0) {
   const topic = vbox.dataset.topic, tid = vbox.dataset.topicId;
   const s = active();
@@ -522,11 +538,32 @@ function showVideo(vbox, data, pos, direction = 0) {
     const list = candidates(topic, tid, data);
     const v = list[pos];
     if (!v) {
-      card = el('div', { class: 'lx-vcard' }, el('div', { class: 'lx-vstate' },
-        el('div', {}, data.videos?.length ? 'You have skipped every ranked video for this topic.' : 'No embeddable tutorials found for this topic.', el('br'),
-          el('a', { href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer', class: 'lx-vbtn', style: { marginTop: '10px' }, text: 'Search YouTube ↗' }), ' ',
-          data.videos?.length ? el('button', { type: 'button', class: 'lx-vbtn', style: { marginTop: '10px' }, text: 'Reset skips', onclick: () => { delete state.disliked[topicKey(topic)]; persist(); showVideo(vbox, data, 0, 1); } }) : '')));
+      const isMiss = !data.videos?.length;
+      vbox.classList.toggle('lx-vbox--tall', isMiss);
+      const parts = [el('div', { class: 'lx-vmiss-title' },
+        isMiss ? 'No embeddable tutorial found for this exact topic.' : 'You have skipped every ranked video for this topic.')];
+      if (isMiss && data.description) {
+        parts.push(el('div', { class: 'lx-vdesc' },
+          el('b', { text: data.description.title }),
+          el('p', { text: data.description.extract }),
+          el('a', { href: data.description.url, target: '_blank', rel: 'noopener noreferrer', text: 'Read more on Wikipedia ↗' })));
+      }
+      const actions = el('div', { class: 'lx-vactions-static' },
+        el('a', { href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer', class: 'lx-vbtn', text: 'Search YouTube ↗' }));
+      if (!isMiss) actions.append(el('button', { type: 'button', class: 'lx-vbtn', text: 'Reset skips', onclick: () => { delete state.disliked[topicKey(topic)]; persist(); showVideo(vbox, data, 0, 1); } }));
+      parts.push(actions);
+      if (isMiss && data.related?.videos?.length) {
+        const rv = data.related.videos;
+        parts.push(el('div', { class: 'lx-vrelated-head', text: `Closest related topic: “${data.related.query}”` }),
+          el('div', { class: 'lx-vbox lx-vbox--mini' }, miniPlayCard(rv[0])));
+        if (rv.length > 1) parts.push(el('div', { class: 'lx-vrelated-list' }, ...rv.slice(1, 4).map(r =>
+          el('a', { class: 'lx-vrelated-item', href: `https://www.youtube.com/watch?v=${r.id}`, target: '_blank', rel: 'noopener noreferrer' },
+            el('img', { src: `https://i.ytimg.com/vi/${r.id}/mqdefault.jpg`, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' }),
+            el('span', {}, el('b', { text: r.title }), el('small', { text: `${r.channel} · ${fmtCompact(r.views)} views` }))))));
+      }
+      card = el('div', { class: 'lx-vcard lx-vcard--empty' }, ...parts);
     } else {
+      vbox.classList.remove('lx-vbox--tall');
       if (s && v.duration) { s.durations[tid] = v.duration; }
       const liked = s?.liked[tid]?.id === v.id;
       const communityPick = communityPicks.get(topicKey(topic));
@@ -548,6 +585,7 @@ function showVideo(vbox, data, pos, direction = 0) {
     // alone, correctly single-encoded) rather than building a separate query
     // client-side, so this always matches what the ranked API would have
     // searched for.
+    vbox.classList.remove('lx-vbox--tall');
     card = el('div', { class: 'lx-vcard' },
       el('div', { class: 'lx-vposter' }),
       el('span', { class: 'lx-vrank', text: 'Sorted by views' }),
