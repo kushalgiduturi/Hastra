@@ -13,6 +13,21 @@ require __DIR__ . '/../_boot.php';
 
 if (!labs_schema_ready($conn)) labs_json(['pick' => null]);
 
+// Self-provisioning: CREATE TABLE IF NOT EXISTS is idempotent and cheap, so
+// this table doesn't need a separate manual migration step on deploy — the
+// first hit to this endpoint on a given database creates it.
+mysqli_query($conn, "CREATE TABLE IF NOT EXISTS labs_video_votes (
+    topic_hash   CHAR(64)     NOT NULL,
+    video_id     VARCHAR(20)  NOT NULL,
+    topic_text   VARCHAR(200) NOT NULL,
+    video_title  VARCHAR(300) NOT NULL,
+    likes        INT UNSIGNED NOT NULL DEFAULT 0,
+    dislikes     INT UNSIGNED NOT NULL DEFAULT 0,
+    updated_at   DATETIME     NOT NULL,
+    PRIMARY KEY (topic_hash, video_id),
+    KEY idx_labs_video_votes_topic_score (topic_hash, likes)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
 function labs_vote_topic_hash(string $topic): string {
     return hash('sha256', mb_strtolower(trim(preg_replace('/\s+/u', ' ', $topic))));
 }
