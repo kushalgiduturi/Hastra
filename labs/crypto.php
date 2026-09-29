@@ -111,7 +111,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
 
     <div class="lx-pane">
       <h2 class="lx-h3">Result</h2>
-      <div id="cx-result" class="lx-stack"><pre class="lx-out" id="cx-out">// Your envelope or plaintext appears here. Nothing leaves this tab.</pre></div>
+      <div id="cx-result" class="lx-stack"><pre class="lx-out" id="cx-out">Your envelope or plaintext appears here. Nothing leaves this tab.</pre></div>
       <hr class="lx-sep">
       <h2 class="lx-h3">Envelope anatomy</h2>
       <dl class="lx-kv" id="cx-anatomy"><dt>Format</dt><dd>"HLX1" · u32 header length · JSON header · AEAD ciphertext. The header is authenticated as associated data.</dd><dd></dd></dl>

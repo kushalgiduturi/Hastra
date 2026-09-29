@@ -190,7 +190,7 @@ t('landing showcase: announced under the hero, three modules linked to /labs/, n
     $doc = file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html');
     $hero = strpos($doc, 'id="hero"'); $show = strpos($doc, 'id="labs-showcase"'); $arch = strpos($doc, 'id="architecture"');
     expect($hero !== false && $show > $hero && $show < $arch, 'showcase is not between the hero counters and the first chapter');
-    foreach (['[ New Labs release // Season 2026 ]', 'Hastra Cyber Arsenal', 'hx-ping', 'hx-rings'] as $s) expect(str_contains($doc, $s), "showcase lost $s");
+    foreach (['[ New Labs release: Season 2026 ]', 'Hastra Cyber Arsenal', 'hx-ping', 'hx-rings'] as $s) expect(str_contains($doc, $s), "showcase lost $s");
     foreach (['crypto', 'siem', 'syllabus'] as $m)
         expect(preg_match('~<a class="ring-power-beam[^"]*" href="\.\./labs/' . $m . '" target="_top"~', $doc) === 1, "no ring-power link to labs/$m (framed page needs target=_top)");
     expect(!preg_match('~<(script|link)[^>]+(src|href)="[^"]*(gsap|tailwind|framer|lucide)|\bimport\b[^;]*[\'"][^\'"]*(gsap|tailwind|framer|lucide)~i',
