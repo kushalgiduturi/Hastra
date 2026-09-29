@@ -110,8 +110,7 @@ t('dashboards wear the plate; deliverables carry cloth and the handover seal', f
 
 t('login: the card is always centred and clickable, never 3-D-projected', function () {
     $l = file_get_contents(ASTRA_ROOT . '/auth/login.php');
-    expect(is_file(ASTRA_ROOT . '/assets/video/login-reveal.mp4') && is_file(ASTRA_ROOT . '/assets/video/login-hand-alpha.webm'), 'a video source is missing');
-    expect(str_contains($l, 'login-reveal.mp4') && str_contains($l, 'login-hand-alpha.webm'), 'login lost a video source');
+    expect(!str_contains($l, 'login-reveal.mp4') && !str_contains($l, 'login-hand-alpha.webm'), 'login should not reference the removed hand video');
     // the 3-D orbit viewport is retired: a login card's position must never
     // depend on the pointer or a camera orbit — it has to be exactly where
     // a user expects it and clickable without a run-up
@@ -123,7 +122,7 @@ t('login: the card is always centred and clickable, never 3-D-projected', functi
     expect(str_contains($l, 'class="auth-wrapper"') && str_contains($l, "display: flex; align-items: center; justify-content: center;"), 'the card lost its centred flex frame');
     expect(str_contains($l, 'translate3d(0, 40px, -280px) rotateX(18deg)') && str_contains($l, 'translate3d(0, 0, 0) rotateX(0deg)'), 'the card no longer zooms in from the crack along its depth axis');
     expect(str_contains($l, 'id="crack-particles"') && str_contains($l, "particles.classList.add('go')"), 'the crack spark burst is gone');
-    expect(str_contains($l, 'id="temple-hand-stage"'), 'the hand-rise stage layer is gone');
+    expect(!str_contains($l, 'id="temple-hand-stage"'), 'the hand-rise stage layer should be removed');
     expect(str_contains($l, 'setTimeout(reveal, 8000)'), 'login reveal lost its last-resort timer');
 });
 

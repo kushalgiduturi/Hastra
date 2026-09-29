@@ -199,7 +199,7 @@ t('landing showcase: announced under the hero, three modules linked to /labs/, n
     expect(str_contains($doc, "h.startsWith('#') ? SECS.indexOf(document.querySelector(h)) : -1"), 'nav chapter lookup no longer skips off-page links');
 });
 
-t('ten rings: engine, emblem and the sign-in bracelets', function () {
+t('ten rings: engine and emblem', function () {
     $js = file_get_contents(ASTRA_ROOT . '/assets/js/shang-chi-rings.js');
     expect(str_contains($js, 'export function createPowerRings') && str_contains($js, "count || (mode === 'circle' ? 10 : 5)"), 'engine lost its ten-ring circle default');
     foreach (['highlight(', 'boost(', 'burst(', 'power(', 'destroy('] as $api) expect(str_contains($js, $api), "engine lost $api");
@@ -207,11 +207,13 @@ t('ten rings: engine, emblem and the sign-in bracelets', function () {
     for ($i = 0; $i < 10; $i++) expect(str_contains($svg, "id=\"rg$i\""), "emblem is missing ring $i");
     expect(substr_count($svg, 'clip-path="url(#xo') === 10 && substr_count($svg, 'clip-path="url(#xi') === 10, 'emblem rings are no longer woven');
     expect(is_file(ASTRA_ROOT . '/tools/generate_rings_logo.php'), 'emblem generator missing');
+});
+
+t('sign-in page has no rings and no hand video', function () {
     $login = file_get_contents(ASTRA_ROOT . '/auth/login.php');
-    expect(str_contains($login, 'assets/js/login-rings.js'), 'sign-in page no longer loads its rings');
-    $lr = file_get_contents(ASTRA_ROOT . '/assets/js/login-rings.js');
-    // full-viewport canvases over the filtered hand video stalled the page for seconds
-    expect(!str_contains($lr, '100vw') && str_contains($lr, 'contain:strict') && str_contains($lr, "'revealed'"), 'sign-in rings regressed to full-screen canvases or never wind down');
+    expect(!str_contains($login, 'login-rings.js'), 'sign-in page still loads the rings script');
+    expect(!str_contains($login, 'bg-video') && !str_contains($login, 'temple-hand-stage'), 'sign-in page still has the hand video stage');
+    expect(!is_file(ASTRA_ROOT . '/assets/js/login-rings.js'), 'login-rings.js should be removed, not just unreferenced');
 });
 
 t('the ten-rings halo stands behind the 3-D wordmark in the landing scene', function () {
