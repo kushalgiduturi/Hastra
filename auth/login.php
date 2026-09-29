@@ -189,87 +189,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     transition: var(--transition);
   }
 
-  /* ── Cinematic reveal, two stages, both deterministic CSS/video —
-     no WebGL, no camera orbit, nothing here is ever driven by the
-     pointer. A login form's one interactive element has to be exactly
-     where a user expects it and clickable without a run-up; the earlier
-     pointer-orbited 3-D version of this page violated that and was torn
-     back out. Everything below only ever changes on a fixed timeline
-     (video playback reaching 4.05s, or the fail-safe timers), the same
-     for every visitor, every time.
+  /* ── Cinematic reveal, deterministic CSS only — no WebGL, no camera
+     orbit, nothing here is ever driven by the pointer or a video. A login
+     form's one interactive element has to be exactly where a user expects
+     it and clickable without a run-up; the earlier pointer-orbited 3-D
+     version of this page violated that and was torn back out, and the
+     hand-rising video stage that used to precede the card was removed
+     too (see the reveal script near the end of the page, which now fires
+     immediately since there is no video to wait on).
 
      Layers, back to front:
        #hastra-kage-scene   the shared temple world (assets/js/kage-scene.js)
-       #temple-hand-stage  stage 1: the hand rising out of it on video
-       #crack-particles    stage 2a: the spark burst at the fracture
-       .auth-wrapper        stage 2b: the login card
+       #crack-particles    the spark burst at the card's reveal point
+       .auth-wrapper        the login card
 
-     Stage 1 — the hand rises out of the temple's fog and settles, playing
-     until the crack forms in the palm at 4.05s, then freezes there. The
-     clip is matted — login-hand-alpha.webm carries its own alpha, the
-     night sky keyed out on chroma, the cloud kept as mist around the
-     wrist — so the temple shows straight through it; a browser without
-     VP9 alpha falls back to the plain clip and no-alpha's mix-blend-mode
-     screens it into the scene instead. It starts small and low (scale
-     .45, anchored bottom-centre) and dim, growing to full size and
-     brightness over the same span the temple-alone beat hands off into
-     — no blur on it or on the temple: a blurred, mostly-transparent
-     layer that covers nearly the whole screen would visibly soften
-     whatever shows through it too, which is the temple.
+     The crack sparks (#crack-particles, a one-shot CSS burst, no draw
+     loop) and the card grows out of that point along its own depth axis
+     (translateZ + rotateX under .auth-wrapper's perspective), while
+     .auth-wrapper itself never moves: it is a full-viewport flex box that
+     keeps the card dead centre at every instant regardless of what the
+     card's own transform is doing. ── */
 
-     Stage 2 — the crack sparks (#crack-particles, a one-shot CSS burst,
-     no draw loop) and the card grows out of that point along its own
-     depth axis (translateZ + rotateX under .auth-wrapper's perspective),
-     while .auth-wrapper itself never moves: it is a full-viewport flex
-     box that keeps the card dead centre at every instant regardless of
-     what the card's own transform is doing. ── */
-  #temple-hand-stage { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
-  /* Contained to the temple's own gate, not the whole screen. object-fit:
-     cover at 100vw/100vh (the earlier version) meant "grow to scale(1)"
-     was "grow to fill the entire viewport" — that's the "so big" the hand
-     became. The box below is fixed at an arch-sized footprint, centred on
-     roughly where the torii gate sits in the scene (49%/58%, the same
-     point the vignette, sparks and card all already anchor to); only the
-     content INSIDE that fixed box scales up, so the ceiling is "as big as
-     the gate", never "as big as the screen". */
-  /* the box: fixed size and position, never itself animated. #bg-video
-     (a separate element inside it, not the same node) does the actual
-     scale/filter growth — the box is what makes "big as the gate, never
-     big as the screen" a hard limit rather than a starting value. */
-  .video-bg {
-    position: fixed;
-    left: 49%; top: 58%;
-    width: min(60vw, 78vh);
-    aspect-ratio: 3 / 4;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    opacity: 0;
-    overflow: hidden;
-    transition: opacity 1.2s ease;
-  }
-  .video-bg.is-rising { opacity: 1; }
-  /* No blur: the video is mostly-transparent (the alpha-matted mist and
-     sky), so a blur on it would smear whatever shows through it too,
-     including the temple. Brightness alone (dim at rest, lifting as it
-     rises) still reads as "in the shadow, then in the light". */
-  #bg-video {
-    display: block; width: 100%; height: 100%; object-fit: contain;
-    pointer-events: none; background: transparent;
-    transform: scale(.4) translateY(10%);
-    filter: brightness(.4) contrast(1.15) saturate(.82) drop-shadow(0 0 40px rgba(224, 35, 28, .22));
-    transition: transform 3.4s cubic-bezier(.22, .61, .36, 1), filter 3.4s cubic-bezier(.22, .61, .36, 1);
-  }
-  /* settled state: contained to the box, and clearly lit rather than
-     perpetually dim — the dimness above is only for the temple-alone beat
-     before this class lands */
-  .video-bg.is-rising #bg-video { transform: scale(1) translateY(0); filter: brightness(.96) contrast(1.02) saturate(.98) drop-shadow(0 0 40px rgba(224, 35, 28, .22)); }
-  [data-theme="light"] #bg-video { filter: brightness(.55) contrast(1.06) saturate(.65) sepia(.1) drop-shadow(0 0 36px rgba(254, 215, 102, .4)); }
-  [data-theme="light"] .video-bg.is-rising #bg-video { filter: brightness(1.05) contrast(1) saturate(1.08) sepia(.04) drop-shadow(0 0 36px rgba(254, 215, 102, .4)); }
-  #bg-video.no-alpha { mix-blend-mode: screen; background: var(--navy); }
-  [data-theme="light"] #bg-video.no-alpha { mix-blend-mode: multiply; background: var(--navy); }
-
-  /* a light vignette to seat the card — soft enough that the temple and
-     hand stay clearly visible around it, not blacked out at the edges */
+  /* a light vignette to seat the card — soft enough that the temple stays
+     clearly visible around it, not blacked out at the edges */
   .video-overlay {
     position: fixed;
     inset: 0;
@@ -900,22 +842,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      mounted underneath. Purely decorative, so it's hidden from assistive
      tech; the fail-safes in the script below guarantee the card appears
      even if this never plays. -->
-<div id="temple-hand-stage">
-<!-- .video-bg is the fixed-size, fixed-position arch box; #bg-video is a
-     separate element inside it that does its own scale/filter growth.
-     They used to be the same element (class and id on one <video>) and
-     fought each other's transform — the ID's always won, so the box's own
-     centering transform never applied at all. -->
-<div class="video-bg">
-<!-- no autoplay: playback starts from JS after RISE_DELAY, once the
-     temple has had its own beat on screen (see the script near the end
-     of the page) — the native attribute would start it immediately and
-     race ahead of that delay --><video id="bg-video" muted playsinline preload="auto" aria-hidden="true">
-  <source src="<?= get_base_url() ?>assets/video/login-hand-alpha.webm" type='video/webm; codecs="vp9"'>
-  <source src="<?= get_base_url() ?>assets/video/login-reveal.mp4" type="video/mp4">
-</video>
-</div>
-</div>
 <div class="video-overlay"></div>
 
 <!-- stage 2a: the crack burst. Angles and radii are fixed server-side
@@ -1113,11 +1039,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 <script>
-// ── Cinematic reveal: freeze the video the instant the crack opens (before
-//    the trees sprout) and zoom the card out of that rupture ──
+// ── Card reveal: a short crack-spark burst then the card zooms out of that
+//    point. No video, no hand — just the card and the crack particles. ──
 (function() {
-  const video     = document.getElementById('bg-video');
-  const videoBox  = video && video.closest('.video-bg');
   const card      = document.querySelector('.card');
   const particles = document.getElementById('crack-particles');
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1129,9 +1053,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   function reveal() {
     if (revealed) return;
     revealed = true;
-    // Freeze right here regardless of how we got here (crack frame or the
-    // fail-safe) — the card must never emerge while trees are sprouting.
-    if (video) video.pause();
     card.classList.add('revealed');
     // the spark burst: a one-shot CSS animation, started the same instant
     if (particles && !reduceMotion && !alreadySeen) particles.classList.add('go');
@@ -1139,74 +1060,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   if (reduceMotion || alreadySeen) {
-    // Reduced motion: skip the video motion entirely, no autoplaying
-    // background to fight with. A tab that already sat through the full
-    // entrance once this session: same idea, but with a quick fade
-    // instead of an instant snap, and the video never even starts —
-    // nothing left to see behind the card that hasn't already been seen.
+    // Reduced motion, or a tab that already sat through the entrance once
+    // this session: a quick fade instead of the full zoom-out-of-the-crack.
     card.classList.add('quick');
-    if (video) { video.pause(); video.removeAttribute('autoplay'); video.style.display = 'none'; }
     if (alreadySeen && !reduceMotion) window.setTimeout(reveal, 120);
     else reveal();
-  } else if (video) {
-    const setSpeed = () => { video.playbackRate = 1.5; };
-    setSpeed();
-    video.addEventListener('loadedmetadata', setSpeed);
-    // The alpha clip is what lets the temple show through; a browser that
-    // fell back to the plain mp4 has no alpha to give and is screened into
-    // the scene instead (.no-alpha, in the CSS above).
-    video.addEventListener('loadeddata', function() {
-      if (/\.mp4(\?|$)/.test(video.currentSrc)) video.classList.add('no-alpha');
-    });
-
-    // The temple gets its own beat first: nothing here starts until
-    // RISE_DELAY after the page's own loader (core/theme.js) has actually
-    // cleared — before that the video sits at opacity 0, scaled down, so
-    // whatever's on screen is the scene behind it, not this timer racing
-    // a full-screen loading spinner nobody can see past. Counting
-    // RISE_DELAY from script-parse time instead (this script runs near
-    // the top of <body>, well before 'load') was the bug: it expired
-    // while the opaque loader was still covering everything, so by the
-    // time a real visitor could see anything the hand had already grown
-    // in — there was never a beat where the temple stood alone.
-    const RISE_DELAY = 1300;   /* + the loader's own 300ms fade = 1.6s, phase 1's length */
-    function startRise() {
-      if (revealed) return;
-      // .is-rising goes on the box (fades it in) — the CSS descendant
-      // selector .video-bg.is-rising #bg-video then handles the video's
-      // own scale/filter growth inside it
-      if (videoBox) videoBox.classList.add('is-rising');
-      const p = video.play();
-      if (p && p.catch) p.catch(reveal);
-      // A hand that never starts (blocked autoplay, bad codec, slow
-      // network) must never keep the form away.
-      window.setTimeout(function() {
-        if (!revealed && (video.paused || video.currentTime < 0.15)) reveal();
-      }, 2500);
-    }
+  } else {
+    // The temple gets its own beat first: reveal fires shortly after the
+    // page's own loader (core/theme.js) has cleared.
+    const REVEAL_DELAY = 1300;   /* + the loader's own 300ms fade = 1.6s */
     function afterLoader(fn, delay) {
-      // 300ms: the loader's own fade-out (core/theme.js hides it in 260ms)
       const go = () => window.setTimeout(fn, delay + 300);
       if (document.readyState === 'complete') go();
       else window.addEventListener('load', go, { once: true });
     }
-    afterLoader(startRise, RISE_DELAY);
-
-    // Crack forms ~4.0s in; pause+reveal at 4.05s so it never plays into
-    // the tree growth that starts at 4.8s.
-    video.addEventListener('timeupdate', function() {
-      if (video.currentTime >= 4.05) reveal();
-    });
-
-    // If the video can't load or play (blocked autoplay, bad codec, slow
-    // network…) the card must still appear — never lock a user out of
-    // the login form because of a background video.
-    video.addEventListener('error', reveal);
+    afterLoader(reveal, REVEAL_DELAY);
   }
 
-  // Last resort: whatever happens to the scene or the clip, the form is
-  // on screen within eight seconds.
-  if (!video) reveal();
+  // Last resort: the form is on screen within eight seconds no matter what.
   window.setTimeout(reveal, 8000);
 })();
 
@@ -1453,7 +1324,5 @@ document.addEventListener('hastra:themechange', function() {
 </script>
 
 <?php astra_consent_banner(); ?>
-<!-- the ten rings around the hand (assets/js/shang-chi-rings.js, mode: 'circle') -->
-<script type="module" src="<?= get_base_url() ?>assets/js/login-rings.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>
