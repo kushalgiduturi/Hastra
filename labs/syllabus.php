@@ -21,7 +21,7 @@ labs_head('Syllabus Accelerator & Video Tutor', 'syllabus', $profile);
     <div>
       <div class="lx-drop" id="syl-drop" tabindex="0" role="button" aria-describedby="syl-drop-hint">
         <input type="file" id="syl-files" multiple accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" tabindex="-1" aria-label="Choose syllabus documents">
-        <b>Drop PDF, DOCX or TXT syllabi</b><small id="syl-drop-hint">Several at once is fine · parsed in your browser · up to 25 MB each</small>
+        <b>Drop PDF, DOCX or TXT syllabi</b><small id="syl-drop-hint">Several at once is fine · parsed in your browser · up to 5 MB each</small>
       </div>
       <div class="lx-row lx-mt" id="syl-files-chips"></div>
     </div>
