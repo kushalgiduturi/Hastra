@@ -143,7 +143,7 @@ t('video API: validates topics, falls back to a view-sorted YouTube link, serves
         $j = json_of(cgi('GET', 'labs/api/youtube?topic=' . rawurlencode('Impossible travel detection')));
         expect($j['mode'] === 'link' && $j['reason'] === 'no_api_key', 'expected the no-key link fallback');
         expect_eq($j['query'], 'Impossible travel detection', 'query');
-        expect(str_ends_with($j['searchUrl'], '&sp=CAM%253D'), 'link is not sorted by view count');
+        expect(str_ends_with($j['searchUrl'], '&sp=CAM%3D'), 'link is not sorted by view count');
     }
     $query = 'Cache probe ' . F::$suffix;
     $payload = json_encode(['mode' => 'ranked', 'query' => $query, 'searchUrl' => 'x', 'videos' => [['id' => 'abcdefghijk', 'title' => 'T', 'channel' => 'C', 'views' => 9, 'duration' => 600]]]);

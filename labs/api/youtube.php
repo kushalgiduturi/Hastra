@@ -65,7 +65,7 @@ $topic = mb_substr($topic, 0, 120);
 if (mb_strlen($topic) < 2) labs_json(['error' => 'topic'], 400);
 
 $query = $topic;
-$search_url = 'https://www.youtube.com/results?search_query=' . rawurlencode($query) . '&sp=CAM%253D'; // sorted by views
+$search_url = 'https://www.youtube.com/results?search_query=' . rawurlencode($query) . '&sp=CAM%3D'; // sorted by views
 $link = fn(string $reason) => labs_json(['mode' => 'link', 'query' => $query, 'searchUrl' => $search_url, 'reason' => $reason]);
 
 $client = labs_client_key();

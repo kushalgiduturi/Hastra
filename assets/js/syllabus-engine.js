@@ -393,7 +393,6 @@ const results = new Map();                  // topic text → api payload (this 
 const queue = [];
 let inflight = 0;
 const MAX_INFLIGHT = 2;
-const VARIANTS = ['full tutorial engineering', 'lecture', 'crash course', 'explained with examples'];
 
 async function fetchRanked(topic) {
   if (results.has(topic)) return results.get(topic);
@@ -472,18 +471,17 @@ function showVideo(vbox, data, pos, direction = 0) {
           el('a', { class: 'lx-vbtn', href: `https://www.youtube.com/watch?v=${v.id}`, target: '_blank', rel: 'noopener noreferrer', 'aria-label': 'Open on YouTube' }, '↗')));
     }
   } else {
-    // no API key on the server: YouTube's own view-count sort, one click away
-    const k = topicKey(topic);
-    const variant = (state.disliked['q:' + k] || []).length % VARIANTS.length;
-    const q = `${topic} ${VARIANTS[variant]}`;
-    const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q) + '&sp=CAM%253D';
+    // no API key on the server, or quota resting: YouTube's own view-count
+    // sort, one click away. Uses the server's own searchUrl (topic name
+    // alone, correctly single-encoded) rather than building a separate query
+    // client-side, so this always matches what the ranked API would have
+    // searched for.
     card = el('div', { class: 'lx-vcard' },
       el('div', { class: 'lx-vposter' }),
       el('span', { class: 'lx-vrank', text: 'Sorted by views' }),
-      el('div', { class: 'lx-vmeta', style: { bottom: '52px' } }, el('b', { text: q }), el('span', { text: data.reason === 'no_api_key' ? 'Ranked in-page videos need a YouTube API key on this server.' : 'Live ranking is resting (daily quota). Opens YouTube sorted by views.' })),
+      el('div', { class: 'lx-vmeta', style: { bottom: '52px' } }, el('b', { text: data.query }), el('span', { text: data.reason === 'no_api_key' ? 'Ranked in-page videos need a YouTube API key on this server.' : 'Live ranking is resting (daily quota). Opens YouTube sorted by views.' })),
       el('div', { class: 'lx-vactions' },
-        el('a', { class: 'lx-vbtn', href: url, target: '_blank', rel: 'noopener noreferrer' }, 'Open most-viewed ↗'),
-        el('button', { class: 'lx-vbtn', type: 'button', onclick: () => { state.disliked['q:' + k] = [...(state.disliked['q:' + k] || []), q]; persist(); swap(vbox, () => showVideo(vbox, data, 0)); } }, ICON.down(), 'Try another angle')));
+        el('a', { class: 'lx-vbtn', href: data.searchUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Open most-viewed ↗')));
   }
   if (direction && vbox.firstElementChild) {
     card.classList.add('is-entering');
