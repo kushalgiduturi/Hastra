@@ -671,26 +671,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
   @media (max-width: 560px) { .row-3 { grid-template-columns: 1fr; } }
 
-  /* ── Full-bleed registration sheet ── */
-  .sheet-grid { display: grid; grid-template-columns: 340px 1fr; min-height: 560px; }
-  @media (max-width: 800px) { .sheet-grid { grid-template-columns: 1fr; } }
-
-  .sheet-side {
-    background: linear-gradient(160deg, rgba(var(--accent-rgb),0.14), rgba(0,0,0,0.15));
-    border-right: 1px solid var(--border-dim);
-    padding: 2.6rem 2.2rem;
-    display: flex; flex-direction: column;
+  /* ── Dual-column stage ─────────────────────────────────────────────────
+     Client Gateway (default): overview on the LEFT, card on the RIGHT.
+     Enterprise: the card slides LEFT and the overview slides RIGHT, by a
+     pixel-measured `translate` (650ms, cubic-bezier(0.16, 1, 0.3, 1)) that
+     composes with everything else; only the overview text crossfades,
+     mid-slide. Same mechanics as auth/login.php. ── */
+  .reg-stage {
+    --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+    column-gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    width: 100%; max-width: 1180px;
   }
-  @media (max-width: 800px) { .sheet-side { border-right: none; border-bottom: 1px solid var(--border-dim); padding: 2rem 1.6rem; } }
-
-  .sheet-side .brand { margin-bottom: 2.2rem !important; }
-  .sheet-side h1 {
-    font-family: var(--font-sans); font-size: 24px; font-weight: 700;
-    color: var(--text); line-height: 1.25; margin: 0 0 0.8rem;
+  .reg-stage .card { grid-column: 2; grid-row: 1; max-width: 560px; }
+  .reg-stage[data-portal="enterprise"] .card      { translate: calc(-1 * var(--card-shift, 0px)) 0; }
+  .reg-stage[data-portal="enterprise"] .auth-info { translate: var(--info-shift, 0px) 0; }
+  .reg-stage.ready .card { transition: translate 650ms var(--slide-ease); }
+  .auth-info {
+    grid-column: 1; grid-row: 1; justify-self: start; max-width: 34rem; min-width: 0; color: var(--text);
+    /* the card is tall (multi-step form), so keep the overview in view while it scrolls */
+    align-self: start; position: sticky; top: max(2rem, 12vh);
   }
-  .sheet-side p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; margin: 0; }
+  .reg-stage.ready .auth-info { transition: translate 650ms var(--slide-ease); }
+  .info-stack { display: grid; }
+  .info-block {
+    grid-area: 1 / 1;
+    opacity: 0; scale: .98; visibility: hidden;
+    transition: opacity .3s ease, scale .3s ease, visibility 0s .3s;
+  }
+  .info-block.is-active {
+    opacity: 1; scale: 1; visibility: visible;
+    transition: opacity .35s ease .3s, scale .45s var(--slide-ease) .3s, visibility 0s 0s;
+  }
+  .info-badge {
+    display: inline-flex; align-items: center; gap: .55rem; padding: .35rem .8rem;
+    border: 1px solid var(--border-dim); border-radius: 999px;
+    font: 600 .72rem/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .info-badge i { width: .45rem; height: .45rem; border-radius: 50%; background: var(--accent-bright); box-shadow: 0 0 10px 2px rgba(var(--accent-rgb), .8); }
+  .info-title { margin: 1.1rem 0 0; font: 800 clamp(2.4rem, 5vw, 4.2rem)/1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--text); }
+  .info-title .info-portal { display: block; margin-top: .6rem; font-size: clamp(.95rem, 1.6vw, 1.25rem); font-weight: 700; letter-spacing: .22em; color: var(--accent-bright); }
+  .info-sub { margin: 1.4rem 0 0; font: 600 1.15rem/1.4 var(--font-sans); color: var(--text); }
+  .info-body { margin: .9rem 0 0; font: 400 1rem/1.7 var(--font-sans); color: var(--text-dim); }
+  .info-feats { margin: 1.3rem 0 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
+  .info-feats li { position: relative; padding-left: 1.3rem; font: 500 .92rem/1.5 var(--font-sans); color: var(--text); }
+  .info-feats li::before { content: ''; position: absolute; left: 0; top: .6em; width: .5rem; height: 1px; background: var(--accent-bright); }
+  .info-flow { margin-top: 1.5rem; padding: .9rem 1rem; border-left: 2px solid var(--accent-bright); font: 400 .88rem/1.6 var(--font-sans); color: var(--text-dim); }
+  .info-flow b { display: block; color: var(--text); font-weight: 600; margin-bottom: .25rem; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1.4rem 2.8rem 0; }
+  .card-head .brand { margin-bottom: 0; }
+  @media (max-width: 1000px) {
+    .reg-stage { grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; max-width: 560px; }
+    .auth-info, .reg-stage .card { grid-column: 1; justify-self: center; width: 100%; }
+    .auth-info { grid-row: 1; text-align: center; }
+    .reg-stage .card { grid-row: 2; }
+    .info-title { font-size: 2rem; margin-top: .8rem; }
+    .info-body, .info-feats, .info-flow { display: none; }
+    .card-head { padding: 1.2rem 1.6rem 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reg-stage.ready .card, .reg-stage.ready .auth-info, .info-block, .info-block.is-active { transition-duration: .01s !important; transition-delay: 0s !important; }
+  }
 
-  .sheet-steps { list-style: none; margin: 2.2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .sheet-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; gap: .5rem 1.4rem; }
   .sheet-steps li {
     display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-dim);
     transition: color 0.2s;
@@ -708,7 +753,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   .sheet-steps li.done { color: var(--text-dim); }
 
   .navbar-preview {
-    margin-top: auto; padding-top: 1.6rem;
+    margin-top: 1rem; padding-top: .4rem;
   }
   .navbar-preview .np-label { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
   .navbar-preview .np-bar {
@@ -798,11 +843,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="pulse p2"></div>
 </div>
 
-<div class="card">
-<div class="sheet-grid">
+<div class="reg-stage" id="reg-stage" data-portal="client">
 
-  <!-- ── Left: brand, steps, live navbar preview ── -->
-  <div class="sheet-side">
+<!-- ── Overview: sits LEFT for Client Gateway, slides RIGHT for Enterprise ── -->
+<aside class="auth-info" id="reg-info" aria-label="About the selected registration track">
+  <div class="info-stack">
+    <div class="info-block is-active" id="info-client" data-block="client">
+      <span class="info-badge"><i></i>Client onboarding</span>
+      <h1 class="info-title">Hastra<span class="info-portal">Client Gateway</span></h1>
+      <p class="info-sub">Provision your secure client portal</p>
+      <p class="info-body">Provision your secure client portal in seconds. Collaborate with engineering teams, trace code deliverables live, verify automated compliance reports, and access zero-trust audit records.</p>
+      <ul class="info-feats">
+        <li>Live deliverable and sprint tracking</li>
+        <li>Automated compliance reports</li>
+        <li>Tamper-evident audit records</li>
+      </ul>
+      <div class="info-flow"><b data-role="heading">Register your company</b><span data-role="intro">You'll be your company's IT Manager on Hastra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</span></div>
+    </div>
+    <div class="info-block" id="info-enterprise" data-block="enterprise" inert aria-hidden="true">
+      <span class="info-badge"><i></i>Workspace provisioning</span>
+      <h1 class="info-title">Hastra<span class="info-portal">Enterprise Deployment</span></h1>
+      <p class="info-sub">Provision an enterprise security tenant</p>
+      <p class="info-body">Provision an enterprise security tenant. Integrate custom STIX/TAXII threat intelligence pipelines, establish post-quantum encrypted vaults, and automate organization-wide SOC compliance.</p>
+      <ul class="info-feats">
+        <li>Multi-seat SOC workspace</li>
+        <li>SIEM and threat-intelligence pipelines</li>
+        <li>Post-quantum encrypted vaults and compliance specs</li>
+      </ul>
+      <div class="info-flow"><b data-role="heading">Set up your organization</b><span data-role="intro">You'll be the admin of your own Hastra workspace, ready immediately. Invite your team, configure leave policy, and start tracking delivery today.</span></div>
+    </div>
+  </div>
+</aside>
+
+<div class="card" id="reg-card">
+
+  <div class="card-head">
     <div class="brand">
       <div class="brand-icon">
         <svg viewBox="0 0 48 48" role="img" aria-label="Hastra star brandmark logo"><defs><linearGradient id="hastraMark" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--accent-bright)"/><stop offset="1" stop-color="var(--purple, var(--accent-bright))"/></linearGradient></defs><path fill="url(#hastraMark)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path fill="url(#hastraMark)" d="M24 15L30 24L24 33L18 24Z"/></svg>
@@ -811,26 +886,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="title">Hastra</div>
       </div>
     </div>
-
-    <h1 id="sheetHeading">Register your company</h1>
-    <p id="sheetIntro">You'll be your company's IT Manager on Hastra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.</p>
-
     <ul class="sheet-steps" id="sheetSteps">
       <li class="current" data-step="1"><span class="step-num">1</span> <span id="step1Label">Workspace details</span></li>
       <li data-step="2"><span class="step-num">2</span> Your account</li>
     </ul>
-
-    <div class="navbar-preview">
-      <div class="np-label">Top bar preview</div>
-      <div class="np-bar">
-        <span class="np-hastra">HASTRA</span>
-        <img id="navPreviewLogo" class="np-logo" style="display:none;" alt="Company logo preview">
-        <span id="navPreviewPlaceholder" class="np-logo-placeholder">?</span>
-      </div>
-    </div>
   </div>
 
-  <!-- ── Right: the multi-step form itself ── -->
   <div class="sheet-main">
 
     <?php if ($msg): ?>
@@ -930,6 +991,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
         </div>
         <p class="logo-status" data-flows="enterprise_full" style="margin-top:-0.6rem;">A biometric attendance webhook secret is generated automatically. Find it under Attendance once you're signed in.</p>
+
+        <div class="navbar-preview" data-flows="client_company,enterprise_full">
+          <div class="np-label">Top bar preview</div>
+          <div class="np-bar">
+            <span class="np-hastra">HASTRA</span>
+            <img id="navPreviewLogo" class="np-logo" style="display:none;" alt="Company logo preview">
+            <span id="navPreviewPlaceholder" class="np-logo-placeholder">?</span>
+          </div>
+        </div>
 
         <div class="step-actions">
           <button type="button" class="btn-register" id="toStep2">Continue</button>
@@ -1155,6 +1225,21 @@ const regSubs      = document.querySelectorAll('.reg-sub');
 const flowInput    = document.getElementById('flowInput');
 const orgNameLabel = document.getElementById('orgNameLabel');
 
+const regStage       = document.getElementById('reg-stage');
+const regInfo        = document.getElementById('reg-info');
+const regCard        = document.getElementById('reg-card');
+const infoClient     = document.getElementById('info-client');
+const infoEnterprise = document.getElementById('info-enterprise');
+
+// Exact pixel distances for the card/overview swap, so the slide lands on the
+// other column at any width. Stacked layout (narrow): no slide.
+function layoutStage() {
+  const narrow = window.matchMedia('(max-width: 1000px)').matches;
+  const gap = parseFloat(getComputedStyle(regStage).columnGap) || 0;
+  regStage.style.setProperty('--card-shift', narrow ? '0px' : (regInfo.offsetWidth + gap) + 'px');
+  regStage.style.setProperty('--info-shift', narrow ? '0px' : (regCard.offsetWidth + gap) + 'px');
+}
+
 const FLOW_COPY = {
   client_company: {
     heading: 'Register your company', intro: "You'll be your company's IT Manager on Hastra. After signing in you can upload your team roster, invite everyone, and finish setting up your workspace.",
@@ -1200,14 +1285,22 @@ function applyFlow() {
   });
 
   const copy = FLOW_COPY[flow];
-  document.getElementById('sheetHeading').textContent  = copy.heading;
-  document.getElementById('sheetIntro').textContent    = copy.intro;
+  const blockSel = '#info-' + (flow.indexOf('enterprise') === 0 ? 'enterprise' : 'client');
+  document.querySelector(blockSel + ' [data-role="heading"]').textContent = copy.heading;
+  document.querySelector(blockSel + ' [data-role="intro"]').textContent   = copy.intro;
   document.getElementById('step1Label').textContent    = copy.stepLabel;
   document.getElementById('step1Heading').textContent  = copy.step1Heading;
   document.getElementById('step1Subtitle').textContent = copy.step1Subtitle;
   document.getElementById('step2Heading').textContent  = copy.step2Heading;
   document.getElementById('step2Subtitle').textContent = copy.step2Subtitle;
   orgNameLabel.textContent = copy.orgLabel;
+
+  const enterprise = flow.indexOf('enterprise') === 0;
+  regStage.dataset.portal = enterprise ? 'enterprise' : 'client';
+  infoClient.classList.toggle('is-active', !enterprise);
+  infoEnterprise.classList.toggle('is-active', enterprise);
+  infoClient.inert = enterprise;      infoClient.setAttribute('aria-hidden', enterprise ? 'true' : 'false');
+  infoEnterprise.inert = !enterprise; infoEnterprise.setAttribute('aria-hidden', enterprise ? 'false' : 'true');
 
   const subLabels = tab => tab === 'client' ? ['Company', 'Individual / Freelancer'] : ['Full Organization', 'Solo Enterprise'];
   const activeTab = document.querySelector('.reg-tab.active').dataset.tab;
@@ -1240,6 +1333,14 @@ if (new URLSearchParams(window.location.search).get('track') === 'enterprise') {
 } else {
   applyFlow();
 }
+layoutStage();
+window.addEventListener('resize', layoutStage);
+// enable the slide only after the first measured layout, so a page that opens
+// straight into Enterprise (?track=enterprise) never visibly slides
+window.addEventListener('load', function () {
+  layoutStage();
+  requestAnimationFrame(function () { requestAnimationFrame(function () { regStage.classList.add('ready'); }); });
+});
 
 // ── Automated brand-logo finder ─────────────────────────────────────────────
 // Builds a domain guess from the company name/website, then probes a few
