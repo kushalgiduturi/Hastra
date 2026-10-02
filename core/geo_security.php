@@ -60,6 +60,33 @@ const ASTRA_DATACENTER_ASN_KEYWORDS = [
     'nordvpn', 'expressvpn', 'surfshark', 'private internet access',
 ];
 
+// Consumer and mobile carriers. Providers sometimes tag a carrier-grade-NAT
+// pool (thousands of phones behind one address) as "hosting"; for these a
+// hosting-only flag is not evidence of a VPN. It never overrides an outright
+// proxy flag or a known datacenter/VPN network.
+const ASTRA_CONSUMER_ISP_KEYWORDS = [
+    'jio', 'airtel', 'bharti', 'vodafone', 'bsnl', 'mtnl', 'act fibernet', 'hathway', 'excitel', 'spectranet',
+    'you broadband', 'comcast', 'verizon', 't-mobile', 'at&t', 'spectrum', 'telefonica',
+];
+
+// Pure classification of the provider's answer (ip-api.com fields: proxy,
+// hosting, isp, as). True = treat as a VPN/proxy. Kept separate so it can be
+// tested without a network call.
+function astra_ip_flags_are_vpn(array $data): bool {
+    $line = strtolower(($data['isp'] ?? '') . ' ' . ($data['as'] ?? ''));
+    foreach (ASTRA_DATACENTER_ASN_KEYWORDS as $kw) {
+        if (strpos($line, $kw) !== false) return true;
+    }
+    if (!empty($data['proxy'])) return true;
+    if (!empty($data['hosting'])) {
+        foreach (ASTRA_CONSUMER_ISP_KEYWORDS as $kw) {
+            if (strpos($line, $kw) !== false) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 // Queries ip-api.com's free JSON endpoint (no key required) for geo +
 // proxy/hosting flags. Returns null on any network/parse failure so the
 // caller can fail open (never block a login just because the reputation
@@ -74,18 +101,11 @@ function astra_query_ip_provider($ip) {
     $data = json_decode($response, true);
     if (!$data || ($data['status'] ?? '') !== 'success') return null;
 
-    $asn_line   = strtolower($data['as'] ?? '');
-    $isp_line   = strtolower($data['isp'] ?? '');
-    $known_dc   = false;
-    foreach (ASTRA_DATACENTER_ASN_KEYWORDS as $kw) {
-        if (strpos($asn_line, $kw) !== false || strpos($isp_line, $kw) !== false) { $known_dc = true; break; }
-    }
-
     return [
         'country' => $data['country'] ?? null,
         'city'    => $data['city'] ?? null,
         'isp'     => $data['isp'] ?? null,
-        'is_vpn'  => (bool)($data['proxy'] ?? false) || (bool)($data['hosting'] ?? false) || $known_dc,
+        'is_vpn'  => astra_ip_flags_are_vpn($data),
     ];
 }
 
@@ -93,6 +113,13 @@ function astra_query_ip_provider($ip) {
 // Fails open: if the reputation provider can't be reached and nothing is
 // cached, is_vpn comes back false rather than blocking every login.
 function astra_inspect_ip(string $ip, $conn = null): array {
+    $r = astra_inspect_ip_lookup($ip, $conn);
+    // Operator escape hatch: HASTRA_ALLOW_PROXY=1 turns the VPN/proxy gate off
+    // (the lookup, geo and logging still run) so nobody can be locked out.
+    if (getenv('HASTRA_ALLOW_PROXY') === '1') $r['is_vpn'] = false;
+    return $r;
+}
+function astra_inspect_ip_lookup(string $ip, $conn = null): array {
     $conn = $conn ?? ($GLOBALS['conn'] ?? null);
     if (!$conn) throw new RuntimeException('astra_inspect_ip(): no database connection available.');
 

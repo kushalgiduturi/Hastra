@@ -161,6 +161,25 @@ t('localhost IPv4 / IPv6 bypass reputation checks (local development)', function
     }
     unset($_SERVER['REMOTE_ADDR']);
 });
+t('VPN gate: carrier-NAT "hosting" flags pass, real proxies and datacenter networks do not', function () {
+    expect(!astra_ip_flags_are_vpn(['hosting' => true, 'isp' => 'Reliance Jio Infocomm Limited', 'as' => 'AS55836 Reliance Jio Infocomm Limited']), 'a Jio hosting-only flag blocked a phone');
+    expect(!astra_ip_flags_are_vpn(['hosting' => true, 'isp' => 'Bharti Airtel Ltd.', 'as' => 'AS24560 Bharti Airtel Ltd.']), 'an Airtel hosting-only flag blocked a subscriber');
+    expect(!astra_ip_flags_are_vpn(['isp' => 'ACT Fibernet', 'hosting' => false, 'proxy' => false]), 'a residential ISP with no flags blocked');
+    expect(astra_ip_flags_are_vpn(['proxy' => true, 'isp' => 'Bharti Airtel Ltd.']), 'an outright proxy flag was ignored');
+    expect(astra_ip_flags_are_vpn(['hosting' => true, 'isp' => 'Acme Hosting', 'as' => 'AS64500 Acme Hosting']), 'a hosting range with no consumer ISP passed');
+    expect(astra_ip_flags_are_vpn(['hosting' => false, 'isp' => 'DigitalOcean, LLC']), 'a known datacenter network passed');
+    expect(!astra_ip_flags_are_vpn([]), 'an empty answer blocked');
+    // the operator escape hatch turns the gate off without touching the lookup
+    $ip = '203.0.113.77';
+    q("REPLACE INTO ip_cache (ip, country, city, is_vpn, isp, updated_at) VALUES (?, 'NL', 'Amsterdam', 1, 'Test Hosting BV', NOW())", [$ip]);
+    $_SERVER['REMOTE_ADDR'] = $ip;                  // a real-looking visitor, not loopback
+    expect(astra_inspect_ip($ip)['is_vpn'] === true, 'a cached VPN verdict was not honoured');
+    putenv('HASTRA_ALLOW_PROXY=1');
+    $off = astra_inspect_ip($ip)['is_vpn'];
+    putenv('HASTRA_ALLOW_PROXY');
+    unset($_SERVER['REMOTE_ADDR']);
+    expect($off === false, 'HASTRA_ALLOW_PROXY=1 did not disable the gate');
+});
 t('cached VPN / datacenter verdict blocks login before any credential check', function () {
     $ip = '203.0.113.50';
     q("REPLACE INTO ip_cache (ip, country, city, is_vpn, isp, updated_at) VALUES (?, 'NL', 'Amsterdam', 1, 'Test Hosting BV', NOW())", [$ip]);

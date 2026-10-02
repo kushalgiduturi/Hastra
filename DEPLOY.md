@@ -52,6 +52,8 @@ Fill in every value in `.env`:
 | `HASTRA_SYSADMIN_EMAIL` | the email you'll register with; it becomes the primary sysadmin |
 | `HASTRA_GOOGLE_*`, `HASTRA_RECAPTCHA_SECRET` | from Google (step 4) |
 | `HASTRA_YOUTUBE_API_KEY` | optional: ranked videos in the Labs study hub |
+| `HASTRA_TRUST_FORWARDED` | set to `1` when the host puts a proxy in front of the container (Render, Cloudflare). Without it the app sees the proxy, not the visitor, so every visitor shares one address: the VPN check, geo lookups, rate limits and lockouts all misfire. It then trusts `CF-Connecting-IP` / `X-Forwarded-For`, so only set it when a proxy you control sets those headers |
+| `HASTRA_ALLOW_PROXY` | optional escape hatch: `1` turns the VPN/proxy sign-in block off (everything else keeps working) |
 
 `.env` holds secrets. It's git-ignored; never commit it or paste it anywhere.
 
