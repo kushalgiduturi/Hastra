@@ -21,7 +21,7 @@ if (isset($_SESSION["user_id"])) {
 }
 
 $msg = "";
-$active_portal = ($_POST["portal"] ?? "") === "client" ? "client" : "enterprise";
+$active_portal = ($_POST["portal"] ?? "") === "enterprise" ? "enterprise" : "client";
 
 // Why the previous session ended (core/session_guard.php redirects here).
 // Shown on both panels, since we don't know which one the user signs in on.
@@ -829,6 +829,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   @media (hover: hover) and (pointer: fine) { .cur-dot { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .cur-dot, #hastra-wisp-mesh { display: none; } }
 
+  /* ── Dual-column stage ─────────────────────────────────────────────────
+     Client Gateway (default): info on the LEFT, card on the RIGHT.
+     Enterprise Workspace: the card slides to the LEFT while the info slides
+     to the RIGHT. Both are plain grid cells that swap by a pixel `translate`
+     (measured in JS so it is exact at any width), on the individual
+     `translate` property so it composes with the card's own depth-reveal
+     `transform`. Only the info text crossfades, mid-slide. ── */
+  .auth-stage {
+    --slide-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    column-gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+    width: 100%; max-width: 1080px;
+  }
+  .auth-stage[data-portal="enterprise"] .card      { translate: calc(-1 * var(--card-shift, 0px)) 0; }
+  .auth-stage[data-portal="enterprise"] .auth-info { translate: var(--info-shift, 0px) 0; }
+  /* the slide is only animated once the first layout has been measured, so
+     a page that loads straight into Enterprise never visibly slides */
+  .auth-stage.ready .card {
+    transition: transform 1.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease-out, filter 1s ease-out,
+                background .5s ease, border-color .5s ease, translate 650ms var(--slide-ease);
+  }
+  .auth-stage.ready .card.quick {
+    transition: transform .4s ease-out, opacity .35s ease-out, filter .35s ease-out,
+                background .5s ease, border-color .5s ease, translate 650ms var(--slide-ease);
+  }
+  .auth-info {
+    grid-column: 1; grid-row: 1; justify-self: start; max-width: 34rem; min-width: 0;
+    color: #fff; text-shadow: 0 2px 18px rgba(3, 5, 12, .75);
+    opacity: 0; transform: translateY(14px);
+    pointer-events: none;
+  }
+  .auth-stage.ready .auth-info { transition: translate 650ms var(--slide-ease), opacity .9s ease, transform .9s var(--slide-ease); }
+  .auth-info.revealed { opacity: 1; transform: none; }
+  .card { grid-column: 2; grid-row: 1; }
+  .info-stack { display: grid; }
+  .info-block {
+    grid-area: 1 / 1;
+    opacity: 0; scale: .98; visibility: hidden;
+    transition: opacity .3s ease, scale .3s ease, visibility 0s .3s;
+  }
+  .info-block.is-active {
+    opacity: 1; scale: 1; visibility: visible;
+    transition: opacity .35s ease .3s, scale .45s var(--slide-ease) .3s, visibility 0s 0s;
+  }
+  .info-badge {
+    display: inline-flex; align-items: center; gap: .55rem; padding: .35rem .8rem;
+    border: 1px solid var(--color-glass-edge, rgba(255,255,255,.2)); border-radius: var(--radius-pill, 999px);
+    font: 600 .72rem/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.85);
+  }
+  .info-badge i { width: .45rem; height: .45rem; border-radius: 50%; background: var(--accent-bright); box-shadow: 0 0 10px 2px rgba(var(--accent-rgb), .8); }
+  .info-title { margin: 1.1rem 0 0; font: 800 clamp(2.4rem, 5.4vw, 4.4rem)/1 var(--font-sans); letter-spacing: .06em; text-transform: uppercase; }
+  .info-title .info-portal { display: block; margin-top: .6rem; font-size: clamp(.95rem, 1.7vw, 1.3rem); font-weight: 700; letter-spacing: .22em; color: var(--accent-bright); }
+  .info-sub { margin: 1.4rem 0 0; font: 600 1.15rem/1.4 var(--font-sans); }
+  .info-body { margin: .9rem 0 0; font: 400 1rem/1.7 var(--font-sans); color: rgba(255,255,255,.82); }
+  .info-feats { margin: 1.4rem 0 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+  .info-feats li { position: relative; padding-left: 1.3rem; font: 500 .92rem/1.5 var(--font-sans); color: rgba(255,255,255,.88); }
+  .info-feats li::before { content: ''; position: absolute; left: 0; top: .6em; width: .5rem; height: 1px; background: var(--accent-bright); }
+  @media (max-width: 900px) {
+    .auth-wrapper { overflow-y: auto; align-items: flex-start; pointer-events: auto; }
+    .auth-stage { grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; margin: auto 0; max-width: 460px; }
+    .auth-info, .card { grid-column: 1; justify-self: center; }
+    .auth-info { grid-row: 1; text-align: center; }
+    .card { grid-row: 2; max-height: none; }
+    .info-title { font-size: 2rem; margin-top: .8rem; }
+    .info-body, .info-feats { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .auth-stage.ready .card, .auth-stage.ready .auth-info, .info-block, .info-block.is-active { transition-duration: .01s !important; transition-delay: 0s !important; }
+  }
+
 </style>
 </head>
 <body data-intro-manual data-cursor-off>
@@ -863,6 +935,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
 
 <div class="auth-wrapper">
+<div class="auth-stage" id="auth-stage" data-portal="<?= $active_portal ?>">
+
+<aside class="auth-info" id="auth-info" aria-label="About the selected portal">
+  <div class="info-stack">
+    <div class="info-block<?= $active_portal === 'client' ? ' is-active' : '' ?>" id="info-client"<?= $active_portal === 'client' ? '' : ' inert aria-hidden="true"' ?>>
+      <span class="info-badge"><i></i>Client portal</span>
+      <h1 class="info-title">Hastra<span class="info-portal">Client Gateway</span></h1>
+      <p class="info-sub">Autonomous Project Oversight &amp; Delivery Tracking</p>
+      <p class="info-body">Complete transparency into deliverables, active security scanners, sprint telemetry, and HMAC-verified audit ledgers for onboarded organizations.</p>
+      <ul class="info-feats">
+        <li>Deliverables and sprint telemetry in one view</li>
+        <li>Live results from active security scanners</li>
+        <li>HMAC-verified, tamper-evident audit ledger</li>
+      </ul>
+    </div>
+    <div class="info-block<?= $active_portal === 'enterprise' ? ' is-active' : '' ?>" id="info-enterprise"<?= $active_portal === 'enterprise' ? '' : ' inert aria-hidden="true"' ?>>
+      <span class="info-badge"><i></i>Enterprise workspace</span>
+      <h1 class="info-title">Hastra<span class="info-portal">Enterprise Core</span></h1>
+      <p class="info-sub">SOC Governance &amp; Cryptographic Control Plane</p>
+      <p class="info-body">Direct access to multi-engine post-quantum key encapsulation (ML-KEM/ML-DSA), internal SIEM threat pipelines, and executive compliance controls.</p>
+      <ul class="info-feats">
+        <li>ML-KEM and ML-DSA post-quantum cryptography</li>
+        <li>Internal SIEM threat-intelligence pipelines</li>
+        <li>Executive compliance and governance controls</li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
 <div class="card" id="auth-card">
 
   <!-- Brand -->
@@ -1037,6 +1138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </div>
 </div>
+</div>
 
 <script>
 // ── Card reveal: a short crack-spark burst then the card zooms out of that
@@ -1054,6 +1156,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (revealed) return;
     revealed = true;
     card.classList.add('revealed');
+    const infoPanel = document.getElementById('auth-info');
+    if (infoPanel) infoPanel.classList.add('revealed');
     // the spark burst: a one-shot CSS animation, started the same instant
     if (particles && !reduceMotion && !alreadySeen) particles.classList.add('go');
     try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* private mode */ }
@@ -1223,8 +1327,28 @@ const toggleClient      = document.getElementById('toggleClient');
 const panelEnterprise  = document.getElementById('panel-enterprise');
 const panelClient      = document.getElementById('panel-client');
 
+const authStage  = document.getElementById('auth-stage');
+const authInfo   = document.getElementById('auth-info');
+const authCard   = document.getElementById('auth-card');
+const infoClient = document.getElementById('info-client');
+const infoEnterprise = document.getElementById('info-enterprise');
+
+// Exact pixel distances for the card/info swap, so the slide lands precisely
+// on the other column at any viewport width. Stacked layout (narrow): no slide.
+function layoutStage() {
+  const narrow = window.matchMedia('(max-width: 900px)').matches;
+  const gap = parseFloat(getComputedStyle(authStage).columnGap) || 0;
+  authStage.style.setProperty('--card-shift', narrow ? '0px' : (authInfo.offsetWidth + gap) + 'px');
+  authStage.style.setProperty('--info-shift', narrow ? '0px' : (authCard.offsetWidth + gap) + 'px');
+}
+
 function setActivePortal(portal, focusTab) {
   const client = portal === 'client';
+  authStage.dataset.portal = portal;
+  infoClient.classList.toggle('is-active', client);
+  infoEnterprise.classList.toggle('is-active', !client);
+  infoClient.inert = !client;       infoClient.setAttribute('aria-hidden', client ? 'false' : 'true');
+  infoEnterprise.inert = client;    infoEnterprise.setAttribute('aria-hidden', client ? 'true' : 'false');
   loginTrack.classList.toggle('show-client', client);
   toggleEnterprise.classList.toggle('active', !client);
   toggleClient.classList.toggle('active', client);
@@ -1248,6 +1372,10 @@ toggleClient.addEventListener('click', function() { setActivePortal('client'); }
   });
 });
 setActivePortal(loginTrack.classList.contains('show-client') ? 'client' : 'enterprise');
+layoutStage();
+window.addEventListener('resize', layoutStage);
+window.addEventListener('load', layoutStage);
+requestAnimationFrame(function () { requestAnimationFrame(function () { authStage.classList.add('ready'); }); });
 
 // ── Show / Hide password (one eye button per panel) ────────────────────────
 const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>`;
