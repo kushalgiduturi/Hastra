@@ -62,6 +62,18 @@ t('duplicate email is refused', function () {
     expect_clean($r);
     expect(!str_contains((string)$r['location'], 'verify-email'), 'duplicate accepted');
 });
+t('country must come from the list: typed or tampered values are refused', function () {
+    require_once ASTRA_ROOT . '/core/countries.php';
+    foreach (['ardtfjytyk', '', 'india', '<script>'] as $bad) {
+        $s = astra_test_session([]);
+        $r = cgi('POST', 'auth/register.php', ['session' => $s, 'post' => [
+            'csrf_token' => csrf_of($s), 'accept_terms' => '1', 'flow' => 'client_individual', 'name' => 'Ctry', 'email' => 'ctry.' . F::$suffix . '@example.test',
+            'phone_number' => '+919876500003', 'password' => FIX_PASSWORD, 'confirm' => FIX_PASSWORD, 'country' => $bad]]);
+        expect_clean($r);
+        expect(!str_contains((string)$r['location'], 'verify-email') && str_contains($r['body'], 'Choose your country'), "country '$bad' accepted");
+    }
+    expect(astra_country_valid('India') && astra_country_valid('United States') && !astra_country_valid('Atlantis'), 'country list drifted');
+});
 t('weak password is refused with a specific message', function () {
     $s = astra_test_session([]);
     $r = cgi('POST', 'auth/register.php', ['session' => $s, 'post' => [

@@ -2,6 +2,7 @@
 // auth/register.php
 include __DIR__ . '/../core/db.php';
 secure_session_start();
+require_once __DIR__ . '/../core/countries.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -67,8 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $msg = $flow === 'enterprise_solo' ? "Enter your studio or developer name." : "Enter your organization's name.";
     } elseif ($needs_org_size && !isset(COMPANY_SIZES[$company_size])) {
         $msg = "Choose your company's size.";
-    } elseif ($needs_country && $country === "") {
-        $msg = "Enter your country.";
+    } elseif ($needs_country && !astra_country_valid($country)) {
+        $msg = "Choose your country from the list.";
     } elseif (mb_strlen($contract_ref) > 60) {
         $msg = "The contract reference can be at most 60 characters.";
     } elseif ($existing_co) {
@@ -965,8 +966,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="field" data-flows="client_individual,enterprise_solo">
           <label for="country">Country</label>
-          <input type="text" name="country" id="country" maxlength="60" placeholder="India"
-                 value="<?= htmlspecialchars($_POST['country'] ?? '') ?>">
+          <?php $picked_country = (string)($_POST['country'] ?? ''); ?>
+          <select name="country" id="country" data-ax-select required>
+            <option value="" disabled<?= astra_country_valid($picked_country) ? '' : ' selected' ?>>Select your country</option>
+            <?php foreach (ASTRA_COUNTRIES as $iso => $country_name): ?>
+            <option value="<?= htmlspecialchars($country_name) ?>" data-iso="<?= $iso ?>"<?= $picked_country === $country_name ? ' selected' : '' ?>><?= htmlspecialchars($country_name) ?></option>
+            <?php endforeach; ?>
+          </select>
         </div>
 
         <div class="field" data-flows="enterprise_full">
@@ -1155,30 +1161,15 @@ const phoneIti = window.intlTelInput(phoneInput, {
   },
 });
 
-// Typing a country in the Country field switches the phone dial code to match.
+// Choosing a country switches the phone dial code to match.
 (function () {
-  const countryInput = document.getElementById('country');
-  if (!countryInput) return;
-  const data = window.intlTelInputGlobals.getCountryData();
-  const norm = function (s) { return s.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); };
-  const aliases = { usa: 'us', america: 'us', 'united states of america': 'us', uk: 'gb', england: 'gb', britain: 'gb', 'great britain': 'gb', uae: 'ae', korea: 'kr', 'south korea': 'kr', russia: 'ru', vietnam: 'vn' };
-  function match(value, allowPrefix) {
-    const v = norm(value);
-    if (v.length < 2) return null;
-    if (aliases[v]) return aliases[v];
-    const exact = data.find(function (c) { return norm(c.name) === v; });
-    if (exact) return exact.iso2;
-    if (!allowPrefix || v.length < 3) return null;
-    const hits = data.filter(function (c) { return norm(c.name).indexOf(v) === 0; });
-    return hits.length === 1 ? hits[0].iso2 : null;
-  }
-  function apply(allowPrefix) {
-    const iso = match(countryInput.value, allowPrefix);
-    if (iso && phoneIti.getSelectedCountryData().iso2 !== iso) phoneIti.setCountry(iso);
-  }
-  countryInput.addEventListener('input', function () { apply(false); });
-  countryInput.addEventListener('change', function () { apply(true); });
-  countryInput.addEventListener('blur', function () { apply(true); });
+  const countrySelect = document.getElementById('country');
+  if (!countrySelect) return;
+  countrySelect.addEventListener('change', function () {
+    const opt = countrySelect.selectedOptions[0];
+    const iso = opt && opt.dataset.iso;
+    if (iso) phoneIti.setCountry(iso.toLowerCase());
+  });
 })();
 
 document.getElementById('registerForm').addEventListener('submit', function (e) {
