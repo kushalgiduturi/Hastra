@@ -7,6 +7,7 @@
 //   GET  ?code=…&state=…      Google's redirect back (GOOGLE_REDIRECT_URI)
 include __DIR__ . '/../core/db.php';
 secure_session_start();
+require_once __DIR__ . '/../core/countries.php';
 
 function google_fail(string $page, string $code) {
     header('Location: ' . get_base_url() . ($page === 'register' ? 'signup' : 'signin') . '?google_error=' . urlencode($code));
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'regis
     if (($_POST['accept_terms'] ?? '') !== '1')                                   google_fail('register', 'terms_required');
     if ($needs_org_name && $ctx['company_name'] === '')                           google_fail('register', 'company_required');
     if ($needs_org_size && !isset(COMPANY_SIZES[$ctx['company_size']]))           google_fail('register', 'size_required');
-    if ($needs_country && ($ctx['country'] === '' || mb_strlen($ctx['country']) > 60)) google_fail('register', 'country_required');
+    if ($needs_country && !astra_country_valid($ctx['country'])) google_fail('register', 'country_required');
     if (mb_strlen($ctx['company_name']) > 150 || mb_strlen($ctx['contract_ref']) > 60) google_fail('register', 'too_long');
     if ($ctx['company_name'] !== '' && find_company_by_name($conn, $ctx['company_name'])) google_fail('register', 'company_taken');
 
