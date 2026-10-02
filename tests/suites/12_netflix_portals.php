@@ -62,7 +62,7 @@ t('theme.js gives portals (and Hastra Labs) the Netflix stack, and nothing else'
     expect(str_contains($js, "const nf = /\\/(portals|workspace|labs)\\/|\\/dashboard(\\.php)?$/.test(location.pathname);"), 'portal detection changed');
     expect(str_contains($js, "['theme-netflix', 'netflix-bento']"), 'portal stylesheets not loaded');
     expect(str_contains($js, "? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']"), 'portal script stack changed');
-    expect(str_contains($js, ": ['landing-host', 'kage-scene', 'hybrid-hand-cursor'"), 'non-portal pages lost their scene');
+    expect(str_contains($js, ": ['landing-host', 'kage-scene', 'sakura-petals-cursor', 'hybrid-hand-cursor'"), 'non-portal pages lost their scene');
     foreach (['/Hastra/workspace/admin/', '/Hastra/workspace/client/my-projects', '/Hastra/portals/projects/signoff', '/Hastra/dashboard.php', '/Hastra/labs/', '/Hastra/labs/crypto'] as $p)
         expect(preg_match('~/(portals|workspace|labs)/|/dashboard(\.php)?$~', $p) === 1, "$p would not be themed");
     foreach (['/Hastra/signin', '/Hastra/', '/Hastra/legal/privacy', '/Hastra/signup'] as $p)

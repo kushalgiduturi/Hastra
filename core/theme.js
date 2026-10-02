@@ -205,12 +205,12 @@
       // No cloth-cards: its fabric plates are container surfaces.
       const stack = nf
         ? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']
-        : ['landing-host', 'kage-scene', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director'];
+        : ['landing-host', 'kage-scene', 'sakura-petals-cursor', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director'];
       stack.forEach(function(name) {
         if ((name === 'landing-host' || name === 'kage-scene' || name === 'kage-cyber') && noScene) return;
         // a page carrying its own dedicated cursor engine (auth/login.php's
         // richer camera-space wisp trail) opts out of the shared simple one
-        if (name === 'hybrid-hand-cursor' && b.hasAttribute('data-cursor-off')) return;
+        if ((name === 'hybrid-hand-cursor' || name === 'sakura-petals-cursor') && b.hasAttribute('data-cursor-off')) return;
         if (name === 'cloth-cards' && !document.querySelector('[data-cloth]')) return;
         if (name === 'handover-seal' && !document.querySelector('[data-handover-seal]')) return;
         const s = document.createElement('script');

@@ -1140,6 +1140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 </div>
 
+<script src="<?= get_base_url() ?>assets/js/sakura-petals-cursor.js?v=<?= ASSET_VERSION ?>"></script>
 <script>
 // ── Card reveal: a short crack-spark burst then the card zooms out of that
 //    point. No video, no hand — just the card and the crack particles. ──
@@ -1185,13 +1186,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   window.setTimeout(reveal, 8000);
 })();
 
-// ── This page's own cursor engine: the ring (.cur-dot) and a wisp trail in
-//    the same visual language as the shared engine's texWisp() falloff
-//    sprites and camera-space drift — built as a 2-D canvas rather than a
-//    real three.js camera (this page has no scene of its own to hang
-//    particles in), so it reads the same without adding a WebGL dependency
-//    just for a cursor. assets/js/hybrid-hand-cursor.js is opted out for
-//    this page via <body data-cursor-off> in core/theme.js. ──────────────
+// ── This page's own cursor engine: the ring (.cur-dot) and the crimson
+//    sakura-petal trail (assets/js/sakura-petals-cursor.js), drawn on this
+//    page's own canvas so the petals pass underneath the card.
+//    assets/js/hybrid-hand-cursor.js is opted out for this page via
+//    <body data-cursor-off> in core/theme.js. ──────────────────────────────
 (function () {
   'use strict';
   const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1200,7 +1199,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   const dot = document.getElementById('cursor');
   const canvas = document.getElementById('hastra-wisp-mesh');
-  if (!dot || !canvas) return;
+  if (!dot || !canvas || !window.HastraPetals) return;
   const cx = canvas.getContext('2d');
   const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -1222,50 +1221,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     el.addEventListener('mouseleave', () => dot.classList.remove('act'));
   });
 
-  /* ---------------------------------------------------- the wisp trail
-     texWisp()'s falloff, ported to a canvas sprite: a hard bright core in
-     a soft halo, tinted per mote. Frost Glow / accent-red at night;
-     additive light vanishes into a white page by day, so it paints over
-     instead, in accent-blue and a deeper steel. */
-  function sprite(rgb) {
-    const S = 64, c = document.createElement('canvas'); c.width = c.height = S;
-    const x = c.getContext('2d'), g = x.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
-    const [r, gg, b] = rgb;
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(.07, `rgba(${r},${gg},${b},.92)`);
-    g.addColorStop(.16, `rgba(${r},${gg},${b},.40)`);
-    g.addColorStop(.34, `rgba(${r},${gg},${b},.13)`);
-    g.addColorStop(.62, `rgba(${r},${gg},${b},.035)`);
-    g.addColorStop(1, `rgba(${r},${gg},${b},0)`);
-    x.fillStyle = g; x.fillRect(0, 0, S, S);
-    return c;
-  }
-  const NIGHT = [sprite([209, 228, 250]), sprite([224, 46, 60])];
-  const DAY = [sprite([2, 101, 220]), sprite([63, 92, 140])];
-  let day = false;
-  const readTheme = () => { day = document.documentElement.getAttribute('data-theme') === 'light'; };
-  readTheme();
-  new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-  const N = 190, STEP = .030 * 900;      /* the shared engine's camera-space STEP, rescaled into CSS pixels */
-  const W = { list: [], i: 0, acc: 0, ex: 0, ey: 0, lx: 0, ly: 0, idle: 0, seen: false, quiet: false };
-  for (let i = 0; i < N; i++) W.list.push({ life: 1, max: 1, x: 0, y: 0, vx: 0, vy: 0, sz: 0, ph: 0, c: 0 });
+  /* ---------------------------------------------------- the petal trail */
+  const N = 120, STEP = 27;              /* petals in the pool; px of travel per emission */
+  const field = window.HastraPetals.create(N);
+  const W = { acc: 0, ex: 0, ey: 0, lx: 0, ly: 0, idle: 0, seen: false, quiet: false };
   let dpr = 1, raf = 0, running = false, tPrev = 0, clock = 0;
 
   function size() {
     dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr);
   }
-  function spawn(x, y, a, weak) {
-    const w = W.list[W.i]; W.i = (W.i + 1) % N;
-    w.x = x + (Math.random() + Math.random() - 1) * 10;
-    w.y = y + (Math.random() + Math.random() - 1) * 10;
-    w.life = 0; w.max = (weak ? 2.1 : 1.45) + Math.random() * 1.3;
-    w.vx = -Math.cos(a) * 24 + (Math.random() - .5) * 90;
-    w.vy = -Math.sin(a) * 24 + (Math.random() - .5) * 80 + 5;
-    w.sz = (weak ? 12 : 16) + Math.random() * 16;
-    w.ph = Math.random() * Math.PI * 2;
-    w.c = Math.random() < .62 ? 0 : 1;
+  function spawn(x, y, a) {
+    field.emit(x, y, -Math.cos(a) * 10, -Math.sin(a) * 10);
   }
   function frame(now) {
     const dt = Math.min((now - tPrev) / 1000 || 0, .05); tPrev = now; clock += dt;
@@ -1277,33 +1244,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     while (W.acc >= STEP && guard++ < 14) {
       W.acc -= STEP;
       const t = moved > 1e-6 ? Math.min(1, guard * STEP / moved) : 0;
-      spawn(W.lx + ddx * t, W.ly + ddy * t, ang, false);
+      spawn(W.lx + ddx * t, W.ly + ddy * t, ang);
+      if (Math.random() < .4) spawn(W.lx + ddx * t + (Math.random() - .5) * 10, W.ly + ddy * t + (Math.random() - .5) * 10, ang);
     }
     W.idle += dt;
-    if (W.idle > .42 && W.seen) { W.idle = 0; spawn(W.ex, W.ey, Math.random() * Math.PI * 2, true); }
+    if (W.idle > .42 && W.seen) { W.idle = 0; spawn(W.ex, W.ey, Math.random() * Math.PI * 2); }
     W.lx = W.ex; W.ly = W.ey;
 
     cx.setTransform(1, 0, 0, 1, 0, 0);
     cx.clearRect(0, 0, canvas.width, canvas.height);
-    cx.globalCompositeOperation = day ? 'source-over' : 'lighter';
-    const set = day ? DAY : NIGHT;
-    let live = 0;
-    for (const w of W.list) {
-      if (w.life >= w.max) continue;
-      live++;
-      w.life += dt;
-      const u = w.life / w.max;
-      w.x += (w.vx + Math.sin(clock * 1.3 + w.ph) * 14) * dt;
-      w.y += (w.vy + Math.cos(clock * 1.1 + w.ph * 1.7) * 12) * dt;
-      w.vx *= 1 - .5 * dt; w.vy = w.vy * (1 - .5 * dt) - 4 * dt;
-      const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-      const a = smooth(0, .12, u) * (1 - smooth(.22, 1, u)) * (day ? .7 : .9);
-      if (a <= .003) continue;
-      const px = w.sz * (1 + u * .55) * dpr;
-      cx.globalAlpha = a;
-      cx.drawImage(set[w.c], w.x * dpr - px / 2, w.y * dpr - px / 2, px, px);
-    }
-    cx.globalAlpha = 1;
+    const live = field.draw(cx, dt, dpr, clock);
     if (!live && moved < 1e-4 && W.idle > .21 && W.quiet) { running = false; return; }
     raf = requestAnimationFrame(frame);
   }

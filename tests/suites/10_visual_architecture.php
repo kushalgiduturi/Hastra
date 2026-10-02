@@ -76,7 +76,7 @@ t('landing hosts Hastra same-origin; framing is SAMEORIGIN, never cross-site', f
 
 t('every page mounts the shared scene and pointer stack through core/theme.js', function () {
     $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
-    foreach (['landing-host', 'kage-scene', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director', 'hastra-atmosphere.css'] as $n) {
+    foreach (['landing-host', 'kage-scene', 'sakura-petals-cursor', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director', 'hastra-atmosphere.css'] as $n) {
         expect(str_contains($js, $n), "theme.js does not mount $n");
         $file = ASTRA_ROOT . (str_ends_with($n, '.css') ? "/assets/css/$n" : "/assets/js/$n.js");
         expect(is_file($file), "missing $file");
@@ -133,16 +133,29 @@ t('login: the card is always centred and clickable, never 3-D-projected', functi
     expect(str_contains($l, 'setTimeout(reveal, 8000)'), 'login reveal lost its last-resort timer');
 });
 
+t('cursor trail: crimson sakura petals, no glitter', function () {
+    $p = file_get_contents(ASTRA_ROOT . '/assets/js/sakura-petals-cursor.js');
+    foreach (['bezierCurveTo', '229, 9, 20', '255, 105, 135', '180, 20, 40', 'rnd(7, 14)', 'rnd(1.2, 2.0)', '46 * dt', 'Math.sin(clock * 2.2', 'Math.abs(Math.cos(p.flip))', 'drawImage'] as $need)
+        expect(str_contains($p, $need), "petal engine lost: $need");
+    expect(!str_contains($p, 'innerHTML'), 'petal engine drifted');
+    $h = file_get_contents(ASTRA_ROOT . '/assets/js/hybrid-hand-cursor.js');
+    expect(str_contains($h, 'window.HastraPetals') && !str_contains($h, 'createRadialGradient'), 'the shared engine still draws glitter motes');
+    $l = file_get_contents(ASTRA_ROOT . '/auth/login.php');
+    expect(str_contains($l, 'sakura-petals-cursor.js') && str_contains($l, 'HastraPetals.create(N)') && !str_contains($l, 'createRadialGradient'), 'the sign-in trail is not petals');
+    $lp = file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html');
+    expect(strpos($lp, 'sakura-petals-cursor.js') !== false && strpos($lp, 'sakura-petals-cursor.js') < strpos($lp, 'hybrid-hand-cursor.js'), 'the landing page does not load the petals before the engine');
+});
+
 t('performance: 50 fps governors, touch safety and reduced motion', function () {
     $d = va_doc();
     expect(str_contains($d, 'avg > 1 / 50 && !PERF.eco') && str_contains($d, 'Math.ceil(WORLD.leaves.list.length / 2)') && str_contains($d, 'PERF.scale = Math.min(PERF.scale, .8)'), 'scene governor drifted');
     expect(str_contains($d, 'if (REDUCE && LV.seeded) return;') && str_contains($d, 'RIG.mx = REDUCE ? 0'), 'scene no longer freezes under reduced motion');
     // simplified back down (a dual botanical/crypto stream with scatter
     // bursts and an orbiting idle ring read as too busy for a cursor) to
-    // plain glowing motes; the governor, touch and reduced-motion
-    // guarantees carried over unchanged
+    // a quiet trail, now crimson sakura petals (sakura-petals-cursor.js); the
+    // governor, touch and reduced-motion guarantees carried over unchanged
     $h = file_get_contents(ASTRA_ROOT . '/assets/js/hybrid-hand-cursor.js');
-    expect(str_contains($h, '> 1 / 50') && str_contains($h, 'MOTES / 2') && str_contains($h, 'G.scale = .8'), 'pointer governor drifted');
-    expect(str_contains($h, '(hover: none)') && str_contains($h, '(pointer: coarse)') && str_contains($h, 'if (TOUCH) return;'), 'trails not disabled on touch');
+    expect(str_contains($h, '> 1 / 50') && str_contains($h, 'PETALS / 2') && str_contains($h, 'G.scale = .8'), 'pointer governor drifted');
+    expect(str_contains($h, '(hover: none)') && str_contains($h, '(pointer: coarse)') && str_contains($h, 'if (TOUCH || !field) return;'), 'trails not disabled on touch');
     expect(str_contains($h, 'prefers-reduced-motion: reduce') && str_contains($h, 'if (REDUCE) return;'), 'no reduced-motion guard');
 });
