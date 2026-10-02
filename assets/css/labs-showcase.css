@@ -170,3 +170,13 @@ html.light .ring-power-beam, [data-theme="light"] .ring-power-beam { --trail-a: 
   .hx-item, .hx-vcard { transition: none; }
   .hx-item:hover, .hx-item:focus-within { transform: none; }
 }
+
+/* ── post-login arsenal: three pillars and a sign-up strip ── */
+.hx-ops .hx-grid { margin-top: clamp(26px, 4vh, 48px); }
+.ops-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.ops-list li { position: relative; padding-left: 18px; font-size: 13.5px; line-height: 1.55; color: var(--hx-dim); }
+.ops-list li::before { content: ''; position: absolute; left: 0; top: .72em; width: 9px; height: 1px; background: var(--hx-accent); }
+.ops-strip { margin-top: clamp(26px, 4vh, 44px); padding: 20px 0 0; border-top: 1px solid var(--hx-hair); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.ops-strip p { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.6; color: var(--hx-dim); }
+.ops-strip b { color: var(--hx-text); }
+.ops-cta { display: flex; flex-wrap: wrap; gap: 12px; }
