@@ -74,6 +74,21 @@ t('country must come from the list: typed or tampered values are refused', funct
     }
     expect(astra_country_valid('India') && astra_country_valid('United States') && !astra_country_valid('Atlantis'), 'country list drifted');
 });
+t('a user can be created under strict SQL mode (as on the production MySQL)', function () {
+    $conn = $GLOBALS['conn'];
+    $old = mysqli_fetch_row(mysqli_query($conn, "SELECT @@SESSION.sql_mode"))[0];
+    mysqli_query($conn, "SET SESSION sql_mode = 'STRICT_ALL_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE'");
+    $email = 'strict.' . F::$suffix . '@example.test';
+    $id = null; $err = null;
+    try {
+        $id = insert_user_in_company($conn, null, ['name' => 'Strict Mode', 'email' => $email, 'phone_number' => null,
+            'password' => password_hash('x', PASSWORD_DEFAULT), 'role' => 'client'], $err);
+    } finally {
+        mysqli_query($conn, "SET SESSION sql_mode = '" . mysqli_real_escape_string($conn, $old) . "'");
+    }
+    expect($id !== null, 'the insert failed under strict mode: ' . ($err ?? 'no error'));
+    if ($id) mysqli_query($conn, "DELETE FROM users WHERE id = " . (int)$id);
+});
 t('weak password is refused with a specific message', function () {
     $s = astra_test_session([]);
     $r = cgi('POST', 'auth/register.php', ['session' => $s, 'post' => [

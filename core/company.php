@@ -371,6 +371,9 @@ function find_or_create_company($conn, $company_name, $owner_user_id = null) {
 // ── User creation inside a company block ─────────────────────────────────────
 // Inserts a user with an ID from the right block; retries if another request
 // grabs the same ID first. Returns the new ID, or null (see $error).
+// reset_token and token_expiry are NOT NULL with no default, so they are set
+// explicitly: a strict-mode MySQL (Aiven) rejects an insert that omits them,
+// while a lax MariaDB quietly fills in ''.
 function insert_user_in_company($conn, $company, array $u, &$error = null) {
     $error      = null;
     $ready      = company_schema_ready($conn);
@@ -391,20 +394,20 @@ function insert_user_in_company($conn, $company, array $u, &$error = null) {
 
         if ($ready && isset($u['client_role'])) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, client_role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, client_role, reset_token, token_expiry, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '', 0, NULL)");
             mysqli_stmt_bind_param($stmt, "isssssssis",
                 $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role'], $company_id, $u['client_role']);
         } elseif ($ready) {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+                "INSERT INTO users (id, name, email, email_bindex, phone_number, phone_bindex, password, role, company_id, reset_token, token_expiry, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', '', 0, NULL)");
             mysqli_stmt_bind_param($stmt, "isssssssi",
                 $id, $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role'], $company_id);
         } else {
             $stmt = mysqli_prepare($conn,
-                "INSERT INTO users (name, email, email_bindex, phone_number, phone_bindex, password, role, login_attempts, locked_until)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 0, NULL)");
+                "INSERT INTO users (name, email, email_bindex, phone_number, phone_bindex, password, role, reset_token, token_expiry, login_attempts, locked_until)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, '', '', 0, NULL)");
             mysqli_stmt_bind_param($stmt, "sssssss",
                 $u['name'], $u['email'], $email_bindex, $u['phone_number'], $phone_bindex, $u['password'], $u['role']);
         }
