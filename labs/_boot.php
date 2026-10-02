@@ -58,8 +58,28 @@ function labs_schema_ready($conn): bool {
 }
 
 // ── Community session ────────────────────────────────────────────────────────
+
+// Is this browser signed in to a Hastra enterprise account? Answered by a
+// read-only peek at the enterprise session (no cookie sent, nothing written,
+// closed straight away) taken just before the Labs session takes over the
+// request, so the free-trial gate can honour a real account without the two
+// sessions ever being mixed.
+function labs_enterprise_signed_in(): bool { return !empty($GLOBALS['labs_ent_signed']); }
+function labs_peek_enterprise_session(): bool {
+    $name = session_name();
+    $sid  = $_COOKIE[$name] ?? '';
+    if ($name === LABS_SESSION_NAME || !is_string($sid) || !preg_match('/^[A-Za-z0-9,-]{22,128}$/', $sid)) return false;
+    session_id($sid);
+    if (!@session_start(['read_and_close' => true, 'use_cookies' => 0, 'use_strict_mode' => 0])) { session_id(''); return false; }
+    $in = !empty($_SESSION['user_id']) && (time() - (int)($_SESSION['last_activity'] ?? 0)) <= 1800;
+    $_SESSION = [];
+    session_id('');
+    return $in;
+}
+
 function labs_session_start(): void {
     if (session_status() === PHP_SESSION_ACTIVE) return;
+    $GLOBALS['labs_ent_signed'] = labs_peek_enterprise_session();
     session_name(LABS_SESSION_NAME);
     session_set_cookie_params([
         'lifetime' => 0,
@@ -261,7 +281,7 @@ const LABS_TABS = [
 // page's `<script src="labs-common.js?v=N">` would be two different module
 // instances (the query string makes a different URL), each wiring its own
 // handlers, and a new release could run next to a stale cached import.
-const LABS_MODULES = ['labs-common', 'pqc-crypto', 'labs-crypto-ui', 'siem-lab', 'ueba-calculator', 'doc-extract', 'syllabus-engine'];
+const LABS_MODULES = ['labs-common', 'trial-gatekeeper', 'pqc-crypto', 'labs-crypto-ui', 'siem-lab', 'ueba-calculator', 'doc-extract', 'syllabus-engine'];
 function labs_import_map(): array {
     $map = LABS_LIBS;
     foreach (LABS_MODULES as $m) {
@@ -286,6 +306,7 @@ function labs_head(string $title, string $active, ?array $profile): void {
 <meta name="description" content="Free cryptography, SOC and study tools from Hastra. Everything sensitive runs in your browser.">
 <meta name="csrf-token" content="<?= labs_e(labs_csrf_token()) ?>">
 <meta name="labs-base" content="<?= labs_e($lb) ?>">
+<meta name="labs-signed-in" content="<?= ($profile || labs_enterprise_signed_in()) ? '1' : '0' ?>">
 <script src="<?= $b ?>core/theme.js?v=<?= $v ?>"></script>
 <link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= $v ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/tools-cyber.css?v=<?= $v ?>">

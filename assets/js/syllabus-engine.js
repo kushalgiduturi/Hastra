@@ -11,6 +11,10 @@
    each other's checkmarks. */
 import { $, $$, el, svg, toast, busy, dropZone, download, labsBase, csrfToken, enc, toHex, fmtNum, fmtCompact, fmtDuration, syncGet, syncPut } from './labs-common.js';
 import { extractText } from './doc-extract.js';
+import { gateLabs } from './trial-gatekeeper.js';
+
+// one free run for visitors who are not signed in (see trial-gatekeeper.js)
+gateLabs({ clicks: { '#syl-run': 'Syllabus extraction', '#syl-demo': 'Syllabus extraction' } });
 
 const STORE_KEY = 'hastra_labs_study_v1';
 const DEFAULT_VIDEO_SEC = 45 * 60;

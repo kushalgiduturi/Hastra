@@ -1,6 +1,14 @@
 /* Hastra Labs — Module 1 UI (labs/crypto.php). */
 import { $, $$, el, toast, busy, tabs, dropZone, download, readFileBytes, enc, dec, toB64, fromB64, fmtBytes, fmtNum } from './labs-common.js';
 import * as V from './pqc-crypto.js';
+import { gateLabs } from './trial-gatekeeper.js';
+
+// one free run for visitors who are not signed in (see trial-gatekeeper.js)
+gateLabs({ clicks: {
+  '#cx-run-enc': 'Encryption', '#cx-run-dec': 'Decryption', '#kx-run': 'Key pair generation',
+  '#sx-run': 'Signing', '#vx-run': 'Signature verification', '#hx-run': 'Password hasher',
+  '#hv-run': 'Hash verification', '#tx-run': 'Crypto self-test',
+} });
 
 tabs($('#cx-tabs'));
 document.addEventListener('click', e => {

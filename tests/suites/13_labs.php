@@ -226,3 +226,29 @@ t('the ten-rings halo stands behind the 3-D wordmark in the landing scene', func
     expect(str_contains($doc, 'updateHalo(dt, easeOut('), 'halo no longer fades with the word');
     expect(str_contains($doc, 'applyHaloTheme();') && str_contains($doc, '0xc49b39'), 'halo has no day (brass) theme');
 });
+
+t('free-trial gate: the page reports signed-in state without mixing the two sessions', function () {
+    $meta = fn(array $r) => preg_match('/name="labs-signed-in" content="([01])"/', $r['body'], $m) ? $m[1] : 'missing';
+    $anon = cgi('GET', 'labs/crypto');
+    expect_clean($anon, 'anon');
+    expect_eq($meta($anon), '0', 'an anonymous visitor was reported signed in');
+    expect(str_contains($anon['body'], 'trial-gatekeeper.js?v='), 'the gatekeeper is not in the versioned import map');
+
+    $s = astra_test_session(['user_id' => 987654, 'user_name' => 'Gate Tester', 'user_role' => 'admin']);
+    $in = cgi('GET', 'labs/crypto', ['session' => $s]);
+    expect_clean($in, 'enterprise');
+    expect_eq($meta($in), '1', 'a signed-in enterprise account was not recognised');
+    $cookies = implode("\n", $in['headers']['set-cookie'] ?? []);
+    expect(!str_contains($cookies, 'PHPSESSID'), 'peeking at the enterprise session set a cookie');
+    expect(!empty(astra_test_session_data($s)['user_id']), 'the enterprise session was damaged');
+    expect(str_contains($in['body'], 'name="csrf-token"'), 'the Labs session did not start');
+
+    $stale = astra_test_session(['user_id' => 987655, 'user_name' => 'Old', 'user_role' => 'admin', 'last_activity' => time() - 4000]);
+    expect_eq($meta(cgi('GET', 'labs/crypto', ['session' => $stale])), '0', 'an expired enterprise session counted as signed in');
+
+    foreach (['labs-crypto-ui', 'siem-lab', 'syllabus-engine'] as $m) {
+        expect(str_contains(file_get_contents(ASTRA_ROOT . "/assets/js/$m.js"), "from './trial-gatekeeper.js'"), "$m is not gated");
+    }
+    $g = file_get_contents(ASTRA_ROOT . '/assets/js/trial-gatekeeper.js');
+    expect(str_contains($g, "'hastra_labs_trial_count'") && str_contains($g, 'localhost') && !str_contains($g, 'innerHTML'), 'gatekeeper drifted');
+});

@@ -408,6 +408,25 @@ html[data-theme="light"] .lx-out { background: #0b1220; color: #d1fae5; }
 .lx-skeleton { background: linear-gradient(90deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .1), rgba(255, 255, 255, .04)); background-size: 200% 100%; animation: lx-shimmer 1.3s linear infinite; }
 @keyframes lx-shimmer { to { background-position: -200% 0; } }
 
+/* Access Gatekeeper: shown on the second attempt by a visitor who is not signed in */
+.lx-gate { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 20px; background: rgba(2, 3, 8, .78); backdrop-filter: blur(8px); opacity: 0; transition: opacity .3s ease; }
+.lx-gate[hidden] { display: none; }
+.lx-gate.is-open { opacity: 1; }
+.lx-gate-card { width: 100%; max-width: 440px; padding: 30px 28px 22px; text-align: center; border-radius: 18px; background: rgba(8, 11, 20, .96); border: 1px solid rgba(var(--lx-accent-rgb), .45);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .04), 0 30px 80px rgba(0, 0, 0, .7), 0 0 60px rgba(var(--lx-accent-rgb), .18); color: #fff; transform: translateY(14px) scale(.98); transition: transform .45s cubic-bezier(.16, 1, .3, 1); }
+.lx-gate.is-open .lx-gate-card { transform: none; }
+.lx-gate-card:focus { outline: none; }
+.lx-gate-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid rgba(var(--lx-accent-rgb), .5); color: var(--lx-accent-2); font: 700 10.5px/1 var(--lx-mono); letter-spacing: .12em; text-transform: uppercase; }
+.lx-gate-title { margin: 16px 0 0; font: 800 22px/1.25 var(--lx-sans); }
+.lx-gate-body { margin: 12px 0 0; font: 400 14px/1.65 var(--lx-sans); color: rgba(255, 255, 255, .72); }
+.lx-gate-actions { display: grid; gap: 10px; margin-top: 22px; }
+.lx-gate-alt { margin: 16px 0 0; font: 12.5px/1.5 var(--lx-sans); color: rgba(255, 255, 255, .55); }
+.lx-gate-alt a { color: #fff; text-decoration: underline; }
+.lx-gate-dismiss { margin-top: 14px; padding: 8px 12px; border: 0; background: none; cursor: pointer; font: 600 12px/1 var(--lx-mono); color: rgba(255, 255, 255, .5); }
+.lx-gate-dismiss:hover { color: #fff; }
+.lx-gate a:focus-visible, .lx-gate button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .lx-gate, .lx-gate-card { transition: none; } }
+
 .lx-library { display: flex; flex-wrap: wrap; gap: 8px; }
 .lx-library button { position: relative; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--lx-hair-strong); background: var(--lx-field); color: var(--lx-dim); cursor: pointer; font: 600 12.5px/1.2 var(--lx-sans); }
 .lx-library button[aria-pressed="true"] { color: var(--lx-text); border-color: rgba(var(--lx-accent-rgb), .7); }
