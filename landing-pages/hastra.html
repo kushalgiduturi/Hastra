@@ -1110,7 +1110,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
 <!-- the pointer engine: petals and cryptographic sparks, above the document -->
 <script src="../assets/js/hybrid-hand-cursor.js" defer></script>
 <!-- Hastra Labs showcase: bump ?v= when either file changes (this page is static) -->
-<link rel="stylesheet" href="../assets/css/labs-showcase.css?v=2">
+<link rel="stylesheet" href="../assets/css/labs-showcase.css?v=3">
 <script type="module" src="../assets/js/labs-showcase.js?v=2"></script>
 </head>
 <body data-layout-hero="b" data-layout-story="b" data-layout-gallery="b"
@@ -1264,6 +1264,76 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
         <a class="ring-power-beam" href="../labs/syllabus" target="_top" data-cursor>Access Study Hub
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ post-login arsenal
+     What signing in unlocks. Only features that exist in the product are
+     described: company-scoped workspaces, the role rules, the HMAC-chained
+     ledger, session hardening, the scan centre and encrypted handover. -->
+<section class="hx-show hx-ops" id="arsenal" aria-labelledby="ops-title">
+  <div class="hx-inner">
+    <header class="hx-head">
+      <div>
+        <span class="hx-badge"><span class="hx-ping" aria-hidden="true"></span>[ After you sign in ]</span>
+        <h2 class="hx-title" id="ops-title">Enterprise Arsenal &amp; <em>Team Governance</em></h2>
+      </div>
+      <p class="hx-sub">The free Labs are a sandbox. An account opens a governed, multi-tenant workspace for engineering squads, security
+        testers and the clients who depend on them, with every action written to a ledger that can be verified.</p>
+    </header>
+
+    <div class="hx-grid">
+      <article class="hx-item" aria-labelledby="ops-f1">
+        <div class="hx-top"><span class="hx-kicker">Pillar 01: Teams</span><span class="hx-state">[ Workspaces ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16.5 14.6c2.6.1 4.5 1.9 4.5 4.4"/></svg></span>
+        <h3 id="ops-f1">Multi-Tenant Team Workspaces &amp; Activity Trail</h3>
+        <p>Every company gets its own isolated workspace. Admins onboard a whole team from a roster, and engineers, testers and clients
+          work the same projects, each seeing only what their company owns.</p>
+        <ul class="ops-list">
+          <li>Company-scoped data and roster onboarding with activation invites</li>
+          <li>Requirements, sprints, deliveries and invoices in one shared project view</li>
+          <li>Sign-ins, scans, key actions and role changes recorded in an append-only trail</li>
+        </ul>
+        <ul class="hx-tags"><li>Isolated tenants</li><li>Roster import</li><li>Activity ledger</li></ul>
+      </article>
+
+      <article class="hx-item" aria-labelledby="ops-f2">
+        <div class="hx-top"><span class="hx-kicker">Pillar 02: Governance</span><span class="hx-state">[ RBAC ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.7-7 9-4.1-1.3-7-4.8-7-9V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>
+        <h3 id="ops-f2">Role-Based Access &amp; Administrative Control</h3>
+        <p>Least privilege by role: system administrators, workspace admins, engineers, security testers, and clients who are
+          project managers, IT managers or teammates, each with different rights.</p>
+        <ul class="ops-list">
+          <li>Clients: PMs submit and pay, IT managers oversee, teammates see documentation only after delivery and payment</li>
+          <li>Email one-time codes on every sign-in, lockout on repeated failures, 30-minute idle timeout</li>
+          <li>Session hijack guard bound to the device, and one-click ledger verification for auditors</li>
+        </ul>
+        <ul class="hx-tags"><li>Role matrix</li><li>OTP sign-in</li><li>Hijack guard</li><li>HMAC verify</li></ul>
+      </article>
+
+      <article class="hx-item" aria-labelledby="ops-f3">
+        <div class="hx-top"><span class="hx-kicker">Pillar 03: Operations</span><span class="hx-state">[ SOC &amp; crypto ]</span></div>
+        <span class="hx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/><path d="M12 15v2"/></svg></span>
+        <h3 id="ops-f3">SOC Workspace &amp; Cryptographic Operations</h3>
+        <p>The security work lives next to the delivery work: scanning, sealed handovers, encrypted data and milestone sign-off with
+          the evidence attached.</p>
+        <ul class="ops-list">
+          <li>Scan centre with code analysis and OWASP ZAP report import, graded by severity</li>
+          <li>Ephemeral dossiers: single-use encrypted credential handover that shreds itself</li>
+          <li>Column-level AES-256-GCM encryption, geo and VPN login checks, and escrow-backed milestone tracking</li>
+        </ul>
+        <ul class="hx-tags"><li>SAST + ZAP</li><li>Sealed handover</li><li>AES-256-GCM</li><li>Milestones</li></ul>
+      </article>
+    </div>
+
+    <div class="ops-strip">
+      <p><b>Try before you sign up:</b> each Labs tool gives every visitor one free run. Create a free account for unlimited use and the full workspace.</p>
+      <span class="ops-cta">
+        <a class="ring-power-beam" href="../signup" target="_top" data-cursor>Create account
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="ring-power-beam is-ghost" href="../signin" target="_top" data-cursor>Sign in</a>
+      </span>
     </div>
   </div>
 </section>
