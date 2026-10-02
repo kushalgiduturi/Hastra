@@ -120,6 +120,13 @@ t('login: the card is always centred and clickable, never 3-D-projected', functi
     // itself animated, so the card is always exactly where it should be
     // regardless of what its own depth transform is doing
     expect(str_contains($l, 'class="auth-wrapper"') && str_contains($l, "display: flex; align-items: center; justify-content: center;"), 'the card lost its centred flex frame');
+    // dual-column stage: Client Gateway is the default (info left, card right);
+    // Enterprise swaps them with a pixel `translate` on the 650ms ease, and
+    // only the info text crossfades
+    expect(str_contains($l, 'id="auth-stage"') && str_contains($l, 'id="auth-info"') && str_contains($l, 'id="auth-card"'), 'the dual-column stage markup is gone');
+    expect(str_contains($l, '=== "enterprise" ? "enterprise" : "client"'), 'Client Gateway is no longer the default portal');
+    expect(str_contains($l, 'translate 650ms var(--slide-ease)') && str_contains($l, 'cubic-bezier(0.16, 1, 0.3, 1)') && str_contains($l, 'function layoutStage()'), 'the card/info slide mechanics drifted');
+    expect(str_contains($l, 'Autonomous Project Oversight') && str_contains($l, 'SOC Governance'), 'the portal descriptions are missing');
     expect(str_contains($l, 'translate3d(0, 40px, -280px) rotateX(18deg)') && str_contains($l, 'translate3d(0, 0, 0) rotateX(0deg)'), 'the card no longer zooms in from the crack along its depth axis');
     expect(str_contains($l, 'id="crack-particles"') && str_contains($l, "particles.classList.add('go')"), 'the crack spark burst is gone');
     expect(!str_contains($l, 'id="temple-hand-stage"'), 'the hand-rise stage layer should be removed');
