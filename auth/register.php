@@ -1085,6 +1085,32 @@ const phoneIti = window.intlTelInput(phoneInput, {
   },
 });
 
+// Typing a country in the Country field switches the phone dial code to match.
+(function () {
+  const countryInput = document.getElementById('country');
+  if (!countryInput) return;
+  const data = window.intlTelInputGlobals.getCountryData();
+  const norm = function (s) { return s.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); };
+  const aliases = { usa: 'us', america: 'us', 'united states of america': 'us', uk: 'gb', england: 'gb', britain: 'gb', 'great britain': 'gb', uae: 'ae', korea: 'kr', 'south korea': 'kr', russia: 'ru', vietnam: 'vn' };
+  function match(value, allowPrefix) {
+    const v = norm(value);
+    if (v.length < 2) return null;
+    if (aliases[v]) return aliases[v];
+    const exact = data.find(function (c) { return norm(c.name) === v; });
+    if (exact) return exact.iso2;
+    if (!allowPrefix || v.length < 3) return null;
+    const hits = data.filter(function (c) { return norm(c.name).indexOf(v) === 0; });
+    return hits.length === 1 ? hits[0].iso2 : null;
+  }
+  function apply(allowPrefix) {
+    const iso = match(countryInput.value, allowPrefix);
+    if (iso && phoneIti.getSelectedCountryData().iso2 !== iso) phoneIti.setCountry(iso);
+  }
+  countryInput.addEventListener('input', function () { apply(false); });
+  countryInput.addEventListener('change', function () { apply(true); });
+  countryInput.addEventListener('blur', function () { apply(true); });
+})();
+
 document.getElementById('registerForm').addEventListener('submit', function (e) {
   if (e.submitter && e.submitter.hasAttribute('data-google-sso')) {
     const terms = document.getElementById('accept_terms');
