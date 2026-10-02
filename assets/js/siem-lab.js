@@ -1,6 +1,13 @@
 /* Hastra Labs — Module 2: SIEM / Threat Intel & SOC Simulator (labs/siem.php). */
 import { $, $$, el, svg, toast, tabs, download, enc, toHex, fmtBytes, fmtNum, fmtCompact } from './labs-common.js';
 import * as U from './ueba-calculator.js';
+import { gateLabs } from './trial-gatekeeper.js';
+
+// one free run for visitors who are not signed in (see trial-gatekeeper.js)
+gateLabs({
+  clicks: { '#ti-add': 'IOC normalizer', '#pl-run': 'Pipeline timeline builder', '#pl-sample': 'Pipeline timeline builder' },
+  live: { '#sl-p-ueba input, #sl-p-ueba select, #sl-p-ueba button': 'UEBA risk calculator', '#eps-form input, #eps-form select, [data-eps]': 'Log scaling calculator' },
+});
 
 tabs($('#sx-tabs'));
 
