@@ -18,7 +18,7 @@ labs_head('Free engineering tools & student hub', 'hub', $profile);
 
 <div class="lx-cards">
   <a class="lx-card" href="<?= $lb ?>crypto">
-    <span class="lx-card-num" aria-hidden="true">01</span>
+    <span class="lx-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/><circle cx="12" cy="16" r="1.6"/></svg></span>
     <h2>Cryptography &amp; File Armor</h2>
     <p>Encrypt text or any file with AES-256-GCM, ChaCha20-Poly1305, RSA-4096, X25519, ML-KEM or the X-Wing hybrid.
       Sign with ML-DSA. Hash passwords and machine tokens with the engine each one needs.</p>
@@ -26,7 +26,7 @@ labs_head('Free engineering tools & student hub', 'hub', $profile);
     <span class="lx-card-go">Open vault &rarr;</span>
   </a>
   <a class="lx-card" href="<?= $lb ?>siem">
-    <span class="lx-card-num" aria-hidden="true">02</span>
+    <span class="lx-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
     <h2>SIEM / Threat Intel &amp; SOC Lab</h2>
     <p>Normalize STIX 2.1, TAXII and MISP feeds, score UEBA risk live, size a 15M-EPS pipeline across hot, warm and cold
       tiers, and correlate M365, CloudTrail and Kubernetes logs on one timeline.</p>
@@ -34,7 +34,7 @@ labs_head('Free engineering tools & student hub', 'hub', $profile);
     <span class="lx-card-go">Enter the lab &rarr;</span>
   </a>
   <a class="lx-card" href="<?= $lb ?>syllabus">
-    <span class="lx-card-num" aria-hidden="true">03</span>
+    <span class="lx-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span>
     <h2>Syllabus Accelerator &amp; Video Tutor</h2>
     <p>Drop in PDF, Word or text syllabi. Hastra extracts every unit and topic, pairs each with the most-viewed tutorial,
       forecasts your finish date, and keeps you on pace.</p>

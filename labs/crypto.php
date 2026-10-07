@@ -24,6 +24,81 @@ function labs_options(array $groups, string $selected = ''): void {
     }
 }
 
+// Architecture guides: what each control does under the hood. Every figure
+// here is what assets/js/pqc-crypto.js actually uses. Rendered as native
+// popovers, so they open with a click or Enter and close with Esc.
+const LX_GUIDES = [
+    'aes' => ['AES-256-GCM', 'Symmetric authenticated encryption', [
+        'What it does' => 'Turns your passphrase into a 256-bit key and encrypts the data with AES in Galois/Counter Mode, which encrypts and authenticates in one pass.',
+        'Under the hood' => [
+            'Key: PBKDF2-SHA256 with 600,000 rounds and a fresh random 16-byte salt, so every guess costs an attacker real time.',
+            'Nonce: a fresh random 12-byte value for every encryption, stored in the envelope header.',
+            'Output: ciphertext plus a 128-bit authentication tag. The envelope header is covered by the tag as associated data.',
+            'ChaCha20-Poly1305 follows the same steps with a different cipher (RFC 8439) and is quick even without AES hardware.',
+        ],
+        'Why it matters' => 'Nobody can read the data without the passphrase, and any change to the ciphertext or the header, even one bit, makes decryption fail instead of returning altered data.',
+    ]],
+    'kem' => ['ML-KEM and X-Wing', 'Post-quantum key encapsulation', [
+        'What it does' => "Public-key encryption of files works in two steps. A KEM (key encapsulation mechanism) takes the recipient's public key and produces a random shared secret plus a short ciphertext that only the secret-key holder can open. That secret becomes the AES-256-GCM key for the file.",
+        'Under the hood' => [
+            'ML-KEM-768 and ML-KEM-1024 (NIST FIPS 203) rely on lattice problems believed to be hard even for quantum computers.',
+            'X-Wing combines ML-KEM-768 with X25519, so the file key stays safe if either one holds.',
+            "The shared secret goes through HKDF-SHA256 with a random salt, bound to the algorithm and the recipient's key id, to make the file key.",
+        ],
+        'Why it matters' => 'Attackers can record encrypted data today and decrypt it once a large quantum computer exists ("harvest now, decrypt later"). Post-quantum and hybrid modes protect data that has to stay secret for years.',
+    ]],
+    'dsa' => ['ML-DSA signatures', 'Post-quantum digital signature (NIST FIPS 204)', [
+        'What it does' => 'Signs a message or file with your secret key, so anyone with your public key can check that it came from you and was not changed.',
+        'Under the hood' => [
+            "The signature covers every byte of the message, and the signature file also records the message's SHA-256.",
+            'ML-DSA-65 (category 3) produces a 3,309-byte signature; ML-DSA-87 (category 5) produces a 4,627-byte one.',
+            'Secret keys can be protected with a passphrase (PBKDF2 and AES-256-GCM) and are wiped from memory after signing.',
+        ],
+        'Why it matters' => 'Lattice-based signatures stay trustworthy against quantum computers, unlike RSA and ECDSA, which a large quantum computer could forge.',
+    ]],
+    'kdf' => ['Password and token hashing', 'Argon2id, bcrypt and keyed hashes', [
+        'What it does' => 'Turns a secret into a value that is safe to store, so a stolen database does not reveal the secret.',
+        'Under the hood' => [
+            'Argon2id (RFC 9106): 64 MiB of memory, 4 passes, 2 lanes, a random salt and a 32-byte result. Each guess needs 64 MiB of RAM, which makes GPU and ASIC cracking farms expensive.',
+            'bcrypt (cost 12) is CPU-hard, but only the first 72 bytes of a password count.',
+            'Machine tokens are already long and random, so a fast keyed hash is enough: HMAC-SHA256 or keyed BLAKE3 with a server-side key, or PBKDF2-SHA512 where a FIPS-approved KDF is required.',
+        ],
+        'Why it matters' => 'Slow, memory-hard hashing turns a stolen database of human passwords into years of work per password.',
+    ]],
+    'env' => ['Envelope anatomy', 'The .hlx file layout', [
+        'What it does' => 'Every encryption is packed into one self-describing file.',
+        'Under the hood' => [
+            'HLX1: a 4-byte magic identifier.',
+            'A 4-byte header length, a big-endian unsigned integer (u32).',
+            'A JSON header: algorithm, nonce (IV), salt or KEM ciphertext, key id, file name, size and timestamp.',
+            'The AEAD ciphertext: the encrypted data with its authentication tag. The magic, the length and the header are authenticated as associated data.',
+        ],
+        'Why it matters' => 'The header carries everything needed to decrypt except the secret, and tampering with any part of it makes decryption fail.',
+    ]],
+];
+function lx_guide_buttons(array $labels): void {
+    echo '<p class="lx-guides"><span>How it works:</span>';
+    foreach ($labels as $id => $label) {
+        echo ' <button type="button" class="lx-info" popovertarget="lxg-' . labs_e($id) . '">' . labs_e($label) . '</button>';
+    }
+    echo '</p>';
+}
+function lx_guide_icon(string $id, string $label): void {
+    echo '<button type="button" class="lx-info lx-info--icon" popovertarget="lxg-' . labs_e($id) . '" aria-label="' . labs_e($label) . '"></button>';
+}
+function lx_guide_popovers(): void {
+    foreach (LX_GUIDES as $id => [$title, $tag, $sections]) {
+        $pid = 'lxg-' . $id;
+        echo '<div popover class="lx-guide" id="' . $pid . '" aria-labelledby="' . $pid . '-t"><h3 id="' . $pid . '-t">' . labs_e($title) . '</h3><p class="lx-guide-tag">' . labs_e($tag) . '</p>';
+        foreach ($sections as $head => $body) {
+            echo '<h4>' . labs_e($head) . '</h4>';
+            if (is_array($body)) { echo '<ul>'; foreach ($body as $li) echo '<li>' . labs_e($li) . '</li>'; echo '</ul>'; }
+            else echo '<p>' . labs_e($body) . '</p>';
+        }
+        echo '<button type="button" class="lx-guide-close" popovertarget="' . $pid . '" popovertargetaction="hide" autofocus>Close</button></div>';
+    }
+}
+
 labs_head('Cryptography & File Armor', 'crypto', $profile);
 ?>
 <section class="lx-hero lx-hero--compact">
@@ -64,6 +139,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
         <label class="lx-label" for="cx-alg">Encryption engine</label>
         <select id="cx-alg" class="lx-select"><?php labs_options($alg_groups, 'xwing'); ?></select>
         <p class="lx-help" id="cx-alg-note"></p>
+        <?php lx_guide_buttons(['aes' => 'AES-256-GCM', 'kem' => 'ML-KEM & X-Wing']); ?>
 
         <div id="cx-pass-wrap" class="lx-mt" hidden>
           <label class="lx-label" for="cx-pass">Passphrase</label>
@@ -113,7 +189,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
       <h2 class="lx-h3">Result</h2>
       <div id="cx-result" class="lx-stack"><pre class="lx-out" id="cx-out">Your envelope or plaintext appears here. Nothing leaves this tab.</pre></div>
       <hr class="lx-sep">
-      <h2 class="lx-h3">Envelope anatomy</h2>
+      <h2 class="lx-h3">Envelope anatomy <?php lx_guide_icon('env', 'How the HLX1 envelope is laid out'); ?></h2>
       <dl class="lx-kv" id="cx-anatomy"><dt>Format</dt><dd>"HLX1" · u32 header length · JSON header · AEAD ciphertext. The header is authenticated as associated data.</dd><dd></dd></dl>
     </div>
   </div>
@@ -160,7 +236,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
 <section role="tabpanel" id="cx-p-sign" aria-labelledby="cx-t-sign" hidden>
   <div class="lx-grid-2">
     <div class="lx-pane">
-      <h2 class="lx-h2">Sign with ML-DSA</h2>
+      <h2 class="lx-h2">Sign with ML-DSA <?php lx_guide_icon('dsa', 'How ML-DSA signatures work'); ?></h2>
       <label class="lx-label" for="sx-text">Message</label>
       <textarea id="sx-text" class="lx-textarea" rows="3" placeholder="Type a message… or drop a file below"></textarea>
       <div class="lx-drop lx-mt" id="sx-drop" tabindex="0" role="button">
@@ -211,6 +287,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
       <label class="lx-label lx-mt" for="hx-engine">Hashing engine</label>
       <select id="hx-engine" class="lx-select"></select>
       <p class="lx-help" id="hx-engine-note"></p>
+      <?php lx_guide_buttons(['kdf' => 'Argon2id & hashing']); ?>
 
       <label class="lx-label lx-mt" for="hx-secret">Secret</label>
       <div class="lx-row" style="flex-wrap:nowrap">
@@ -262,4 +339,5 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
     <div class="lx-tablewrap lx-mt"><table class="lx-table"><thead><tr><th>Check</th><th>Result</th><th>Time</th></tr></thead><tbody id="tx-out"><tr><td colspan="3" class="lx-muted">Not run yet.</td></tr></tbody></table></div>
   </div>
 </section>
+<?php lx_guide_popovers(); ?>
 <?php labs_foot(['labs-common', 'labs-crypto-ui']); ?>

@@ -1408,6 +1408,7 @@ body::before {
 }
 
 .hastra-loader-spinner {
+  position: relative;
   width: 52px; height: 52px; border-radius: 50%;
   border: 3px solid rgba(var(--accent-rgb), 0.18);
   border-top-color: var(--accent-bright);
@@ -1415,6 +1416,13 @@ body::before {
   animation: hastraLoaderSpin 0.85s linear infinite;
 }
 
+/* a second ring turning the other way */
+.hastra-loader-spinner::after {
+  content: ''; position: absolute; inset: 8px; border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.12);
+  border-bottom-color: var(--accent-bright);
+  animation: hastraLoaderSpin 1.3s linear infinite reverse;
+}
 @keyframes hastraLoaderSpin {
   to { transform: rotate(360deg); }
 }
@@ -1436,5 +1444,6 @@ body::before {
 
 @media (prefers-reduced-motion: reduce) {
   .hastra-loader-spinner { animation-duration: 1.6s; }
+  .hastra-loader-spinner::after { animation-duration: 2.4s; }
   .loader-status-text { animation: none; opacity: 0.85; }
 }
