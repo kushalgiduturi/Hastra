@@ -54,14 +54,26 @@ html[data-theme="light"] .auth-info {
 html[data-theme="light"] .auth-info::before {
   content: "";
   position: absolute;
-  inset: -2rem -3rem;
+  inset: -2.25rem -3rem;
   z-index: -1;
   pointer-events: none;
-  /* fades to fully transparent before the element edge: no visible box */
-  background: radial-gradient(ellipse closest-side,
-    rgba(248, 250, 252, .74) 0%,
-    rgba(248, 250, 252, .62) 55%,
-    rgba(248, 250, 252, 0) 100%);
+  /* a dense frosted wash whose four edges feather to transparent, so the
+     text always has a light ground (dark temple or bright sky) but there is
+     no border, outline or shadow to read as a box */
+  background: rgba(248, 250, 252, .86);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+          backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
+                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
+                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
+html.low-perf-mode[data-theme="light"] .auth-info::before {
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  background: rgba(248, 250, 252, .9);
 }
 html[data-theme="light"] .auth-info .info-badge {
   color: #1e293b;

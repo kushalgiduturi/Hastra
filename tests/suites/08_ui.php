@@ -91,7 +91,7 @@ t('light contrast: stylesheet only touches the light theme and adds no boxes', f
     preg_match_all('~([^{}]+)\{~', $code, $m);
     foreach ($m[1] as $sel) {
         foreach (array_map('trim', explode(',', $sel)) as $s) {
-            expect(str_starts_with($s, 'html[data-theme="light"]'), "rule escapes the light theme: $s");
+            expect(str_starts_with($s, 'html[data-theme="light"]') || str_starts_with($s, 'html.low-perf-mode[data-theme="light"]'), "rule escapes the light theme: $s");
         }
     }
     expect(!preg_match('~box-shadow\s*:\s*(?!none)~', $code), 'adds a shadow');
@@ -122,6 +122,7 @@ t('light contrast: status and accent tokens clear AA on white and on pale fills'
 t('light contrast: sign-in and sign-up hero text is dark slate with a feathered wash, not a box', function () {
     $css = file_get_contents(ASTRA_ROOT . '/assets/css/theme-contrast.css');
     expect((bool)preg_match('~\.auth-info\s*\{[^}]*color:\s*#0f172a~', $css), 'hero text not dark slate');
-    expect((bool)preg_match('~\.auth-info::before\s*\{[^}]*radial-gradient[^}]*rgba\(248, 250, 252, 0\) 100%~s', $css), 'wash must fade to transparent');
+    expect((bool)preg_match('~\.auth-info::before\s*\{[^}]*mask-image:[^}]*transparent 0[^}]*transparent 100%~s', $css), 'wash must feather out on every edge');
+    expect(!preg_match('~\.auth-info::before\s*\{[^}]*(border|box-shadow|outline)\s*:~s', $css), 'wash must have no edge');
     expect((bool)preg_match('~\.info-body\s*\{[^}]*color:\s*#334155~', $css), 'paragraph not slate 700');
 });
