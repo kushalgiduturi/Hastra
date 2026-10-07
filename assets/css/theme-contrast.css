@@ -1,0 +1,91 @@
+/* ========================================================
+   HASTRA LIGHT-MODE CONTRAST FLOOR
+   Loaded after core/theme.css on every themed page. Everything here is
+   scoped to html[data-theme="light"], so the dark theme is untouched.
+
+   Measured with the in-page audit in tests/tools/contrast-audit.js, which
+   computes the WCAG ratio of every visible text node. Targets: 4.5:1 for
+   body text, 3:1 for large text (AA); most values below clear 7:1 (AAA).
+
+   Boxless by design (see DEPLOY/feedback): nothing here adds a border,
+   fill or shadow around content. The hero panels get a feathered wash that
+   fades to nothing at its edges instead of a bordered pill.
+   ======================================================== */
+
+/* ── Tokens ────────────────────────────────────────────────────────────
+   The status and accent colours are used as text across the portals. On
+   white the light-theme originals were ~3:1 (green #16a34a, amber #d97706,
+   cyan #0891b2, orange #ea580c) and the accent 4.4:1 on tinted fills. These
+   are the same hues, darkened until they clear 4.5:1 on white and on the
+   pale tinted backgrounds the portals use. */
+html[data-theme="light"] {
+  --accent-bright: #1259c0;   /* 6.3:1 on white, 5.6:1 on the blue-tinted fills */
+  --green:  #166534;          /* 7.1:1 */
+  --yellow: #92400e;          /* 7.1:1 */
+  --cyan:   #0e7490;          /* 5.4:1 */
+  --orange: #c2410c;          /* 5.2:1 */
+  --accent-primary: #1d4ed8;  /* Netflix-style portals and Labs: 6.7:1 (was #2563eb, 4.4:1 on tints) */
+  --lx-accent: #1d4ed8;
+  --text-muted: #556078;      /* was #64748b, 4.4:1 on the pale card fills */
+}
+
+/* ── Form placeholders ─────────────────────────────────────────────────
+   register.php hard-codes the dark theme's pale placeholder, which is
+   about 1.4:1 on the light field. */
+html[data-theme="light"] .card input::placeholder,
+html[data-theme="light"] .card textarea::placeholder,
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #556078 !important;   /* 5.6:1 on #eef2ff, 6.4:1 on white */
+  opacity: 1;
+}
+
+/* ── Sign-in / sign-up overview panel (left column) ────────────────────
+   Sign-in hard-codes white text for the dark theme; in daylight that is
+   white on cream (1.1:1). Sign-up already switches to dark text but sits
+   straight on the busy pagoda scene, so lines cross high-contrast detail.
+   Dark slate text plus a soft light wash behind it fixes both. */
+html[data-theme="light"] .auth-info {
+  position: relative;
+  isolation: isolate;
+  color: #0f172a;
+  text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8);
+}
+html[data-theme="light"] .auth-info::before {
+  content: "";
+  position: absolute;
+  inset: -2rem -3rem;
+  z-index: -1;
+  pointer-events: none;
+  /* fades to fully transparent before the element edge: no visible box */
+  background: radial-gradient(ellipse closest-side,
+    rgba(248, 250, 252, .74) 0%,
+    rgba(248, 250, 252, .62) 55%,
+    rgba(248, 250, 252, 0) 100%);
+}
+html[data-theme="light"] .auth-info .info-badge {
+  color: #1e293b;
+  border-color: transparent;       /* no outlined pill */
+  font-weight: 700;
+}
+html[data-theme="light"] .auth-info .info-title,
+html[data-theme="light"] .auth-info .info-sub {
+  color: #0f172a;
+}
+html[data-theme="light"] .auth-info .info-sub { font-weight: 700; }
+html[data-theme="light"] .auth-info .info-title .info-portal { color: #1259c0; }
+html[data-theme="light"] .auth-info .info-body {
+  color: #334155;                   /* 10:1 on the wash */
+  font-weight: 500;
+}
+html[data-theme="light"] .auth-info .info-feats li { color: #1e293b; font-weight: 600; }
+html[data-theme="light"] .auth-info .info-flow { color: #334155; }
+html[data-theme="light"] .auth-info .info-flow b { color: #0f172a; }
+
+/* ── Sign-up card ──────────────────────────────────────────────────────
+   The glass card is the one panel Hastra keeps. In light mode it was 72%
+   white over the scene, so labels and helper text competed with the
+   background. Keep the glass look, raise the fill. */
+html[data-theme="light"] .reg-stage .card {
+  background: rgba(255, 255, 255, .94) !important;
+}

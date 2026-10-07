@@ -19,7 +19,7 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <title><?= htmlspecialchars($title) ?> · Hastra</title>
 <meta name="description" content="<?= htmlspecialchars($summary) ?>">
 <script src="<?= $b ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <?php astra_compliance_css(); ?>
 </head>
