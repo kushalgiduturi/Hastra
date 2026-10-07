@@ -31,7 +31,7 @@ foreach (glob(ASTRA_ROOT . '/_backup_*', GLOB_ONLYDIR) as $dir) {
     t("backup folder not served: $name/", fn() => expect_blocked("$name/"));
     if ($php) {
         $rel = $name . '/' . str_replace('\\', '/', substr($php[0], strlen($dir) + 1));
-        t("backup PHP not executable: $rel", fn() => expect_blocked($rel, ['Hastra', 'theme.css']));
+        t("backup PHP not executable: $rel", fn() => expect_blocked($rel, ['verify_session', 'theme.css', '<?php']));
     }
 }
 t('public landing page serves at a clean address; .php addresses redirect to it', function () {

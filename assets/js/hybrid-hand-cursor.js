@@ -31,9 +31,18 @@
   /* ------------------------------------------------------------ budget */
   const PETALS = 120;
   const G = { cap: PETALS, scale: 1, eco: false, acc: 0, n: 0 };
-  const STEP = 26;                                  /* px of travel per emission */
+  let STEP = 26;                                    /* px of travel per emission */
   const field = window.HastraPetals ? window.HastraPetals.create(PETALS) : null;
   let clock = 0;
+
+  /* a weak device (assets/js/performance-guard.js) keeps fewer petals and drops them less often */
+  const lowPerf = () => !!(window.HASTRA_PERF && window.HASTRA_PERF.low);
+  function applyPerf() {
+    STEP = lowPerf() ? (window.HASTRA_PERF.petalStep || 44) : 26;
+    if (field) field.setCap(lowPerf() ? Math.min(G.cap, window.HASTRA_PERF.petalCap || 50) : G.cap);
+  }
+  applyPerf();
+  window.addEventListener('hastra:perf', applyPerf);
 
   function emit(x, y, vx, vy) { if (field) field.emit(x, y, vx, vy); }
   function burst(x, y, o) {
@@ -63,7 +72,7 @@
     if (field && !G.eco && raw > 0) {
       G.acc += raw; G.n++;
       if (G.n >= 45) {
-        if (G.acc / G.n > 1 / 50) { G.eco = true; G.cap = PETALS / 2; G.scale = .8; field.setCap(G.cap); size(); }
+        if (G.acc / G.n > 1 / 50) { G.eco = true; G.cap = PETALS / 2; G.scale = .8; applyPerf(); size(); }
         G.acc = 0; G.n = 0;
       }
     }

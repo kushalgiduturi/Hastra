@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '116');
+    define('ASSET_VERSION', '119');
 }
 
 header_remove('X-Powered-By'); // don't advertise the PHP version
@@ -291,6 +291,7 @@ require_once __DIR__ . '/milestone_signoff.php';
 require_once __DIR__ . '/requirement_versions.php';
 require_once __DIR__ . '/google_oauth.php';
 require_once __DIR__ . '/legal.php';
+require_once __DIR__ . '/seo.php';
 require_once __DIR__ . '/auth_check.php';
 
 // Enforced on every single request, after every helper above has loaded but

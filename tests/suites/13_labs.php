@@ -276,3 +276,52 @@ t('labs polish: hub cards without numerals, a themed result console, architectur
         expect(str_contains($js, $need), "theme.js lost: $need");
     }
 });
+
+t('production hardening: social tags, crawler files, brand 404, icons, adaptive performance', function () {
+    // every public page carries the full tag set; sign-in pages are noindex
+    foreach (['labs/index' => 'index, follow', 'labs/crypto' => 'index, follow', 'labs/siem' => 'index, follow', 'labs/syllabus' => 'index, follow', 'auth/login' => 'noindex, follow', 'auth/register' => 'noindex, follow'] as $page => $robots) {
+        $r = cgi('GET', $page);
+        expect_clean($r, $page);
+        foreach (['property="og:title"', 'property="og:description"', 'property="og:image" content="', 'og-preview.png', 'name="twitter:card" content="summary_large_image"', 'rel="canonical"', 'rel="apple-touch-icon"', 'name="description"'] as $need) {
+            expect(str_contains($r['body'], $need), "$page lost $need");
+        }
+        expect(str_contains($r['body'], 'name="robots" content="' . $robots . '"'), "$page should be '$robots'");
+    }
+
+    // robots.txt and sitemap.xml are generated from the configured URL, never from the database
+    $rb = cgi('GET', 'robots.php');
+    expect($rb['status'] === 200 && str_contains($rb['body'], 'User-agent: *') && str_contains($rb['body'], 'auth/') && str_contains($rb['body'], 'api/') && str_contains($rb['body'], 'Sitemap: '), 'robots.txt is incomplete');
+    $sm = cgi('GET', 'sitemap.php');
+    $xml = @simplexml_load_string($sm['body']);
+    expect($xml !== false && count($xml->url) === 5, 'sitemap.xml is not valid or does not list the 5 public pages');
+    foreach ($xml->url as $u) expect(preg_match('~^https?://~', (string)$u->loc) === 1 && preg_match('~^\d{4}-\d{2}-\d{2}$~', (string)$u->lastmod) === 1, 'bad sitemap entry ' . $u->loc);
+    $locs = array_map(fn($u) => (string)$u->loc, iterator_to_array($xml->url, false));
+    foreach (['labs/', 'labs/crypto', 'labs/siem', 'labs/syllabus'] as $p) expect((bool)array_filter($locs, fn($l) => str_ends_with($l, $p)), "sitemap misses $p");
+    expect(!array_filter($locs, fn($l) => str_contains($l, '/auth') || str_contains($l, 'signin') || str_contains($l, 'signup')), 'sitemap lists a private page');
+
+    // the brand 404 answers 404 and needs no database, scripts or session
+    $nf = web_get('this-page-does-not-exist-' . F::$suffix);
+    expect($nf['status'] === 404 && str_contains($nf['body'], 'This page is not in the sanctuary') && str_contains($nf['body'], 'Open Hastra Labs'), 'the custom 404 page is not served');
+    expect(!str_contains($nf['body'], '<script'), 'the 404 page runs scripts');
+
+    // icons and the 1200 x 630 social card exist and are real images
+    foreach (['assets/images/favicon-32.png' => [32, 32], 'assets/images/apple-touch-icon.png' => [180, 180], 'assets/images/og-preview.png' => [1200, 630]] as $file => [$w, $h]) {
+        $info = @getimagesize(ASTRA_ROOT . '/' . $file);
+        expect($info && $info[0] === $w && $info[1] === $h, "$file is missing or the wrong size");
+    }
+    expect(is_file(ASTRA_ROOT . '/favicon.ico') && substr(file_get_contents(ASTRA_ROOT . '/favicon.ico'), 0, 4) === "\0\0\1\0", 'favicon.ico is not a valid ICO');
+
+    // adaptive performance: the guard exists and the heavy visuals read it
+    $g = file_get_contents(ASTRA_ROOT . '/assets/js/performance-guard.js');
+    foreach (['hardwareConcurrency', 'deviceMemory', 'saveData', '> 33', 'low-perf-mode'] as $need) expect(str_contains($g, $need), "performance guard lost $need");
+    expect(str_contains(file_get_contents(ASTRA_ROOT . '/core/theme.js'), 'performance-guard.js'), 'theme.js does not load the guard');
+    expect(str_contains(file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html'), 'HASTRA_PERF.low') && str_contains(file_get_contents(ASTRA_ROOT . '/assets/js/hybrid-hand-cursor.js'), "'hastra:perf'"), 'the scene or the petal trail ignores the guard');
+
+    // touch targets and no sideways scroll
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/tools-cyber.css');
+    expect(str_contains($css, '@media (pointer: coarse)') && preg_match('~@media \(pointer: coarse\)\s*\{[^}]*min-height: 48px~s', $css) === 1, 'Labs lost its 48 px touch targets');
+    foreach (['auth/login.php', 'auth/register.php'] as $p) {
+        $src = file_get_contents(ASTRA_ROOT . '/' . $p);
+        expect(str_contains($src, 'min-height: 48px') && str_contains($src, 'overflow-x: hidden'), "$p lost its touch-target or overflow rules");
+    }
+});

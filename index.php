@@ -10,16 +10,24 @@ if (isset($_SESSION["user_id"])) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Hastra · Enterprise Software Delivery &amp; Governance</title>
-<meta name="description" content="Hastra: governed, auditable enterprise software delivery.">
+<title>Hastra | Secure Software Delivery &amp; Free Security Labs</title>
+<?php astra_seo_meta([
+    'title' => 'Hastra | Secure Software Delivery & Free Security Labs',
+    'description' => 'Hastra runs requirements, projects, testing, deployment, billing and credentials in one encrypted, audited workspace, with free browser-native labs for post-quantum cryptography, SIEM and a syllabus accelerator.',
+    'path' => '',
+]); ?>
+<script type="application/ld+json"><?= json_encode([
+    '@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'Hastra',
+    'url' => rtrim(APP_URL, '/') . '/', 'logo' => rtrim(APP_URL, '/') . '/assets/images/apple-touch-icon.png',
+], JSON_UNESCAPED_SLASHES) ?></script>
 <!-- data-loader-manual: the landing document carries its own preloader -->
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>" data-loader-manual></script>
 <style>
   /* no overflow lock: the frame is fixed and scrolls itself, so the host
      document never has anything to scroll */
   html, body { margin: 0; background: #05070a; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   html[data-theme="light"], html[data-theme="light"] body { background: #f6ecd2; }
   /* LandingPageFrame: a full-size, overflow-controlled host */
   .landing-page-frame { position: fixed; inset: 0; overflow: hidden; background: #080808; }
@@ -32,6 +40,13 @@ if (isset($_SESSION["user_id"])) {
 </style>
 </head>
 <body data-atmosphere-off>
+
+<div class="sr-only">
+  <h1>Hastra: secure software delivery and free security labs</h1>
+  <p>Hastra runs requirements, projects, testing, deployment, billing and credentials in one encrypted, audited workspace.
+    The free Labs add post-quantum cryptography, SIEM and threat-intel simulators, and a syllabus accelerator, all running in your browser.</p>
+  <nav aria-label="Hastra"><a href="<?= get_base_url() ?>labs/">Hastra Labs</a> <a href="<?= get_base_url() ?>signin">Sign in</a> <a href="<?= get_base_url() ?>signup">Create an account</a></nav>
+</div>
 
 <div class="threeui-background landing-page-frame" data-state="loading">
   <!-- allow-top-navigation-by-user-activation: Sign In / Get Started in the

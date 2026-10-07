@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="../assets/images/hastra-logo.svg">
+<script src="../assets/js/performance-guard.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hastra — Enterprise Software Delivery &amp; Governance</title>
 <meta name="description" content="Hastra runs requirements, projects, testing, deployment, billing, and credentials in one encrypted, audited workspace.">
@@ -1228,7 +1229,7 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
         <ul class="hx-tags"><li>NIST FIPS 203 (ML-KEM-1024)</li><li>FIPS 204 (ML-DSA-87)</li><li>AES-256-GCM</li><li>Argon2id</li></ul>
         <div class="hx-preview">
           <label for="hx-hash-in">Live preview · text → SHA-256</label>
-          <input type="text" id="hx-hash-in" value="Hastra" autocomplete="off" spellcheck="false">
+          <input type="text" id="hx-hash-in" value="Hastra" autocomplete="off" spellcheck="false" maxlength="200">
           <output class="hx-hash" id="hx-hash-out" for="hx-hash-in" aria-live="polite"></output>
         </div>
         <a class="ring-power-beam" href="../labs/crypto" target="_top" data-cursor>Open Crypto Vault
@@ -5425,6 +5426,8 @@ function frame(now) {
   tPrev = now; clock += dt;
   fadeIn = INTRO.t0 ? sat((now - INTRO.t0) / 700) : 1;
 
+  /* the guard's verdict (hardware, or measured frames) applies as soon as the scene is up */
+  if (!PERF.locked && !PERF.eco && window.HASTRA_PERF && window.HASTRA_PERF.low && clock > .6) economy();
   if (!PERF.locked && clock > 2.2) {
     PERF.acc += raw; PERF.n++;      /* … but the governor reads the truth */
     if (PERF.n >= 40 || PERF.acc > .9) {
@@ -5469,10 +5472,13 @@ function kick() {
 function economy() {
   PERF.eco = true;
   PERF.scale = Math.min(PERF.scale, .8);
-  if (WORLD.leaves) WORLD.leaves.mesh.count = Math.ceil(WORLD.leaves.list.length / 2);
+  /* a weak device (assets/js/performance-guard.js) drops to a quarter of the particles and 1x pixels */
+  const weak = !!(window.HASTRA_PERF && window.HASTRA_PERF.low), div = weak ? 4 : 2;
+  if (weak) PERF.scale = Math.min(PERF.scale, .7);
+  if (WORLD.leaves) WORLD.leaves.mesh.count = Math.ceil(WORLD.leaves.list.length / div);
   if (WORLD.embers) {
     const g = WORLD.embers.geometry, n = g.attributes.position.count;
-    g.setDrawRange(0, Math.ceil(n / 2));
+    g.setDrawRange(0, Math.ceil(n / div));
   }
   resize();
 }

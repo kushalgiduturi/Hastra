@@ -4,6 +4,12 @@ DirectoryIndex index.php auth/login.php
 RewriteEngine On
 RewriteBase /Hastra/
 
+# Crawler files are generated from the config (see robots.php / sitemap.php),
+# so their URLs follow the real domain. The 404 page is standalone too.
+RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+ErrorDocument 404 /Hastra/404.php
+
 # Never serve version control, dotfiles, backup copies of the code, or the
 # test suite. .git/ would expose the whole repository history (including
 # config/config.php), and _backup_*/ holds old, executable copies of

@@ -55,7 +55,7 @@ dedup_key         SHA-256(indicator_type + "|" + indicator_value)</div>
       <div class="lx-stats" id="ti-stats"></div>
       <div class="lx-row">
         <label class="lx-sr" for="ti-filter">Filter</label>
-        <input id="ti-filter" class="lx-input" style="width:220px" placeholder="Filter value, type, T-id…">
+        <input id="ti-filter" class="lx-input" style="width:220px" placeholder="Filter value, type, T-id…" maxlength="120">
         <button type="button" class="lx-btn lx-btn--ghost lx-btn--sm" id="ti-json">Export JSON</button>
         <button type="button" class="lx-btn lx-btn--ghost lx-btn--sm" id="ti-csv">Export CSV</button>
         <button type="button" class="lx-btn lx-btn--ghost lx-btn--sm" id="ti-clear">Clear</button>

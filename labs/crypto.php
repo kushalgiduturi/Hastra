@@ -143,7 +143,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
 
         <div id="cx-pass-wrap" class="lx-mt" hidden>
           <label class="lx-label" for="cx-pass">Passphrase</label>
-          <input type="password" id="cx-pass" class="lx-input" autocomplete="new-password" placeholder="A long passphrase you will remember">
+          <input type="password" id="cx-pass" class="lx-input" autocomplete="new-password" placeholder="A long passphrase you will remember" maxlength="1024">
           <div class="lx-meter lx-mt" aria-hidden="true"><i id="cx-pass-meter"></i></div>
           <p class="lx-help" id="cx-pass-strength">Strength appears here.</p>
         </div>
@@ -172,7 +172,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
         <h2 class="lx-h3 lx-mt">2 · Key</h2>
         <div id="cx-dpass-wrap">
           <label class="lx-label" for="cx-dpass">Passphrase <span class="lx-muted">(for AES-256-GCM / ChaCha20 envelopes)</span></label>
-          <input type="password" id="cx-dpass" class="lx-input" autocomplete="current-password">
+          <input type="password" id="cx-dpass" class="lx-input" autocomplete="current-password" maxlength="1024">
         </div>
         <div class="lx-drop lx-mt" id="cx-sk-drop" tabindex="0" role="button">
           <input type="file" id="cx-sk" accept=".json,application/json" tabindex="-1" aria-label="Load a secret key">
@@ -180,7 +180,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
           <span id="cx-sk-chip"></span>
         </div>
         <label class="lx-label lx-mt" for="cx-skpass">Secret-key passphrase <span class="lx-muted">(only if the key file is protected)</span></label>
-        <input type="password" id="cx-skpass" class="lx-input" autocomplete="off">
+        <input type="password" id="cx-skpass" class="lx-input" autocomplete="off" maxlength="1024">
         <button id="cx-run-dec" class="lx-btn lx-btn--block lx-mt btn-beam" type="button">Decrypt</button>
       </div>
     </div>
@@ -206,7 +206,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
       <select id="kx-alg" class="lx-select"><?php labs_options($key_algs, 'xwing'); ?></select>
       <p class="lx-help" id="kx-note"></p>
       <label class="lx-label lx-mt" for="kx-pass">Protect the secret key with a passphrase <span class="lx-muted">(optional, recommended)</span></label>
-      <input type="password" id="kx-pass" class="lx-input" autocomplete="new-password">
+      <input type="password" id="kx-pass" class="lx-input" autocomplete="new-password" maxlength="1024">
       <button id="kx-run" class="lx-btn lx-btn--block lx-mt btn-beam" type="button">Generate key pair</button>
       <div id="kx-out" class="lx-mt"></div>
     </div>
@@ -248,7 +248,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
         <b>Load an ML-DSA secret key</b><small>.hkey.json from Key pairs</small><span id="sx-sk-chip"></span>
       </div>
       <label class="lx-label lx-mt" for="sx-skpass">Secret-key passphrase <span class="lx-muted">(if protected)</span></label>
-      <input type="password" id="sx-skpass" class="lx-input" autocomplete="off">
+      <input type="password" id="sx-skpass" class="lx-input" autocomplete="off" maxlength="1024">
       <button id="sx-run" class="lx-btn lx-btn--block lx-mt btn-beam" type="button">Sign</button>
     </div>
     <div class="lx-pane">
@@ -291,7 +291,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
 
       <label class="lx-label lx-mt" for="hx-secret">Secret</label>
       <div class="lx-row" style="flex-wrap:nowrap">
-        <input type="password" id="hx-secret" class="lx-input" autocomplete="off" spellcheck="false" placeholder="Type a password or paste an API secret">
+        <input type="password" id="hx-secret" class="lx-input" autocomplete="off" spellcheck="false" placeholder="Type a password or paste an API secret" maxlength="4096">
         <button type="button" class="lx-btn lx-btn--ghost lx-btn--sm" id="hx-show" aria-pressed="false">Show</button>
       </div>
       <div class="lx-row lx-mt" id="hx-gen-row" hidden>
@@ -299,7 +299,7 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
       </div>
       <div id="hx-key-wrap" class="lx-mt" hidden>
         <label class="lx-label" for="hx-key">Hash key / pepper <span class="lx-muted">(64 hex chars; leave empty to generate one)</span></label>
-        <input id="hx-key" class="lx-input lx-mono" spellcheck="false" autocomplete="off">
+        <input id="hx-key" class="lx-input lx-mono" spellcheck="false" autocomplete="off" maxlength="64">
       </div>
       <button id="hx-run" class="lx-btn lx-btn--block lx-mt btn-beam" type="button">Derive hardened hash</button>
 
@@ -320,9 +320,9 @@ labs_head('Cryptography & File Armor', 'crypto', $profile);
       <label class="lx-label" for="hv-stored">Stored hash</label>
       <textarea id="hv-stored" class="lx-textarea" rows="3" spellcheck="false" placeholder="$argon2id$v=19$… · $2b$12$… · $pbkdf2-sha512$… · hmac-sha256$kid=…$… · blake3-keyed$kid=…$…"></textarea>
       <label class="lx-label lx-mt" for="hv-key">Key <span class="lx-muted">(HMAC / BLAKE3 only)</span></label>
-      <input id="hv-key" class="lx-input lx-mono" spellcheck="false" autocomplete="off">
+      <input id="hv-key" class="lx-input lx-mono" spellcheck="false" autocomplete="off" maxlength="64">
       <label class="lx-label lx-mt" for="hv-candidate">Candidate secret</label>
-      <input type="password" id="hv-candidate" class="lx-input" autocomplete="off">
+      <input type="password" id="hv-candidate" class="lx-input" autocomplete="off" maxlength="1024">
       <button id="hv-run" class="lx-btn lx-btn--block lx-mt" type="button">Verify</button>
       <div id="hv-out" class="lx-mt" role="status"></div>
     </div>

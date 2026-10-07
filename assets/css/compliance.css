@@ -196,3 +196,9 @@ body:has(> .legal-foot--below) { flex-direction: column; }
 
 /* the login card scrolls internally on short screens */
 #auth-card { scrollbar-width: thin; scrollbar-color: rgba(199, 211, 234, .28) transparent; }
+
+/* Touch screens: the shared cookie banner and footer buttons are at least 48 px tall */
+@media (pointer: coarse) {
+  .consent-btn, .legal-linkbtn, .btn-google-sso, .card .btn-google-sso, [data-theme] .card .btn-google-sso { min-height: 48px; }
+  .legal-linkbtn { display: inline-flex; align-items: center; }
+}

@@ -553,7 +553,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input type="email" name="email" id="email"
              maxlength="100" required
              placeholder="you@example.com"
-             autofocus>
+             autofocus autocomplete="email">
     </div>
 
     <button type="submit" class="btn-send">
@@ -570,7 +570,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <div class="footer-links">
     <span>Remembered it?</span>
-    <a href="signin">Back to Login</a>
+    <a href="<?= get_base_url() ?>signin">Back to Login</a>
   </div>
 
 </div>
