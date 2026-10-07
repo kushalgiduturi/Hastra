@@ -51,6 +51,28 @@
 @keyframes pbPulse { 50% { border-bottom-color: #ff5a3c; } }
 .pb-opt:disabled { opacity: 0.6; cursor: wait; }
 
+/* role catalog: search underline, a scrolling list with sticky track names, no boxes */
+.pb-filter {
+  display: block; width: 100%; margin: 0 0 8px; padding: 10px 0; background: none; border: 0; border-bottom: 1px solid rgba(243, 244, 246, .22);
+  border-radius: 0; color: #fff; font: 500 13px/1.2 var(--font-mono, ui-monospace, monospace); letter-spacing: .04em; text-shadow: none; outline: none;
+}
+.pb-filter::placeholder { color: rgba(243, 244, 246, .4); }
+.pb-filter:focus { border-bottom-color: #e50914; }
+.pb-rolelist { max-height: min(300px, 38vh); overflow-y: auto; padding-right: 8px; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(229, 9, 20, .5) transparent; }
+.pb-group[hidden], .pb-roleitem[hidden], .pb-none[hidden] { display: none; }
+.pb-grouphead {
+  position: sticky; top: 0; z-index: 1; padding: 10px 0 6px; font: 700 10px/1 var(--font-mono, ui-monospace, monospace); letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255, 90, 60, .9); background: linear-gradient(rgba(2, 4, 10, .96) 70%, rgba(2, 4, 10, 0));
+}
+.pb-roleitem { display: block; width: 100%; text-align: left; padding: 8px 0 8px; min-height: 48px; }
+.pb-roleitem .pb-rt { display: block; font: 700 13px/1.3 var(--font-sans); letter-spacing: 0; color: inherit; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 2px; text-underline-offset: 5px; transition: text-decoration-color .18s; }
+.pb-roleitem .pb-rd { display: block; margin-top: 3px; font: 400 11.5px/1.45 var(--font-sans); letter-spacing: 0; color: rgba(243, 244, 246, .5); }
+.pb-roleitem.selected, .pb-roleitem:hover { border-bottom-color: transparent; animation: none; }
+.pb-roleitem:hover .pb-rt { text-decoration-color: rgba(229, 9, 20, .5); }
+.pb-roleitem.selected .pb-rt { text-decoration-color: #e50914; text-shadow: 0 0 14px rgba(229, 9, 20, .8); }
+.pb-roleitem.selected .pb-rt::after { content: '  \2713'; color: #ff5a3c; }
+.pb-none { margin: 10px 0; font-size: 12.5px; color: rgba(243, 244, 246, .5); }
+
 .pb-locked { display: flex; align-items: center; gap: 9px; margin: 0 0 6px; font: 700 13px/1.3 var(--font-mono, ui-monospace, monospace); color: #fbbf24; }
 .pb-locked svg { width: 16px; height: 16px; flex: none; }
 .pb-note { margin: 8px 0 0; font-size: 12px; line-height: 1.55; color: rgba(243, 244, 246, .5); }

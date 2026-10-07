@@ -1250,7 +1250,7 @@ const FLOW_COPY = {
   client_individual: {
     heading: 'Register as a client', intro: "You're joining as an individual client. You'll be able to submit requirements, track delivery, and settle invoices directly.",
     stepLabel: 'Your details', step1Heading: 'Where are you based?', step1Subtitle: 'Just enough to set up a personal workspace.',
-    step2Heading: 'Your account', step2Subtitle: "You'll sign in with this email once you're verified.",
+    step2Heading: 'Your account', step2Subtitle: "We'll email you a code to confirm this address, then you can sign in straight away.",
     orgLabel: 'Company Name',
   },
   enterprise_full: {

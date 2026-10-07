@@ -11,12 +11,45 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 // Self-described roles for people who are not part of an organization. This is
 // a profile label only: it never grants access (authorization comes from
 // users.role, which only an administrator or the sign-up flow sets).
-const ASTRA_FOCUS_OPTIONS = [
-    'security_analyst'   => 'Security Analyst',
-    'researcher_student' => 'Researcher / Student',
-    'independent_client' => 'Independent Client',
-    'auditor'            => 'Auditor',
+const ASTRA_FOCUS_GROUPS = [
+    'Security operations & defense' => [
+        'soc_analyst_l1'        => ['SOC Analyst (Tier 1 Triage)',          'IOC normalization and UEBA risk scoring in the SIEM lab.'],
+        'soc_analyst_l2'        => ['SOC Incident Responder (Tier 2)',      'Threat hunting and multi-cloud incident timelines in the SIEM lab.'],
+        'threat_intel_engineer' => ['Threat Intelligence Engineer',         'STIX 2.1, TAXII and MISP feed normalization.'],
+        'pqc_cryptographer'     => ['Cryptographic / PQC Engineer',         'ML-KEM, X-Wing and ML-DSA in the cryptography lab.'],
+    ],
+    'Engineering & architecture' => [
+        'security_engineer'     => ['DevSecOps / Cloud Security Engineer',  'Scan Center results, secure delivery pipelines and key handling.'],
+        'security_architect'    => ['Enterprise Security Architect',        'Governance, audit-ledger design and encryption architecture.'],
+        'penetration_tester'    => ['Penetration Tester / Red Teamer',      'Vulnerability findings, the Scan Center and the crypto lab.'],
+    ],
+    'Academic & research' => [
+        'student_researcher'    => ['Student / Security Researcher',        'Syllabus accelerator, study planner and the labs.'],
+        'faculty_instructor'    => ['Academic Faculty / Instructor',        'Syllabus mapping, pacing forecasts and lab material.'],
+    ],
+    'Governance & client delivery' => [
+        'client_stakeholder'    => ['Client Project Stakeholder',           'Requirements, delivery tracking and milestone sign-off.'],
+        'compliance_auditor'    => ['Compliance & Risk Auditor',            'The tamper-evident audit ledger and its verification.'],
+    ],
 ];
+
+// key => title for every role, in catalog order
+function astra_focus_options(): array {
+    $out = [];
+    foreach (ASTRA_FOCUS_GROUPS as $roles) foreach ($roles as $key => [$title]) $out[$key] = $title;
+    return $out;
+}
+
+// Where a person who has just chosen a role lands: the lab that fits it, or
+// null to stay in their workspace. Fixed paths only, never user input.
+function astra_focus_landing(string $key): ?string {
+    $labs = [
+        'student_researcher' => 'syllabus', 'faculty_instructor' => 'syllabus',
+        'soc_analyst_l1' => 'siem', 'soc_analyst_l2' => 'siem', 'threat_intel_engineer' => 'siem',
+        'pqc_cryptographer' => 'crypto', 'security_engineer' => 'crypto', 'security_architect' => 'crypto', 'penetration_tester' => 'crypto',
+    ];
+    return isset($labs[$key]) ? get_base_url() . 'labs/' . $labs[$key] : null;
+}
 
 // Is this person part of an organization (so their role is managed by its
 // administrator), and what is their role called? Organizations are the
@@ -105,12 +138,21 @@ function render_profile_barrier($conn) {
           </p>
           <p class="pb-note">Role locked by your organization's policy. Contact your Organization System Administrator to change your assigned role.</p>
           <?php else: ?>
-          <div class="pb-choices" role="radiogroup" aria-labelledby="pbRoleLabel">
-            <?php foreach (ASTRA_FOCUS_OPTIONS as $value => $text): ?>
-            <button type="button" class="pb-opt pb-role" role="radio" aria-checked="false" data-focus="<?= htmlspecialchars($value) ?>"><?= htmlspecialchars($text) ?></button>
+          <input type="search" id="pbRoleFilter" class="pb-filter" placeholder="Search roles" aria-label="Search roles" autocomplete="off" maxlength="40">
+          <div class="pb-rolelist" id="pbRoleList" role="radiogroup" aria-labelledby="pbRoleLabel">
+            <?php foreach (ASTRA_FOCUS_GROUPS as $group => $roles): ?>
+            <div class="pb-group">
+              <div class="pb-grouphead"><?= htmlspecialchars($group) ?></div>
+              <?php foreach ($roles as $value => [$title, $desc]): ?>
+              <button type="button" class="pb-opt pb-role pb-roleitem" role="radio" aria-checked="false" data-focus="<?= htmlspecialchars($value) ?>">
+                <span class="pb-rt"><?= htmlspecialchars($title) ?></span><span class="pb-rd"><?= htmlspecialchars($desc) ?></span>
+              </button>
+              <?php endforeach; ?>
+            </div>
             <?php endforeach; ?>
+            <p class="pb-none" id="pbRoleNone" hidden>No role matches that search.</p>
           </div>
-          <p class="pb-note">Describes how you will use Hastra. It does not change what you can access.</p>
+          <p class="pb-note"><?= count(astra_focus_options()) ?> roles. Describes how you will use Hastra and where you land first. It does not change what you can access, and no approval is needed.</p>
           <?php endif; ?>
         </div>
 
