@@ -11,7 +11,7 @@ t('dual-theme tokens: crimson on cinema black, cobalt on white', function () {
               '--bg-canvas: #f8fafc', '--accent-primary: #2563eb', '--border-subtle: #e2e8f0', '--text-primary: #0f172a',
               '--badge-text: #2563eb', '--spotlight-color: rgba(37, 99, 235, 0.12)'] as $tok)
         expect(str_contains($css, $tok), "missing token $tok");
-    expect(str_contains($css, "html.light,\n[data-theme=\"light\"] {"), 'light block not keyed on the theme switch');
+    expect(str_contains(str_replace("\r\n", "\n", $css), "html.light,\n[data-theme=\"light\"] {"), 'light block not keyed on the theme switch');
     // legacy tokens are remapped so every page's own styles follow the palette
     foreach (['--navy: var(--bg-canvas)', '--text: var(--text-primary)', '--accent: #E50914', '--accent: #2563eb'] as $m)
         expect(str_contains($css, $m), "legacy token not remapped: $m");

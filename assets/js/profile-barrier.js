@@ -46,6 +46,21 @@
       });
     });
 
+    // role search: hides roles (and whole groups) that do not match
+    var filter = document.getElementById('pbRoleFilter');
+    if (filter) {
+      var items = overlay.querySelectorAll('.pb-roleitem'), groups = overlay.querySelectorAll('.pb-group'), none = document.getElementById('pbRoleNone');
+      filter.addEventListener('input', function () {
+        var q = filter.value.trim().toLowerCase(), shown = 0;
+        items.forEach(function (it) {
+          var hit = !q || it.textContent.toLowerCase().indexOf(q) !== -1 || (it.parentNode.querySelector('.pb-grouphead').textContent.toLowerCase().indexOf(q) !== -1);
+          it.hidden = !hit; if (hit) shown++;
+        });
+        groups.forEach(function (g) { g.hidden = !g.querySelector('.pb-roleitem:not([hidden])'); });
+        if (none) none.hidden = shown > 0;
+      });
+    }
+
     submit.addEventListener('click', function () {
       if (!ready()) return;
       error.classList.remove('show');
@@ -65,7 +80,8 @@
         .then(function (data) {
           if (data.ok) {
             overlay.classList.add('pb-done');
-            setTimeout(function () { overlay.remove(); }, 320);
+            if (data.redirect) setTimeout(function () { window.location.href = data.redirect; }, 320);
+            else setTimeout(function () { overlay.remove(); }, 320);
           } else {
             setBusy(false);
             showError(data.message || 'Something went wrong. Please try again.');

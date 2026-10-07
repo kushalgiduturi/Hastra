@@ -43,14 +43,22 @@ t('role: independent people choose a role label (a profile label, never an acces
         $s = as_user('indy');
         $page = cgi('GET', 'portals/client/client_portal.php', ['session' => $s]);
         expect_clean($page, 'portal');
-        expect(str_contains($page['body'], 'data-focus="auditor"') && str_contains($page['body'], 'data-needs-focus="1"') && !str_contains($page['body'], 'Role locked by your organization'), 'an independent user was not offered the role choice');
+        expect(substr_count($page['body'], 'data-focus="') === 11 && str_contains($page['body'], 'data-focus="compliance_auditor"') && str_contains($page['body'], 'id="pbRoleFilter"') && str_contains($page['body'], 'data-needs-focus="1"') && !str_contains($page['body'], 'Role locked by your organization'), 'an independent user was not offered the full, searchable role catalog');
         $post = fn(array $extra) => json_of(cgi('POST', 'api/complete_profile.php', ['session' => $s, 'accept' => 'application/json', 'post' => ['csrf_token' => csrf_of($s), 'gender' => 'male'] + $extra]));
         expect(!($post([])['ok'] ?? true), 'accepted no role');
         expect(!($post(['focus' => 'sysadmin'])['ok'] ?? true), 'accepted a role that is not on the list');
         expect(!($post(['focus' => 'admin'])['ok'] ?? true), 'accepted an access role as a profile label');
-        expect($post(['focus' => 'security_analyst'])['ok'] ?? false, 'refused a valid role');
+        expect(!($post(['focus' => 'auditor'])['ok'] ?? true), 'accepted a retired role key');
+        // no approval step: the request is accepted and the account is usable at once
+        $stay = $post(['focus' => 'client_stakeholder']);
+        expect(($stay['ok'] ?? false) && !isset($stay['redirect']), 'a stakeholder should stay in their workspace');
+        $lab = $post(['focus' => 'soc_analyst_l1']);
+        expect(($lab['ok'] ?? false) && str_ends_with($lab['redirect'] ?? '', 'labs/siem'), 'a SOC analyst should land in the SIEM lab');
+        expect_eq(astra_focus_landing('student_researcher'), get_base_url() . 'labs/syllabus', 'student landing');
+        expect_eq(astra_focus_landing('pqc_cryptographer'), get_base_url() . 'labs/crypto', 'crypto landing');
+        expect(count(astra_focus_options()) === 11, 'the catalog is not 11 roles');
         $row = q1("SELECT role, profile_focus, profile_updated FROM users WHERE id = ?", [$u['id']]);
-        expect_eq($row['profile_focus'], 'security_analyst', 'stored role label');
+        expect_eq($row['profile_focus'], 'soc_analyst_l1', 'stored role label');
         expect_eq($row['role'], 'client', 'the access role must not change');
         expect_eq((int)$row['profile_updated'], 1, 'profile_updated');
     } finally {
@@ -64,7 +72,7 @@ t('role: organization members see the lock and cannot post a role', function () 
     expect_clean($page, 'portal');
     expect(str_contains($page['body'], "Role locked by your organization's policy") && str_contains($page['body'], 'data-needs-focus="0"') && !str_contains($page['body'], 'data-focus='), 'the lock notice is missing or a picker is shown');
     $r = cgi('POST', 'api/complete_profile.php', ['session' => $s, 'accept' => 'application/json',
-        'post' => ['csrf_token' => csrf_of($s), 'gender' => 'male', 'focus' => 'auditor']]);
+        'post' => ['csrf_token' => csrf_of($s), 'gender' => 'male', 'focus' => 'compliance_auditor']]);
     expect($r['status'] === 403 && !(json_of($r)['ok'] ?? true), 'an organization member could post a role');
     $u = q1("SELECT gender, profile_updated FROM users WHERE id = ?", [F::$u['nogender']['id']]);
     expect($u['gender'] === null && (int)$u['profile_updated'] === 0, 'a refused request still changed the profile');

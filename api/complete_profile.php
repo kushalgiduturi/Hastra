@@ -47,7 +47,7 @@ if ($role['locked']) {
         echo json_encode(['ok' => false, 'message' => "Your role is managed by your organization's administrator."]);
         exit();
     }
-} elseif (!isset(ASTRA_FOCUS_OPTIONS[$focus]) || !astra_ensure_profile_focus_column($conn)) {
+} elseif (!isset(astra_focus_options()[$focus]) || !astra_ensure_profile_focus_column($conn)) {
     http_response_code(400);
     echo json_encode(['ok' => false, 'message' => 'Choose your role.']);
     exit();
@@ -63,7 +63,9 @@ if ($role['locked']) {
 }
 
 if (mysqli_stmt_execute($upd)) {
-    echo json_encode(['ok' => true]);
+    // independent people go straight to the lab that fits the role they chose
+    $landing = $role['locked'] ? null : astra_focus_landing($focus);
+    echo json_encode(['ok' => true] + ($landing ? ['redirect' => $landing] : []));
 } else {
     http_response_code(500);
     echo json_encode(['ok' => false, 'message' => 'Failed to save. Please try again.']);
