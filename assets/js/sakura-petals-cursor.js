@@ -7,6 +7,11 @@
    rules stay with the engines that use it: assets/js/hybrid-hand-cursor.js
    (shared pages) and auth/login.php (the sign-in page's own canvas).
 
+   Never a heart: the petal is a single smooth lobe (no notch, no second lobe).
+   The trail can be switched off entirely with
+       localStorage.setItem('hastra_cursor_trail', 'off')   (or window.HASTRA_NO_TRAIL = true)
+   and back on by removing that key.
+
    A petal:  7 to 14 px, one of four crimson / rose tints, spawned with a gentle
    outward burst, then pulled down by gravity, slowed by air drag, swayed by a
    sine-wave wind and tumbled in 2D (rotation) and pseudo-3D (a flip that
@@ -24,6 +29,11 @@
   if (window.HastraPetals) return;
 
   const rnd = (a, b) => a + Math.random() * (b - a);
+  // the visitor's switch for the whole trail (read on every emit, so it applies at once)
+  function trailOff() {
+    if (window.HASTRA_NO_TRAIL) return true;
+    try { return localStorage.getItem('hastra_cursor_trail') === 'off'; } catch (e) { return false; }
+  }
 
   /* Hastra crimson, blossom pink, deep temple wine, pale sakura */
   const TINTS = [[229, 9, 20, .8], [255, 105, 135, .75], [180, 20, 40, .6], [255, 130, 150, .75]];
@@ -31,15 +41,15 @@
   function petalSprite(tint) {
     const S = 48, c = document.createElement('canvas'); c.width = c.height = S;
     const x = c.getContext('2d'), [r, g, b, a] = tint;
-    /* an asymmetric petal with the small notch cherry petals have at the broad end,
-       drawn in a unit box (-.5 to .5) and scaled up */
-    x.translate(S / 2, S / 2); x.scale(S * .92, S * .92);
+    /* ONE smooth lobe, leaning to one side: a curved teardrop with a rounded top and a
+       pointed base. The two sides are different curves and there is no dip anywhere, so
+       it can never read as a heart when it tumbles. Drawn in a unit box (-.5 to .5). */
+    x.translate(S / 2, S / 2); x.scale(S * .86, S * .92);
     x.beginPath();
-    x.moveTo(0, .5);
-    x.bezierCurveTo(.46, .22, .5, -.3, .2, -.46);
-    x.bezierCurveTo(.12, -.5, .04, -.44, 0, -.35);
-    x.bezierCurveTo(-.06, -.46, -.16, -.5, -.25, -.43);
-    x.bezierCurveTo(-.53, -.26, -.4, .2, 0, .5);
+    x.moveTo(.03, .5);
+    x.bezierCurveTo(.38, .3, .44, -.2, .14, -.46);
+    x.bezierCurveTo(.05, -.53, -.1, -.5, -.2, -.38);
+    x.bezierCurveTo(-.5, -.1, -.28, .34, .03, .5);
     x.closePath();
     /* paler toward the tip, richer toward the broad end */
     const gr = x.createLinearGradient(0, .5, 0, -.45);
@@ -59,6 +69,7 @@
       live: 0,
       setCap(n) { size = Math.max(1, Math.min(n, list.length)); next %= size; },
       emit(x, y, vx, vy) {
+        if (trailOff()) return;
         const p = list[next]; next = (next + 1) % size;
         const a = rnd(0, Math.PI * 2), burst = rnd(14, 60);        /* the gentle outward burst */
         p.x = x + rnd(-3, 3); p.y = y + rnd(-3, 3);

@@ -146,6 +146,17 @@ t('cursor trail: crimson sakura petals, no glitter', function () {
     expect(strpos($lp, 'sakura-petals-cursor.js') !== false && strpos($lp, 'sakura-petals-cursor.js') < strpos($lp, 'hybrid-hand-cursor.js'), 'the landing page does not load the petals before the engine');
 });
 
+t('no hearts: no heart glyphs or curves in any script, and the petal is one smooth lobe', function () {
+    $files = array_merge(glob(ASTRA_ROOT . '/assets/js/*.js'), glob(ASTRA_ROOT . '/core/*.js'), [ASTRA_ROOT . '/landing-pages/hastra.html', ASTRA_ROOT . '/auth/login.php', ASTRA_ROOT . '/auth/register.php']);
+    foreach ($files as $f) {
+        $src = file_get_contents($f);
+        expect(!preg_match('~\x{2764}|\x{2665}|\x{2661}|\x{1F495}|\x{1F496}|\x{1F497}|\x{1F493}|\x{1F49D}~u', $src), basename($f) . ' contains a heart glyph');
+        expect(!preg_match('~16\s*\*\s*Math\.pow\(\s*Math\.sin|Math\.pow\(\s*Math\.sin\([^)]*\),\s*3\s*\)\s*\*\s*16~', $src), basename($f) . ' draws a heart curve');
+    }
+    $p = file_get_contents(ASTRA_ROOT . '/assets/js/sakura-petals-cursor.js');
+    expect(substr_count($p, 'x.bezierCurveTo') === 3, 'the petal is no longer a single smooth lobe');
+    expect(str_contains($p, "hastra_cursor_trail") && str_contains($p, 'HASTRA_NO_TRAIL'), 'the trail lost its off switch');
+});
 t('performance: 50 fps governors, touch safety and reduced motion', function () {
     $d = va_doc();
     expect(str_contains($d, 'avg > 1 / 50 && !PERF.eco') && str_contains($d, 'Math.ceil(WORLD.leaves.list.length / div)') && str_contains($d, 'div = weak ? 4 : 2') && str_contains($d, 'PERF.scale = Math.min(PERF.scale, .8)'), 'scene governor drifted');
