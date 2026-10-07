@@ -28,6 +28,52 @@ t('invalid gender value is refused', function () {
     expect(!(json_of($r)['ok'] ?? true), 'accepted a bad value');
 });
 
+t('barrier is boxless and the streaming banner is gone from every stylesheet', function () {
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/profile-barrier.css');
+    expect(!preg_match('~\.profile-barrier-modal\s*\{[^}]*(border:\s*1px|box-shadow|background:\s*var\(--navy-card\))~s', $css), 'the barrier modal is a box again');
+    expect(!preg_match('~\.pb-opt\s*\{[^}]*(border:\s*1\.5px|background:\s*var\(--input-bg\))~s', $css) && str_contains($css, 'border-bottom: 2px solid transparent'), 'the choices are boxes again');
+    foreach (glob(ASTRA_ROOT . '/assets/css/*.css') as $c) expect(!str_contains(file_get_contents($c), 'NOW STREAMING'), basename($c) . ' still draws the NOW STREAMING banner');
+    foreach (glob(ASTRA_ROOT . '/{portals/*,core,auth}/*.php', GLOB_BRACE) as $p) expect(!str_contains(file_get_contents($p), 'NOW STREAMING'), basename($p) . ' still prints the NOW STREAMING banner');
+});
+t('role: independent people choose a role label (a profile label, never an access role)', function () {
+    $conn = $GLOBALS['conn'];
+    $co = create_company($conn, 'Indy ' . F::$suffix . ' (Individual)', null, ['account_type' => 'client_individual']);
+    $u = fix_make_user('indy', 'client', (int)$co['id'], ['gender' => null]);
+    try {
+        $s = as_user('indy');
+        $page = cgi('GET', 'portals/client/client_portal.php', ['session' => $s]);
+        expect_clean($page, 'portal');
+        expect(str_contains($page['body'], 'data-focus="auditor"') && str_contains($page['body'], 'data-needs-focus="1"') && !str_contains($page['body'], 'Role locked by your organization'), 'an independent user was not offered the role choice');
+        $post = fn(array $extra) => json_of(cgi('POST', 'api/complete_profile.php', ['session' => $s, 'accept' => 'application/json', 'post' => ['csrf_token' => csrf_of($s), 'gender' => 'male'] + $extra]));
+        expect(!($post([])['ok'] ?? true), 'accepted no role');
+        expect(!($post(['focus' => 'sysadmin'])['ok'] ?? true), 'accepted a role that is not on the list');
+        expect(!($post(['focus' => 'admin'])['ok'] ?? true), 'accepted an access role as a profile label');
+        expect($post(['focus' => 'security_analyst'])['ok'] ?? false, 'refused a valid role');
+        $row = q1("SELECT role, profile_focus, profile_updated FROM users WHERE id = ?", [$u['id']]);
+        expect_eq($row['profile_focus'], 'security_analyst', 'stored role label');
+        expect_eq($row['role'], 'client', 'the access role must not change');
+        expect_eq((int)$row['profile_updated'], 1, 'profile_updated');
+    } finally {
+        q("DELETE FROM users WHERE id = ?", [$u['id']]);
+        q("DELETE FROM companies WHERE id = ?", [(int)$co['id']]);
+    }
+});
+t('role: organization members see the lock and cannot post a role', function () {
+    $s = as_user('nogender');   // a team member of an organization
+    $page = cgi('GET', 'portals/emlpoyee/employee_portal.php', ['session' => $s]);
+    expect_clean($page, 'portal');
+    expect(str_contains($page['body'], "Role locked by your organization's policy") && str_contains($page['body'], 'data-needs-focus="0"') && !str_contains($page['body'], 'data-focus='), 'the lock notice is missing or a picker is shown');
+    $r = cgi('POST', 'api/complete_profile.php', ['session' => $s, 'accept' => 'application/json',
+        'post' => ['csrf_token' => csrf_of($s), 'gender' => 'male', 'focus' => 'auditor']]);
+    expect($r['status'] === 403 && !(json_of($r)['ok'] ?? true), 'an organization member could post a role');
+    $u = q1("SELECT gender, profile_updated FROM users WHERE id = ?", [F::$u['nogender']['id']]);
+    expect($u['gender'] === null && (int)$u['profile_updated'] === 0, 'a refused request still changed the profile');
+    // posting only the gender still works for them
+    $ok = json_of(cgi('POST', 'api/complete_profile.php', ['session' => $s, 'accept' => 'application/json', 'post' => ['csrf_token' => csrf_of($s), 'gender' => 'female']]));
+    expect($ok['ok'] ?? false, 'an organization member could not finish setup');
+    q("UPDATE users SET gender = NULL, profile_updated = 0 WHERE id = ?", [F::$u['nogender']['id']]);
+});
+
 // ── Ephemeral dossiers (core/ephemeral_dossier.php) ─────────────────────────
 T::group('Ephemeral dossiers');
 function gov_released_milestone(): int {

@@ -14,11 +14,21 @@
     var error    = document.getElementById('pbError');
     var submit   = document.getElementById('pbSubmit');
     var opts     = overlay.querySelectorAll('.pb-opt');
-    var selected = null;
+    var needsFocus = overlay.dataset.needsFocus === '1';   // people outside an organization pick a role
+    var selected = null;      // gender
+    var focus    = null;      // role label (independent people only)
 
+    function ready() { return !!selected && (!needsFocus || !!focus); }
     function setBusy(busy) {
       opts.forEach(function (b) { b.disabled = busy; });
-      submit.disabled = busy || !selected;
+      submit.disabled = busy || !ready();
+    }
+    // a row of text choices behaves as one radio group
+    function choose(btn) {
+      btn.parentNode.querySelectorAll('.pb-opt').forEach(function (b) {
+        b.classList.remove('selected'); b.setAttribute('aria-checked', 'false');
+      });
+      btn.classList.add('selected'); btn.setAttribute('aria-checked', 'true');
     }
 
     function showError(message) {
@@ -28,22 +38,23 @@
 
     opts.forEach(function (btn) {
       btn.addEventListener('click', function () {
-        opts.forEach(function (b) { b.classList.remove('selected'); });
-        btn.classList.add('selected');
-        selected = btn.dataset.gender;
+        choose(btn);
+        if (btn.dataset.gender) selected = btn.dataset.gender;
+        if (btn.dataset.focus) focus = btn.dataset.focus;
         error.classList.remove('show');
-        submit.disabled = false;
+        submit.disabled = !ready();
       });
     });
 
     submit.addEventListener('click', function () {
-      if (!selected) return;
+      if (!ready()) return;
       error.classList.remove('show');
       setBusy(true);
 
       var body = new URLSearchParams();
       body.set('csrf_token', csrf);
       body.set('gender', selected);
+      if (needsFocus) body.set('focus', focus);
 
       fetch(endpoint, {
         method: 'POST',
