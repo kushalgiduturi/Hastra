@@ -252,3 +252,27 @@ t('free-trial gate: the page reports signed-in state without mixing the two sess
     $g = file_get_contents(ASTRA_ROOT . '/assets/js/trial-gatekeeper.js');
     expect(str_contains($g, "'hastra_labs_trial_count'") && str_contains($g, 'localhost') && !str_contains($g, 'innerHTML'), 'gatekeeper drifted');
 });
+
+t('labs polish: hub cards without numerals, a themed result console, architecture guides, route loader', function () {
+    $hub = cgi('GET', 'labs/index');
+    expect_clean($hub, 'hub');
+    expect(!str_contains($hub['body'], 'lx-card-num') && substr_count($hub['body'], 'lx-card-icon') === 3, 'the hub cards still show numerals or lost their icons');
+
+    $css = file_get_contents(ASTRA_ROOT . '/assets/css/tools-cyber.css');
+    expect(!preg_match('~html\[data-theme="light"\]\s+\.lx-out\s*\{[^}]*#0b1220~', $css), 'the light-theme result console is hard-coded dark again');
+    expect(preg_match('~html\[data-theme="light"\]\s+\.lx-out\s*\{[^}]*var\(--lx-field\)~', $css) === 1, 'the light-theme result console no longer follows the theme tokens');
+
+    $c = cgi('GET', 'labs/crypto');
+    expect_clean($c, 'crypto');
+    foreach (['lxg-aes', 'lxg-kem', 'lxg-dsa', 'lxg-kdf', 'lxg-env'] as $id) {
+        expect(str_contains($c['body'], 'id="' . $id . '"') && str_contains($c['body'], 'popovertarget="' . $id . '"'), "guide $id is missing or has no button");
+    }
+    foreach (['PBKDF2-SHA256 with 600,000 rounds', 'ML-KEM-768 with X25519', 'ML-DSA-65', '64 MiB of memory', 'HLX1'] as $fact) {
+        expect(str_contains($c['body'], $fact), "guide lost the fact: $fact");
+    }
+
+    $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
+    foreach (['Loading Hastra Cryptographic Engine', 'Parsing WebGL shaders', 'showRouteLoader', "addEventListener('pageshow'"] as $need) {
+        expect(str_contains($js, $need), "theme.js lost: $need");
+    }
+});

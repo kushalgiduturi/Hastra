@@ -13,6 +13,12 @@
     // "project_portal") — NOT the full pathname, which always contains
     // "login" here since the whole app is served under an /Hastra/ base path.
     const LOADER_TEXT_MAP = [
+      [/^crypto$/,                      'Loading Hastra Cryptographic Engine…'],
+      [/^siem$/,                        'Loading SOC lab pipelines…'],
+      [/^syllabus$/,                    'Preparing the study hub…'],
+      [/^labs$/,                        'Opening Hastra Labs…'],
+      [/^auth$/,                        'Opening your free session…'],
+      [/^(hastra|index|)$/,             'Parsing WebGL shaders…'],
       [/^(login|otp|forgot|signin|verify$|reset)/, 'Initializing defense-grade workspace…'],
       [/^(register|verify_register|signup|verify-email|set-password)/, 'Provisioning your Hastra workspace…'],
       [/project|requirement/,           'Fetching SDLC project pipeline…'],
@@ -26,9 +32,9 @@
       [/security/,                      'Running security diagnostics…'],
       [/doc/,                           'Loading documentation…'],
     ];
-    function contextualText() {
-      const segments = window.location.pathname.toLowerCase().split('/').filter(Boolean);
-      const page = (segments[segments.length - 1] || '').replace(/\.php$/, '');
+    function contextualText(pathname) {
+      const segments = (pathname || window.location.pathname).toLowerCase().split('/').filter(Boolean);
+      const page = (segments[segments.length - 1] || '').replace(/\.(php|html)$/, '');
       for (const [re, text] of LOADER_TEXT_MAP) {
         if (re.test(page)) return text;
       }
@@ -53,6 +59,51 @@
     // Fail-safe: never let a stuck asset (slow font, video, etc.) hold the
     // loader up indefinitely — the rest of the page is interactive either way.
     setTimeout(hidePageLoader, 4000);
+
+    // ── Route transitions ──────────────────────────────────────────────────
+    // Following a link to another page of this site shows the same loader once
+    // the wait is noticeable, instead of leaving the old page frozen (or blank)
+    // until the next one paints. It waits 140 ms so instant navigations never
+    // flash it, is skipped for downloads, new tabs, modified clicks and
+    // same-page links, and is removed again on pageshow (back/forward cache)
+    // or after 10 s, so it can never outstay the navigation it belongs to.
+    const SKIP_EXT = /\.(zip|pdf|json|csv|md|txt|hlx|docx?|xlsx?|png|jpe?g|gif|webp|svg|mp4|webm)$/i;
+    let routeTimer = 0, routeFail = 0;
+    function showRouteLoader(text) {
+      if (document.getElementById('hastra-page-loader') || !document.body) return;
+      const box = document.createElement('div');
+      box.id = 'hastra-page-loader';
+      box.setAttribute('role', 'status');
+      box.style.opacity = '0';
+      const ring = document.createElement('div');
+      ring.className = 'hastra-loader-spinner';
+      const p = document.createElement('p');
+      p.id = 'hastra-loader-text';
+      p.className = 'loader-status-text';
+      p.textContent = text;
+      box.append(ring, p);
+      document.body.append(box);
+      requestAnimationFrame(function () { box.style.opacity = '1'; });
+      routeFail = setTimeout(hidePageLoader, 10000);
+    }
+    function cancelRouteLoader() {
+      clearTimeout(routeTimer); clearTimeout(routeFail);
+      hidePageLoader();
+    }
+    document.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.hasAttribute('download') || a.hasAttribute('data-no-loader')) return;
+      if (a.target && a.target !== '_self') return;
+      let u;
+      try { u = new URL(a.href, location.href); } catch (err) { return; }
+      if (!/^https?:$/.test(u.protocol) || u.origin !== location.origin) return;
+      if (u.pathname === location.pathname && u.search === location.search) return;
+      if (SKIP_EXT.test(u.pathname) || /download/i.test(u.pathname)) return;
+      clearTimeout(routeTimer);
+      routeTimer = setTimeout(function () { showRouteLoader(contextualText(u.pathname)); }, 140);
+    });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) cancelRouteLoader(); });
   })();
 
   const THEME_KEY = 'astra_theme';
