@@ -320,7 +320,7 @@ function labs_head(string $title, string $active, ?array $profile): void {
 <meta name="labs-base" content="<?= labs_e($lb) ?>">
 <meta name="labs-signed-in" content="<?= ($profile || labs_enterprise_signed_in()) ? '1' : '0' ?>">
 <script src="<?= $b ?>core/theme.js?v=<?= $v ?>"></script>
-<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= $v ?>">
+<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= $v ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= $v ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/tools-cyber.css?v=<?= $v ?>">
 <script type="importmap"><?= json_encode(['imports' => labs_import_map()], JSON_UNESCAPED_SLASHES) ?></script>
 </head>
