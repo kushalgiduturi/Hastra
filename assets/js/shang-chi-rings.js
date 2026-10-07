@@ -71,7 +71,7 @@ export function createPowerRings(opts) {
   const sparks = [], bolts = [];
 
   function resize() {
-    dpr = Math.min(2, window.devicePixelRatio || 1);
+    dpr = Math.min(window.HASTRA_PERF && window.HASTRA_PERF.low ? 1 : 2, window.devicePixelRatio || 1);
     for (const c of [back, front]) {
       const r = c.getBoundingClientRect();
       c.width = Math.max(1, Math.round(r.width * dpr)); c.height = Math.max(1, Math.round(r.height * dpr));

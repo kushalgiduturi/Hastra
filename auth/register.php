@@ -194,9 +194,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register · Hastra</title>
+<title>Create your account · Hastra</title>
+<?php astra_seo_meta(['title' => 'Create your account · Hastra', 'description' => 'Create a Hastra client or enterprise workspace.', 'path' => 'signup', 'robots' => 'noindex, follow']); ?>
 <?php astra_compliance_css(); ?>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/hastra-select.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
@@ -833,6 +833,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .logo-status { font-size: 12px; color: var(--text-dim); margin-top: 8px; min-height: 16px; }
 
+  /* Touch screens: every control is at least 48 px tall; nothing scrolls sideways */
+  html, body { overflow-x: hidden; }
+  @media (pointer: coarse) {
+    .card button, .card select, .card input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    .portal-toggle button, .reg-tab, .reg-sub, .btn-theme-toggle { min-height: 48px; }
+    .card .footer-links a, .card .forgot-link, .checkbox-wrap { display: inline-flex; align-items: center; min-height: 48px; }
+    .card input[type="checkbox"] { min-width: 24px; min-height: 24px; }
+  }
+  html.low-perf-mode .card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 </style>
 </head>
 <body>
@@ -1032,13 +1041,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
           <div class="field">
             <label for="email">Email</label>
-            <input type="email" name="email" id="email" maxlength="100" required placeholder="you@example.com">
+            <input type="email" name="email" id="email" maxlength="100" required placeholder="you@example.com" autocomplete="email">
           </div>
         </div>
 
         <div class="field">
           <label for="phone_number">Phone Number</label>
-          <input type="tel" name="phone_number" id="phone_number" required placeholder="9876543210">
+          <input type="tel" name="phone_number" id="phone_number" required placeholder="9876543210" autocomplete="tel" inputmode="tel" maxlength="20">
         </div>
 
         <div class="field">
@@ -1046,7 +1055,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="input-wrap">
             <input type="password" name="password" id="password"
                    maxlength="128" required placeholder="••••••••••••"
-                   oninput="checkPassword(this.value)">
+                   oninput="checkPassword(this.value)" autocomplete="new-password">
             <button type="button" class="eye-btn" onclick="toggleEye('password', 'eye1')" aria-label="Show or hide password">
               <svg id="eye1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
@@ -1070,7 +1079,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="input-wrap">
             <input type="password" name="confirm" id="confirm"
                    maxlength="128" required placeholder="••••••••••••"
-                   oninput="checkMatch()">
+                   oninput="checkMatch()" autocomplete="new-password">
             <button type="button" class="eye-btn" onclick="toggleEye('confirm', 'eye2')" aria-label="Show or hide password confirmation">
               <svg id="eye2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>

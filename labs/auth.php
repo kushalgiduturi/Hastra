@@ -136,7 +136,7 @@ labs_head('Community session', 'auth', $profile);
       <input type="hidden" name="csrf_token" value="<?= labs_e($csrf) ?>">
       <input type="hidden" name="action" value="restore">
       <label class="lx-label" for="rc">Recovery code</label>
-      <input class="lx-input lx-mono" id="rc" name="code" placeholder="HLAB-XXXXX-XXXXX-XXXXX-XXXXX" autocomplete="off" spellcheck="false" required>
+      <input class="lx-input lx-mono" id="rc" name="code" placeholder="HLAB-XXXXX-XXXXX-XXXXX-XXXXX" autocomplete="off" spellcheck="false" required maxlength="64" autocapitalize="characters">
       <label class="lx-check"><input type="checkbox" name="remember" value="1"> Remember this device for 60 days</label>
       <button class="lx-btn" type="submit" <?= $ready ? '' : 'disabled' ?>>Restore my progress</button>
     </form>

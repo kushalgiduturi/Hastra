@@ -27,6 +27,7 @@ $special = [
 $skip = [
     'auth/logout.php' => 'ends the session (covered in Authentication)',
     'download.php'    => 'needs a file id (covered in Download security)',
+    '404.php'         => 'the error page answers 404 by design (covered in Production hardening)',
 ];
 
 const CRAWL_DATA_PAGES = ['portals/sysadmin/logs.php', 'portals/admin/security.php', 'portals/sysadmin/security_dashboard.php'];

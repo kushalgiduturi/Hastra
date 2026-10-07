@@ -474,3 +474,30 @@ html:not([data-theme="light"]) .lx-guide { background: rgba(10, 12, 20, .96); }
 .lx-guide-close { margin-top: 16px; padding: 8px 14px; border-radius: 10px; cursor: pointer; border: 1px solid var(--lx-hair-strong); background: var(--lx-field); color: var(--lx-text); font: 700 11px/1 var(--lx-mono); }
 .lx-guide-close:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 2px; }
 @media print { .lx-guides, .lx-info, .lx-guide { display: none !important; } }
+
+/* ── Touch screens: every control is at least 48 px tall ─────────────────── */
+@media (pointer: coarse) {
+  .lx-btn, .lx-chip, .lx-tab, .lx-enterprise, .lx-input, .lx-select, .lx-vbtn, .lx-info, .lx-guide-close, .lx-gate-dismiss,
+  .lx-library button, .lx-seg-opt, .lx-filechip button, [role="tab"] { min-height: 48px; }
+  [role="tab"] { display: inline-flex; align-items: center; justify-content: center; }
+  .lx-btn, .lx-chip, .lx-tab, .lx-enterprise, .lx-vbtn, .lx-info, .lx-library button { display: inline-flex; align-items: center; justify-content: center; }
+  .lx-btn--block { display: flex; }
+  /* small round "?" buttons keep their look but get a 48 px hit area */
+  .lx-info--icon { position: relative; }
+  .lx-info--icon::after { content: ''; position: absolute; inset: -13px; }
+  .lx-info--icon { min-height: 22px; }
+  .lx-range { min-height: 48px; }
+  input[type="checkbox"], input[type="radio"] { min-width: 24px; min-height: 24px; }
+}
+@media (max-width: 767px) {
+  html, body.lx-body { overflow-x: hidden; }
+  .lx-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .lx-h1 { font-size: clamp(28px, 8vw, 40px); }
+}
+
+/* ── Weak devices (performance-guard.js): no glass blur ─────────────────── */
+html.low-perf-mode .lx-top, html.low-perf-mode .lx-pane, html.low-perf-mode .lx-card, html.low-perf-mode .lx-guide,
+html.low-perf-mode .lx-gate, html.low-perf-mode .lx-gate-card, html.low-perf-mode .lx-banner {
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+html.low-perf-mode .lx-pane, html.low-perf-mode .lx-card { background: var(--lx-plate-2); }

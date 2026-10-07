@@ -148,7 +148,7 @@ t('cursor trail: crimson sakura petals, no glitter', function () {
 
 t('performance: 50 fps governors, touch safety and reduced motion', function () {
     $d = va_doc();
-    expect(str_contains($d, 'avg > 1 / 50 && !PERF.eco') && str_contains($d, 'Math.ceil(WORLD.leaves.list.length / 2)') && str_contains($d, 'PERF.scale = Math.min(PERF.scale, .8)'), 'scene governor drifted');
+    expect(str_contains($d, 'avg > 1 / 50 && !PERF.eco') && str_contains($d, 'Math.ceil(WORLD.leaves.list.length / div)') && str_contains($d, 'div = weak ? 4 : 2') && str_contains($d, 'PERF.scale = Math.min(PERF.scale, .8)'), 'scene governor drifted');
     expect(str_contains($d, 'if (REDUCE && LV.seeded) return;') && str_contains($d, 'RIG.mx = REDUCE ? 0'), 'scene no longer freezes under reduced motion');
     // simplified back down (a dual botanical/crypto stream with scatter
     // bursts and an orbiting idle ring read as too busy for a cursor) to

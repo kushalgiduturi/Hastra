@@ -149,9 +149,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login · Hastra</title>
+<title>Sign in · Hastra</title>
+<?php astra_seo_meta(['title' => 'Sign in · Hastra', 'description' => 'Sign in to your Hastra workspace or client gateway.', 'path' => 'signin', 'robots' => 'noindex, follow']); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -901,6 +901,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .auth-stage.ready .card, .auth-stage.ready .auth-info, .info-block, .info-block.is-active { transition-duration: .01s !important; transition-delay: 0s !important; }
   }
 
+  /* Touch screens: every control is at least 48 px tall; nothing scrolls sideways */
+  html, body { overflow-x: hidden; }
+  @media (pointer: coarse) {
+    .card button, .card select, .card input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    .portal-toggle button, .reg-tab, .reg-sub, .btn-theme-toggle { min-height: 48px; }
+    .card .footer-links a, .card .forgot-link, .checkbox-wrap { display: inline-flex; align-items: center; min-height: 48px; }
+    .card input[type="checkbox"] { min-width: 24px; min-height: 24px; }
+  }
+  html.low-perf-mode .card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 </style>
 </head>
 <body data-intro-manual data-cursor-off>
@@ -1140,6 +1149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 </div>
 
+<script src="<?= get_base_url() ?>assets/js/performance-guard.js?v=<?= ASSET_VERSION ?>"></script>
 <script src="<?= get_base_url() ?>assets/js/sakura-petals-cursor.js?v=<?= ASSET_VERSION ?>"></script>
 <script>
 // ── Card reveal: a short crack-spark burst then the card zooms out of that
@@ -1222,8 +1232,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   });
 
   /* ---------------------------------------------------- the petal trail */
-  const N = 120, STEP = 27;              /* petals in the pool; px of travel per emission */
+  const N = 120;                         /* petals in the pool */
+  let STEP = 27;                         /* px of travel per emission */
   const field = window.HastraPetals.create(N);
+  /* a weak device (assets/js/performance-guard.js) keeps fewer petals and drops them less often */
+  function applyPerf() {
+    const P = window.HASTRA_PERF, low = !!(P && P.low);
+    STEP = low ? (P.petalStep || 44) : 27;
+    field.setCap(low ? (P.petalCap || 50) : N);
+  }
+  applyPerf();
+  window.addEventListener('hastra:perf', applyPerf);
   const W = { acc: 0, ex: 0, ey: 0, lx: 0, ly: 0, idle: 0, seen: false, quiet: false };
   let dpr = 1, raf = 0, running = false, tPrev = 0, clock = 0;
 

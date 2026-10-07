@@ -291,6 +291,14 @@ function labs_import_map(): array {
     return $map;
 }
 
+const LABS_DESCRIPTIONS = [
+    'hub'      => 'Free, browser-native security tools and a study coach: post-quantum cryptography, SIEM and threat-intel labs, and a syllabus accelerator. Nothing sensitive leaves your browser.',
+    'crypto'   => 'Encrypt text or files with AES-256-GCM, ChaCha20-Poly1305, RSA-4096, X25519, ML-KEM or the X-Wing hybrid, sign with ML-DSA and hash credentials with Argon2id. All in your browser.',
+    'siem'     => 'Normalize STIX 2.1, TAXII and MISP feeds, score UEBA risk, size a 15M-EPS pipeline across storage tiers and correlate multi-cloud logs on one timeline.',
+    'syllabus' => 'Drop in PDF, Word or text syllabi: every unit and topic gets the most-viewed tutorial, a finish-date forecast and a pace that keeps you on track.',
+    'auth'     => 'Start a free Hastra Labs session to sync your study progress between devices.',
+];
+
 function labs_head(string $title, string $active, ?array $profile): void {
     $b = get_base_url();
     $lb = labs_base();
@@ -300,10 +308,14 @@ function labs_head(string $title, string $active, ?array $profile): void {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="<?= $b ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= labs_e($title) ?> · Hastra Labs</title>
-<meta name="description" content="Free cryptography, SOC and study tools from Hastra. Everything sensitive runs in your browser.">
+<?php astra_seo_meta([
+    'title' => $title . ' · Hastra Labs',
+    'description' => LABS_DESCRIPTIONS[$active] ?? LABS_DESCRIPTIONS['hub'],
+    'path' => 'labs/' . (in_array($active, ['crypto', 'siem', 'syllabus', 'auth'], true) ? $active : ''),
+    'robots' => $active === 'auth' ? 'noindex, follow' : 'index, follow',
+]); ?>
 <meta name="csrf-token" content="<?= labs_e(labs_csrf_token()) ?>">
 <meta name="labs-base" content="<?= labs_e($lb) ?>">
 <meta name="labs-signed-in" content="<?= ($profile || labs_enterprise_signed_in()) ? '1' : '0' ?>">

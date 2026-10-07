@@ -257,6 +257,11 @@
       const stack = nf
         ? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']
         : ['landing-host', 'kage-scene', 'sakura-petals-cursor', 'hybrid-hand-cursor', 'cloth-cards', 'handover-seal', 'view-director'];
+      // the guard goes first and on its own, so the scene and the cursor can read its verdict
+      const guard = document.createElement('script');
+      guard.src = base + 'assets/js/performance-guard.js' + q;
+      guard.async = false;
+      b.appendChild(guard);
       stack.forEach(function(name) {
         if ((name === 'landing-host' || name === 'kage-scene' || name === 'kage-cyber') && noScene) return;
         // a page carrying its own dedicated cursor engine (auth/login.php's
