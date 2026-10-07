@@ -1,8 +1,10 @@
 <?php
 // api/complete_profile.php
 // Backend for the mandatory profile-completion barrier (core/auth_check.php).
-//   POST gender=<male|female|prefer_not_to_say>&csrf_token=<session token>
+//   POST gender=<male|female|prefer_not_to_say>&focus=<role label>&csrf_token=<session token>
 //     -> { ok, message? }
+//   focus is required from people outside an organization and refused from
+//   organization members (core/auth_check.php: astra_profile_role_context).
 // Session-scoped: a user only ever updates their own row.
 include __DIR__ . '/../core/db.php';
 secure_session_start();
@@ -34,9 +36,31 @@ if (!in_array($gender, ['male', 'female', 'prefer_not_to_say'], true)) {
 }
 
 $user_id    = (int)$_SESSION['user_id'];
+
+// Role label: organization members never choose (their administrator manages
+// it, so a posted value is refused, not ignored); everyone else must.
+$role  = astra_profile_role_context($conn, $user_id);
+$focus = trim((string)($_POST['focus'] ?? ''));
+if ($role['locked']) {
+    if ($focus !== '') {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'message' => "Your role is managed by your organization's administrator."]);
+        exit();
+    }
+} elseif (!isset(ASTRA_FOCUS_OPTIONS[$focus]) || !astra_ensure_profile_focus_column($conn)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'message' => 'Choose your role.']);
+    exit();
+}
+
 $gender_enc = astra_db_encrypt($gender);
-$upd = mysqli_prepare($conn, "UPDATE users SET gender = ?, profile_updated = 1 WHERE id = ?");
-mysqli_stmt_bind_param($upd, "si", $gender_enc, $user_id);
+if ($role['locked']) {
+    $upd = mysqli_prepare($conn, "UPDATE users SET gender = ?, profile_updated = 1 WHERE id = ?");
+    mysqli_stmt_bind_param($upd, "si", $gender_enc, $user_id);
+} else {
+    $upd = mysqli_prepare($conn, "UPDATE users SET gender = ?, profile_focus = ?, profile_updated = 1 WHERE id = ?");
+    mysqli_stmt_bind_param($upd, "ssi", $gender_enc, $focus, $user_id);
+}
 
 if (mysqli_stmt_execute($upd)) {
     echo json_encode(['ok' => true]);

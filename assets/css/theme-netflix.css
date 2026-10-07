@@ -146,15 +146,8 @@ html.nf-portal .btn-theme-toggle {
 }
 html.nf-portal .btn-theme-toggle:hover { border-color: var(--border-accent) !important; color: var(--text-primary) !important; }
 
-/* ── Page header: episode headline ── */
+/* ── Page header: the headline sits straight under the top bar ── */
 html.nf-portal .page-header { margin-bottom: 2.4rem !important; }
-html.nf-portal .page-header::before {
-  content: 'HASTRA ORIGINALS  |  NOW STREAMING';
-  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 5px 12px 5px 22px;
-  font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
-  color: var(--badge-text); background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 4px;
-  background-image: radial-gradient(circle at 11px 50%, var(--accent-primary) 3px, transparent 3.5px);
-}
 html.nf-portal .page-header h1 {
   font-size: clamp(28px, 4vw, 44px) !important; font-weight: 900 !important; letter-spacing: -.03em !important;
   line-height: 1.05 !important; text-transform: uppercase;

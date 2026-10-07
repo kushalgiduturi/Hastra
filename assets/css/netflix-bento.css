@@ -322,14 +322,6 @@ html.nf-portal .wrap > h1 {
   background: var(--gradient-headline); -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 26px var(--accent-glow));
 }
-html.nf-portal .wrap > h1::before {
-  content: 'HASTRA ORIGINALS  |  NOW STREAMING';
-  display: block; width: max-content; margin-bottom: 14px; padding: 5px 12px 5px 22px;
-  font: 700 11px/1 var(--font-mono); letter-spacing: .16em; white-space: pre;
-  -webkit-text-fill-color: var(--badge-text); color: var(--badge-text);
-  background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 4px;
-  background-image: radial-gradient(circle at 11px 50%, var(--accent-primary) 3px, transparent 3.5px);
-}
 html.nf-portal .wrap > .lede { color: var(--text-secondary) !important; }
 /* bare page titles (Scan Center, Dossier, Sign-Off, Handover Terminal) */
 html.nf-portal :is(.sc-header h1, .main > h1, .ht-main h1) {

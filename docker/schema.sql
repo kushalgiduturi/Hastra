@@ -795,6 +795,7 @@ CREATE TABLE `users` (
   `google_id_bindex` varchar(64) DEFAULT NULL,
   `terms_accepted_at` datetime DEFAULT NULL,
   `terms_version` varchar(16) DEFAULT NULL,
+  `profile_focus` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email_bindex` (`email_bindex`),
   UNIQUE KEY `uniq_google_id_bindex` (`google_id_bindex`),
