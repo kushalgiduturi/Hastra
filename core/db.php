@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '130');
+    define('ASSET_VERSION', '131');
 }
 
 header_remove('X-Powered-By'); // don't advertise the PHP version
@@ -14,8 +14,8 @@ header("X-Frame-Options: SAMEORIGIN");
 header("X-Content-Type-Options: nosniff");
 header("Content-Security-Policy: default-src 'self'; "
      . "script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net; "
-     . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
-     . "font-src 'self' https://fonts.gstatic.com; "
+     . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+     . "font-src 'self'; "
      . "img-src 'self' data: https://cdn.jsdelivr.net https://logo.clearbit.com https://www.google.com https://*.gstatic.com https://icons.duckduckgo.com; "
      . "frame-src 'self' https://www.google.com; "
      . "connect-src 'self'; "

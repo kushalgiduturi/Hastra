@@ -240,3 +240,17 @@ t('static assets get long cache lifetimes in production; a load-test script exis
     expect(str_contains($conf, 'stale-while-revalidate') && str_contains($conf, 'text/css'), 'no CSS/JS cache policy');
     expect(str_contains(px_src('tests/load/k6-hastra.js'), "exec: 'auth'"), 'no auth scenario in the load test');
 });
+t('fonts are self-hosted: no Google Fonts requests, OFL licences shipped, CSP allows only our own fonts', function () {
+    $hits = [];
+    foreach (px_pages() as $rel => $p) if (preg_match('~fonts\.(googleapis|gstatic)\.com~', (string)file_get_contents($p))) $hits[] = $rel;
+    if (preg_match('~fonts\.(googleapis|gstatic)\.com~', px_src('landing-pages/hastra.html'))) $hits[] = 'landing-pages/hastra.html';
+    foreach (['.htaccess', 'labs/.htaccess'] as $h) if (preg_match('~fonts\.(googleapis|gstatic)\.com~', px_src($h))) $hits[] = $h;
+    expect(!$hits, 'still referenced in: ' . implode(', ', $hits));
+    $css = px_src('assets/css/fonts.css');
+    foreach (['share-tech-mono-latin.woff2', 'onest-latin.woff2', 'onest-latin-ext.woff2'] as $f) {
+        expect(str_contains($css, $f), "fonts.css lacks $f");
+        expect(substr((string)@file_get_contents(ASTRA_ROOT . "/assets/fonts/$f"), 0, 4) === 'wOF2', "$f missing or not WOFF2");
+    }
+    foreach (['OFL-ShareTechMono.txt', 'OFL-Onest.txt'] as $l) expect(str_contains((string)@file_get_contents(ASTRA_ROOT . "/assets/fonts/$l"), 'SIL Open Font License'), "$l missing");
+    expect(str_contains(px_src('core/db.php'), "font-src 'self'; "), 'CSP font-src');
+});
