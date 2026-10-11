@@ -40,7 +40,7 @@ function signoff_send_otp($to, $otp) {
     $mail->addAddress($to);
     $mail->Subject = "Milestone Sign-Off Confirmation Code";
     $mail->Body    = "Your milestone sign-off code is: $otp\n\nExpires in 10 minutes. If you didn't request this, ignore this email.";
-    $mail->send();
+    astra_mail_send($mail);
 }
 
 // Is this user the project's team_lead, or an internal admin (either counts
@@ -243,6 +243,7 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Milestone Sign-Off · Hastra</title>
+<?php astra_page_meta('Milestone Sign-Off · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -385,7 +386,7 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
       <?php endif; ?>
 
       <?php if ($row['status'] !== 'disputed' && ($user_role === 'admin' || ((int)$row['client_user_id'] === $user_id))): ?>
-      <form method="POST" action="signoff" style="margin-top:6px;display:inline-block;" onsubmit="return confirm('Flag this milestone as disputed?')">
+      <form method="POST" action="signoff" style="margin-top:6px;display:inline-block;" data-confirm="Flag this milestone as disputed?">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="dispute">
         <input type="hidden" name="project_id" value="<?= (int)$row['project_id'] ?>">

@@ -22,6 +22,7 @@ require __DIR__ . '/../../config/migrations/2026_09_enterprise_trust.php';
 require __DIR__ . '/../../config/migrations/2026_09_security_scanner.php';
 require __DIR__ . '/../../config/migrations/2026_09_google_sso.php';
 require __DIR__ . '/../../config/migrations/2026_09_labs.php';
+require __DIR__ . '/../../config/migrations/2026_10_performance.php';
 
 const BACKUP_DIR        = __DIR__ . '/../../config/backups';
 const BACKUP_VALID_SECS = 3600;
@@ -75,6 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_security_scanner($conn, $out);
             astra_migrate_google_sso($conn, $out);
             astra_migrate_labs($conn, $out);
+            astra_migrate_performance($conn, $out);
             $ran = "Dry run"; $result = 'ok';
         } elseif ($action === "apply") {
             if (!$backup_fresh) throw new RuntimeException("Take a backup first (step 1). Backups older than an hour don't count.");
@@ -95,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             astra_migrate_security_scanner($conn, $out);
             astra_migrate_google_sso($conn, $out);
             astra_migrate_labs($conn, $out);
+            astra_migrate_performance($conn, $out);
             $ran = "Apply"; $result = 'ok';
             // Your own ID may have moved — keep this session pointing at it.
             // (Matched via the blind index, not email = ?, since email may
@@ -136,6 +139,7 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Database Migration · Hastra</title>
+<?php astra_page_meta('Database Migration · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">

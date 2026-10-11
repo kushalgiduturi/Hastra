@@ -84,6 +84,7 @@ $has_key  = anthropic_api_key() !== '';
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documentation <?= htmlspecialchars($project['project_code']) ?> · Hastra</title>
+<?php astra_page_meta(); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -164,7 +165,7 @@ $has_key  = anthropic_api_key() !== '';
           <div class="section-sub"><?= htmlspecialchars(DOC_ENGINE_LABELS[$current['source']] ?? $current['source']) ?> · <?= htmlspecialchars(date('d M Y, H:i', strtotime($current['created_at']))) ?></div>
         </div>
         <?php if (!$current['approved_at']): ?>
-        <form method="POST" onsubmit="return confirmApprove()">
+        <form method="POST" onsubmit="return confirmApprove(event)">
           <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
           <input type="hidden" name="project_id" value="<?= $project_id ?>">
           <input type="hidden" name="action" value="approve">
@@ -245,7 +246,7 @@ $has_key  = anthropic_api_key() !== '';
             <button type="submit" class="small" style="margin-top:6px;">Save repository</button>
           </form>
           <?php if ($current): ?>
-          <form method="POST" onsubmit="if (!confirm('Create a new draft? The current versions are kept.')) return false; this.classList.add('generating'); this.querySelector('button').disabled = true;">
+          <form method="POST" data-confirm="Create a new draft? The current versions are kept." data-confirm-action="Create draft" onsubmit="this.classList.add('generating'); this.querySelector('button').disabled = true;">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="project_id" value="<?= $project_id ?>">
             <input type="hidden" name="action" value="generate">
@@ -298,10 +299,18 @@ $has_key  = anthropic_api_key() !== '';
     markDirty();
   });
   document.getElementById('btnLink').addEventListener('click', () => {
-    const url = prompt('Link address (https://…)');
-    if (!url) return;
-    if (!/^(https?:\/\/|mailto:|#)/i.test(url)) { alert('Links must start with https://, http://, mailto: or #'); return; }
-    editor.focus(); document.execCommand('createLink', false, url); markDirty();
+    // the dialog takes focus, so keep the editor's selection to restore afterwards
+    const sel = window.getSelection();
+    const saved = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    HastraDialog.prompt('Link address', {
+      placeholder: 'https://example.com', confirmText: 'Add link', inputType: 'url',
+      validate: v => !v ? 'Enter a link address.' : (/^(https?:\/\/|mailto:|#)/i.test(v) ? '' : 'Links must start with https://, http://, mailto: or #.'),
+    }).then(url => {
+      if (!url) return;
+      editor.focus();
+      if (saved) { sel.removeAllRanges(); sel.addRange(saved); }
+      document.execCommand('createLink', false, url); markDirty();
+    });
   });
   document.getElementById('btnSource').addEventListener('click', function () {
     sourceMode = !sourceMode;
@@ -315,9 +324,21 @@ $has_key  = anthropic_api_key() !== '';
     if (!sourceMode) source.value = editor.innerHTML;
     dirty = false;
   };
-  window.confirmApprove = function () {
-    if (dirty) { alert('Save your changes first. Approval applies to the saved version.'); return false; }
-    return confirm('Approve this version as the project documentation?');
+  // unsaved edits first (approval applies to the saved version), then confirm
+  window.confirmApprove = function (e) {
+    const form = e.target;
+    if (form.__approved) return true;
+    e.preventDefault();
+    if (dirty) {
+      HastraDialog.alert('Save your changes first. Approval applies to the saved version.', { title: 'Unsaved changes' });
+      return false;
+    }
+    HastraDialog.confirm('Approve this version as the project documentation?', { confirmText: 'Approve' }).then(ok => {
+      if (!ok) return;
+      form.__approved = true;
+      if (form.requestSubmit) form.requestSubmit(); else form.submit();
+    });
+    return false;
   };
 })();
 </script>

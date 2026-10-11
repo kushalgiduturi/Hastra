@@ -51,7 +51,7 @@ function astra_send_mail($to, $subject, $body) {
     $mail->addAddress($to);
     $mail->Subject = $subject;
     $mail->Body    = $body;
-    $mail->send();
+    astra_mail_send($mail);
 }
 
 // ── Activation invites (reuse password_set_tokens) ───────────────────────────

@@ -14,10 +14,10 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($title) ?> · Hastra</title>
-<meta name="description" content="<?= htmlspecialchars($summary) ?>">
+<?php astra_seo_meta(['title' => $title . ' · Hastra', 'description' => $summary,
+                      'path' => $slug === 'delete-data' ? 'privacy/delete-data' : 'legal/' . $slug, 'type' => 'article']); ?>
 <script src="<?= $b ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -39,8 +39,25 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 </header>
 <main id="legal-main" class="legal-doc">
   <h1><?= htmlspecialchars($title) ?></h1>
-  <p class="legal-meta">Effective <?= htmlspecialchars(LEGAL_EFFECTIVE_DATE) ?> · Version <?= htmlspecialchars(LEGAL_TERMS_VERSION) ?> · Operated by <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?></p>
+  <?php $updated = legal_last_updated($slug); ?>
+  <p class="legal-meta">
+    <span class="legal-updated">Last updated <time datetime="<?= htmlspecialchars($updated) ?>"><?= htmlspecialchars(date('j F Y', strtotime($updated))) ?></time></span>
+    · Effective <?= htmlspecialchars(LEGAL_EFFECTIVE_DATE) ?> · Version <?= htmlspecialchars(LEGAL_TERMS_VERSION) ?> · Operated by <?= htmlspecialchars(LEGAL_ENTITY_NAME) ?></p>
     <?php
+}
+
+// When each document last changed. Bump the date in the same commit that edits
+// the document; the page shows whichever is later, this or the effective date.
+const ASTRA_LEGAL_UPDATED = [
+    'privacy'     => '2026-10-11',
+    'terms'       => '2026-09-26',
+    'cookies'     => '2026-10-11',
+    'refunds'     => '2026-09-26',
+    'delete-data' => '2026-10-11',
+];
+function legal_last_updated(string $slug): string {
+    $d = ASTRA_LEGAL_UPDATED[$slug] ?? LEGAL_EFFECTIVE_DATE;
+    return max($d, LEGAL_EFFECTIVE_DATE);
 }
 
 function legal_page_end(): void {

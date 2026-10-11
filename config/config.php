@@ -83,7 +83,7 @@ hastra_def('PRIMARY_SYSADMIN_EMAIL', hastra_env('HASTRA_SYSADMIN_EMAIL', 'kushal
 // The person or company operating Hastra. Leave LEGAL_ADDRESS or
 // LEGAL_COMPANY_ID empty ('') and that line is simply left out everywhere.
 define('LEGAL_ENTITY_NAME',   'Kushal Giduturi');
-define('LEGAL_ADDRESS',       '');
+define('LEGAL_ADDRESS',       hastra_env('HASTRA_LEGAL_ADDRESS', '')); // postal address for footers and email; set the env var, never guess one
 define('LEGAL_COMPANY_ID',    '');
 define('LEGAL_SUPPORT_EMAIL', 'kushalgiduturi@gmail.com');
 define('LEGAL_EFFECTIVE_DATE', '2026-09-26');

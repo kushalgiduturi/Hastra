@@ -128,7 +128,7 @@ labs_head('Community session', 'auth', $profile);
       <input type="hidden" name="action" value="start">
       <label class="lx-label" for="dn">Display name <span class="lx-muted">(optional, shown only to you)</span></label>
       <input class="lx-input" id="dn" name="display_name" maxlength="40" placeholder="Student" autocomplete="nickname">
-      <label class="lx-check"><input type="checkbox" name="remember" value="1" checked> Remember this device for 60 days</label>
+      <label class="lx-check"><input type="checkbox" name="remember" value="1"> Remember this device for 60 days</label>
       <button class="lx-btn btn-beam" type="submit" <?= $ready ? '' : 'disabled' ?>>Create my session</button>
     </form>
     <form class="lx-pane" method="post" action="<?= $lb ?>auth">

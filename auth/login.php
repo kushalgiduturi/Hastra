@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $mail->Subject = 'Your OTP Code';
                         $mail->Body    = "Your OTP is: $otp\n\nExpires in 10 minutes.\n\nIgnore if not requested.";
 
-                        $mail->send();
+                        astra_mail_send($mail);
 
                         log_activity($conn, $user["id"], "login_otp_sent",$user["name"]);
                         $_SESSION["otp_email"] = $email;

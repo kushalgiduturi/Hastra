@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                         "Click the link below to set your password:\n$set_link\n\n" .
                         "This link expires in 24 hours.\n\n" .
                         "Your account will be active once sysadmin approves it.";
-                    $mail->send();
+                    astra_mail_send($mail);
                     $msg      = "Employee account created successfully. Setup email sent to $email.";
                     $msg_type = "success";
                 } catch (Exception $e) {
@@ -132,6 +132,7 @@ $internal_company    = get_internal_company($conn);
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Employee · Hastra</title>
+<?php astra_page_meta('Create Employee · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">

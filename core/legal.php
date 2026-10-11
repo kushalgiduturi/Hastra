@@ -30,6 +30,7 @@ function astra_legal_footer(string $variant = 'card'): void {
     <?php foreach (ASTRA_LEGAL_DOCS as $slug => $title): ?>
       <a href="<?= $b ?>legal/<?= $slug ?>"><?= $e($title) ?></a>
     <?php endforeach; ?>
+    <a href="<?= $b ?>privacy/delete-data">Delete my data</a>
     <button type="button" class="legal-linkbtn" data-consent-open>Cookie settings</button>
   </nav>
   <address class="legal-entity">

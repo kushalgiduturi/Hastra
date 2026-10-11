@@ -500,3 +500,33 @@ html.low-perf-mode .lx-gate, html.low-perf-mode .lx-gate-card, html.low-perf-mod
   backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
 }
 html.low-perf-mode .lx-pane, html.low-perf-mode .lx-card { background: var(--lx-plate-2); }
+
+/* ── Labs FAQ: native <details>, boxless (hairline rules, no cards) ── */
+.lx-faq { max-width: 860px; margin: clamp(48px, 8vw, 88px) 0 24px; }
+.lx-faq h2 { margin: 0 0 18px; font: 800 clamp(22px, 3vw, 30px)/1.15 var(--lx-sans); color: var(--lx-text); }
+.lx-faq details { border-top: 1px solid var(--lx-hair); }
+.lx-faq details:last-of-type { border-bottom: 1px solid var(--lx-hair); }
+.lx-faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 56px; padding: 14px 2px;
+  cursor: pointer; list-style: none; font: 700 16.5px/1.4 var(--lx-sans); color: var(--lx-text);
+}
+.lx-faq summary::-webkit-details-marker { display: none; }
+.lx-faq summary::after {
+  content: ""; flex: none; width: 12px; height: 12px; margin-right: 4px;
+  border-right: 2px solid var(--lx-accent); border-bottom: 2px solid var(--lx-accent);
+  transform: rotate(45deg) translate(-2px, -2px); transition: transform .25s ease;
+}
+.lx-faq details[open] summary::after { transform: rotate(225deg) translate(-2px, -2px); }
+.lx-faq summary:hover { color: var(--lx-accent); }
+.lx-faq summary:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 2px; }
+.lx-faq details p { margin: 0 0 18px; max-width: 68ch; font: 400 15.5px/1.7 var(--lx-sans); color: var(--lx-dim); }
+.lx-faq details a { color: var(--lx-accent); }
+/* smooth height where the browser supports animating to auto */
+@supports (interpolate-size: allow-keywords) {
+  .lx-faq { interpolate-size: allow-keywords; }
+  .lx-faq details::details-content { height: 0; overflow: clip; transition: height .3s ease, content-visibility .3s allow-discrete; }
+  .lx-faq details[open]::details-content { height: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx-faq details::details-content, .lx-faq summary::after { transition: none !important; }
+}

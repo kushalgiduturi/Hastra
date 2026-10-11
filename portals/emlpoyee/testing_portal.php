@@ -1073,7 +1073,7 @@ foreach ($qa_projects as $pid => $info) {
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
-                <button type="submit" class="btn-delete-file" onclick="return confirm('Delete this file?')">
+                <button type="submit" class="btn-delete-file" data-confirm="Delete this file?">
                   <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
               </form>
@@ -1164,7 +1164,7 @@ foreach ($qa_projects as $pid => $info) {
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
-                <button type="submit" class="btn-delete-file" onclick="return confirm('Delete this file?')">
+                <button type="submit" class="btn-delete-file" data-confirm="Delete this file?">
                   <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
               </form>
@@ -1209,7 +1209,7 @@ foreach ($qa_projects as $pid => $info) {
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <input type="hidden" name="new_status" value="open">
             <button type="submit" class="action-btn reopen"
-              onclick="return confirm('Reopen this bug and send it back to the developer?')">Reopen</button>
+              data-confirm="Reopen this bug and send it back to the developer?">Reopen</button>
           </form>
         </div>
         <?php endif; ?>
@@ -1265,7 +1265,7 @@ foreach ($qa_projects as $pid => $info) {
                 <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                 <input type="hidden" name="action"  value="delete_bug_file">
                 <input type="hidden" name="file_id" value="<?= $f['id'] ?>">
-                <button type="submit" class="btn-delete-file" onclick="return confirm('Delete this file?')">
+                <button type="submit" class="btn-delete-file" data-confirm="Delete this file?">
                   <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
               </form>
@@ -1295,7 +1295,7 @@ foreach ($qa_projects as $pid => $info) {
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <input type="hidden" name="new_status" value="closed">
             <button type="submit" class="action-btn close"
-              onclick="return confirm('Close this bug without the reporter\'s retest? This override is recorded in the activity log.')">Close (override)</button>
+              data-confirm="Close this bug without the reporter's retest? This override is recorded in the activity log.">Close (override)</button>
           </form>
           <?php endif; ?>
           <form method="POST" action="testing-portal">
@@ -1303,14 +1303,14 @@ foreach ($qa_projects as $pid => $info) {
             <input type="hidden" name="action" value="wont_fix_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <button type="submit" class="action-btn wontfix"
-              onclick="return confirm('Mark this bug as Won\'t Fix?')">Won't Fix</button>
+              data-confirm="Mark this bug as Won't Fix?">Won't Fix</button>
           </form>
           <form method="POST" action="testing-portal">
             <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
             <input type="hidden" name="action" value="delete_bug">
             <input type="hidden" name="bug_id" value="<?= $bug['id'] ?>">
             <button type="submit" class="action-btn delete"
-              onclick="return confirm('Delete bug <?= htmlspecialchars($bug['bug_code'], ENT_QUOTES) ?> permanently?')">Delete</button>
+              data-confirm="Delete bug <?= htmlspecialchars($bug['bug_code'], ENT_QUOTES) ?> permanently?">Delete</button>
           </form>
         </div>
         <?php endif; ?>

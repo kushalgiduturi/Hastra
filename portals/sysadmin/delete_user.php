@@ -44,7 +44,7 @@ function send_mail_to($to, $subject, $body) {
     $mail->addAddress($to);
     $mail->Subject = $subject;
     $mail->Body    = $body;
-    $mail->send();
+    astra_mail_send($mail);
 }
 
 // Returns the target user, or ends the request with an error.

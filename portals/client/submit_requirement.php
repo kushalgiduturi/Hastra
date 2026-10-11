@@ -346,9 +346,14 @@ if (reqForm) {
   reqForm.addEventListener('submit', function(e) {
     const min = parseFloat(document.getElementById('budget_min').value);
     const max = parseFloat(document.getElementById('budget_max').value);
+    const maxField = document.getElementById('budget_max');
     if (!isNaN(min) && !isNaN(max) && min > max) {
       e.preventDefault();
-      alert('Minimum budget cannot be greater than maximum budget.');
+      maxField.setCustomValidity('The maximum budget must be at least the minimum (' + min + ').');
+      maxField.reportValidity();   // shown inline under the field by assets/js/hastra-ux.js
+      maxField.focus();
+    } else {
+      maxField.setCustomValidity('');
     }
   });
 }

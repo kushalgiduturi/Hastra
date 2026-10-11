@@ -43,7 +43,7 @@ t('landing content is Hastra: no retired narrative, glyphs or fonts', function (
     foreach (["const word = 'HASTRA'", 'Initializing cryptographic workspace...', '<div class="word-fb" aria-hidden="true">HASTRA</div>',
               'href="#architecture"', 'href="#security"', 'href="#governance"', 'href="#ledger"', '<b>HASTRA</b><i>ENTERPRISE GOVERNANCE</i>',
               'id="architecture" data-cam="1"', 'id="security" data-cam="2"', 'id="governance" data-cam="3"', 'id="ledger" data-cam="4"',
-              '© 2026 Hastra Delivery Network. All rights reserved.', "addColorStop(0, '#98c0ef')", "addColorStop(1, '#d8ecf8')"] as $needle)
+              '© <span data-year>2026</span> Hastra Delivery Network. All rights reserved.', "addColorStop(0, '#98c0ef')", "addColorStop(1, '#d8ecf8')"] as $needle)
         expect(str_contains($doc, $needle), "hastra.html lost: $needle");
     expect(preg_match('~<p class="hero-sub body"[^>]*>([^<]+)</p>~', $doc, $hm) === 1 && !str_contains($hm[1], '—'), 'hero subtitle carries an em dash');
     expect(!is_file(ASTRA_ROOT . '/landing-pages/kage.html') && !is_file(ASTRA_ROOT . '/assets/js/kage-host.js'), 'retired files are back');

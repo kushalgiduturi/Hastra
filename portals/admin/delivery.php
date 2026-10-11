@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                         "Project: {$client_data['project_code']}: {$client_data['title']}\n\n" .
                         $links_section .
                         "\nPlease log in to your portal for full delivery details.\n\nRegards,\nAstra Team";
-                    $mail->send();
+                    astra_mail_send($mail);
                 } catch (Exception $e) {
                     // Silent fail — delivery still recorded
                 }
@@ -157,6 +157,7 @@ while ($row = mysqli_fetch_assoc($deliveries_result)) {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delivery · Hastra</title>
+<?php astra_page_meta('Delivery · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -321,7 +322,7 @@ while ($row = mysqli_fetch_assoc($deliveries_result)) {
               <td class="muted"><?= date('d M Y', strtotime($d['delivered_at'])) ?></td>
               <td>
                 <?php if (!empty($d['security_viewed_at'])): ?>
-                <form method="POST" action="delivery" onsubmit="return confirm('Let the client open the security summary one more time?')">
+                <form method="POST" action="delivery" data-confirm="Let the client open the security summary one more time?">
                   <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
                   <input type="hidden" name="action" value="reset_security_view">
                   <input type="hidden" name="delivery_id" value="<?= (int)$d['id'] ?>">

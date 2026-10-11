@@ -61,6 +61,7 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deployment Approvals · Hastra</title>
+<?php astra_page_meta('Deployment Approvals · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -185,12 +186,12 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
           <?php $can_approve = !$docs_ready || !empty($proj['doc_approved']); ?>
           <button type="submit" name="decision" value="approve" <?= $can_approve ? '' : 'disabled title="Approve the documentation first"' ?>
             style="<?= $can_approve ? '' : 'opacity:0.45;cursor:not-allowed;' ?>background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--green);font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
-            onclick="return confirm('Approve deployment and mark project as Completed?')">
+            data-confirm="Approve deployment and mark project as Completed?">
             ✓ Approve & Complete
           </button>
           <button type="submit" name="decision" value="reject"
             style="background:rgba(var(--red-rgb),0.08);border:1px solid rgba(var(--red-rgb),0.3);color:#fca5a5;font-family:var(--font-sans);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:8px 18px;border-radius:3px;cursor:pointer;"
-            onclick="return confirm('Reject deployment and move project back to Testing?')">
+            data-confirm="Reject deployment and move project back to Testing?">
             ✗ Reject
           </button>
         </div>
