@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $mail->Subject = 'Password Reset OTP';
                 $mail->Body    = "Your OTP to reset your password is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not request this please ignore.";
 
-                $mail->send();
+                astra_mail_send($mail);
 
                 $_SESSION["reset_email"] = $email;
                 header("Location: " . APP_URL . "reset-code");
@@ -78,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Forgot Password · Hastra</title>
+<?php astra_page_meta('Forgot Password · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">

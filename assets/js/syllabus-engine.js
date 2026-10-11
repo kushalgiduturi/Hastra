@@ -745,9 +745,12 @@ $('#syl-apply').addEventListener('click', () => {
   try { Object.assign(s, targetOpts(), { settingsAt: Date.now() }); persist(); renderBanner(); toast('Targets updated'); }
   catch (err) { toast(err.message, 4000); }
 });
-$('#syl-delete').addEventListener('click', () => {
+$('#syl-delete').addEventListener('click', async () => {
   const s = active();
-  if (!s || !confirm(`Remove “${s.title}” and its progress from this device${signedIn ? ' and your synced profile' : ''}?`)) return;
+  if (!s) return;
+  const ok = await window.HastraDialog.confirm(`Remove “${s.title}” and its progress from this device${signedIn ? ' and your synced profile' : ''}? This can't be undone.`,
+    { title: 'Remove syllabus', confirmText: 'Remove', danger: true });
+  if (!ok) return;
   delete state.syllabi[s.id];
   state.active = Object.keys(state.syllabi)[0] || null;
   persist();

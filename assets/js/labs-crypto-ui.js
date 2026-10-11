@@ -98,7 +98,9 @@ $('#cx-run-enc').addEventListener('click', e => busy(e.currentTarget, async () =
     if (V.needsPassphrase(alg)) {
       opts.passphrase = $('#cx-pass').value;
       const s = V.estimateStrength(opts.passphrase);
-      if (opts.passphrase && s.bits < 40 && !confirm(`This passphrase is ${s.rating} (≈${Math.round(s.bits)} bits). Encrypt anyway?`)) return;
+      if (opts.passphrase && s.bits < 40 && !(await window.HastraDialog.confirm(
+        `This passphrase is ${s.rating} (about ${Math.round(s.bits)} bits). A longer passphrase is much harder to guess.`,
+        { title: 'Weak passphrase', confirmText: 'Encrypt anyway', cancelText: 'Choose a stronger one' }))) return;
     } else opts.recipient = state.recipient;
     const t0 = performance.now();
     const { envelope, header } = await V.encryptPayload(data, opts);

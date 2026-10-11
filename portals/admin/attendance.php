@@ -273,6 +273,7 @@ if ($employees) {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attendance · Hastra</title>
+<?php astra_page_meta('Attendance · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
@@ -619,8 +620,11 @@ if ($employees) {
           closePopover();
           return;
         }
-        if (gridDirty && !confirm('You have unsaved attendance changes for this month. Leave without saving?')) return;
-        location.href = '?month=' + picked + '&day=' + parseInt(d, 10);
+        const leave = () => { location.href = '?month=' + picked + '&day=' + parseInt(d, 10); };
+        if (!gridDirty) { leave(); return; }
+        HastraDialog.confirm('You have unsaved attendance changes for this month. Leave without saving?',
+          { title: 'Unsaved changes', confirmText: 'Leave without saving', cancelText: 'Stay and save', danger: true })
+          .then(ok => { if (ok) leave(); });
       },
     });
 

@@ -171,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->Subject = 'Verify your email';
                     $mail->Body    = "Hi $name,\n\nThank you for registering!\n\nYour email verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not register, please ignore this email.";
 
-                    $mail->send();
+                    astra_mail_send($mail);
 
                     $_SESSION["verify_email"] = $email;
                     header("Location: " . APP_URL . "verify-email");

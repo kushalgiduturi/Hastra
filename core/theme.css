@@ -1447,3 +1447,56 @@ body::before {
   .hastra-loader-spinner::after { animation-duration: 2.4s; }
   .loader-status-text { animation: none; opacity: 0.85; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   USABILITY FLOOR — applies to every themed page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* No sideways scrolling from a stray wide element. `clip` (not hidden) keeps
+   position: sticky working and never clips vertically. */
+html, body { overflow-x: clip; }
+img, video { max-width: 100%; height: auto; }
+pre { max-width: 100%; overflow-x: auto; }
+
+/* A gentle press for anything clickable (filter, not transform, so elements
+   that already use transforms for layout or magnification are unaffected). */
+button:not(:disabled):active, [role="button"]:not([aria-disabled="true"]):active,
+a.btn:active, .btn:not(:disabled):active { filter: brightness(.92); }
+
+/* Disabled controls stay readable: say "unavailable" with the cursor and a
+   muted colour that still clears 4.5:1, rather than fading to near-invisible. */
+button:disabled, input:disabled, select:disabled, textarea:disabled,
+[aria-disabled="true"] { cursor: not-allowed; }
+[data-theme="light"] input:disabled, [data-theme="light"] select:disabled, [data-theme="light"] textarea:disabled {
+  color: #4b5563; -webkit-text-fill-color: #4b5563; opacity: 1;
+}
+
+/* Touch screens: at least 44 x 44 px for every control (WCAG 2.5.5/2.5.8). */
+@media (pointer: coarse) {
+  button, [role="button"], select, summary,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]) { min-height: 44px; }
+  input[type="checkbox"], input[type="radio"] { min-width: 22px; min-height: 22px; }
+  nav a, .legal-links a, .legal-linkbtn, address a { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* ── Print: paper-friendly, no chrome, black on white ── */
+@media print {
+  @page { margin: 16mm 14mm; }
+  html, body { background: #fff !important; color: #000 !important; }
+  *, *::before, *::after {
+    background: transparent !important; color: #000 !important;
+    box-shadow: none !important; text-shadow: none !important; filter: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  nav, header.topnav, .topnav, .hastra-dock-wrap, .hastra-dock, .legal-top, .legal-theme, .btn-theme-toggle,
+  .hastra-consent, #hastra-consent, canvas, video, iframe, .video-overlay, .no-print,
+  [data-ux-print-hide], button:not(.print-keep) { display: none !important; }
+  a { text-decoration: underline; }
+  .legal-doc a[href^="http"]::after, main a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 85%; word-break: break-all; }
+  h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  tr, img, pre, blockquote, figure { break-inside: avoid; page-break-inside: avoid; }
+  table { border-collapse: collapse; }
+  th, td { border-bottom: 1px solid #999 !important; }
+  thead { display: table-header-group; }
+  main, .legal-doc, .container, .wrap { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; }
+}

@@ -37,7 +37,7 @@ function send_assignment_email($to_email, $to_name, $project_code, $project_titl
                 : "Please log in to your portal to view your assigned tasks once the Team Lead creates them.\n\n"
             ) .
             "Regards,\nAstra Team";
-        $mail->send();
+        astra_mail_send($mail);
     } catch (Exception $e) {
         // Silent fail — project still created
     }
@@ -838,7 +838,7 @@ $status_labels = [
                   <input type="hidden" name="action"      value="remove_member">
                   <input type="hidden" name="member_id"   value="<?= $member['member_id'] ?>">
                   <button type="submit" class="btn-remove-member" title="Remove member"
-                    onclick="return confirm('Remove <?= htmlspecialchars($member['name'], ENT_QUOTES) ?> from this project?')">
+                    data-confirm="Remove <?= htmlspecialchars($member['name'], ENT_QUOTES) ?> from this project?">
                     <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                   </button>
                 </form>

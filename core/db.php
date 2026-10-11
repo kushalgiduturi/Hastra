@@ -6,7 +6,7 @@ require __DIR__ . '/../config/config.php';
 // Bump this whenever core/theme.css, core/theme.js, or any assets/ file
 // changes so browsers fetch the new file instead of serving a stale cached copy.
 if (!defined('ASSET_VERSION')) {
-    define('ASSET_VERSION', '126');
+    define('ASSET_VERSION', '130');
 }
 
 header_remove('X-Powered-By'); // don't advertise the PHP version
@@ -43,6 +43,29 @@ function astra_mail_auth($mail): void {
     if (!MAIL_AUTH) return;
     $mail->Username = MAIL_USER;
     $mail->Password = MAIL_PASS;
+}
+
+// Every outgoing email goes through here instead of $mail->send(): it adds
+// a plain footer saying who sent the message and why, where to ask questions,
+// and the privacy / delete-your-data links, plus the postal address when
+// LEGAL_ADDRESS (HASTRA_LEGAL_ADDRESS) is configured. Hastra only sends
+// service messages (codes, invites, assignments), never marketing, so there is
+// no unsubscribe list to join; that is stated in the footer.
+function astra_mail_footer(): string {
+    $lines = ["--", "Hastra, operated by " . LEGAL_ENTITY_NAME . "."];
+    $lines[] = "This is a service message about your Hastra account. Hastra does not send marketing email.";
+    $lines[] = "Questions: " . LEGAL_SUPPORT_EMAIL;
+    $lines[] = "Privacy policy: " . APP_URL . "legal/privacy";
+    $lines[] = "Delete your data: " . APP_URL . "privacy/delete-data";
+    if (LEGAL_ADDRESS !== '') $lines[] = LEGAL_ADDRESS;
+    return implode("\n", $lines);
+}
+function astra_mail_send($mail): bool {
+    if (!str_contains((string)$mail->Body, "\n--\nHastra, operated by")) {
+        $mail->Body = rtrim((string)$mail->Body) . "\n\n" . astra_mail_footer();
+    }
+    $mail->addCustomHeader('Auto-Submitted', 'auto-generated');
+    return $mail->send();
 }
 
 function astra_is_https(): bool {
@@ -273,6 +296,9 @@ require_once __DIR__ . '/session_guard.php';
 require_once __DIR__ . '/escrow.php';
 require_once __DIR__ . '/security_scans.php';
 require_once __DIR__ . '/network.php';
+require_once __DIR__ . '/rate_limit.php';
+require_once __DIR__ . '/telemetry.php';
+astra_register_error_capture();
 require_once __DIR__ . '/geo_security.php';
 require_once __DIR__ . '/company.php';
 require_once __DIR__ . '/onboarding.php';

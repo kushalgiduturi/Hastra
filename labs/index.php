@@ -12,8 +12,8 @@ labs_head('Free engineering tools & student hub', 'hub', $profile);
   <p class="lx-eyebrow"><span class="lx-dot"></span> Hastra Labs · free &amp; open to everyone</p>
   <h1 class="lx-h1">Security tools and a study coach, <em>running in your browser</em>.</h1>
   <p class="lx-lead">Encrypt files with classical or post-quantum cryptography, hash credentials the right way, practise SOC
-    engineering on live calculators, and turn any syllabus into a paced video course. No enterprise account needed, and
-    no sign-in unless you want your study progress to follow you between devices.</p>
+    engineering on live calculators, and turn any syllabus into a paced video course. Your first run is free with no sign-up;
+    after that, a free Labs session or Hastra account keeps the tools unlimited. No card, no paid tier.</p>
 </section>
 
 <div class="lx-cards">
@@ -52,4 +52,36 @@ labs_head('Free engineering tools & student hub', 'hub', $profile);
     your study progress syncs automatically.<?php else: ?>Start a <a href="<?= $lb ?>auth">free session</a> to sync study
     progress. You get a recovery code instead of a password.<?php endif; ?></p></div>
 </div>
+
+<section class="lx-faq" aria-labelledby="lx-faq-title">
+  <h2 id="lx-faq-title">Questions people ask</h2>
+  <details>
+    <summary>Is Hastra Labs really free?</summary>
+    <p>Yes. Every Labs tool is free. Your first run needs no sign-up; after that a free Labs session (no password, just a
+      recovery code) or a free Hastra account keeps the tools unlimited. There is no card, trial period or paid Labs tier.</p>
+  </details>
+  <details>
+    <summary>Do my files, messages or passwords leave my computer?</summary>
+    <p>No. Encryption, hashing, key generation and document parsing run in your browser with WebCrypto and audited
+      open-source libraries. Plaintext, passphrases and private keys are never uploaded. If you start a Labs session, only
+      your study progress is synced.</p>
+  </details>
+  <details>
+    <summary>Is the post-quantum cryptography production grade?</summary>
+    <p>The ML-KEM (FIPS 203) and ML-DSA (FIPS 204) implementations come from the audited @noble libraries, pinned to fixed
+      versions. The Labs are for learning and for protecting your own files; for regulated production systems, use a
+      certified module and your organization's key management.</p>
+  </details>
+  <details>
+    <summary>Can I lose what I encrypted?</summary>
+    <p>Yes, if you lose the passphrase or private key. Hastra never sees them, so nobody, including us, can recover the data.
+      Keep the key file somewhere safe before you delete the original.</p>
+  </details>
+  <details>
+    <summary>How do I delete my Labs data?</summary>
+    <p>Study progress kept in your browser is removed with the Remove button in the Syllabus Accelerator or by clearing site
+      data. A synced Labs session or Hastra account can be erased at any time from
+      <a href="<?= labs_e(get_base_url()) ?>privacy/delete-data">Delete my data</a>.</p>
+  </details>
+</section>
 <?php labs_foot(['labs-common']); ?>

@@ -155,6 +155,7 @@ foreach ($company_sections as $sec) {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Role Management · Hastra</title>
+<?php astra_page_meta('Role Management · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -533,7 +534,7 @@ foreach ($company_sections as $sec) {
       </form>
       <?php foreach ($company_sections as $sec): if (!$sec['internal'] && !empty($sec['id']) && !$sec['users']): ?>
       <form method="POST" action="roles" id="removeCompany-<?= $sec['id'] ?>"
-            onsubmit="return confirm('Remove <?= htmlspecialchars(addslashes($sec['name']), ENT_QUOTES) ?>? It has no users. This can\'t be undone.')">
+            data-confirm="Remove <?= htmlspecialchars($sec['name'], ENT_QUOTES) ?>? It has no users. This can't be undone.">
         <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
         <input type="hidden" name="action" value="remove_company">
         <input type="hidden" name="company_id" value="<?= $sec['id'] ?>">

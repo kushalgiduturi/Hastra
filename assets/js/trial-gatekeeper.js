@@ -7,10 +7,12 @@
    account, or a free Labs session) are never limited; the server tells the page
    so through <meta name="labs-signed-in">.
 
-   The count lives in localStorage and is mirrored into a first-party cookie
-   with a coarse device label, so clearing one of the two does not reset it.
-   This is a client-side nudge, not a security boundary: the tools run in the
-   browser, so a determined visitor can still get around it.
+   The count lives in localStorage only: nothing about it is sent to the
+   server, and no device fingerprint is taken. (An earlier version mirrored it
+   into a cookie with a hashed device label; that cookie is read once for
+   continuity and then deleted.) This is a client-side nudge, not a security
+   boundary: the tools run in the browser, so a determined visitor can still
+   get around it.
 
    Live calculators (UEBA, scaling) recompute on every keystroke, so the one
    trial there is "this visit": once it has been spent on a calculator, that
@@ -21,38 +23,31 @@ import { el, svg, labsBase, toast } from './labs-common.js';
 
 const COUNT_KEY = 'hastra_labs_trial_count';
 const AT_KEY    = 'hastra_labs_trial_at';
-const COOKIE    = 'hastra_labs_trial';
+const LEGACY_COOKIE = 'hastra_labs_trial'; // retired: read once, then deleted
 const LOCAL     = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 
 const signedIn = () => document.querySelector('meta[name="labs-signed-in"]')?.content === '1';
 
-// a coarse, non-identifying device label (not a hash of anything sensitive)
-function deviceLabel() {
-  const s = [navigator.language, Intl.DateTimeFormat().resolvedOptions().timeZone, screen.width + 'x' + screen.height, navigator.hardwareConcurrency || 0].join('|');
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-  return h.toString(16).padStart(8, '0');
-}
-
-function cookieCount() {
-  const m = document.cookie.split('; ').find(c => c.startsWith(COOKIE + '='));
-  const n = m ? parseInt(m.slice(COOKIE.length + 1), 10) : 0;
-  return Number.isFinite(n) && n > 0 ? n : 0;
-}
 function storedCount() {
   let n = 0;
   try { n = parseInt(localStorage.getItem(COUNT_KEY) || '0', 10); } catch { /* private mode */ }
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
-export const getTrialCount = () => Math.max(storedCount(), cookieCount());
+// carry over a count from the retired cookie, then delete the cookie for good
+(function migrateLegacyCookie() {
+  const m = document.cookie.split('; ').find(c => c.startsWith(LEGACY_COOKIE + '='));
+  if (!m) return;
+  const n = parseInt(m.slice(LEGACY_COOKIE.length + 1), 10);
+  if (Number.isFinite(n) && n > storedCount()) { try { localStorage.setItem(COUNT_KEY, String(n)); } catch { /* private mode */ } }
+  document.cookie = `${LEGACY_COOKIE}=; max-age=0; path=/; SameSite=Lax`;
+})();
+export const getTrialCount = () => storedCount();
 
 function setTrialCount(n) {
   try { localStorage.setItem(COUNT_KEY, String(n)); localStorage.setItem(AT_KEY, new Date().toISOString()); } catch { /* private mode */ }
-  document.cookie = `${COOKIE}=${n}.${deviceLabel()}; max-age=31536000; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
 }
 function clearTrial() {
   try { localStorage.removeItem(COUNT_KEY); localStorage.removeItem(AT_KEY); } catch { /* ignore */ }
-  document.cookie = `${COOKIE}=; max-age=0; path=/; SameSite=Lax`;
 }
 
 let trialTool = null;            // the tool this visit's free run was spent on

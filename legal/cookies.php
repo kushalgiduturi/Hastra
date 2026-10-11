@@ -19,6 +19,13 @@ legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage Ha
     <tr><td><code>hastra_consent_state</code> (local storage)</td><td>Remembers your cookie choices so the banner does not reappear.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
     <tr><td><code>astra_theme</code> (local storage)</td><td>Remembers light or dark theme.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
     <tr><td><code>astra_intro_played</code>, <code>astra_login_seen</code> (session storage)</td><td>Plays the intro animations once per tab.</td><td>Until the tab closes</td><td>Not sent to the server</td></tr>
+    <tr><td><code>HASTRA_LABS</code></td><td>Hastra Labs session: holds the Labs form-protection token and, if you start a free Labs session, which session you are in.</td>
+      <td>Until the browser closes</td><td><code>HttpOnly</code>, <code>SameSite=Lax</code>, <code>Secure</code> over HTTPS, limited to <code>/labs/</code></td></tr>
+    <tr><td><code>hastra_labs_device</code></td><td>Only if you tick "remember this device" when starting a Labs session: a random token that keeps you signed in to the Labs. Stored server-side only as a keyed hash.</td>
+      <td>60 days, or until you sign out</td><td><code>HttpOnly</code>, <code>SameSite=Lax</code>, <code>Secure</code> over HTTPS, limited to <code>/labs/</code></td></tr>
+    <tr><td><code>hastra_labs_trial_count</code>, <code>hastra_labs_trial_at</code> (local storage)</td><td>Counts the one free Labs run you get before a free session or account is needed. No device fingerprint is taken.</td><td>Until you clear site data</td><td>Not sent to the server</td></tr>
+    <tr><td><code>hastra_labs_study_v1</code> (local storage)</td><td>Your syllabi and study progress in the Syllabus Accelerator, kept on your device.</td><td>Until you remove the syllabus or clear site data</td><td>Not sent to the server unless you start a Labs session to sync it</td></tr>
+    <tr><td><code>hastra_utm</code>, <code>hastra_support</code> (session storage)</td><td>Campaign tags from the link you arrived by (used only if you allow Analytics) and the support address for the contact button.</td><td>Until the tab closes</td><td>Not sent to the server on their own</td></tr>
   </tbody>
 </table>
 
@@ -34,8 +41,16 @@ legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage Ha
 <p>Hastra's own security controls (session binding, rate limits, VPN screening, honeytokens) run on the server and set no additional cookies.</p>
 
 <h2 id="performance">3. Performance and telemetry</h2>
-<p>Switched off unless you allow <strong>Analytics</strong>. Hastra currently runs <strong>no</strong> analytics or telemetry
-  scripts. If any are added, they will be listed here first and will only load after you opt in.</p>
+<p>Switched off unless you allow <strong>Analytics</strong>. Hastra uses no third-party analytics. If you opt in, your browser
+  tells Hastra's own server which page you viewed and a few named actions (for example opening search or starting sign-up),
+  together with the referring site's domain and any <code>utm_source</code>, <code>utm_medium</code> or <code>utm_campaign</code>
+  tags in the link you followed. No cookie is set, no account or IP address is stored with the event, and a visitor is counted
+  through a code that changes every day, so visits cannot be linked from one day to the next. Campaign tags are kept in your
+  browser's session storage only until you close the tab. Events are deleted after 30 days. A Global Privacy Control or
+  Do Not Track signal turns this off even if you opted in.</p>
+<p>Separately, if a page fails with an error, your browser reports the error message and where in the code it happened, so it
+  can be fixed. Email addresses, numbers, tokens and passwords are removed before it is stored, nothing identifies you, and
+  reports are deleted after 30 days.</p>
 
 <h2 id="third-party">4. Third-party integrations</h2>
 <p>Switched off unless you allow <strong>Third-party integrations</strong>. When off, external content is replaced by a

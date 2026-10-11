@@ -69,7 +69,8 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Hastra collect
   <li><strong>To keep accounts and data secure</strong>: fraud, abuse and intrusion detection, VPN/proxy screening, audit logging (legitimate interests; legal obligations).</li>
   <li><strong>To bill and settle milestones</strong> (contract; legal obligations such as tax records).</li>
   <li><strong>To send service emails</strong> such as verification codes and notifications (contract).</li>
-  <li><strong>Analytics</strong> only if you allow it in the cookie banner (consent). Hastra currently runs no analytics scripts.</li>
+  <li><strong>Analytics</strong> only if you allow it in the cookie banner (consent): first-party, cookieless page-view counts kept on Hastra's own server for 30 days, with no IP address or account attached (details in the <a href="<?= get_base_url() ?>legal/cookies#performance">Cookie Policy</a>).</li>
+  <li><strong>To fix faults</strong>: when a page errors, the error message and code location are stored for 30 days after emails, numbers and secrets are removed (legitimate interests).</li>
 </ul>
 <p>We do not sell personal data, and we do not use it for advertising or automated decisions with legal effects.</p>
 
@@ -113,6 +114,9 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Hastra collect
   "Cookie settings" link in any footer), and, in California, to know what we collect and to not be discriminated against for
   exercising these rights. We do not sell or share personal information for cross-context advertising.</p>
 <h3>How to make a request, including deletion</h3>
+<p><strong>Deletion is self-service:</strong> open <a href="<?= get_base_url() ?>privacy/delete-data">Delete my data</a>, enter
+  the email on your account and confirm with the link we send. The erasure happens as soon as you confirm. For anything
+  else, or if you prefer email:</p>
 <ol>
   <li>Email <?= legal_contact() ?> from the address on the account, with the subject "Data request" and what you want (access, correction, deletion, export).</li>
   <li>We verify the request comes from the account holder, for example with a one-time code sent to that address.</li>

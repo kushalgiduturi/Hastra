@@ -279,4 +279,25 @@
     else go();
   })();
 
+  // ── Shared usability layer (assets/js/hastra-ux.js): skip link, accessible
+  // dialogs, inline form errors, Ctrl+K search, back-to-top, copy buttons,
+  // error reporting and consent-gated analytics. Independent of the
+  // atmosphere opt-outs above, so every themed page gets it.
+  (function mountUX() {
+    const me = document.currentScript;
+    if (!me || !me.src || window.top !== window.self) return;
+    let url;
+    try { url = new URL(me.src, location.href); } catch (err) { return; }
+    const base = url.href.replace(/core\/theme\.js.*$/, '');
+    const v = url.searchParams.get('v');
+    const q = v ? '?v=' + encodeURIComponent(v) : '';
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = base + 'assets/css/hastra-ux.css' + q;
+    document.head.appendChild(css);
+    const s = document.createElement('script');
+    s.src = base + 'assets/js/hastra-ux.js' + q;
+    s.defer = true;
+    document.head.appendChild(s);
+  })();
+
 })();

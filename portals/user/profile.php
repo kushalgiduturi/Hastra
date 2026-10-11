@@ -122,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "reque
         $mail->addAddress($new_email);
         $mail->Subject = 'Verify your new email address';
         $mail->Body    = "Hi {$user['name']},\n\nYour OTP to change your email to $new_email is: $otp\n\nThis OTP expires in 10 minutes.\n\nIf you did not request this, please ignore this email.";
-        $mail->send();
+        astra_mail_send($mail);
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Could not send OTP. Please try again.']);
@@ -216,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST["action"] ?? "") === "reque
         $mail->addAddress($user['email']);
         $mail->Subject = 'Password Change OTP';
         $mail->Body    = "Hi {$user['name']},\n\nYour OTP to change your password is: $otp\n\nThis OTP expires in 10 minutes.\n\nIf you did not request this, please ignore this email.";
-        $mail->send();
+        astra_mail_send($mail);
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Could not send OTP. Please try again.']);
@@ -354,6 +354,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Profile · Hastra</title>
+<?php astra_page_meta('My Profile · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -769,6 +770,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     <button class="tab-btn" onclick="switchTab('edit')">Edit Profile</button>
     <button class="tab-btn" onclick="switchTab('email')">Change Email</button>
     <button class="tab-btn" onclick="switchTab('password')">Change Password</button>
+    <button class="tab-btn" onclick="switchTab('privacy')">Privacy &amp; Data</button>
     <?php if ($role === 'employee'): ?>
     <button class="tab-btn" onclick="switchTab('activity')">Activity</button>
     <?php endif; ?>
@@ -1032,6 +1034,23 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
           <div style="font-size:13px;color:var(--text-dim);">Your password has been changed successfully.</div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: PRIVACY & DATA ── -->
+  <div class="tab-panel" id="tab-privacy">
+    <div class="section">
+      <div class="section-header">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        Privacy &amp; Data
+      </div>
+      <div style="padding:18px 20px;line-height:1.7;max-width:62ch;">
+        <p>Your personal fields (name, email, phone) are encrypted in the database, and every sign-in and change is recorded in a tamper-evident log.
+           Read the <a href="<?= get_base_url() ?>legal/privacy">Privacy Policy</a> for what is kept and for how long.</p>
+        <p style="margin-top:14px;"><strong>Delete your account and data.</strong> Erasure removes your name, contact details, password and sessions.
+           Project records your organization must keep stay with them, linked to "Deleted user" instead of you. We confirm by email first.</p>
+        <p style="margin-top:14px;"><a href="<?= get_base_url() ?>privacy/delete-data" style="color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:5px;">Delete my account and data</a></p>
       </div>
     </div>
   </div>

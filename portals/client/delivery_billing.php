@@ -114,6 +114,7 @@ unset($dr);
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delivery &amp; Billing · Hastra</title>
+<?php astra_page_meta('Delivery & Billing · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
@@ -267,7 +268,7 @@ unset($dr);
           <?php elseif ($can_security): ?>
             <span>Security summary and handover credentials: <b style="color:var(--yellow);">can be opened only once</b>.</span>
             <form method="POST" action="<?= get_base_url() ?>workspace/client/security-view" style="display:inline;"
-                  onsubmit="return confirm('The security summary can be opened only once. Open it now?')">
+                  data-confirm="The security summary can be opened only once. Open it now?">
               <input type="hidden" name="csrf_token" value="<?= generate_csrf_token() ?>">
               <input type="hidden" name="delivery_id" value="<?= (int)$d['id'] ?>">
               <button type="submit" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.35);color:var(--yellow);font-family:var(--font-sans);font-size:12px;font-weight:600;padding:5px 12px;border-radius:3px;cursor:pointer;">Open security summary</button>
@@ -288,6 +289,13 @@ unset($dr);
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-dim);font-size:13px;color:var(--text-dim);">
           Invoice <strong style="color:var(--text);"><?= htmlspecialchars($matched_invoice['invoice_code']) ?></strong>:
           ₹<?= number_format($matched_invoice['total_amount'], 2) ?>
+          <?php if ($matched_invoice['dev_hours'] !== null && $matched_invoice['hourly_rate'] !== null): ?>
+          <span style="display:block;margin-top:4px;font-size:12px;">
+            = <?= rtrim(rtrim(number_format((float)$matched_invoice['dev_hours'], 2), '0'), '.') ?> h × ₹<?= number_format((float)$matched_invoice['hourly_rate'], 2) ?>/h
+            <?php if ((float)$matched_invoice['infra_cost'] > 0): ?> + ₹<?= number_format((float)$matched_invoice['infra_cost'], 2) ?> infrastructure<?php endif; ?>.
+            This is the full amount: no service, platform or payment fees are added.
+          </span>
+          <?php endif; ?>
           <span class="badge badge-<?= $matched_invoice['status'] === 'paid' ? 'approved' : 'clarification_needed' ?>" style="margin-left:6px;"><?= htmlspecialchars($matched_invoice['status']) ?></span>
           <?php if ($matched_invoice['status'] !== 'paid' && $can_pay): ?>
           <button onclick="openPayModal(<?= $matched_invoice['id'] ?>, '<?= htmlspecialchars($matched_invoice['invoice_code']) ?>', '<?= number_format($matched_invoice['total_amount'], 2) ?>')"
@@ -429,7 +437,7 @@ let currentPayMethod   = null;
 function openPayModal(invoiceId, invoiceCode, amount) {
   currentInvoiceId = invoiceId;
   document.getElementById('payModalDesc').textContent =
-    'Invoice ' + invoiceCode + ' · Total ₹' + amount;
+    'Invoice ' + invoiceCode + ' · Total ₹' + amount + '. This is the full amount you will pay: Hastra adds no service, platform or payment fees.';
   document.getElementById('payAmountBtn').textContent = amount;
   document.getElementById('payStep1').style.display   = 'block';
   document.getElementById('payStep2').style.display   = 'none';

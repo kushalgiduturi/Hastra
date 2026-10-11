@@ -74,6 +74,7 @@ $ICONS = [
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard · Hastra</title>
+<?php astra_page_meta('Dashboard · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:var(--font-sans)}

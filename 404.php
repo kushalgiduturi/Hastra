@@ -15,6 +15,7 @@ $b = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>404 · Page not found · Hastra</title>
 <meta name="robots" content="noindex, nofollow">
+<meta name="description" content="This page could not be found on Hastra. It may have moved or never existed. Go back to the home page or open the free security and study Labs.">
 <meta name="theme-color" content="#050505">
 <link rel="icon" type="image/svg+xml" href="<?= $b ?>assets/images/hastra-logo.svg">
 <link rel="alternate icon" href="<?= $b ?>favicon.ico">

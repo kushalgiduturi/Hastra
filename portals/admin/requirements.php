@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["action"]) && $_POST["a
                         $notes_section .
                         "\n\nLog in to your portal to view full details.\n\nRegards,\nAstra Team";
 
-                    $mail->send();
+                    astra_mail_send($mail);
                 } catch (Exception $e) {
                     // Email failed silently — status still updated
                 }
@@ -126,6 +126,7 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Requirement Review · Hastra</title>
+<?php astra_page_meta('Requirement Review · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">

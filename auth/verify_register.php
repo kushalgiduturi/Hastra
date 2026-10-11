@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->Subject = 'Verify your email';
                     $mail->Body    = "Hi {$pending['name']},\n\nYour verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.";
 
-                    $mail->send();
+                    astra_mail_send($mail);
 
                     $_SESSION["verify_email"]       = $email;
                     $_SESSION["verify_otp_attempts"] = 0;
@@ -122,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->Subject = 'Verify your email';
                     $mail->Body    = "Hi {$pending['name']},\n\nYour verification OTP is: $otp\n\nThis OTP will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.";
 
-                    $mail->send();
+                    astra_mail_send($mail);
 
                     $_SESSION["verify_otp_attempts"] = 0;
                     $msg      = "A new OTP has been sent to your email.";
@@ -275,6 +275,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verify Email · Hastra</title>
+<?php astra_page_meta('Verify Email · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">

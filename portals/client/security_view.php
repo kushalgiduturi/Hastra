@@ -65,6 +65,7 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Security Summary · Hastra</title>
+<?php astra_page_meta('Security Summary · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -86,7 +87,7 @@ $status_words = ['open' => 'Open', 'in_progress' => 'In progress', 'fixed' => 'F
 
   <div class="once-banner" role="status">
     <b>This page can be opened only once.</b> The link has already been deleted. Save or print anything you need
-    (<a href="#" onclick="window.print(); return false;" style="color:inherit">print this page</a>) before you leave.
+    (<button type="button" onclick="window.print()" style="color:inherit;background:none;border:0;padding:0;font:inherit;text-decoration:underline;cursor:pointer;">print this page</button>) before you leave.
   </div>
 
   <div class="stats">

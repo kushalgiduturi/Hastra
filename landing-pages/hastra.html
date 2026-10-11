@@ -1582,7 +1582,8 @@ if (new URLSearchParams(location.search).get('scene') === 'bg') document.documen
     <span>Support: <a href="mailto:kushalgiduturi@gmail.com">kushalgiduturi@gmail.com</a></span>
   </address>
   <div class="foot-base">
-    <span>© 2026 Hastra Delivery Network. All rights reserved.</span>
+    <span>© <span data-year>2026</span> Hastra Delivery Network. All rights reserved.</span>
+    <script>document.querySelectorAll('[data-year]').forEach(function (n) { n.textContent = new Date().getFullYear(); });</script>
     <span>AES-256-GCM · HMAC audit chain</span>
     <span>WebGL · Onest</span>
   </div>
