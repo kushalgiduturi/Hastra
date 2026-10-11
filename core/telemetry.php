@@ -140,7 +140,8 @@ function astra_log_app_error($conn, string $source, string $message, string $loc
     $message  = astra_scrub($message, 500);
     $location = astra_scrub($location, 255);
     $stack    = astra_scrub($stack, 4000);
-    $path     = astra_clean_path($path ?: ($_SERVER['REQUEST_URI'] ?? '/'));
+    // a browser report without a page path must not be filed under the intake endpoint's own address
+    $path     = astra_clean_path($path ?: ($source === 'server' ? ($_SERVER['REQUEST_URI'] ?? '/') : '/'));
     $env      = astra_environment();
     $browser  = $source === 'client' ? astra_browser_family($_SERVER['HTTP_USER_AGENT'] ?? '') : 'php';
     // same message at the same place counts as one issue

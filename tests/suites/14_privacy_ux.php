@@ -254,3 +254,53 @@ t('fonts are self-hosted: no Google Fonts requests, OFL licences shipped, CSP al
     foreach (['OFL-ShareTechMono.txt', 'OFL-Onest.txt'] as $l) expect(str_contains((string)@file_get_contents(ASTRA_ROOT . "/assets/fonts/$l"), 'SIL Open Font License'), "$l missing");
     expect(str_contains(px_src('core/db.php'), "font-src 'self'; "), 'CSP font-src');
 });
+
+// ── sysadmin analytics & errors page ────────────────────────────────────────
+function px_seed_insights(string $tag): void {
+    for ($d = 0; $d < 10; $d++) {
+        for ($i = 0; $i <= $d % 4; $i++) {
+            q("INSERT INTO analytics_events (created_at, event, path, referrer_host, utm_source, utm_medium, utm_campaign, visitor_day, device)
+               VALUES (NOW() - INTERVAL ? DAY, 'pageview', ?, 'news.example.org', 'newsletter', 'email', ?, ?, 'desktop')",
+              [$d, "/labs/$tag", "camp-$tag", substr(md5("$tag$d$i"), 0, 16)]);
+        }
+    }
+    q("INSERT INTO analytics_events (event, path, visitor_day, device) VALUES ('search_open', '/', 'x', 'mobile')");
+    astra_log_app_error($GLOBALS['conn'], 'client', "TypeError $tag cannot read value", '/assets/js/x.js:3:9', "Error\n at f (x.js:3:9)", '/labs/crypto');
+    astra_log_app_error($GLOBALS['conn'], 'client', "=HYPERLINK(\"http://evil.example\") $tag", '', '', '/');
+}
+t('insights page: sysadmin sees daily charts, ranked lists and the error list', function () {
+    $tag = 'ins' . bin2hex(random_bytes(3));
+    px_seed_insights($tag);
+    $r = cgi('GET', 'portals/sysadmin/insights.php?days=30', ['session' => as_user('sysadmin')]);
+    expect_clean($r);
+    expect($r['status'] === 200, 'status ' . $r['status']);
+    $b = $r['body'];
+    @file_put_contents(ASTRA_RESULTS . '/insights.html', $b);
+    expect(substr_count($b, 'class="ins-chart"') === 3, 'expected 3 charts');
+    expect(substr_count($b, 'class="ins-bar"') >= 10, 'no columns drawn');
+    expect(preg_match('~<g class="ins-col" tabindex="0" aria-label="[^"]+"><title>~', $b) === 1, 'columns lack tooltip / keyboard access');
+    expect(str_contains($b, 'Show as table'), 'no table view');
+    expect(str_contains($b, "/labs/$tag") && str_contains($b, 'news.example.org') && str_contains($b, "camp-$tag"), 'ranked lists missing data');
+    expect(str_contains($b, "TypeError $tag cannot read value") && str_contains($b, 'Stack trace'), 'error row missing');
+    expect(str_contains($b, 'data-confirm="Mark this issue as resolved?'), 'resolve not confirmed');
+    expect(str_contains($b, 'workspace/sysadmin/insights') && str_contains($b, 'Analytics &amp; Errors'), 'not in the sysadmin nav');
+});
+t('insights page: other roles are refused', function () {
+    $r = cgi('GET', 'portals/sysadmin/insights.php', ['session' => as_user('admin')]);
+    expect($r['status'] !== 200 || !str_contains($r['body'], 'Page views per day'), 'admin can read analytics');
+    $anon = cgi('GET', 'portals/sysadmin/insights.php');
+    expect(!str_contains($anon['body'], 'Page views per day'), 'anonymous visitor can read analytics');
+});
+t('insights page: CSV export is formula-safe; resolve needs CSRF and removes the issue', function () {
+    $tag = 'csv' . bin2hex(random_bytes(3));
+    px_seed_insights($tag);
+    $s = as_user('sysadmin');
+    $csv = cgi('GET', 'portals/sysadmin/insights.php?days=30&export=errors', ['session' => $s]);
+    expect(str_contains(implode(';', $csv['headers']['content-type'] ?? []), 'text/csv'), 'not CSV');
+    expect(str_contains($csv['body'], "'=HYPERLINK"), 'formula not neutralised');
+    $id = (int)qv("SELECT id FROM app_errors WHERE message LIKE ?", ["TypeError $tag%"]);
+    cgi('POST', 'portals/sysadmin/insights.php', ['session' => $s, 'post' => ['csrf_token' => 'wrong', 'action' => 'resolve', 'id' => $id]]);
+    expect((bool)qv("SELECT 1 FROM app_errors WHERE id = ?", [$id]), 'resolved without a valid CSRF token');
+    $r = cgi('POST', 'portals/sysadmin/insights.php', ['session' => $s, 'post' => ['csrf_token' => csrf_of($s), 'action' => 'resolve', 'id' => $id]]);
+    expect($r['status'] === 302 && !qv("SELECT 1 FROM app_errors WHERE id = ?", [$id]), 'issue not resolved');
+});

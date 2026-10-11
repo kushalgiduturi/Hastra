@@ -1,7 +1,7 @@
 <?php
 // Shared top bar + sidebar for the sysadmin pages. Expects $nav_current to
 // be set by the including page ('dashboard' | 'roles' | 'logs' | 'security'
-// | 'migrate') before this include, and $logged_in_name (falls back to
+// | 'insights' | 'migrate') before this include, and $logged_in_name (falls back to
 // $_SESSION user_name).
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_response_code(404); exit(); }
 $nav_current   = $nav_current ?? '';
@@ -39,6 +39,7 @@ render_sidebar(
     ['label' => 'System & Security', 'links' => [
       ['key' => 'logs',     'label' => 'Audit Logs & Security Architecture', 'href' => get_base_url() . 'workspace/sysadmin/logs',              'current' => $nav_current === 'logs'],
       ['key' => 'security', 'label' => 'Security Dashboard',                 'href' => get_base_url() . 'workspace/sysadmin/security-dashboard','current' => $nav_current === 'security'],
+      ['key' => 'insights', 'label' => 'Analytics & Errors',                 'href' => get_base_url() . 'workspace/sysadmin/insights',          'current' => $nav_current === 'insights'],
       ['key' => 'migrate',  'label' => 'Database Migration',                 'href' => get_base_url() . 'workspace/sysadmin/migrate',           'current' => $nav_current === 'migrate'],
     ]],
   ],
@@ -54,6 +55,7 @@ $__dock_items = [
   ['key' => 'roles',     'label' => 'Role Management',     'href' => get_base_url() . 'workspace/sysadmin/roles',              'current' => $nav_current === 'roles'],
   ['key' => 'logs',      'label' => 'Activity Logs',       'href' => get_base_url() . 'workspace/sysadmin/logs',               'current' => $nav_current === 'logs'],
   ['key' => 'security',  'label' => 'Security Dashboard',  'href' => get_base_url() . 'workspace/sysadmin/security-dashboard', 'current' => $nav_current === 'security'],
+  ['key' => 'insights',  'label' => 'Analytics & Errors',  'href' => get_base_url() . 'workspace/sysadmin/insights',           'current' => $nav_current === 'insights'],
   ['key' => 'migrate',   'label' => 'Migration',           'href' => get_base_url() . 'workspace/sysadmin/migrate',            'current' => $nav_current === 'migrate'],
 ];
 render_dock($__dock_items); astra_consent_banner();

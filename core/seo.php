@@ -103,6 +103,7 @@ const ASTRA_PAGE_DESCRIPTIONS = [
     'portals/emlpoyee/testing_portal.php'    => 'Testing and QA in Hastra: log bugs with evidence, retest fixes and close defects, with every status change kept in the project history for audit.',
     'portals/projects/signoff.php'           => 'Milestone sign-off in Hastra: review what was delivered, confirm with a one-time code or raise a dispute, with each decision recorded permanently.',
     'portals/security/scan_center.php'       => 'Hastra scan centre: run code analysis and web scans on your projects, track findings by severity and confirm the fixes before each release ships.',
+    'portals/sysadmin/insights.php'          => 'Hastra analytics and errors: consent-based page views, visitors, top pages and campaigns, plus scrubbed browser and server errors you can review and resolve.',
     'portals/sysadmin/logs.php'              => 'Activity logs and security architecture in Hastra: the tamper-evident, hash-chained record of sign-ins, changes and security events platform-wide.',
     'portals/sysadmin/migrate.php'           => 'Database migrations for Hastra: apply schema updates safely, see which ones have run and confirm the database matches what the application expects.',
     'portals/sysadmin/roles.php'             => 'Role management in Hastra: define roles, grant permissions and see who holds each one, so access across the platform always follows least privilege.',
