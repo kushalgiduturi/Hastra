@@ -84,7 +84,7 @@ legal_page_start('privacy', 'Privacy Policy', 'What personal data Hastra collect
     <tr><td>Google Identity (optional)</td><td>"Continue with Google" sign-in</td><td>The Google account details listed above</td></tr>
     <tr><td>Anthropic (optional, if enabled by the operator)</td><td>Drafting documentation and reading uploaded rosters</td><td>Project records and roster files you choose to process</td></tr>
     <tr><td>Clearbit, DuckDuckGo (only with third-party consent)</td><td>Suggesting a company logo during sign-up</td><td>The company domain you typed; your IP address</td></tr>
-    <tr><td>jsDelivr CDN, Google Fonts</td><td>Serving the phone-number widget and one typeface</td><td>IP address (no cookies are set)</td></tr>
+    <tr><td>jsDelivr CDN</td><td>Serving the phone-number widget on sign-up (typefaces are self-hosted)</td><td>IP address (no cookies are set)</td></tr>
     <tr><td>Email and payment providers</td><td>Delivering service email; processing payments</td><td>Email address and message; invoice reference and amount</td></tr>
   </tbody>
 </table>

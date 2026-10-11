@@ -114,7 +114,7 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
 <?php astra_page_meta('Ephemeral Dossier · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; background: var(--navy); color: var(--text); font-family: var(--font-sans);

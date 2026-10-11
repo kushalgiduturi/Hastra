@@ -162,7 +162,7 @@ foreach ($company_sections as $sec) {
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/gooey-search.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/gooey-search.js?v=<?= ASSET_VERSION ?>" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

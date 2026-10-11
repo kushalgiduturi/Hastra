@@ -61,8 +61,9 @@ legal_page_start('cookies', 'Cookie Policy', 'The cookies and browser storage Ha
     <tr><td>Clearbit logo lookup, DuckDuckGo icons</td><td>Organization sign-up, logo suggestions</td><td>The domain you typed and your IP address</td></tr>
   </tbody>
 </table>
-<p>The phone-number widget on sign-up (from the jsDelivr CDN) and the monospace typeface (from Google Fonts) are loaded to make
-  those pages work. They set no cookies, but the providers receive your IP address when the files download.</p>
+<p>The phone-number widget on sign-up is loaded from the jsDelivr CDN to make that page work. It sets no cookies, but jsDelivr
+  receives your IP address when the file downloads. Hastra's typefaces are served from Hastra's own server, so no font
+  provider sees your visit.</p>
 
 <h2 id="control">5. Managing your choices</h2>
 <ul>
