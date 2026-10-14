@@ -56,6 +56,18 @@ function astra_migrate_performance($conn, callable $out) {
         $out("  add  $table.$index ($cols)");
     }
 
+    // The primary sysadmin is whoever holds PRIMARY_SYSADMIN_EMAIL (sign-up
+    // proves ownership of that inbox with a one-time code). If that account had
+    // to be re-created, for example after lost encryption keys made the old one
+    // unreadable, it gets its role back here instead of staying a client.
+    if (defined('PRIMARY_SYSADMIN_EMAIL') && PRIMARY_SYSADMIN_EMAIL !== '' && db_column_exists($conn, 'users', 'email_bindex')) {
+        $bi = astra_blind_index(PRIMARY_SYSADMIN_EMAIL);
+        $up = mysqli_prepare($conn, "UPDATE users SET role = 'sysadmin', client_role = NULL WHERE email_bindex = ? AND role NOT IN ('sysadmin', 'deleted')");
+        mysqli_stmt_bind_param($up, "s", $bi);
+        mysqli_stmt_execute($up);
+        $out("  " . (mysqli_stmt_affected_rows($up) ? 'set  primary sysadmin role restored for ' . PRIMARY_SYSADMIN_EMAIL : 'ok   primary sysadmin role'));
+    }
+
     require_once __DIR__ . '/../../core/data_deletion.php';
     $out("  " . (astra_rate_table_ready($conn) ? 'ok' : 'FAIL') . "   rate_windows");
     $out("  " . (astra_telemetry_ready($conn) ? 'ok' : 'FAIL') . "   analytics_events, app_errors");
