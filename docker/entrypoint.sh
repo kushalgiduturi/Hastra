@@ -86,6 +86,13 @@ fi
 
 echo "hastra: running migrations"
 ( cd "$APP" && php tools/run_migrations.php ) || { echo "hastra: migrations failed"; exit 1; }
+# One-off cleanup of accounts that became unreadable after lost keys. Opt-in:
+# HASTRA_PURGE_UNREADABLE=dry previews in this log, =1 applies. Remove the
+# variable afterwards. Never blocks startup.
+case "${HASTRA_PURGE_UNREADABLE:-}" in
+  dry) ( cd "$APP" && php tools/purge_unreadable.php ) || true ;;
+  1)   ( cd "$APP" && php tools/purge_unreadable.php --apply ) || true ;;
+esac
 # key files the migrations just generated must stay readable by Apache (www-data)
 chown -R www-data:www-data "$KEYS"
 find "$KEYS" -type f -exec chmod 600 {} +
