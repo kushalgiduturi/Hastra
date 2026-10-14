@@ -304,3 +304,42 @@ t('insights page: CSV export is formula-safe; resolve needs CSRF and removes the
     $r = cgi('POST', 'portals/sysadmin/insights.php', ['session' => $s, 'post' => ['csrf_token' => csrf_of($s), 'action' => 'resolve', 'id' => $id]]);
     expect($r['status'] === 302 && !qv("SELECT 1 FROM app_errors WHERE id = ?", [$id]), 'issue not resolved');
 });
+
+// ── cleanup of accounts made unreadable by lost keys ────────────────────────
+require_once ASTRA_ROOT . '/core/purge_unreadable.php';
+t('purge unreadable: refuses without a readable primary sysadmin, dry run changes nothing', function () {
+    if (!q1("SELECT 1 FROM users WHERE email_bindex = ?", [astra_blind_index(PRIMARY_SYSADMIN_EMAIL)])) return 'no primary sysadmin in the clone';
+    $lines = [];
+    $ghost = fix_make_user('ghost' . bin2hex(random_bytes(2)), 'client', null);
+    q("UPDATE users SET email = ? WHERE id = ?", ['hastra:v1:' . base64_encode(random_bytes(60)), $ghost['id']]);
+    $ok = astra_purge_unreadable($GLOBALS['conn'], false, function ($l) use (&$lines) { $lines[] = $l; });
+    expect($ok && (bool)q1("SELECT 1 FROM users WHERE id = ?", [$ghost['id']]), 'dry run deleted something: ' . implode(' | ', $lines));
+    expect(str_contains(implode(' ', $lines), 'DRY RUN'), 'no dry-run notice');
+    q("DELETE FROM users WHERE id = ?", [$ghost['id']]);
+});
+t('purge unreadable: removes only accounts that cannot be decrypted, with their company', function () {
+    if (!q1("SELECT 1 FROM users WHERE email_bindex = ?", [astra_blind_index(PRIMARY_SYSADMIN_EMAIL)])) return 'no primary sysadmin in the clone';
+    q("INSERT INTO companies (company_name, is_internal) VALUES (?, 0)", ['Ghost Co ' . bin2hex(random_bytes(2))]);
+    $cid = (int)mysqli_insert_id($GLOBALS['conn']);
+    $ghost = fix_make_user('ghost2' . bin2hex(random_bytes(2)), 'client', $cid);
+    q("UPDATE users SET email = ?, name = ? WHERE id = ?", ['hastra:v1:' . base64_encode(random_bytes(60)), 'hastra:v1:' . base64_encode(random_bytes(60)), $ghost['id']]);
+    $before = (int)qv("SELECT COUNT(*) FROM users WHERE id <> ?", [$ghost['id']]);
+    $lines = [];
+    $ok = astra_purge_unreadable($GLOBALS['conn'], true, function ($l) use (&$lines) { $lines[] = $l; });
+    expect($ok, 'purge failed: ' . implode(' | ', $lines));
+    expect(!q1("SELECT 1 FROM users WHERE id = ?", [$ghost['id']]), 'unreadable account kept');
+    expect(!q1("SELECT 1 FROM companies WHERE id = ?", [$cid]), 'its company kept');
+    expect((int)qv("SELECT COUNT(*) FROM users") === $before, 'a readable account was removed');
+    expect((bool)q1("SELECT 1 FROM companies WHERE is_internal = 1"), 'internal company removed');
+});
+t('purge unreadable: refuses when most accounts look unreadable (a key problem, not dead accounts)', function () {
+    if (!q1("SELECT 1 FROM users WHERE email_bindex = ?", [astra_blind_index(PRIMARY_SYSADMIN_EMAIL)])) return 'no primary sysadmin in the clone';
+    $ids = [];
+    $n = (int)qv("SELECT COUNT(*) FROM users") + 2;
+    for ($i = 0; $i < $n; $i++) { $g = fix_make_user('mass' . $i . bin2hex(random_bytes(2)), 'client', null); q("UPDATE users SET email = ? WHERE id = ?", ['hastra:v1:' . base64_encode(random_bytes(60)), $g['id']]); $ids[] = $g['id']; }
+    $lines = [];
+    $ok = astra_purge_unreadable($GLOBALS['conn'], true, function ($l) use (&$lines) { $lines[] = $l; });
+    expect(!$ok && str_contains(implode(' ', $lines), 'more than half'), 'did not refuse: ' . implode(' | ', $lines));
+    expect((int)qv("SELECT COUNT(*) FROM users WHERE id IN (" . implode(',', $ids) . ")") === count($ids), 'rows were deleted despite the refusal');
+    q("DELETE FROM users WHERE id IN (" . implode(',', $ids) . ")");
+});
