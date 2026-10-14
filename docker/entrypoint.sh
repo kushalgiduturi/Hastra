@@ -1,9 +1,10 @@
 #!/bin/sh
 # Hastra container entrypoint.
-#   1. Keys: every config/*.key file lives in the persistent /data/keys volume.
-#      The encryption keys are generated on first use; if they were kept in
-#      the image, a rebuild would lose them and every encrypted column would
-#      become unreadable for good. BACK UP THE hastra-keys VOLUME.
+#   1. Keys: every config/*.key file lives in /data/keys. The four encryption
+#      keys come from HASTRA_DB_KEY / HASTRA_CRYPTO_KEY / HASTRA_SECRET_KEY /
+#      HASTRA_WEBHOOK_KEY when set (required where /data/keys is not a
+#      persistent disk, such as Render's free plan); otherwise they are
+#      generated on first use and the hastra-keys volume MUST be backed up.
 #   2. Secrets given in the environment are written to their key files.
 #   3. Waits for the database, creates the schema on an empty one, then runs
 #      every migration (all idempotent) so an upgrade needs only a rebuild.
@@ -24,6 +25,33 @@ put_secret() { # $1 = env var name, $2 = key file
   eval "v=\${$1:-}"
   if [ -n "$v" ]; then printf '%s\n' "$v" > "$KEYS/$2"; fi
 }
+# Encryption keys from the environment. A host without a persistent disk
+# (Render's free plan) starts every deploy and every restart with an empty
+# /data/keys, so without these the app would mint new keys each time and
+# every name, email and token already in the database would become
+# unreadable. Each value is 32 random bytes, base64-encoded:
+#   php -r 'echo base64_encode(random_bytes(32)), PHP_EOL;'
+# Set them once and never change them (see DEPLOY.md).
+put_key() { # $1 = env var name, $2 = key file; returns 1 when the variable is unset
+  v=$(printenv "$1" || true)
+  [ -n "$v" ] || return 1
+  if ! printf '%s' "$v" | php -r '$r = base64_decode(trim(stream_get_contents(STDIN)), true); exit($r !== false && strlen($r) === 32 ? 0 : 1);'; then
+    echo "hastra: $1 must be 32 random bytes, base64-encoded (44 characters). Refusing to start rather than guess a key."
+    exit 1
+  fi
+  echo "$v" > "$KEYS/$2"
+}
+missing=""
+put_key HASTRA_DB_KEY      astra_db.key              || missing="$missing HASTRA_DB_KEY"
+put_key HASTRA_CRYPTO_KEY  astra_index.key           || missing="$missing HASTRA_CRYPTO_KEY"
+put_key HASTRA_SECRET_KEY  astra.key                 || missing="$missing HASTRA_SECRET_KEY"
+put_key HASTRA_WEBHOOK_KEY astra_payment_webhook.key || missing="$missing HASTRA_WEBHOOK_KEY"
+if [ -n "$missing" ]; then
+  echo "hastra: WARNING - encryption keys not set in the environment:$missing"
+  echo "hastra: WARNING - on a host without a persistent disk they are regenerated on every deploy/restart,"
+  echo "hastra: WARNING - which makes existing accounts unreadable. Set them (DEPLOY.md, 'Encryption keys')."
+fi
+
 put_secret HASTRA_GOOGLE_CLIENT_SECRET google_oauth.key
 put_secret HASTRA_RECAPTCHA_SECRET recaptcha.key
 put_secret HASTRA_YOUTUBE_API_KEY youtube.key
