@@ -77,7 +77,7 @@ RewriteRule ^([^\.]+)$ $1.php [NC,L]
     Deny from all
 </FilesMatch>
 
-<FilesMatch "\.(ini|log|sh|sql|rules)$">
+<FilesMatch "\.(ini|log|sh|sql|rules|md)$">
     Order allow,deny
     Deny from all
 </FilesMatch>

@@ -22,7 +22,8 @@ foreach (glob(ASTRA_ROOT . '/portals/*/_nav.php') as $f) {
 foreach (['config/config.php', 'config/astra_db.key', 'config/astra_index.key', 'config/astra_payment_webhook.key',
           'config/audit_chain.anchor', 'config/migrations/v4_enterprise_trust.sql', 'schema_v2.sql', '.git/config',
           '.gitignore', 'tests/runner.php', 'tests/lib/bootstrap.php', 'tools/run_migrations.php',
-          'cli/migrate_encryption.php', 'PHPMailer/PHPMailer.php', 'uploads/'] as $p) {
+          'cli/migrate_encryption.php', 'PHPMailer/PHPMailer.php', 'uploads/', 'firestore.rules',
+          'HASTRA_ARCHITECTURE_AND_EXECUTION_GUIDE.md', 'DEPLOY.md'] as $p) {
     t("sensitive path blocked: $p", fn() => expect_blocked($p, ['DB_PASS', 'define(', '[core]', 'RECAPTCHA']));
 }
 foreach (glob(ASTRA_ROOT . '/_backup_*', GLOB_ONLYDIR) as $dir) {
