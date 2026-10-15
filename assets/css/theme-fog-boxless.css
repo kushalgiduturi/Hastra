@@ -1,0 +1,87 @@
+/* ========================================================
+   HASTRA TEXT FOG + BOXLESS TOKENS
+   Loaded after core/theme.css and assets/css/theme-contrast.css on every
+   themed page.
+
+   Text that floats over the 3D temple never sits on the raw scene: a
+   .text-fog-scrim element carries a feathered fog behind it. By night it is
+   Black Fog under pure white type; by day it is White Fog under Jet Black
+   type. The fog fades to transparent over a fixed width at all four edges,
+   so the text always has a calm ground while there is no border, outline or
+   shadow that could read as a box.
+
+   Strict type and accent tokens:
+     dark   type #ffffff on Black Fog    accent Crimson Red #e50914
+     light  type #000000 on White Fog    accent Cobalt Blue #2563eb
+   ======================================================== */
+
+:root {
+  --fog-ink: 3, 5, 10;              /* Black Fog: rgb of the night wash */
+  --fog-alpha: .72;
+  --fog-blur: 8px;
+  --color-ice-highlight: #ffffff;   /* sign-in card headings: pure white by night */
+}
+html[data-theme="light"] {
+  --fog-ink: 248, 250, 252;         /* White Fog */
+  --fog-alpha: .86;
+  --fog-blur: 10px;
+}
+
+.text-fog-scrim {
+  position: relative;
+  isolation: isolate;
+}
+.text-fog-scrim::before {
+  content: "";
+  position: absolute;
+  inset: var(--fog-inset-y, -2.25rem) var(--fog-inset-x, -3rem);
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(var(--fog-ink), var(--fog-alpha));
+  -webkit-backdrop-filter: blur(var(--fog-blur)) saturate(1.1);
+          backdrop-filter: blur(var(--fog-blur)) saturate(1.1);
+  /* each edge fades to nothing over exactly the padding width, so the text
+     itself is always on full-strength fog */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
+                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
+                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
+/* weak devices (assets/js/performance-guard.js): no blur, a slightly denser wash */
+html.low-perf-mode .text-fog-scrim::before {
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  --fog-alpha: .82;
+}
+html.low-perf-mode[data-theme="light"] .text-fog-scrim::before { --fog-alpha: .9; }
+/* people who ask the OS for less transparency get solid ground */
+@media (prefers-reduced-transparency: reduce) {
+  .text-fog-scrim::before { --fog-alpha: .94; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* Night text on the fog: pure white, with a soft dark halo for the edges */
+.text-fog-scrim { color: #ffffff; text-shadow: 0 1px 14px rgba(3, 5, 10, .85); }
+html[data-theme="light"] .text-fog-scrim { color: #000000; text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8); }
+
+/* The sign-in and sign-up overview panels: every line pure white by night
+   (sign-up used the dimmed body token), accent words in the text-safe red. */
+.auth-info.text-fog-scrim .info-title,
+.auth-info.text-fog-scrim .info-sub,
+.auth-info.text-fog-scrim .info-body,
+.auth-info.text-fog-scrim .info-feats li,
+.auth-info.text-fog-scrim .info-flow,
+.auth-info.text-fog-scrim .info-flow b,
+.auth-info.text-fog-scrim .info-badge { color: #ffffff; }
+.auth-info.text-fog-scrim .info-badge { border-color: transparent; font-weight: 700; }
+.auth-info.text-fog-scrim .info-title .info-portal { color: var(--accent-bright); }
+.auth-info.text-fog-scrim .info-feats li::before { background: var(--accent); }
+html[data-theme="light"] .auth-info.text-fog-scrim .info-title,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-sub,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-body,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-feats li,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-flow,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-flow b,
+html[data-theme="light"] .auth-info.text-fog-scrim .info-badge { color: #000000; }
+html[data-theme="light"] .auth-info.text-fog-scrim .info-title .info-portal { color: #2563eb; }

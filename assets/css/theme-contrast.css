@@ -19,13 +19,26 @@
    are the same hues, darkened until they clear 4.5:1 on white and on the
    pale tinted backgrounds the portals use. */
 html[data-theme="light"] {
-  --accent-bright: #1259c0;   /* 6.3:1 on white, 5.6:1 on the blue-tinted fills */
+  /* Strict light tokens: Jet Black type, Cobalt Blue #2563eb accent.
+     #2563eb is 5.2:1 on white and 4.6:1 on the palest tinted fill, so it is
+     AA as text everywhere; #000000 type is 21:1 (AAA). */
+  --text: #000000;
+  --text-primary: #000000;
+  --lx-text: #000000;
+  --color-ice-highlight: #000000;
+  --accent: #2563eb;
+  --accent-dim: #1d4ed8;
+  --accent-rgb: 37,99,235;
+  --accent-glow: rgba(37,99,235,0.22);
+  --accent-soft: rgba(37,99,235,0.08);
+  --border: rgba(37,99,235,0.22);
+  --accent-bright: #2563eb;
   --green:  #166534;          /* 7.1:1 */
   --yellow: #92400e;          /* 7.1:1 */
   --cyan:   #0e7490;          /* 5.4:1 */
   --orange: #c2410c;          /* 5.2:1 */
-  --accent-primary: #1d4ed8;  /* Netflix-style portals and Labs: 6.7:1 (was #2563eb, 4.4:1 on tints) */
-  --lx-accent: #1d4ed8;
+  --accent-primary: #2563eb;  /* Netflix-style portals and Labs */
+  --lx-accent: #2563eb;
   --text-muted: #556078;      /* was #64748b, 4.4:1 on the pale card fills */
 }
 
@@ -41,58 +54,32 @@ html[data-theme="light"] textarea::placeholder {
 }
 
 /* ── Sign-in / sign-up overview panel (left column) ────────────────────
-   Sign-in hard-codes white text for the dark theme; in daylight that is
-   white on cream (1.1:1). Sign-up already switches to dark text but sits
-   straight on the busy pagoda scene, so lines cross high-contrast detail.
-   Dark slate text plus a soft light wash behind it fixes both. */
+   Jet Black type in daylight. The feathered fog behind it (white by day,
+   black by night) lives in assets/css/theme-fog-boxless.css as
+   .text-fog-scrim, so both themes share one implementation. */
 html[data-theme="light"] .auth-info {
-  position: relative;
-  isolation: isolate;
-  color: #0f172a;
+  color: #000000;
   text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8);
 }
-html[data-theme="light"] .auth-info::before {
-  content: "";
-  position: absolute;
-  inset: -2.25rem -3rem;
-  z-index: -1;
-  pointer-events: none;
-  /* a dense frosted wash whose four edges feather to transparent, so the
-     text always has a light ground (dark temple or bright sky) but there is
-     no border, outline or shadow to read as a box */
-  background: rgba(248, 250, 252, .86);
-  -webkit-backdrop-filter: blur(10px) saturate(1.1);
-          backdrop-filter: blur(10px) saturate(1.1);
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
-                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
-                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
-  -webkit-mask-composite: source-in;
-          mask-composite: intersect;
-}
-html.low-perf-mode[data-theme="light"] .auth-info::before {
-  -webkit-backdrop-filter: none;
-          backdrop-filter: none;
-  background: rgba(248, 250, 252, .9);
-}
 html[data-theme="light"] .auth-info .info-badge {
-  color: #1e293b;
+  color: #000000;
   border-color: transparent;       /* no outlined pill */
   font-weight: 700;
 }
 html[data-theme="light"] .auth-info .info-title,
-html[data-theme="light"] .auth-info .info-sub {
-  color: #0f172a;
+html[data-theme="light"] .auth-info .info-sub,
+html[data-theme="light"] .auth-info .info-feats li,
+html[data-theme="light"] .auth-info .info-flow b {
+  color: #000000;
 }
 html[data-theme="light"] .auth-info .info-sub { font-weight: 700; }
-html[data-theme="light"] .auth-info .info-title .info-portal { color: #1259c0; }
-html[data-theme="light"] .auth-info .info-body {
-  color: #334155;                   /* 10:1 on the wash */
+html[data-theme="light"] .auth-info .info-feats li { font-weight: 600; }
+html[data-theme="light"] .auth-info .info-title .info-portal { color: #2563eb; }
+html[data-theme="light"] .auth-info .info-body,
+html[data-theme="light"] .auth-info .info-flow {
+  color: #000000;
   font-weight: 500;
 }
-html[data-theme="light"] .auth-info .info-feats li { color: #1e293b; font-weight: 600; }
-html[data-theme="light"] .auth-info .info-flow { color: #334155; }
-html[data-theme="light"] .auth-info .info-flow b { color: #0f172a; }
 
 /* ── Sign-up card ──────────────────────────────────────────────────────
    The glass card is the one panel Hastra keeps. In light mode it was 72%

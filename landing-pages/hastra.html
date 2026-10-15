@@ -11,20 +11,21 @@
 <link rel="preload" href="../assets/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/css/fonts.css?v=1">
 <style>
-/* theme accent: red by night, blue by day (mirrors core/theme.css) */
-:root{ --ax:#e02e3c; --ax-hi:#ff4655; --ax-dim:#a3202c; --ax-rgb:224,46,60; }
-html.light, [data-theme="light"]{ --ax:#0265dc; --ax-hi:#1668d0; --ax-dim:#024fac; --ax-rgb:2,101,220; }
+/* theme accent: Crimson Red #e50914 by night, Cobalt Blue #2563eb by day
+   (mirrors core/theme.css). --ax-hi is the text-safe shade for small text. */
+:root{ --ax:#e50914; --ax-hi:#ff4655; --ax-dim:#b00710; --ax-rgb:229,9,20; }
+html.light, [data-theme="light"]{ --ax:#2563eb; --ax-hi:#2563eb; --ax-dim:#1d4ed8; --ax-rgb:37,99,235; }
 
 /* ============================================================= tokens */
 :root{
   --ink:#05070a;          /* page black */
   --ink-2:#0a0e12;        /* raised black */
-  --bone:#dfe7e0;         /* the pale sage white of the wordmark */
+  --bone:#ffffff;         /* pure white type by night */
   --bone-dim:#aab4ad;
   --muted:#98a4b3;
   --line:rgba(223,231,224,.13);
   --line-soft:rgba(223,231,224,.07);
-  --vermilion:#e0231c;
+  --vermilion:#e50914;
   --ember:#ff5a3c;
   --gold:#c9a24a;
   --pad:clamp(20px, 3.4vw, 56px);
@@ -1103,7 +1104,7 @@ html.scene-bg #gl{ opacity:1 !important; }
 .foot-consent{ background:none; border:0; padding:0; font:inherit; font-size:13px; color:#c7d3ea; cursor:pointer; text-align:left; transition:color .35s; }
 .foot-consent:hover{ color:var(--bone); }
 :focus-visible{ outline:2px solid #ff4655; outline-offset:2px; }
-html[data-theme="light"] :focus-visible{ outline-color:#1668d0; }
+html[data-theme="light"] :focus-visible{ outline-color:#2563eb; }
 </style>
 <script>
 if (new URLSearchParams(location.search).get('scene') === 'bg') document.documentElement.classList.add('scene-bg');

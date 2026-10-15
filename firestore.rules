@@ -1,0 +1,111 @@
+rules_version = '2';
+
+// Hastra: Cloud Firestore security rules.
+//
+// Hastra stores accounts, roles and community video votes in MySQL. These
+// rules are ready for the day any of that is mirrored to Firestore (the client
+// config is in assets/js/firebase-config.js); nothing in the site reads or
+// writes Firestore today. Deploy with:  firebase deploy --only firestore:rules
+//
+// Model
+//   users/{uid}                  one profile per Firebase Auth user
+//     orgId     set only by trusted server code (Admin SDK): null = independent
+//     role      the profile "focus" label; independents choose it themselves,
+//               organization members can never change it from a client
+//     orgRole   'member' | 'sysadmin' inside the organization (server only)
+//   orgs/{orgId}/members/{uid}   organization roster; only that org's
+//                                sysadmins may change a member's role
+//   videoVotes/{topicId}         public tallies per syllabus topic
+//     voters/{uid}               one vote per user per topic, with its direction
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── helpers ──────────────────────────────────────────────────────────
+    function signedIn() { return request.auth != null; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function profile(uid) { return get(/databases/$(database)/documents/users/$(uid)).data; }
+    function isOrgSysadmin(orgId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && profile(request.auth.uid).orgId == orgId
+        && profile(request.auth.uid).orgRole == 'sysadmin';
+    }
+    // the 11 roles a person may choose (mirrors ASTRA_FOCUS_GROUPS in core/auth_check.php)
+    function validRole(r) {
+      return r in ['student_researcher', 'faculty_instructor', 'soc_analyst_l1', 'soc_analyst_l2',
+                   'threat_intel_engineer', 'pqc_cryptographer', 'security_engineer',
+                   'security_architect', 'penetration_tester', 'compliance_auditor', 'client_stakeholder'];
+    }
+    function validGender(g) { return g in ['male', 'female', 'prefer_not_to_say']; }
+    function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    // ── user profiles: private to their owner ─────────────────────────────
+    match /users/{uid} {
+      allow read: if isSelf(uid);
+
+      // created by the owner as an independent account; organization fields
+      // are never self-assigned
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'gender', 'role', 'createdAt', 'orgId', 'orgRole'])
+        && request.resource.data.get('orgId', null) == null
+        && request.resource.data.get('orgRole', null) == null
+        && (!('gender' in request.resource.data) || validGender(request.resource.data.gender))
+        && (!('role' in request.resource.data) || validRole(request.resource.data.role));
+
+      // independents may change name, gender and role; organization members
+      // only name and gender (their role belongs to the organization's sysadmins)
+      allow update: if isSelf(uid)
+        && request.resource.data.get('orgId', null) == resource.data.get('orgId', null)
+        && request.resource.data.get('orgRole', null) == resource.data.get('orgRole', null)
+        && (!('gender' in request.resource.data) || validGender(request.resource.data.gender))
+        && (resource.data.get('orgId', null) == null
+              ? (onlyChanges(['displayName', 'gender', 'role']) && validRole(request.resource.data.get('role', 'student_researcher')))
+              : onlyChanges(['displayName', 'gender']));
+
+      allow delete: if isSelf(uid);
+    }
+
+    // ── organization roster: role changes by that org's sysadmins only ────
+    match /orgs/{orgId}/members/{uid} {
+      allow read: if isSelf(uid) || isOrgSysadmin(orgId);
+      allow create, delete: if false;           // provisioning is server-side (Admin SDK)
+      allow update: if isOrgSysadmin(orgId)
+        && onlyChanges(['role'])
+        && validRole(request.resource.data.role);
+    }
+
+    // ── community video votes: public tallies, one vote per signed-in user ─
+    match /videoVotes/{topicId} {
+      allow read: if true;
+      allow write: if false;                    // tallies change only through the voter docs below
+      match /videos/{videoId} {
+        allow read: if true;
+        // a signed-in user may move a tally by exactly one step, and only in
+        // the same batch that writes their own voter record for this topic
+        allow update: if signedIn()
+          && onlyChanges(['likes', 'dislikes'])
+          && (request.resource.data.likes - resource.data.likes) in [-1, 0, 1]
+          && (request.resource.data.dislikes - resource.data.dislikes) in [-1, 0, 1]
+          && existsAfter(/databases/$(database)/documents/videoVotes/$(topicId)/voters/$(request.auth.uid));
+        allow create: if signedIn()
+          && request.resource.data.keys().hasOnly(['likes', 'dislikes', 'title'])
+          && request.resource.data.likes in [0, 1] && request.resource.data.dislikes in [0, 1];
+        allow delete: if false;
+      }
+      match /voters/{uid} {
+        allow read: if isSelf(uid);
+        allow create, update: if isSelf(uid)
+          && request.resource.data.keys().hasOnly(['videoId', 'dir', 'at'])
+          && request.resource.data.dir in ['like', 'dislike', 'none']
+          && request.resource.data.at == request.time;
+        allow delete: if isSelf(uid);
+      }
+    }
+
+    // everything else is closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

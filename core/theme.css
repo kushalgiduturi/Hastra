@@ -5,21 +5,24 @@
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* Dark: industrial obsidian + charcoal cards, signal-red accent */
+  /* Dark: industrial obsidian, pure white type, Crimson Red #e50914 accent.
+     --accent is for fills, marks, underlines and focus rings; small accent
+     TEXT uses --accent-bright, because #e50914 is 4.1:1 on this background
+     and AA text needs 4.5:1 (--accent-bright is 5.8:1). */
   --navy:        #090b10;
   --navy-card:   #12161f;
   --navy-deep:   #06070a;
   --blue:        #1d4ed8;
   --blue-bright: #3b82f6;
-  --accent:        #e02e3c;
+  --accent:        #e50914;
   --accent-bright: #ff4655;
-  --accent-dim:    #a3202c;
-  --accent-rgb:    224,46,60;
-  --accent-glow:   rgba(224,46,60,0.28);
-  --accent-soft:   rgba(224,46,60,0.10);
-  --border:      rgba(224,46,60,0.22);
+  --accent-dim:    #b00710;
+  --accent-rgb:    229,9,20;
+  --accent-glow:   rgba(229,9,20,0.28);
+  --accent-soft:   rgba(229,9,20,0.10);
+  --border:      rgba(229,9,20,0.22);
   --border-dim:  #1f2633;
-  --text:        #eef0f4;
+  --text:        #ffffff;
   --text-dim:    #8b93a3;
   --red:         #ff4655;
   --red-rgb:     255,70,85;
