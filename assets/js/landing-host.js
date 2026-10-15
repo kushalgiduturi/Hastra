@@ -50,10 +50,10 @@ h1:not(.jp), h2:not(.jp), h3:not(.jp), .display:not(.jp) {
   /* -------------------------------------------- the daylight skin (DOM) */
   const DAY_CSS = `
 html[data-hastra-day] {
-  --ink:#d3dfe5; --ink-2:#c6d4db; --bone:#121c24; --bone-dim:#34444d; --muted:#5a6a72;
+  --ink:#d3dfe5; --ink-2:#c6d4db; --bone:#000000; --bone-dim:#34444d; --muted:#5a6a72;
   --line:rgba(18,28,36,.16); --line-soft:rgba(18,28,36,.09);
 }
-html[data-hastra-day] body { background:#f6ecd2; color:#121c24; }
+html[data-hastra-day] body { background:#f6ecd2; color:#000000; }
 html[data-hastra-day] #gl { background:#f6ecd2; }
 html[data-hastra-day] #pre { background:#fbf3de; }
 html[data-hastra-day] .pre-bar { background:rgba(18,28,36,.14); }
@@ -61,9 +61,9 @@ html[data-hastra-day] #vignette { background:radial-gradient(125% 95% at 50% 42%
 html[data-hastra-day] #grain { opacity:.03; }
 html[data-hastra-day] .eyebrow, html[data-hastra-day] .chip b { text-shadow:0 1px 14px rgba(255,251,238,.85); }
 html[data-hastra-day] .display { text-shadow:0 2px 30px rgba(255,251,238,.7); }
-html[data-hastra-day] .body-lg { color:#26343c; text-shadow:0 1px 18px rgba(255,251,238,.9); }
-html[data-hastra-day] .body { color:#33424a; text-shadow:0 1px 16px rgba(255,251,238,.9); }
-html[data-hastra-day] .gate-copy .lead { color:#1e2c34; text-shadow:0 1px 18px rgba(255,251,238,.9); }
+html[data-hastra-day] .body-lg { color:#000000; text-shadow:0 1px 18px rgba(255,251,238,.9); }
+html[data-hastra-day] .body { color:#000000; text-shadow:0 1px 16px rgba(255,251,238,.9); }
+html[data-hastra-day] .gate-copy .lead { color:#000000; text-shadow:0 1px 18px rgba(255,251,238,.9); }
 html[data-hastra-day] .hero-sub { text-shadow:0 1px 22px rgba(255,251,238,.95); }
 html[data-hastra-day] .chip p, html[data-hastra-day] .les p, html[data-hastra-day] .les .t,
 html[data-hastra-day] .foot li a, html[data-hastra-day] .foot-brand p { color:#3d4c54; text-shadow:none; }

@@ -19,7 +19,7 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <?php astra_seo_meta(['title' => $title . ' · Hastra', 'description' => $summary,
                       'path' => $slug === 'delete-data' ? 'privacy/delete-data' : 'legal/' . $slug, 'type' => 'article']); ?>
 <script src="<?= $b ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <?php astra_compliance_css(); ?>
 </head>

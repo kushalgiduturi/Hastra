@@ -200,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php astra_compliance_css(); ?>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/hastra-select.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
@@ -856,7 +856,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="reg-stage" id="reg-stage" data-portal="client">
 
 <!-- ── Overview: sits LEFT for Client Gateway, slides RIGHT for Enterprise ── -->
-<aside class="auth-info" id="reg-info" aria-label="About the selected registration track">
+<aside class="auth-info text-fog-scrim" id="reg-info" aria-label="About the selected registration track">
   <div class="info-stack">
     <div class="info-block is-active" id="info-client" data-block="client">
       <span class="info-badge"><i></i>Client onboarding</span>

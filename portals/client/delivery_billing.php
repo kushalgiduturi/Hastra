@@ -116,7 +116,7 @@ unset($dr);
 <title>Delivery &amp; Billing · Hastra</title>
 <?php astra_page_meta('Delivery & Billing · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">

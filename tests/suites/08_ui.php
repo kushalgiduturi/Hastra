@@ -95,7 +95,8 @@ t('light contrast: stylesheet only touches the light theme and adds no boxes', f
         }
     }
     expect(!preg_match('~box-shadow\s*:\s*(?!none)~', $code), 'adds a shadow');
-    expect(!preg_match('~\bborder(-color)?\s*:\s*[^;]*(rgba?\(|#[0-9a-f]{3})~i', $code), 'adds a visible border');
+    // a real border declaration, not a custom property such as --border (a colour token)
+    expect(!preg_match('~(?<![-\w])border(-color)?\s*:\s*[^;]*(rgba?\(|#[0-9a-f]{3})~i', $code), 'adds a visible border');
 });
 t('light contrast: every themed page loads the stylesheet after core/theme.css', function () {
     $missing = [];
@@ -119,10 +120,22 @@ t('light contrast: status and accent tokens clear AA on white and on pale fills'
     }
     expect((bool)preg_match('~placeholder\s*\{[^}]*color:\s*(#[0-9a-f]{6})~is', $css, $pm) && ui_contrast($pm[1], '#eef2ff') >= 4.5, 'placeholder colour below AA on the field');
 });
-t('light contrast: sign-in and sign-up hero text is dark slate with a feathered wash, not a box', function () {
+t('text fog: sign-in and sign-up hero text is jet black / pure white on a feathered fog, never a box', function () {
     $css = file_get_contents(ASTRA_ROOT . '/assets/css/theme-contrast.css');
-    expect((bool)preg_match('~\.auth-info\s*\{[^}]*color:\s*#0f172a~', $css), 'hero text not dark slate');
-    expect((bool)preg_match('~\.auth-info::before\s*\{[^}]*mask-image:[^}]*transparent 0[^}]*transparent 100%~s', $css), 'wash must feather out on every edge');
-    expect(!preg_match('~\.auth-info::before\s*\{[^}]*(border|box-shadow|outline)\s*:~s', $css), 'wash must have no edge');
-    expect((bool)preg_match('~\.info-body\s*\{[^}]*color:\s*#334155~', $css), 'paragraph not slate 700');
+    $fog = file_get_contents(ASTRA_ROOT . '/assets/css/theme-fog-boxless.css');
+    expect((bool)preg_match('~\.auth-info\s*\{[^}]*color:\s*#000000~', $css), 'light hero text is not #000000');
+    expect((bool)preg_match('~\.text-fog-scrim::before\s*\{[^}]*mask-image:[^}]*transparent 0[^}]*transparent 100%~s', $fog), 'fog must feather out on every edge');
+    expect(!preg_match('~\.text-fog-scrim::before\s*\{[^}]*(border|box-shadow|outline)\s*:~s', $fog), 'fog must have no edge');
+    expect((bool)preg_match('~:root\s*\{[^}]*--fog-ink:\s*3, 5, 10~', $fog) && (bool)preg_match('~html\[data-theme="light"\]\s*\{[^}]*--fog-ink:\s*248, 250, 252~', $fog), 'black fog by night / white fog by day');
+    foreach (['auth/login.php', 'auth/register.php'] as $f) {
+        expect(str_contains(file_get_contents(ASTRA_ROOT . "/$f"), 'class="auth-info text-fog-scrim"'), "$f hero lacks the fog");
+    }
+});
+t('strict tokens: white / crimson by night, black / cobalt by day', function () {
+    $theme = file_get_contents(ASTRA_ROOT . '/core/theme.css');
+    $light = file_get_contents(ASTRA_ROOT . '/assets/css/theme-contrast.css');
+    expect((bool)preg_match('~:root\s*\{[^}]*--accent:\s*#e50914;[^}]*--text:\s*#ffffff;~s', $theme), 'dark tokens');
+    expect((bool)preg_match('~--text:\s*#000000;[^}]*--accent:\s*#2563eb;~s', $light), 'light tokens');
+    $land = file_get_contents(ASTRA_ROOT . '/landing-pages/hastra.html');
+    expect(str_contains($land, '--ax:#e50914') && str_contains($land, '--ax:#2563eb') && str_contains($land, '--bone:#ffffff'), 'landing tokens');
 });

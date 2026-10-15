@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Sign in · Hastra</title>
 <?php astra_seo_meta(['title' => 'Sign in · Hastra', 'description' => 'Sign in to your Hastra workspace or client gateway.', 'path' => 'signin', 'robots' => 'noindex, follow']); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <?php astra_compliance_css(); ?>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
@@ -946,7 +946,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="auth-wrapper">
 <div class="auth-stage" id="auth-stage" data-portal="<?= $active_portal ?>">
 
-<aside class="auth-info" id="auth-info" aria-label="About the selected portal">
+<aside class="auth-info text-fog-scrim" id="auth-info" aria-label="About the selected portal">
   <div class="info-stack">
     <div class="info-block<?= $active_portal === 'client' ? ' is-active' : '' ?>" id="info-client"<?= $active_portal === 'client' ? '' : ' inert aria-hidden="true"' ?>>
       <span class="info-badge"><i></i>Client portal</span>
