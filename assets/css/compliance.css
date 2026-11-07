@@ -169,7 +169,7 @@ body:has(> .legal-foot--below) { flex-direction: column; }
 .legal-doc a { color: var(--accent-bright); }
 .legal-doc code { font-family: 'Share Tech Mono', ui-monospace, monospace; font-size: .92em; padding: 1px 5px; border-radius: 4px; background: rgba(199, 211, 234, .08); }
 .legal-doc .legal-note {
-  border-left: 3px solid var(--accent); padding: 10px 14px; margin: 16px 0; border-radius: 0 8px 8px 0;
+  padding: 10px 14px; margin: 16px 0; border-radius: 12px;
   background: rgba(var(--accent-rgb), .07);
 }
 .legal-doc table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }

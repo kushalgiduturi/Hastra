@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4h done (Labs).** Next: 4i public pages (legal/*.php + _layout + cookie banner, 404.php, index.php host and the HTML/CSS chrome of landing-pages/hastra.html; no 3D code).
+**Phase 4i done for legal pages and 404; landing-page chrome is OPEN, waiting on the owner** (landing-pages/hastra.html is a 315 KB single file with its own inline styles and the 3D scene; a chrome-only pass is a separate, careful job). After that: phase 6 (tests, docs, deleting netflix-bento.css / theme-fog-boxless.css / most of theme-netflix.css, final checks). Phase 5 (edge/ React pilot) is optional and needs the owner's go-ahead.
 
 ## Tool status (2026-11-07)
 
@@ -135,6 +135,14 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Labs is layered in theme-spatial.css section 53 (tools-cyber.css untouched so the Labs tests keep reading it): the --lx-* tokens map onto the spatial tokens, laser beams are off, the header is the island and module tabs a pill row, .lx-main is the one depth-2 panel, panes are raised groups (no blur, so the panel stays the only blurred layer besides the bar), home tool cards are flat tilting tiles, labels and buttons are sentence case, segmented choices tinted, the result viewport is a console well in both themes, guides and toast are solid popovers.
 - The eyebrows ("MODULE 01 ...") are hidden and title emphasis uses weight instead of a second colour (craft floor).
 - core/theme.css light exclusions now also skip .lx-main, .sc-main and .ht-terminal.
+- Suite 310/310. Detector: 0 findings.
+
+## Phase 4i notes
+
+- Legal pages (theme-spatial.css section 54): the header is the island bar with pill navigation (current page tinted, not solid red) and a pill theme button; the document is the depth-2 panel, in Read mode (measure capped at 72ch, sentence-case table heads), the contents list an inset group, notes tinted. compliance.css: the legal note lost its 3px coloured side rule.
+- 404.php stays standalone (no scripts, no shared CSS) but is rewritten inline on the spatial recipe: one glass card over a calm gradient (no grid), solid numerals (no neon outline or glow), pill buttons, light theme via prefers-color-scheme, reduced-transparency fallback. It links fonts.css only. Copy is unchanged (13_labs checks it).
+- core/theme.css light exclusions also skip `.legal-doc`.
+- The cookie banner was already restyled in 4a.
 - Suite 310/310. Detector: 0 findings.
 
 ## Files done

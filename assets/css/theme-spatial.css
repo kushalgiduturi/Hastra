@@ -2167,3 +2167,45 @@ html.sp-ui .lx-enterprise { display: inline-flex; align-items: center; min-heigh
 html.sp-ui .lx-enterprise:hover { color: var(--sp-text); background: var(--sp-hover); }
 html.sp-ui .lx-card-icon { display: grid; place-items: center; width: 40px; height: 40px; }
 html.sp-ui :has(> .hx-copy--corner) > :is(.lx-out, pre) { padding-right: 84px; }
+
+/* ── 54. Legal pages (phase 4i) ────────────────────────────────────────── */
+html.sp-ui .legal-page { background: none; font-family: var(--sp-font-ui); }
+html.sp-ui .legal-top {
+  top: var(--sp-bar-inset); z-index: var(--sp-z-bar); min-height: var(--sp-bar-h);
+  margin: var(--sp-bar-inset) var(--sp-bar-inset) 0; padding: 6px var(--sp-2) 6px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3)); backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+@media (max-width: 760px) { html.sp-ui .legal-top { border-radius: 20px; } }
+html.sp-ui .legal-brand { font: 650 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .1em; color: var(--sp-text); }
+html.sp-ui .legal-top nav a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none;
+}
+html.sp-ui .legal-top nav a:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .legal-top nav a[aria-current="page"] { color: var(--sp-accent-text); font-weight: 650; background: rgba(var(--sp-accent-rgb), .14); }
+html.sp-ui .legal-theme {
+  min-height: 36px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+/* the document is the page panel (Read mode: measure and rhythm first) */
+html.sp-ui .legal-doc {
+  box-sizing: border-box; margin: var(--sp-6) auto 0; padding: clamp(24px, 4vw, 48px);
+  border: 0; border-radius: var(--sp-r-panel); background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2)); backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2); color: var(--sp-text); font: 400 var(--sp-fs-md)/1.7 var(--sp-font-ui);
+}
+@media (max-width: 760px) { html.sp-ui .legal-doc { margin: var(--sp-4) 8px 0; border-radius: 24px; } }
+html.sp-ui .legal-doc h1 { font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display); color: var(--sp-text); }
+html.sp-ui .legal-doc .legal-meta { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .legal-doc h2 { margin-top: var(--sp-10); font: 600 var(--sp-fs-xl)/1.3 var(--sp-font-ui); letter-spacing: -.015em; color: var(--sp-text); }
+html.sp-ui .legal-doc h3 { font: 600 var(--sp-fs-lg)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .legal-doc :is(p, li) { color: var(--sp-text); max-width: 72ch; }
+html.sp-ui .legal-doc a { color: var(--sp-accent-text); text-underline-offset: 3px; }
+html.sp-ui .legal-doc code { border: 0; border-radius: 6px; background: var(--sp-hover); font-family: var(--sp-font-mono); }
+html.sp-ui .legal-doc .legal-note { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text); }
+html.sp-ui .legal-doc table { border-collapse: collapse; }
+html.sp-ui .legal-doc :is(th, td) { border: 0; border-top: 1px solid var(--sp-hair); background: none; }
+html.sp-ui .legal-doc th { border-top: 0; font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .legal-toc { border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
