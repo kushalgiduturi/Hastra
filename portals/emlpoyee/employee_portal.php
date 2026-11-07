@@ -189,7 +189,7 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
 
 <?php $nav_current = ''; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main portal-surface-scrim">
+<div class="main">
 
   <div class="page-header">
     <h1>Employee Portal</h1>

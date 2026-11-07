@@ -1595,7 +1595,7 @@ html.sp-ui.nf-portal .workspace-index { text-shadow: none; }
 
 /* ── 46. Shared portal controls (classes many portal pages define inline) ─ */
 /* primary actions */
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit) {
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve) {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
   min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
   background: var(--sp-accent); color: var(--sp-on-accent);
@@ -1603,32 +1603,32 @@ html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .bt
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); filter: none; cursor: pointer;
   transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2);
 }
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit) svg { width: 16px; height: 16px; fill: currentColor; }
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit):hover:not(:disabled) {
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve) svg { width: 16px; height: 16px; fill: currentColor; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve):hover:not(:disabled) {
   background: color-mix(in srgb, var(--sp-accent) 88%, #fff); transform: translateY(var(--sp-lift));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift);
 }
 /* the roles page lights its save button while edits are pending: a neutral lift, not a glow */
 html.sp-ui.nf-portal .main:has(tr.changed) .btn-save { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift); }
 /* secondary and quiet actions */
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger)) {
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger), .btn-expand, .btn-toggle-add, .btn-nav-portal, .btn-gen-secret, .ledger-btn, .btn-cancel, .btn-cancel-delete, .action-btn.clarify, .action-btn.retest, .action-btn.close, .action-btn.fix, .btn-back) {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
   min-height: 40px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
   background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
   font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none; cursor: pointer;
   transition: background var(--sp-dur-2);
 }
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger)):hover:not(:disabled) { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger), .btn-expand, .btn-toggle-add, .btn-nav-portal, .btn-gen-secret, .ledger-btn, .btn-cancel, .btn-cancel-delete, .action-btn.clarify, .action-btn.retest, .action-btn.close, .action-btn.fix, .btn-back):hover:not(:disabled) { background: var(--sp-press); color: var(--sp-text); }
 html.sp-ui.nf-portal :is(.main, .wrap) :is(.btn-clear.active, .role-filters .btn-clear.active) { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; font-weight: 650; }
 /* destructive actions: soft in tables, solid in the confirming dialog */
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger) {
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger, .btn-remove-row, .btn-remove-member, .btn-delete-req, .btn-delete-task, .btn-delete-file, .action-btn.reject) {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 32px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
   background: rgba(var(--sp-bad-rgb), .13); color: var(--sp-bad); box-shadow: none;
   font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
   transition: background var(--sp-dur-2);
 }
-html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger):hover:not(:disabled) { background: rgba(var(--sp-bad-rgb), .22); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger, .btn-remove-row, .btn-remove-member, .btn-delete-req, .btn-delete-task, .btn-delete-file, .action-btn.reject):hover:not(:disabled) { background: rgba(var(--sp-bad-rgb), .22); }
 html.sp-ui.nf-portal .wrap .actions button.danger { min-height: 40px; padding: 0 var(--sp-4); font-size: var(--sp-fs-sm); }
 html.sp-ui .modal :is(.modal-btn-confirm) {
   min-height: 44px; border: 0; border-radius: var(--sp-r-pill);
@@ -1796,3 +1796,57 @@ html.sp-ui .cd-option { min-height: 38px; padding: 0 var(--sp-3); border-radius:
 html.sp-ui :is(.cd-option:hover, .cd-option.cd-option-highlight) { background: var(--sp-hover); color: var(--sp-text); }
 html.sp-ui .cd-option.cd-option-active { color: var(--sp-accent-text); font-weight: 600; background: none; }
 html.sp-ui .cd-option.cd-option-disabled { color: var(--sp-text-disabled); }
+
+/* ── 49. Portal labels, small headings and IDs ─────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) label:not(.consent-check, .checkbox-wrap, .confirm, .sc-drop, .dropzone, .cell-btn) {
+  font: 550 var(--sp-fs-sm)/1.35 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.team-title, .members-title, .review-form-title, .form-divider, .filter-count, .legend, .month-label, .detail-cell > span:first-child) {
+  font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.team-title, .members-title, .review-form-title) { font-size: var(--sp-fs-sm); font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.filter-count, .legend, .month-label) { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+/* record IDs: a neutral mono chip (the accent is for actions, not labels) */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.req-id-badge, .project-code, .project-code-badge, .req-card-id, .bug-code) {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 0; border-radius: var(--sp-r-sm);
+  font: 400 var(--sp-fs-xs)/1 var(--sp-font-mono); letter-spacing: 0; text-transform: none;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: none;
+}
+
+/* ── 50. Admin pages (phase 4d) ────────────────────────────────────────── */
+/* the audit ledger on the admin portal is the protection strip */
+html.sp-ui.nf-portal .main .ledger {
+  display: flex; align-items: center; gap: var(--sp-5); flex-wrap: wrap;
+  margin: var(--sp-8) 0 0; padding: var(--sp-4) var(--sp-5); border: 0; border-radius: 20px;
+  background: rgba(var(--sp-ok-rgb), .08); box-shadow: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal .main .ledger :is(.ledger-title) { font: 600 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .main .ledger :is(.ledger-desc, .ledger-copy) { font-size: var(--sp-fs-sm); line-height: 1.5; color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main .ledger .ledger-meta { font: 400 var(--sp-fs-xs)/1.4 var(--sp-font-mono); letter-spacing: 0; color: var(--sp-text-3); }
+html.sp-ui.nf-portal .main .ledger .ledger-ok { color: var(--sp-ok); }
+html.sp-ui.nf-portal .main .ledger-breach { border: 0; border-radius: var(--sp-r-card); padding: var(--sp-3) var(--sp-4); background: rgba(var(--sp-bad-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal .main .ledger-breach strong { font-family: var(--sp-font-ui); letter-spacing: 0; color: var(--sp-bad); }
+html.sp-ui.nf-portal .main .ledger-breach code { color: var(--sp-text); }
+
+/* cards and forms inside the panel are flat groups with a hairline */
+html.sp-ui.nf-portal .main :is(.req-card, .project-card, .review-panel, .create-form, .team-section, .webhook-row, .import-results, .review-form, .form-card, .proj-card) {
+  margin: 0; padding: var(--sp-5) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .main :is(.project-card-header, .review-top, .proj-card-header) { padding: 0 0 var(--sp-3); border: 0; background: none; }
+html.sp-ui.nf-portal .main :is(.project-title, .req-card-title) { font: 600 var(--sp-fs-md)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .main :is(.project-meta, .project-req-ref, .req-card-sub, .req-card-client, .review-info, .member-email, .muted-text) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main .member-avatar { border: 0; background: var(--sp-press); color: var(--sp-text); font-family: var(--sp-font-ui); }
+html.sp-ui.nf-portal .main .add-member-row { border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .main .btn-toggle-add { width: 100%; justify-content: center; border-radius: var(--sp-r-ctl); box-shadow: none; outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; background: transparent; }
+html.sp-ui.nf-portal .main .btn-toggle-add:hover { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui.nf-portal .main :is(.detail-row) { border: 0; background: none; }
+html.sp-ui.nf-portal .main .admin-note-existing { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text); }
+html.sp-ui.nf-portal .main :is(.webhook-secret, .webhook-hint code) { font-family: var(--sp-font-mono); border: 0; border-radius: var(--sp-r-sm); background: var(--sp-fill-1); box-shadow: var(--sp-inset); color: var(--sp-text); }
+html.sp-ui.nf-portal .main .webhook-hint { color: var(--sp-text-2); border: 0; background: none; }
+html.sp-ui.nf-portal .main .dropzone { border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main :is(.dropzone:hover, .dropzone.dragover) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+/* attendance matrix: day cells are quiet buttons, status keeps its colour */
+html.sp-ui.nf-portal .main .cell-btn { border: 0; border-radius: var(--sp-r-sm); font-family: var(--sp-font-ui); box-shadow: none; }
+html.sp-ui.nf-portal .main .cell-btn:not([class*="present"], [class*="absent"], [class*="half_day"], [class*="on_leave"], [class*="wfh"]) { background: var(--sp-hover); color: var(--sp-text-3); }
+html.sp-ui.nf-portal .main .emp-col { background: none; border: 0; color: var(--sp-text); }
+html.sp-ui.nf-portal .main .month-nav button { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text); min-width: 36px; min-height: 36px; }

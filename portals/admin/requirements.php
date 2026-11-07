@@ -140,35 +140,13 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p { font-size: 13px; color: var(--text-dim); }
 
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-  .stat-card { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; padding: 1.2rem 1.4rem; position: relative; overflow: hidden; }
-  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .stat-card.blue::before   { background: var(--blue-bright); }
-  .stat-card.yellow::before { background: var(--yellow); }
-  .stat-card.green::before  { background: var(--green); }
-  .stat-card.red::before    { background: var(--red); }
-  .stat-label { font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
-  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
 
-  .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim); background: var(--section-header-bg); }
-  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
-  .section-title svg { width: 15px; height: 15px; fill: var(--accent-bright); }
-  .section-body { padding: 1.4rem; }
 
   .alert { display: flex; align-items: flex-start; gap: 8px; border-radius: 3px; padding: 10px 14px; margin-bottom: 1.2rem; font-size: 13px; border-left: 3px solid; line-height: 1.5; }
   .alert.success { background: var(--green-bg); border-color: var(--green); color: #86efac; }
@@ -177,14 +155,6 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .alert.success svg { fill: var(--green); }
   .alert.error   svg { fill: var(--red); }
 
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead tr { background: var(--section-header-bg); border-bottom: 1px solid var(--border-dim); }
-  th { padding: 10px 14px; text-align: left; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); font-weight: 400; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
-  tbody tr:hover { background: var(--hover-bg); }
-  tbody tr:last-child { border-bottom: none; }
-  td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
   td.muted { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
@@ -254,7 +224,6 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
   .btn-nav-portal svg { width: 14px; height: 14px; fill: var(--accent-bright); }
 
   @media (max-width: 768px) {
-    .stats-row { grid-template-columns: 1fr 1fr; }
     .review-top { grid-template-columns: 1fr; }
     .review-info { border-right: none; border-bottom: 1px solid var(--border-dim); }
   }

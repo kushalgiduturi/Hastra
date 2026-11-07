@@ -291,42 +291,42 @@ html:not(.nf-portal)[data-theme="light"] .section-nav-card:hover {
 [data-theme="light"] .stat-value { color: #0f172a !important; }
 
 /* ── All inputs, textareas, selects ── */
-[data-theme="light"] input[type="text"]:not(.sp-glass *),
-[data-theme="light"] input[type="email"]:not(.sp-glass *),
-[data-theme="light"] input[type="tel"]:not(.sp-glass *),
-[data-theme="light"] input[type="url"]:not(.sp-glass *),
-[data-theme="light"] input[type="password"]:not(.sp-glass *),
-[data-theme="light"] input[type="date"]:not(.sp-glass *),
-[data-theme="light"] input[type="number"]:not(.sp-glass *),
-[data-theme="light"] textarea:not(.sp-glass *),
-[data-theme="light"] .field input[type="text"]:not(.sp-glass *),
-[data-theme="light"] .field input[type="email"]:not(.sp-glass *),
-[data-theme="light"] .field input[type="tel"]:not(.sp-glass *),
-[data-theme="light"] .field input[type="url"]:not(.sp-glass *),
-[data-theme="light"] .field input[type="password"]:not(.sp-glass *),
-[data-theme="light"] .field textarea:not(.sp-glass *),
-[data-theme="light"] .field select:not(.sp-glass *),
-[data-theme="light"] .otp-box:not(.sp-glass *),
-[data-theme="light"] .role-select:not(.sp-glass *),
-[data-theme="light"] .status-select:not(.sp-glass *),
-[data-theme="light"] .comment-input:not(.sp-glass *),
-[data-theme="light"] .member-row select:not(.sp-glass *),
-[data-theme="light"] .add-member-row select:not(.sp-glass *),
-[data-theme="light"] .notes-field textarea:not(.sp-glass *) {
+[data-theme="light"] input[type="text"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="email"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="tel"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="url"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="password"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="date"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] input[type="number"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field input[type="text"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field input[type="email"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field input[type="tel"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field input[type="url"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field input[type="password"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .field select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .otp-box:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .role-select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .status-select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .comment-input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+html:not(.nf-portal)[data-theme="light"] .member-row select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .add-member-row select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .notes-field textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.22) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] input:not(.sp-glass *)::placeholder,
-[data-theme="light"] textarea:not(.sp-glass *)::placeholder,
-[data-theme="light"] .comment-input:not(.sp-glass *)::placeholder { color: #9ca3af !important; }
+[data-theme="light"] input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *)::placeholder,
+[data-theme="light"] textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *)::placeholder,
+[data-theme="light"] .comment-input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *)::placeholder { color: #9ca3af !important; }
 
-[data-theme="light"] input:focus:not(.sp-glass *),
-[data-theme="light"] textarea:focus:not(.sp-glass *),
-[data-theme="light"] select:focus:not(.sp-glass *),
-[data-theme="light"] .otp-box:focus:not(.sp-glass *),
-[data-theme="light"] .comment-input:focus:not(.sp-glass *) {
+[data-theme="light"] input:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] textarea:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] select:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .otp-box:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .comment-input:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   border-color: var(--accent-bright) !important;
   background: #e8eeff !important;
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.12) !important;
@@ -338,7 +338,7 @@ html:not(.nf-portal)[data-theme="light"] .section-nav-card:hover {
 }
 
 /* ── OTP boxes ── */
-[data-theme="light"] .otp-box.filled:not(.sp-glass *) {
+[data-theme="light"] .otp-box.filled:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   border-color: rgba(var(--accent-rgb),0.5) !important;
   background: rgba(var(--accent-rgb),0.08) !important;
 }
@@ -488,32 +488,32 @@ html:not(.nf-portal)[data-theme="light"] tbody tr.deletion-row { background: rgb
 
 /* ── Cards / panels inside portals ── */
 [data-theme="light"] .navy-card,
-[data-theme="light"] .review-panel,
+html:not(.nf-portal)[data-theme="light"] .review-panel,
 [data-theme="light"] .create-task-form,
-[data-theme="light"] .project-card,
-[data-theme="light"] .project-block,
-[data-theme="light"] .proj-card,
-[data-theme="light"] .bug-card,
-[data-theme="light"] .req-card,
-[data-theme="light"] .team-member,
+html:not(.nf-portal)[data-theme="light"] .project-card,
+html:not(.nf-portal)[data-theme="light"] .project-block,
+html:not(.nf-portal)[data-theme="light"] .proj-card,
+html:not(.nf-portal)[data-theme="light"] .bug-card,
+html:not(.nf-portal)[data-theme="light"] .req-card,
+html:not(.nf-portal)[data-theme="light"] .team-member,
 [data-theme="light"] .member-chip,
 [data-theme="light"] .file-chip,
 [data-theme="light"] .steps-box,
-[data-theme="light"] .req-box,
+html:not(.nf-portal)[data-theme="light"] .req-box,
 [data-theme="light"] .drop-zone,
 [data-theme="light"] .file-attach-field {
   background: #f8faff !important;
   border-color: rgba(var(--accent-rgb),0.14) !important;
 }
 
-[data-theme="light"] .project-card-header,
-[data-theme="light"] .proj-card-header,
-[data-theme="light"] .project-block-header {
+html:not(.nf-portal)[data-theme="light"] .project-card-header,
+html:not(.nf-portal)[data-theme="light"] .proj-card-header,
+html:not(.nf-portal)[data-theme="light"] .project-block-header {
   background: rgba(15,23,42,0.02) !important;
   border-bottom-color: rgba(15,23,42,0.08) !important;
 }
-[data-theme="light"] .project-block-header:hover,
-[data-theme="light"] .proj-card-header:hover {
+html:not(.nf-portal)[data-theme="light"] .project-block-header:hover,
+html:not(.nf-portal)[data-theme="light"] .proj-card-header:hover {
   background: rgba(var(--accent-rgb),0.04) !important;
 }
 
@@ -720,22 +720,22 @@ html:not(.nf-portal)[data-theme="light"] .filter-bar select {
 [data-theme="light"] .step-line { background: rgba(15,23,42,0.1) !important; }
 
 /* ── Requirement card (client portal) ── */
-[data-theme="light"] .req-card {
+html:not(.nf-portal)[data-theme="light"] .req-card {
   background: #f8faff !important;
   border-color: rgba(var(--accent-rgb),0.12) !important;
 }
-[data-theme="light"] .req-card:hover {
+html:not(.nf-portal)[data-theme="light"] .req-card:hover {
   border-color: var(--accent-bright) !important;
   box-shadow: 0 0 12px rgba(var(--accent-rgb),0.1) !important;
 }
-[data-theme="light"] .req-card.selected {
+html:not(.nf-portal)[data-theme="light"] .req-card.selected {
   border-color: var(--accent-bright) !important;
   background: rgba(var(--accent-rgb),0.05) !important;
   box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.2) !important;
 }
-[data-theme="light"] .req-card-id    { color: var(--accent-bright) !important; }
-[data-theme="light"] .req-card-title { color: #0f172a !important; }
-[data-theme="light"] .req-card-sub   { color: #334155 !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-id    { color: var(--accent-bright) !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-title { color: #0f172a !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-sub   { color: #334155 !important; }
 
 /* ── Detail rows / inline panels ── */
 [data-theme="light"] .detail-cell { background: rgba(var(--accent-rgb),0.02) !important; }
@@ -789,7 +789,7 @@ html:not(.nf-portal)[data-theme="light"] .filter-bar select {
 }
 
 /* ── Password req box ── */
-[data-theme="light"] .req-box {
+html:not(.nf-portal)[data-theme="light"] .req-box {
   background: rgba(15,23,42,0.025) !important;
   border-color: rgba(15,23,42,0.1) !important;
 }
@@ -911,8 +911,8 @@ html:not(.nf-portal)[data-theme="light"] .filter-bar select {
 [data-theme="light"] .recaptcha-wrap { filter: invert(0) !important; }
 
 /* ── Attempt dots ── */
-[data-theme="light"] .attempt-dot:not(.sp-glass *) { background: rgba(15,23,42,0.1) !important; }
-[data-theme="light"] .attempt-dot.used:not(.sp-glass *) { background: var(--red) !important; box-shadow: 0 0 5px rgba(var(--red-rgb),0.4) !important; }
+[data-theme="light"] .attempt-dot:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) { background: rgba(15,23,42,0.1) !important; }
+[data-theme="light"] .attempt-dot.used:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) { background: var(--red) !important; box-shadow: 0 0 5px rgba(var(--red-rgb),0.4) !important; }
 [data-theme="light"] .attempts-label { color: #475569 !important; }
 
 /* ── Countdown / timer ── */
@@ -1076,19 +1076,19 @@ html:not(.nf-portal)[data-theme="light"] .modal-btn-cancel {
   color: #374151 !important;
 }
 
-html:not(.nf-portal)[data-theme="light"] .otp-box:not(.sp-glass *) {
+html:not(.nf-portal)[data-theme="light"] .otp-box:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.22) !important;
   color: #0f172a !important;
 }
 
-html:not(.nf-portal)[data-theme="light"] .otp-box:focus:not(.sp-glass *) {
+html:not(.nf-portal)[data-theme="light"] .otp-box:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   border-color: var(--red) !important;
   background: #fee2e2 !important;
   box-shadow: 0 0 0 3px rgba(var(--red-rgb),0.12) !important;
 }
 
-html:not(.nf-portal)[data-theme="light"] .otp-box.filled:not(.sp-glass *) {
+html:not(.nf-portal)[data-theme="light"] .otp-box.filled:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   border-color: rgba(var(--red-rgb),0.4) !important;
   background: rgba(var(--red-rgb),0.05) !important;
 }

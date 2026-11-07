@@ -75,7 +75,7 @@ if ($dcheck_row && ((int)$dcheck_row['inv_count'] > 0 || (int)$dcheck_row['del_c
 
 <?php $nav_current = 'projects'; include __DIR__ . '/_nav.php'; ?>
 
-<div class="main portal-surface-scrim">
+<div class="main">
 
   <div class="page-header">
     <h1><?= htmlspecialchars($ctx['company']['company_name'] ?? 'Client Portal') ?></h1>

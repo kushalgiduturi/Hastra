@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4c done (sysadmin portal + the shared portal layer).** Next: 4d admin portal (admin_portal, project_portal, requirements, delivery, deployments, billing, attendance, leave_management, directory, create_employee, doc_editor, security, testing).
+**Phase 4d done (admin portal).** Next: 4e employee portal (employee_portal, my_tasks, team_lead, testing_portal, deployment_portal).
 
 ## Tool status (2026-11-07)
 
@@ -93,6 +93,16 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - This layer touches every portal page at once. Groups 4d-4g still need their own inline styles migrated (example: admin project_portal project blocks are still boxed in light theme, section titles uppercase).
 - delete_user.php is an endpoint (no markup); nothing to restyle.
 - Test changed: 12_netflix_portals stack test (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings on the 4c files.
+
+## Phase 4d notes
+
+- Dead generic inline rules stripped from 12 admin pages (scratchpad helper `strip_dead.py`: grid backgrounds, boxed shell, stat cards, table base, section nav).
+- Shared button groups in part 6 now include the admin action classes (create, save review/attendance/policy, confirm/add member, expand/toggle, nav, secret, ledger, approve/clarify/retest/reject, remove row/member).
+- Part 6 sections 49-50: sentence-case labels and small headings in portal panels, neutral mono ID chips, the audit ledger as the protection strip (fixes the baseline light-theme contrast bug), flat request/project/review cards, add-member row, dropzone, webhook secret, attendance cells and month nav.
+- Retired the old per-page plate: `portal-surface-scrim` removed from the four dashboards and its block (with !important light tiles, ember glows and a global gradient confirm button) deleted from hastra-atmosphere.css.
+- core/theme.css: the light input/OTP/attempt-dot exclusion now also skips portal panels and modals (`:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *)`), and 21 more structural light rules (project/request/bug/team cards and headers) skip spatial portals.
+- doc_editor was not captured (needs a doc id); it inherits the portal layer.
+- Test changed: 10_visual_architecture plate test (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings.
 
 ## Files done
 

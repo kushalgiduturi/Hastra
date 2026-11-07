@@ -95,17 +95,20 @@ t('every page mounts the shared scene and pointer stack through core/theme.js', 
     expect(str_contains($k, 'root.insertBefore(frame, b)'), 'the scene must hang outside <body>');
 });
 
-t('dashboards wear the plate; deliverables carry cloth and the handover seal', function () {
+t('dashboards sit on the spatial panel; deliverables carry cloth and the handover seal', function () {
+    // spatial UI (phase 4d): the per-page plate class is gone; every portal
+    // .main is the depth-2 glass panel from theme-spatial.css (part 5)
+    $sp = file_get_contents(ASTRA_ROOT . '/assets/css/theme-spatial.css');
+    expect(str_contains($sp, 'html.sp-ui.nf-portal :is(.main, .wrap) {') && str_contains($sp, 'background: var(--sp-fill-2);'), 'portal pages lost the spatial panel');
     foreach (['portals/admin/admin_portal.php', 'portals/emlpoyee/employee_portal.php', 'portals/emlpoyee/testing_portal.php', 'portals/client/client_portal.php'] as $p)
-        expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), 'class="main portal-surface-scrim"'), "$p lost its plate");
+        expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), '<div class="main">') && !str_contains(file_get_contents(ASTRA_ROOT . "/$p"), 'portal-surface-scrim'), "$p still wears the old plate");
     foreach (['portals/deliveries/dossier.php' => 'dossier', 'portals/projects/signoff.php' => 'certificate', 'portals/security/scan_center.php' => 'report'] as $p => $kind)
         expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), "data-cloth=\"$kind\""), "$p lost data-cloth=\"$kind\"");
     foreach (['portals/deliveries/dossier.php', 'portals/projects/signoff.php'] as $p)
         expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), 'data-handover-seal'), "$p lost its handover seal");
-    $css = file_get_contents(ASTRA_ROOT . '/assets/css/hastra-atmosphere.css');
-    foreach (['rgba(10, 14, 18, 0.88)', 'rgba(255, 255, 255, 0.92)', 'blur(16px)', 'rgba(223, 231, 224, 0.15)', '#cbd5e1', 'linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 55%, var(--accent-dim) 100%)'] as $v)
-        expect(str_contains($css, $v), "plate spec drifted: $v");
-    expect(!preg_match('~#663af3|102,\s*58,\s*243~i', $css), 'violet crept back into the plate');
+    // the panel recipe now lives in theme-spatial.css; it must stay within the blur budget
+    expect(preg_match('~--sp-blur-2:\s*(\d+)px~', $sp, $m) === 1 && (int)$m[1] <= 24, 'panel blur over the 24px budget');
+    expect(!preg_match('~#663af3|102,\s*58,\s*243~i', $sp . file_get_contents(ASTRA_ROOT . '/assets/css/hastra-atmosphere.css')), 'violet crept back into the plate');
 });
 
 t('login: the card is always centred and clickable, never 3-D-projected', function () {

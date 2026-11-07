@@ -53,82 +53,8 @@ html.hastra-atmos-static[data-theme="light"] body {
     linear-gradient(#7eb4e8, #fde68a 60%, #fffbeb) fixed !important;
 }
 
-/* ── Dashboard plates: charred-cypress glass by night, rice paper by day ──
-   One plate per page (the .main column) rather than one per table: every
-   backdrop-filter re-samples a scene that repaints each frame, so the count
-   of them is what costs. */
-.portal-surface-scrim {
-  background: rgba(10, 14, 18, 0.88);
-  backdrop-filter: blur(16px) saturate(130%);
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
-  border: 1px solid rgba(223, 231, 224, 0.15);
-  border-radius: 16px;
-}
-.main.portal-surface-scrim { margin-top: 1.25rem; margin-bottom: 2rem; }
-@media (max-width: 720px) { .main.portal-surface-scrim { border-radius: 0; border-left: 0; border-right: 0; } }
-[data-theme="light"] .portal-surface-scrim {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: #cbd5e1;
-  box-shadow: 0 24px 60px -30px rgba(15, 27, 46, .30);
-}
-
-/* crisp enterprise type on the plate */
-html:not([data-theme="light"]) .portal-surface-scrim h1,
-html:not([data-theme="light"]) .portal-surface-scrim h2,
-html:not([data-theme="light"]) .portal-surface-scrim h3,
-html:not([data-theme="light"]) .portal-surface-scrim strong { color: #ffffff; }
-html:not([data-theme="light"]) .portal-surface-scrim,
-html:not([data-theme="light"]) .portal-surface-scrim td,
-html:not([data-theme="light"]) .portal-surface-scrim th,
-html:not([data-theme="light"]) .portal-surface-scrim .section-nav-label,
-html:not([data-theme="light"]) .portal-surface-scrim .badge { color: #e2ecf8; }
-[data-theme="light"] .portal-surface-scrim h1,
-[data-theme="light"] .portal-surface-scrim h2,
-[data-theme="light"] .portal-surface-scrim h3 { color: #0b1220; }
-
-/* the cards on the plate: inset bone hairlines, an ember glow on hover */
-.portal-surface-scrim .section-nav-card,
-.portal-surface-scrim .stat-card {
-  background: rgba(16, 21, 26, 0.72);
-  border: 1px solid rgba(223, 231, 224, 0.15);
-  box-shadow: inset 0 1px 0 rgba(223, 231, 224, 0.06);
-}
-.portal-surface-scrim .section-nav-card:hover,
-.portal-surface-scrim .section-nav-card:focus-visible {
-  border-color: rgba(224, 35, 28, 0.55);
-  box-shadow: inset 0 1px 0 rgba(223, 231, 224, 0.08), 0 12px 30px -16px rgba(224, 35, 28, 0.65), 0 0 0 1px rgba(var(--accent-rgb), 0.18);
-}
-.portal-surface-scrim .section-nav-icon { background: rgba(224, 35, 28, 0.12); color: #ff6a4d; }
-[data-theme="light"] .portal-surface-scrim .section-nav-card,
-[data-theme="light"] .portal-surface-scrim .stat-card {
-  background: rgba(255, 255, 255, 0.96) !important;
-  border-color: #cbd5e1 !important;
-}
-[data-theme="light"] .portal-surface-scrim .section-nav-card:hover {
-  border-color: rgba(224, 35, 28, 0.45) !important;
-  box-shadow: 0 14px 28px -14px rgba(224, 35, 28, 0.35), 0 0 0 1px rgba(var(--accent-rgb), 0.12) !important;
-}
-[data-theme="light"] .portal-surface-scrim .section-nav-icon { background: rgba(224, 35, 28, 0.08); color: #c81e17; }
-
-/* primary actions: the theme accent, with a soft ember glow */
-.portal-surface-scrim button[type="submit"],
-.portal-surface-scrim .btn-primary,
-.portal-surface-scrim .ledger-btn,
-.portal-surface-scrim .modal-btn-confirm,
-.modal-btn-confirm {
-  background: linear-gradient(135deg, var(--accent-bright) 0%, var(--accent) 55%, var(--accent-dim) 100%) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(var(--accent-rgb), 0.45) !important;
-  box-shadow: 0 10px 26px -12px rgba(var(--accent-rgb), 0.85), 0 0 18px -6px rgba(var(--accent-rgb), 0.45);
-  transition: box-shadow .3s ease, filter .3s ease, transform .2s ease;
-}
-.portal-surface-scrim button[type="submit"]:hover,
-.portal-surface-scrim .btn-primary:hover,
-.portal-surface-scrim .ledger-btn:hover,
-.modal-btn-confirm:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 14px 32px -12px rgba(var(--accent-rgb), 0.95), 0 0 26px -4px rgba(var(--accent-rgb), 0.55);
-}
+/* The per-page dashboard plate (.portal-surface-scrim) that lived here is
+   replaced by the spatial page panel (assets/css/theme-spatial.css part 5). */
 
 /* ── Cloth hosts ─────────────────────────────────────────────────────────
    The fabric hangs at -1 inside the card's own stacking context: above the
