@@ -377,7 +377,7 @@ html.sp-ui .sp-sr { position: absolute; width: 1px; height: 1px; overflow: hidde
 html.sp-ui .sp-glass {
   --_fill: var(--sp-fill-2); --_blur: var(--sp-blur-2); --_sat: var(--sp-sat-2);
   --_shadow: var(--sp-shadow-2); --_radius: var(--sp-r-panel);
-  position: relative; isolation: isolate;
+  isolation: isolate;
   background: var(--_fill);
   border-radius: var(--_radius);
   -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
@@ -386,6 +386,9 @@ html.sp-ui .sp-glass {
 }
 html.sp-ui .sp-d3 { --_fill: var(--sp-fill-3); --_blur: var(--sp-blur-3); --_sat: var(--sp-sat-3); --_shadow: var(--sp-shadow-3); --_radius: var(--sp-r-pill); }
 html.sp-ui .sp-d4 { --_fill: var(--sp-fill-4); --_blur: var(--sp-blur-4); --_sat: var(--sp-sat-4); --_shadow: var(--sp-shadow-4); --_radius: var(--sp-r-float); }
+/* positioned so the pointer light can sit under the content; zero specificity,
+   so chrome that is fixed or sticky (top bar, dock, drawer) keeps its own */
+:where(html.sp-ui .sp-glass) { position: relative; }
 /* never nest backdrop-filter: a glass inside glass keeps its fill, loses its blur */
 html.sp-ui .sp-glass .sp-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }
 /* pointer light: painted under the content, only while hovered */
@@ -912,3 +915,163 @@ html.sp-ui .sp-protect[data-tone="bad"] .sp-protect-icon { color: var(--sp-bad);
   html.sp-ui .sp-dialog { padding: var(--sp-6); }
   html.sp-ui .sp-otp input { width: 42px; height: 52px; }
 }
+
+/* ==========================================================================
+   Part 3: shared chrome (phase 4a). These style hooks that other scripts
+   build (core/theme.js loader, assets/js/hastra-ux.js dialogs and palette,
+   the consent bar). Their base files (core/theme.css, hastra-ux.css,
+   compliance.css) also serve pages that are not spatial yet (the landing
+   page), so the spatial look is layered here, scoped to html.sp-ui, until
+   phase 4i moves those pages over and the old rules can go.
+   The top bar, drawer, dock, tour and profile barrier are restyled in their
+   own files (sidebar-nav.css, core/dock.css, tour.css, profile-barrier.css).
+   ========================================================================== */
+
+/* ── 26. Page loader (core/theme.js #hastra-page-loader); timings untouched ── */
+html.sp-ui #hastra-page-loader {
+  z-index: var(--sp-z-loader, 100);
+  background: var(--sp-solid-4);
+  background-image: none;
+}
+html.sp-ui .hastra-loader-spinner {
+  width: 56px; height: 56px; border: 0; box-shadow: none;
+  animation: none;
+}
+html.sp-ui .hastra-loader-spinner::before,
+html.sp-ui .hastra-loader-spinner::after {
+  content: ""; position: absolute; border-radius: 50%; border: 2px solid transparent;
+  animation: sp-spin 1s var(--sp-ease-in-out) infinite;
+}
+html.sp-ui .hastra-loader-spinner::before { inset: 0; border-top-color: var(--sp-accent); border-right-color: rgba(var(--sp-accent-rgb), .35); }
+html.sp-ui .hastra-loader-spinner::after { inset: 10px; border-top-color: var(--sp-text-2); border-bottom-color: transparent; animation-duration: 1.4s; animation-direction: reverse; }
+html.sp-ui .loader-status-text {
+  font: 500 var(--sp-fs-sm) var(--sp-font-ui); letter-spacing: 0; color: var(--sp-text-2);
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui .hastra-loader-spinner::before, html.sp-ui .hastra-loader-spinner::after { animation-duration: 3s; }
+}
+
+/* ── 27. UX layer (assets/js/hastra-ux.js) ─────────────────────────────── */
+html.sp-ui .hx-skip {
+  z-index: 2147483000; padding: 0 var(--sp-5); min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: var(--sp-r-pill); background: var(--sp-accent); color: var(--sp-on-accent) !important;
+  font: 600 var(--sp-fs-sm) var(--sp-font-ui); box-shadow: var(--sp-shadow-3);
+}
+html.sp-ui .hx-skip:focus-visible { outline: 2px solid var(--sp-text); outline-offset: 3px; }
+
+/* dialogs: the shade dims (no blur), the dialog is depth-4 glass */
+html.sp-ui .hx-shade { background: var(--sp-dim); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.sp-ui .hx-dlg {
+  box-sizing: border-box; padding: var(--sp-8); border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui); text-shadow: none;
+  transition: transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui .hx-dlg-title { margin: 0 0 var(--sp-2); font-size: var(--sp-fs-xl); font-weight: 650; letter-spacing: -.015em; color: var(--sp-text); }
+html.sp-ui .hx-dlg-msg { margin: 0 0 var(--sp-6); font-size: var(--sp-fs-md); line-height: var(--sp-lh-body); color: var(--sp-text-2); }
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input) {
+  box-sizing: border-box; min-height: 48px; padding: 0 var(--sp-4); margin: 0 0 var(--sp-2);
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.3 var(--sp-font-ui);
+}
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input):focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input)::placeholder { color: var(--sp-text-3); }
+html.sp-ui .hx-dlg-actions { justify-content: flex-end; gap: var(--sp-2); margin-top: var(--sp-6); }
+html.sp-ui .hx-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: var(--sp-accent); color: var(--sp-on-accent); text-shadow: none; text-decoration: none;
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2);
+}
+html.sp-ui .hx-btn:hover { transform: translateY(var(--sp-lift)); filter: none; }
+html.sp-ui .hx-btn:active { transform: scale(.98); }
+html.sp-ui .hx-btn--danger { background: var(--sp-bad-solid); }
+html.sp-ui .hx-link {
+  min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: transparent; color: var(--sp-text); text-decoration: none; text-shadow: none;
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui);
+}
+html.sp-ui .hx-link:hover { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui :is(.hx-btn, .hx-link, .hx-pal-input, .hx-dlg-input):focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+/* Ctrl+K palette */
+html.sp-ui .hx-pal { padding: var(--sp-4); }
+html.sp-ui .hx-pal-list { margin-top: var(--sp-2); }
+html.sp-ui .hx-pal-opt {
+  align-items: center; min-height: 48px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-sm);
+  color: var(--sp-text);
+}
+html.sp-ui .hx-pal-opt[aria-selected="true"] { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .hx-pal-title { font-size: var(--sp-fs-md); font-weight: 550; }
+html.sp-ui .hx-pal-group { font: 500 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui :is(.hx-pal-empty, .hx-pal-hint) { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+
+/* top progress line */
+html.sp-ui .hx-progress span { background: var(--sp-accent); }
+
+/* floating controls (back to top, contact): depth-3 glass buttons */
+html.sp-ui .hx-fabs { bottom: max(18px, env(safe-area-inset-bottom)); }
+html.sp-ui .hx-fab {
+  width: 48px; height: 48px;
+  background: var(--sp-fill-3); color: var(--sp-text);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2), opacity var(--sp-dur-2);
+}
+html.sp-ui .hx-fab:hover { filter: none; background: var(--sp-solid-3); transform: translateY(var(--sp-lift)); }
+html.sp-ui .hx-fab:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui .hx-contact { opacity: 1; }
+@media (max-width: 760px) { html.sp-ui .hx-fabs { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 72px); } }
+
+/* copy buttons: a small pill, not underlined mono text */
+html.sp-ui .hx-copy {
+  min-height: 32px; padding: 0 var(--sp-3); border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  transition: background var(--sp-dur-2), color var(--sp-dur-2);
+}
+html.sp-ui .hx-copy:hover { background: var(--sp-press); }
+html.sp-ui .hx-copy.is-done { background: rgba(var(--sp-ok-rgb), .14); color: var(--sp-ok); }
+html.sp-ui .hx-copy:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* inline field errors */
+html.sp-ui :is(.field-error, .hx-field-error) { color: var(--sp-bad); font-family: var(--sp-font-ui); }
+html.sp-ui .field-hint { color: var(--sp-text-2); }
+
+/* ── 28. Cookie consent bar (legal/_cookie_banner.php) ─────────────────── */
+html.sp-ui .consent-bar {
+  left: var(--sp-bar-inset); right: var(--sp-bar-inset); bottom: var(--sp-bar-inset);
+  border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui);
+}
+html.sp-ui .consent-in { padding: var(--sp-6) var(--sp-8); gap: var(--sp-4) var(--sp-8); }
+html.sp-ui .consent-copy h2 { font-size: var(--sp-fs-lg); font-weight: 650; color: var(--sp-text); }
+html.sp-ui .consent-copy p { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .consent-copy a { color: var(--sp-accent-text); text-underline-offset: 3px; }
+html.sp-ui .consent-toggle { min-height: 40px; font-size: var(--sp-fs-sm); color: var(--sp-text); }
+html.sp-ui .consent-toggle small { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .consent-switch { width: 44px; height: 26px; background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); }
+html.sp-ui .consent-switch::after { top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); transition: transform var(--sp-dur-3) var(--sp-ease-spring); }
+html.sp-ui .consent-toggle input:checked + .consent-switch { background: var(--sp-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2); }
+html.sp-ui .consent-toggle input:checked + .consent-switch::after { transform: translateX(18px); }
+html.sp-ui .consent-toggle input:focus-visible + .consent-switch { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui .consent-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui);
+  transition: background var(--sp-dur-2), transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .consent-btn:hover { background: var(--sp-press); border-color: transparent; }
+html.sp-ui .consent-btn--primary { background: var(--sp-accent); color: var(--sp-on-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); }
+html.sp-ui .consent-btn--primary:hover { background: color-mix(in srgb, var(--sp-accent) 88%, #fff); }
+@media (max-width: 760px) { html.sp-ui .consent-in { padding: var(--sp-5); } }

@@ -188,62 +188,11 @@ input, select, textarea, button { font-family: var(--font-sans); }
    unused now.) */
 
 
-/* ── Topnav ── */
-[data-theme="light"] .topnav {
-  background: rgba(246,248,252,0.98) !important;
-  border-bottom-color: rgba(var(--accent-rgb),0.15) !important;
-  box-shadow: 0 1px 3px rgba(15,23,42,0.08) !important;
-  /* A blurred pane over the 40px grid pattern is what causes the
-     pixelated/mosaic rendering reported in light theme — the topnav's
-     own background is already ~98% opaque, so dropping the blur costs
-     nothing visually and removes the artifact. */
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
 
-/* ── Floating dock quick-nav (core/dock.css) — was hardcoded dark with
-   no light-theme rule at all, so it showed as a dark blurred pill on an
-   otherwise light page. ── */
-[data-theme="light"] .hastra-dock {
-  background: rgba(255,255,255,0.92) !important;
-  border-color: rgba(15,23,42,0.1) !important;
-  box-shadow: 0 10px 30px -5px rgba(15,23,42,0.12), 0 0 0 1px rgba(15,23,42,0.05) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-[data-theme="light"] .hastra-dock-item {
-  background: #ffffff !important;
-  border-color: rgba(15,23,42,0.1) !important;
-  color: #334155 !important;
-}
-[data-theme="light"] .hastra-dock-item:hover,
-[data-theme="light"] .hastra-dock-item.is-current {
-  color: var(--accent-bright) !important;
-  border-color: rgba(var(--accent-rgb),0.35) !important;
-  background: rgba(var(--accent-rgb),0.1) !important;
-}
-[data-theme="light"] .hastra-dock-tooltip {
-  background: #0f172a !important;
-  border-color: rgba(15,23,42,0.15) !important;
-  color: #f8fafc !important;
-}
 
-[data-theme="light"] .nav-title { color: #0f172a !important; }
 [data-theme="light"] .nav-divider { background: rgba(15,23,42,0.12) !important; }
 
-[data-theme="light"] .nav-badge {
-  color: #0891b2 !important;
-  background: rgba(8,145,178,0.08) !important;
-  border-color: rgba(8,145,178,0.2) !important;
-}
-[data-theme="light"] .nav-badge.lead {
-  color: var(--purple) !important;
-  background: rgba(var(--purple-rgb),0.08) !important;
-  border-color: rgba(var(--purple-rgb),0.2) !important;
-}
 
-[data-theme="light"] .nav-user { color: #334155 !important; }
-[data-theme="light"] .nav-user span { color: #0f172a !important; }
 
 [data-theme="light"] .nav-link {
   color: #334155 !important;
@@ -285,16 +234,6 @@ input, select, textarea, button { font-family: var(--font-sans); }
   color: var(--accent-bright) !important;
 }
 
-/* ── Theme toggle button ── */
-[data-theme="light"] .btn-theme-toggle {
-  background: rgba(15,23,42,0.05) !important;
-  border-color: rgba(15,23,42,0.12) !important;
-  color: #334155 !important;
-}
-[data-theme="light"] .btn-theme-toggle:hover {
-  background: rgba(var(--accent-rgb),0.08) !important;
-  color: var(--accent-bright) !important;
-}
 
 /* ── Auth card (login, register, otp, forgot, reset, verify) ──
    Translucent, not flat solid, so the cinematic background still shows

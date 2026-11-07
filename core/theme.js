@@ -304,6 +304,13 @@
     s.src = base + 'assets/js/hastra-ux.js' + q;
     s.defer = true;
     document.head.appendChild(s);
+    // spatial UI motion layer: pointer light, tilt and tab indicators. It only
+    // acts on .sp-* markup, and switches itself off for reduced motion,
+    // touch screens and low-perf mode (assets/js/spatial-fx.js).
+    const fx = document.createElement('script');
+    fx.src = base + 'assets/js/spatial-fx.js' + q;
+    fx.defer = true;
+    document.head.appendChild(fx);
   })();
 
 })();

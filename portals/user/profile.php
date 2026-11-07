@@ -723,7 +723,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 
 <?php render_profile_barrier($conn); ?>
 
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
     <div class="nav-icon">

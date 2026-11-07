@@ -116,35 +116,6 @@ html.nf-portal body {
 }
 html.nf-portal ::selection { background: var(--accent-primary); color: #fff; }
 
-/* ── Top bar: cinema glass ── */
-html.nf-portal .topnav {
-  background: var(--topnav-bg) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%);
-  border-bottom: 1px solid var(--border-subtle) !important;
-  box-shadow: none !important;
-}
-html.nf-portal .topnav .nav-title {
-  font-weight: 900 !important; letter-spacing: .14em !important; text-transform: uppercase;
-  color: var(--accent-primary) !important;
-}
-html.nf-portal .nav-badge {
-  font-family: var(--font-mono) !important; font-size: 10px !important; font-weight: 700 !important;
-  letter-spacing: .14em !important; text-transform: uppercase !important;
-  color: var(--badge-text) !important; background: var(--badge-bg) !important;
-  border: 1px solid var(--badge-border) !important; border-radius: 4px !important;
-}
-html.nf-portal .nav-user { color: var(--text-muted) !important; }
-html.nf-portal .nav-user span { color: var(--text-primary) !important; }
-html.nf-portal .nav-avatar {
-  background: var(--accent-primary) !important; color: #fff !important; border: 0 !important;
-  box-shadow: 0 0 16px var(--accent-glow) !important;
-}
-html.nf-portal .btn-theme-toggle {
-  font-family: var(--font-mono) !important; font-size: 10.5px !important; letter-spacing: .12em !important; text-transform: uppercase !important;
-  background: var(--chip-bg) !important; color: var(--text-secondary) !important;
-  border: 1px solid var(--border-subtle) !important; border-radius: 4px !important;
-}
-html.nf-portal .btn-theme-toggle:hover { border-color: var(--border-accent) !important; color: var(--text-primary) !important; }
 
 /* ── Page header: the headline sits straight under the top bar ── */
 html.nf-portal .page-header { margin-bottom: 2.4rem !important; }
@@ -247,11 +218,6 @@ html.nf-portal .modal-overlay > :is(.modal, .modal-box, .modal-card, div:first-c
   box-shadow: var(--shadow-card) !important; color: var(--text-primary) !important;
 }
 
-/* ── Sidebar drawer & dock pick up the palette ── */
-html.nf-portal .sidebar-drawer { background: var(--bg-surface) !important; border-right: 1px solid var(--border-subtle) !important; }
-html.nf-portal .sidebar-link.current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
-html.nf-portal .hastra-dock { background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; }
-html.nf-portal .hastra-dock-item.is-current { color: var(--accent-primary) !important; background: var(--badge-bg) !important; }
 
 /* ── Scrollbars ── */
 html.nf-portal { scrollbar-color: rgba(var(--accent-primary-rgb), .45) var(--bg-canvas); }

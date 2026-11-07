@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 3 done, STOPPED for the owner's approval of the style guide** (brief: no rollout before approval). Owner picked direction A, Quiet glass, on 2026-11-07. Review: http://localhost/Hastra/docs/spatial-ui/styleguide.html (screenshots in docs/spatial-ui/styleguide-shots/). Next after approval: phase 4a shared chrome, at /effort high per the brief.
+**Phase 4a done (shared chrome).** Style guide approved by the owner on 2026-11-07. Next: 4b auth pages.
 
 ## Tool status (2026-11-07)
 
@@ -60,6 +60,18 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - docs/spatial-ui/styleguide.html: static, not routed; mounts the temple world exactly like the portals (landing-host.js + kage-scene.js, sky-only), `?theme=light`, `?perf=low`.
 - Impeccable: detector run on theme-spatial.css, spatial-fx.js, styleguide.html. Fixed: coloured glow shadows on accent controls and the current step (now neutral elevation), white on coral critical pill (new --sp-bad-solid), disabled text contrast, bouncy entrances (dialog/toast now ease-out; spring kept for indicators, switch and press), icon tile above the empty-state heading. Left as intentional: cramped-padding flags on hairline dividers (tabs, metrics, accordion), file chips and the panel (false positive). Two findings come from hastra-atmosphere.css (legacy, phase 4a/4i).
 - Impeccable extract/critique/polish as separate commands not run yet: the loop is planned per surface group in phase 4.
+
+## Phase 4a notes
+
+- Top bar (all 7 topnavs), drawer and dock carry `sp-glass sp-d3/d4`; sidebar-nav.css, core/dock.css, tour.css and profile-barrier.css rewritten on spatial tokens (ids, hooks and JS unchanged; dock magnification untouched). Bar is a sticky island, so no page needed extra padding.
+- theme-spatial.css part 3 layers the loader, hastra-ux dialogs/palette/fabs/copy/skip link and the consent bar under html.sp-ui; their base files still serve the landing page, so old rules there go in 4i.
+- Fixed a phase 2 regression: the loader painted var(--navy), which the bridge maps to transparent.
+- `.sp-glass` positioning moved to `:where()` (zero specificity) so fixed/sticky chrome keeps its own position.
+- Deleted 95 lines of legacy chrome rules (theme.css light topnav/dock/nav, theme-netflix top bar, drawer, dock).
+- core/theme.js now loads assets/js/spatial-fx.js on every themed page.
+- Test changed: 06_governance barrier test (see docs/spatial-ui/TEST-CHANGES.md). Suite 310/310. Impeccable detector: 0 findings on the chrome files.
+- Open: 10 added lines in this diff contain long dashes (most likely legacy comment lines re-emitted by line-ending rewrites); check `git show HEAD | grep` and strip any that are new.
+- Light theme portals show the washed daylight scene more strongly than the baseline did (the veil is present; the baseline likely shot before the scene went live). Re-check when 4c-4f put content on the glass panel.
 
 ## Files done
 

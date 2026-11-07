@@ -10,7 +10,7 @@ $nav_current = $nav_current ?? '';
 $__admin_company = astra_session_company($conn);
 $__is_solo        = astra_is_solo_company($__admin_company);
 ?>
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>

@@ -28,10 +28,15 @@ t('invalid gender value is refused', function () {
     expect(!(json_of($r)['ok'] ?? true), 'accepted a bad value');
 });
 
-t('barrier is boxless and the streaming banner is gone from every stylesheet', function () {
+t('barrier is a spatial glass card over an unblurred scrim; the streaming banner is gone', function () {
+    // spatial UI (docs/spatial-ui): the boxless barrier became a depth-4 glass
+    // card. The scrim dims without blurring so backdrop-filter never nests.
     $css = file_get_contents(ASTRA_ROOT . '/assets/css/profile-barrier.css');
-    expect(!preg_match('~\.profile-barrier-modal\s*\{[^}]*(border:\s*1px|box-shadow|background:\s*var\(--navy-card\))~s', $css), 'the barrier modal is a box again');
-    expect(!preg_match('~\.pb-opt\s*\{[^}]*(border:\s*1\.5px|background:\s*var\(--input-bg\))~s', $css) && str_contains($css, 'border-bottom: 2px solid transparent'), 'the choices are boxes again');
+    $modal = preg_match('~\.profile-barrier-modal\s*\{([^}]*)\}~s', $css, $m) ? $m[1] : '';
+    expect(str_contains($modal, 'var(--sp-fill-4)') && str_contains($modal, 'backdrop-filter: blur(var(--sp-blur-4))'), 'the barrier modal is not spatial glass');
+    $shade = preg_match('~\.profile-barrier-overlay\s*\{([^}]*)\}~s', $css, $m) ? $m[1] : '';
+    expect($shade !== '' && !str_contains($shade, 'backdrop-filter'), 'the barrier scrim blurs (nested backdrop-filter)');
+    expect(!preg_match('~\.pb-opt\s*\{[^}]*border:\s*1\.5px~s', $css), 'the choices are outlined boxes again');
     foreach (glob(ASTRA_ROOT . '/assets/css/*.css') as $c) expect(!str_contains(file_get_contents($c), 'NOW STREAMING'), basename($c) . ' still draws the NOW STREAMING banner');
     foreach (glob(ASTRA_ROOT . '/{portals/*,core,auth}/*.php', GLOB_BRACE) as $p) expect(!str_contains(file_get_contents($p), 'NOW STREAMING'), basename($p) . ' still prints the NOW STREAMING banner');
 });
