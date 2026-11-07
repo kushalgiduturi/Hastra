@@ -103,6 +103,8 @@ $total_closed_bugs   = array_sum(array_column($bug_stats, 'closed_bugs'));
     .stats-row { grid-template-columns: 1fr 1fr; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

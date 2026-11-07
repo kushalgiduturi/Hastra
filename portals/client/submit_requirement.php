@@ -221,6 +221,8 @@ $my_completed_projects = mysqli_stmt_get_result($cp_stmt)->fetch_all(MYSQLI_ASSO
   .btn-submit:hover { background: var(--accent-dim); box-shadow: 0 0 20px rgba(var(--accent-rgb),0.3); }
 </style>
 <?php astra_compliance_css(); ?>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

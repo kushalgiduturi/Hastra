@@ -90,6 +90,8 @@ $users = mysqli_query($conn, company_schema_ready($conn)
   .badge-pending_employee { background: rgba(245,158,11,0.1);   color: var(--yellow);      border: 1px solid rgba(245,158,11,0.2); }
   .badge-client           { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

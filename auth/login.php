@@ -911,6 +911,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
   html.low-perf-mode .card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body data-intro-manual data-cursor-off>
 

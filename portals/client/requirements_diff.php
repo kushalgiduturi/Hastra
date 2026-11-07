@@ -142,6 +142,8 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
   .badge.ack { background: var(--green-bg); color: #86efac; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <div class="main">

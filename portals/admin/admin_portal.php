@@ -79,6 +79,8 @@ $ledger_anchor = astra_audit_anchor_read();
   .ledger-breach strong { display: block; color: #f87171; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; font-size: 12.5px; margin-bottom: 4px; }
   .ledger-breach code { font-family: 'Share Tech Mono', monospace; color: #fff; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body data-tour-page="admin/admin_portal">
 

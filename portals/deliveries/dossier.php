@@ -151,6 +151,8 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   .badge.shredded { background: var(--red-bg); color: #fca5a5; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <div class="main">

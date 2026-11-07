@@ -716,6 +716,8 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     .otp-wrap .otp-box { width: 40px; height: 46px; font-size: 18px; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

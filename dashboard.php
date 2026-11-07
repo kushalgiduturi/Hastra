@@ -276,6 +276,8 @@ if (!isset($_SESSION["user_id"])) {
 
   .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

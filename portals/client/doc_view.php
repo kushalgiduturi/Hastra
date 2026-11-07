@@ -69,6 +69,8 @@ $live = $project ? safe_url($project['deployment_link']) : '';
     .doc-paper { border: 0; padding: 0; background: none; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'docs'; include __DIR__ . '/_nav.php'; ?>

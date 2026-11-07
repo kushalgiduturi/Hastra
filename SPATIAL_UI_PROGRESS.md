@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 1 done, waiting for the owner's pick of direction** (the brief says to show the Phase 0 inventory and the Phase 1 direction, then proceed). Recommended: A, Quiet glass (`docs/spatial-ui/DIRECTIONS.md`). Next: Phase 2 tokens in `assets/css/theme-spatial.css`.
+**Phase 2 done (tokens, fallbacks, wiring).** Owner picked direction A, Quiet glass, on 2026-11-07. Next: Phase 3, the component library (theme-spatial.css part 2), assets/js/spatial-fx.js and docs/spatial-ui/styleguide.html, then STOP for the owner's approval before any rollout.
 
 ## Tool status (2026-11-07)
 
@@ -44,10 +44,20 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Tests: `C:\xampp\php\php.exe -d output_buffering=0 tests\runner.php`.
 - The shell tool collapses `\\` in strings; write Python helpers to files instead of heredocs when backslashes matter.
 
+## Phase 2 notes
+
+- `assets/css/theme-spatial.css` part 1: depth scale, glass fills/blur/saturate per depth, specular edge and shadow stacks, radii, spacing and type scale (Onest UI, Share Tech Mono for IDs), motion tokens (springs as CSS `linear()`), pointer-glow and tilt variables, z-index map, legacy token bridge, and fallbacks for low-perf, reduced transparency, reduced motion, coarse pointer and forced colours.
+- Legacy surface tokens (`--navy-card`, `--bg-card`...) map to DENSE fills, not glass: an unmigrated box has no blur, so translucency would put text on the scene. `--gradient-headline` maps to a flat text-colour paint (headlines clip to it; `none` made them vanish).
+- Mosaic fix: `html.sp-ui body { animation-fill-mode: backwards }`.
+- Wiring: core/theme.js always adds `html.sp-ui` before first paint; the 53 pages that link theme-fog-boxless.css now also link theme-spatial.css as the last element in `<head>` (theme.js sits above every stylesheet, so anything it injected would load first, not last). 404.php is standalone by design (no scripts) and is handled in phase 4i.
+- Deliberate sequencing choice: the brief's phase 2 says to replace the nf-portal / netflix-bento loading path, but removing it before the components exist would strip every portal back to the old boxed core/theme.css look and break the boxless tests mid-branch. Those files stay loaded and their rules are deleted surface by surface in phase 4 (non-negotiable 3), with the files themselves removed in phase 6.
+- Tests after phase 2: 310 / 310 pass.
+
 ## Files done
 
 - PRODUCT.md, docs/spatial-ui/INVENTORY.md, REFERENCES.md, COMPONENTS.md, DIRECTIONS.md, mocks/dashboard.html, mocks/shots/*.png
 - .gitignore: `.local/` and `docs/spatial-ui/baseline/`
+- Phase 2: assets/css/theme-spatial.css (part 1), core/theme.js (sp-ui class), spatial link in 53 pages
 
 ## Files remaining
 

@@ -259,6 +259,8 @@ $rejected_count = count(array_filter($all_reqs, fn($r) => in_array($r["status"],
     .review-info { border-right: none; border-bottom: 1px solid var(--border-dim); }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

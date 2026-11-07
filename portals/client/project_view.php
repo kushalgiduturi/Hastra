@@ -89,6 +89,8 @@ if ($projects && astra_escrow_ready($conn)) {
     .pv-stage::before { display: none; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'projects'; include __DIR__ . '/_nav.php'; ?>

@@ -182,6 +182,8 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   .leave-badge.rejected { color: var(--red);    background: rgba(var(--red-rgb),0.1); border: 1px solid rgba(var(--red-rgb),0.25); }
   .no-leave { font-size: 12.5px; color: var(--text-dim); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body data-tour-page="emlpoyee/employee_portal">
 

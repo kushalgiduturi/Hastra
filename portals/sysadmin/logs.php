@@ -132,6 +132,8 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   .btn-more { background: rgba(var(--accent-rgb),0.08); border: 1px solid var(--border); border-radius: 3px; color: var(--accent-bright); font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 20px; cursor: pointer; transition: background 0.2s; }
   .btn-more:hover { background: rgba(var(--accent-rgb),0.15); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

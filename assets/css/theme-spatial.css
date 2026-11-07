@@ -1,0 +1,352 @@
+/* ==========================================================================
+   Hastra spatial UI: "Quiet glass" (docs/spatial-ui/DIRECTIONS.md, A)
+
+   Everything is a layer in a depth stack over the 3-D temple world:
+     depth 0  the world (#hastra-kage-scene, assets/js/kage-scene.js)
+     depth 1  insets: fields, tracks, wells (no blur)
+     depth 2  the page panel (one per page, the main glass)
+     depth 3  floating bar and raised controls
+     depth 4  dock, drawer, dialogs, popovers, toasts
+   Glass only where something floats. Content inside a panel is flat.
+
+   Scope: html.sp-ui (set by core/theme.js). Loaded by a hard-coded <link>
+   after each page's legacy stylesheets, so it follows them in the cascade.
+   Budget: blur <= 24px, at most 3 blurred layers in a viewport, never nested,
+   never on rows or list items.
+
+   Part 1 (this phase): tokens, the legacy-token bridge and the fallbacks.
+   Part 2 (phase 3): components.
+   ========================================================================== */
+
+/* ── 1. Tokens: dark (default) ─────────────────────────────────────────── */
+html.sp-ui {
+  /* type */
+  --sp-font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-font-mono: 'Share Tech Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --sp-fs-xs: .75rem;     /* 12 */
+  --sp-fs-sm: .8125rem;   /* 13 */
+  --sp-fs-md: .9375rem;   /* 15 body */
+  --sp-fs-lg: 1.125rem;   /* 18 section titles */
+  --sp-fs-xl: 1.5rem;     /* 24 */
+  --sp-fs-2xl: 2rem;      /* 32 metrics */
+  --sp-fs-display: clamp(1.875rem, 3.4vw, 2.625rem); /* 30-42 page titles */
+  --sp-lh-tight: 1.1;
+  --sp-lh-body: 1.55;
+  --sp-track-display: -.025em;
+  --sp-track-label: .02em;
+
+  /* spacing (4px base) */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
+  --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
+  --sp-gutter: clamp(12px, 3vw, 24px);
+  --sp-panel-pad: clamp(20px, 3.2vw, 40px);
+  --sp-bar-inset: 12px;
+  --sp-bar-h: 56px;
+  --sp-page-max: 1180px;
+
+  /* radii */
+  --sp-r-panel: 28px;
+  --sp-r-float: 24px;   /* dock, dialogs, popovers */
+  --sp-r-card: 16px;    /* inner groups, ledger strips */
+  --sp-r-ctl: 14px;     /* inputs, tiles */
+  --sp-r-sm: 10px;      /* icon wells, chips */
+  --sp-r-pill: 999px;
+
+  /* brand (hue identity unchanged) */
+  --sp-accent: #e50914;           /* fills, marks, rings */
+  --sp-accent-text: #ff4655;      /* small accent text, 5.8:1 on the panel */
+  --sp-accent-rgb: 229, 9, 20;
+  --sp-on-accent: #ffffff;
+  --sp-ring: #ff4655;
+
+  /* text */
+  --sp-text: #ffffff;
+  --sp-text-2: rgba(255, 255, 255, .76);
+  --sp-text-3: rgba(255, 255, 255, .62);
+  --sp-text-disabled: rgba(255, 255, 255, .42);
+
+  /* status (text-safe on the panel fill) */
+  --sp-ok: #4ade80;     --sp-ok-rgb: 74, 222, 128;
+  --sp-warn: #fbbf24;   --sp-warn-rgb: 251, 191, 36;
+  --sp-bad: #ff6b76;    --sp-bad-rgb: 255, 107, 118;
+  --sp-info: #67e8f9;   --sp-info-rgb: 103, 232, 249;
+
+  /* lines and washes */
+  --sp-hair: rgba(255, 255, 255, .09);
+  --sp-hair-strong: rgba(255, 255, 255, .16);
+  --sp-hover: rgba(255, 255, 255, .06);
+  --sp-press: rgba(255, 255, 255, .1);
+  --sp-row-hover: rgba(255, 255, 255, .04);
+
+  /* glass fills per depth (dark: obsidian, slightly cool) */
+  --sp-fill-1: rgba(9, 10, 14, .46);
+  --sp-fill-2: rgba(10, 11, 16, .64);
+  --sp-fill-3: rgba(18, 20, 27, .72);
+  --sp-fill-4: rgba(14, 15, 20, .86);
+  /* dense fills: no-blur fallbacks and unmigrated legacy surfaces */
+  --sp-solid-1: rgba(12, 13, 18, .9);
+  --sp-solid-2: rgba(12, 13, 18, .94);
+  --sp-solid-3: rgba(20, 22, 29, .96);
+  --sp-solid-4: rgba(16, 17, 23, .98);
+
+  /* blur and saturation per depth (depth 1 never blurs) */
+  --sp-blur-2: 18px;  --sp-sat-2: 1.35;
+  --sp-blur-3: 16px;  --sp-sat-3: 1.3;
+  --sp-blur-4: 20px;  --sp-sat-4: 1.3;
+
+  /* specular edge: bright top/left, dim bottom/right */
+  --sp-edge-hi: rgba(255, 255, 255, .14);
+  --sp-edge-side: rgba(255, 255, 255, .06);
+  --sp-edge-lo: rgba(255, 255, 255, .03);
+  --sp-edge: inset 0 1px 0 var(--sp-edge-hi), inset 1px 0 0 var(--sp-edge-side), inset 0 -1px 0 var(--sp-edge-lo);
+  --sp-inset: inset 0 1px 2px rgba(0, 0, 0, .28), inset 0 -1px 0 var(--sp-edge-lo);
+
+  /* shadows grow with depth: offset + soft blur, never a halo */
+  --sp-shadow-1: none;
+  --sp-shadow-2: 0 24px 60px -18px rgba(0, 0, 0, .65), 0 2px 6px rgba(0, 0, 0, .35);
+  --sp-shadow-3: 0 14px 34px -10px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4);
+  --sp-shadow-4: 0 28px 70px -16px rgba(0, 0, 0, .72), 0 4px 12px rgba(0, 0, 0, .4);
+  --sp-shadow-lift: 0 20px 40px -14px rgba(0, 0, 0, .6), 0 2px 6px rgba(0, 0, 0, .35);
+  --sp-shadow-accent: 0 6px 18px -6px rgba(var(--sp-accent-rgb), .7);
+  --sp-shadow-accent-lift: 0 12px 26px -8px rgba(var(--sp-accent-rgb), .75);
+
+  /* the world under glass */
+  --sp-world-wash: radial-gradient(120% 80% at 50% 0%, rgba(5, 5, 5, .15), rgba(5, 5, 5, .55));
+  --sp-world-filter: none;
+  --sp-dim: rgba(3, 4, 7, .4);   /* dialog backdrop, never blurred */
+
+  /* motion */
+  --sp-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --sp-ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  /* spring, stiffness 280 / damping 25 / mass .8 (fluid-tabs), sampled */
+  --sp-ease-spring: linear(0, .32 8%, .72 18%, .96 28%, 1.04 38%, 1.03 48%, 1 62%, 1);
+  /* press, stiffness 550 / damping 15 / mass 1.1 (dock), one short overshoot */
+  --sp-ease-press: linear(0, .5 10%, 1.08 26%, 1.02 40%, .99 55%, 1);
+  --sp-dur-1: 150ms;  --sp-dur-2: 220ms;  --sp-dur-3: 280ms;  --sp-dur-4: 350ms;
+
+  /* pointer light and tilt (assets/js/spatial-fx.js writes --sp-mx / --sp-my) */
+  --sp-mx: 50%;
+  --sp-my: -40%;
+  --sp-glow: rgba(255, 255, 255, .07);
+  --sp-glow-size: 420px;
+  --sp-glow-opacity: 1;
+  --sp-tilt-max: 3deg;
+  --sp-lift: -1px;
+
+  /* z-index map (legacy overlays such as the tour keep their own values
+     until they are migrated in phase 4a) */
+  --sp-z-world: 0;
+  --sp-z-page: 1;
+  --sp-z-raised: 10;
+  --sp-z-sticky: 20;
+  --sp-z-bar: 50;
+  --sp-z-dock: 60;
+  --sp-z-drawer: 70;
+  --sp-z-popover: 80;
+  --sp-z-modal: 90;
+  --sp-z-toast: 95;
+  --sp-z-loader: 100;
+
+  color-scheme: dark;
+}
+
+/* ── 2. Tokens: light ──────────────────────────────────────────────────── */
+html.sp-ui[data-theme="light"] {
+  --sp-accent: #2563eb;
+  --sp-accent-text: #1d4ed8;
+  --sp-accent-rgb: 37, 99, 235;
+  --sp-ring: #2563eb;
+
+  --sp-text: #000000;
+  --sp-text-2: #2b3442;
+  --sp-text-3: #3d4756;
+  --sp-text-disabled: #6b7484;
+
+  --sp-ok: #15803d;     --sp-ok-rgb: 21, 128, 61;
+  --sp-warn: #b45309;   --sp-warn-rgb: 180, 83, 9;
+  --sp-bad: #c62031;    --sp-bad-rgb: 198, 32, 49;
+  --sp-info: #0e7490;   --sp-info-rgb: 14, 116, 144;
+
+  --sp-hair: rgba(15, 23, 42, .1);
+  --sp-hair-strong: rgba(15, 23, 42, .18);
+  --sp-hover: rgba(15, 23, 42, .05);
+  --sp-press: rgba(15, 23, 42, .09);
+  --sp-row-hover: rgba(15, 23, 42, .035);
+
+  --sp-fill-1: rgba(15, 23, 42, .05);
+  --sp-fill-2: rgba(255, 255, 255, .74);
+  --sp-fill-3: rgba(255, 255, 255, .8);
+  --sp-fill-4: rgba(255, 255, 255, .92);
+  --sp-solid-1: rgba(241, 244, 248, .96);
+  --sp-solid-2: rgba(250, 251, 253, .97);
+  --sp-solid-3: rgba(255, 255, 255, .98);
+  --sp-solid-4: #ffffff;
+
+  --sp-sat-2: 1.6;  --sp-sat-3: 1.5;  --sp-sat-4: 1.4;
+
+  --sp-edge-hi: rgba(255, 255, 255, .95);
+  --sp-edge-side: rgba(255, 255, 255, .5);
+  --sp-edge-lo: rgba(15, 23, 42, .06);
+  --sp-inset: inset 0 1px 2px rgba(15, 23, 42, .1), inset 0 -1px 0 rgba(255, 255, 255, .7);
+
+  --sp-shadow-2: 0 24px 60px -20px rgba(15, 23, 42, .28), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-3: 0 12px 30px -10px rgba(15, 23, 42, .25), 0 1px 3px rgba(15, 23, 42, .08);
+  --sp-shadow-4: 0 28px 70px -18px rgba(15, 23, 42, .32), 0 4px 12px rgba(15, 23, 42, .1);
+  --sp-shadow-lift: 0 18px 36px -14px rgba(15, 23, 42, .3), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-accent: 0 6px 18px -6px rgba(var(--sp-accent-rgb), .55);
+  --sp-shadow-accent-lift: 0 12px 26px -8px rgba(var(--sp-accent-rgb), .6);
+
+  /* by day the world is softened and washed, so glass never samples hard
+     detail (this replaces the frosted veil and avoids the old mosaic) */
+  --sp-world-wash: linear-gradient(180deg, rgba(244, 246, 250, .55), rgba(244, 246, 250, .35) 50%, rgba(244, 246, 250, .6));
+  --sp-world-filter: blur(6px) saturate(1.15) brightness(1.08);
+  --sp-dim: rgba(15, 23, 42, .28);
+
+  --sp-glow: rgba(37, 99, 235, .08);
+
+  color-scheme: light;
+}
+
+/* ── 3. Legacy token bridge ────────────────────────────────────────────────
+   Pages not yet migrated keep their inline styles (var(--navy-card),
+   var(--text-dim), var(--hairline)...). These map them onto the spatial
+   tokens. Surface tokens map to the DENSE fills: an unmigrated box has no
+   backdrop blur, so a translucent fill would put text straight on the scene.
+   Declared on html.sp-ui, which follows html.nf-portal and
+   html[data-theme] blocks in the cascade at equal or higher specificity. */
+html.sp-ui {
+  --font-sans: var(--sp-font-ui);
+  --font-mono: var(--sp-font-mono);
+
+  /* core/theme.css */
+  --navy: transparent;
+  --navy-deep: var(--sp-solid-1);
+  --navy-mid: var(--sp-solid-1);
+  --navy-card: var(--sp-solid-2);
+  --accent: var(--sp-accent);
+  --accent-bright: var(--sp-accent-text);
+  --accent-dim: color-mix(in srgb, var(--sp-accent) 78%, #000);
+  --accent-rgb: var(--sp-accent-rgb);
+  --accent-glow: rgba(var(--sp-accent-rgb), .3);
+  --accent-soft: rgba(var(--sp-accent-rgb), .12);
+  --border: var(--sp-hair-strong);
+  --border-dim: var(--sp-hair);
+  --text: var(--sp-text);
+  --text-dim: var(--sp-text-2);
+  --red: var(--sp-bad);       --red-rgb: var(--sp-bad-rgb);   --red-bg: rgba(var(--sp-bad-rgb), .12);
+  --green: var(--sp-ok);      --green-bg: rgba(var(--sp-ok-rgb), .12);
+  --yellow: var(--sp-warn);   --yellow-bg: rgba(var(--sp-warn-rgb), .12);
+  --cyan: var(--sp-info);
+  --purple: var(--sp-text-3);
+  --grid-line: transparent;
+  --topnav-bg: var(--sp-fill-3);
+  --input-bg: var(--sp-fill-1);
+  --hover-bg: var(--sp-hover);
+  --section-header-bg: transparent;
+  --shadow: none;
+
+  /* assets/css/theme-netflix.css */
+  --bg-canvas: transparent;
+  --bg-surface: var(--sp-solid-1);
+  --bg-card: var(--sp-solid-2);
+  --bg-card-hover: var(--sp-solid-3);
+  --border-subtle: var(--sp-hair);
+  --border-accent: rgba(var(--sp-accent-rgb), .5);
+  --accent-primary: var(--sp-accent);
+  --accent-primary-rgb: var(--sp-accent-rgb);
+  --text-primary: var(--sp-text);
+  --text-secondary: var(--sp-text-2);
+  --text-muted: var(--sp-text-3);
+  --badge-bg: rgba(var(--sp-accent-rgb), .12);
+  --badge-border: transparent;
+  --badge-text: var(--sp-accent-text);
+  --chip-bg: var(--sp-hover);
+  --shadow-card: var(--sp-shadow-3);
+  --spotlight-color: transparent;
+  --ambient-glow: transparent;
+  /* headlines are clipped to this gradient (transparent text colour), so it
+     must stay a paint: a flat one in the text colour, no gradient text */
+  --gradient-headline: linear-gradient(var(--sp-text), var(--sp-text));
+
+  /* assets/css/netflix-bento.css and the Labs layer */
+  --hairline: var(--sp-hair);
+  --hairline-accent: rgba(var(--sp-accent-rgb), .35);
+  --lx-text: var(--sp-text);
+  --lx-accent: var(--sp-accent);
+
+  /* theme-fog-boxless.css glass names used by the auth pages */
+  --surface-deep-glass: var(--sp-solid-2);
+  --color-glass-edge: var(--sp-hair);
+  --color-ice-highlight: var(--sp-text);
+  --color-frost-glow: var(--sp-text-2);
+  --color-moon-mist: var(--sp-text-2);
+  --color-fog-veil: var(--sp-text-3);
+}
+
+/* ── 4. Page-level fixes that the glass depends on ──────────────────────── */
+/* Glass must sample the scene. core/theme.css fades body in with fill mode
+   `both`, which keeps an opacity animation held on <body> forever and makes
+   body a backdrop root: backdrop-filter inside the page then only sees the
+   page (the old light-theme "mosaic"). `backwards` plays the same fade and
+   holds nothing once it ends. */
+html.sp-ui body { animation-fill-mode: backwards; }
+html.sp-ui ::selection { background: rgba(var(--sp-accent-rgb), .32); color: var(--sp-text); }
+html.sp-ui #hastra-kage-scene { filter: var(--sp-world-filter); }
+html.sp-ui[data-theme="light"] #hastra-kage-scene { transform: scale(1.04); }
+html.sp-ui :focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+/* ── 5. Fallbacks ──────────────────────────────────────────────────────── */
+/* Weak devices (assets/js/performance-guard.js): no blur, dense tint. */
+html.sp-ui.low-perf-mode {
+  --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+  --sp-fill-2: var(--sp-solid-2);
+  --sp-fill-3: var(--sp-solid-3);
+  --sp-fill-4: var(--sp-solid-4);
+  --sp-glow-opacity: 0;
+  --sp-tilt-max: 0deg;
+  --sp-world-filter: none;
+}
+/* Users who ask for less transparency get near-solid surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  html.sp-ui {
+    --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+    --sp-fill-1: var(--sp-solid-1);
+    --sp-fill-2: var(--sp-solid-2);
+    --sp-fill-3: var(--sp-solid-3);
+    --sp-fill-4: var(--sp-solid-4);
+    --sp-glow-opacity: 0;
+  }
+}
+/* No tilt, no spring, no parallax; transitions collapse to near-instant. */
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui {
+    --sp-ease-spring: linear;
+    --sp-ease-press: linear;
+    --sp-dur-1: 1ms; --sp-dur-2: 1ms; --sp-dur-3: 1ms; --sp-dur-4: 1ms;
+    --sp-tilt-max: 0deg;
+    --sp-lift: 0px;
+  }
+}
+/* Touch: no pointer light, no tilt. */
+@media (pointer: coarse) {
+  html.sp-ui { --sp-glow-opacity: 0; --sp-tilt-max: 0deg; }
+}
+/* Windows high contrast and similar: system colours, real borders, no
+   translucency, no decorative shadow or glow. */
+@media (forced-colors: active) {
+  html.sp-ui {
+    --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+    --sp-glow-opacity: 0;
+    --sp-tilt-max: 0deg;
+  }
+  html.sp-ui :is(.sp-glass, .sp-panel, .sp-bar, .sp-dock, .sp-dialog, .sp-popover, .sp-drawer, .sp-toast) {
+    background: Canvas !important;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    forced-color-adjust: none;
+  }
+  html.sp-ui :focus-visible { outline-color: Highlight; }
+}

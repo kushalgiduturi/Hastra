@@ -278,6 +278,8 @@ $status_labels = ['pending_client' => 'Awaiting client', 'completed' => 'Complet
   .otp-box { background: rgba(255,255,255,0.03); border: 1px dashed var(--border-dim); border-radius: 3px; padding: 1rem; margin-top: 10px; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <div class="main">

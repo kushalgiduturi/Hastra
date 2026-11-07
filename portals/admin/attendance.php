@@ -403,6 +403,8 @@ if ($employees) {
   .modal-btn-confirm { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px; cursor: pointer; }
   .modal-btn-cancel { background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px 16px; cursor: pointer; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

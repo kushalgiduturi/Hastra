@@ -182,6 +182,8 @@ $leave_type_labels = ["general" => "General", "sick" => "Sick", "maternity" => "
 
   @media (max-width: 768px) { .stats-row { grid-template-columns: 1fr; } .policy-row { grid-template-columns: 1fr; } }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

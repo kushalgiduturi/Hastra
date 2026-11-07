@@ -491,6 +491,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   .card .footer-links a, .card .forgot-link { color: var(--color-frost-glow) !important; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

@@ -108,6 +108,8 @@ while ($row = mysqli_fetch_assoc($deploy_result)) {
 
   @media (max-width: 768px) {}
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

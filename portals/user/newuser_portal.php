@@ -376,6 +376,8 @@ verify_session($conn, ["client", "pending_employee"]);
     50%       { opacity: 0.4; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

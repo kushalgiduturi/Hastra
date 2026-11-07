@@ -175,6 +175,8 @@ $account_type_ready = db_column_exists($conn, 'companies', 'account_type');
 
   /* ── TOPNAV ── */
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'migrate'; include __DIR__ . '/_nav.php'; ?>

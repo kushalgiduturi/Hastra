@@ -120,6 +120,8 @@ $action_labels = [
   .export-link { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent-bright); text-decoration: none; letter-spacing: 0.04em; }
   .export-link:hover { text-decoration: underline; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'security'; include __DIR__ . '/_nav.php'; ?>

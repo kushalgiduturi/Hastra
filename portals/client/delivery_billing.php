@@ -223,6 +223,8 @@ unset($dr);
   .modal h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
   .modal p  { font-size: 13px; color: var(--text-dim); margin-bottom: 1.4rem; line-height: 1.5; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

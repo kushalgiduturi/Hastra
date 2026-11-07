@@ -108,7 +108,9 @@ body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);back
 @keyframes dashIn{to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){.workspace-index .dash-card{animation:none;opacity:1;transform:none}}
 @media(max-width:560px){.workspace-index .account{display:none}}
-</style></head>
+</style><!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
+</head>
 <body class="workspace-index">
 <?php render_profile_barrier($conn); ?>
 <header class="bar">

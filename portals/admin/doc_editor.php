@@ -116,6 +116,8 @@ $has_key  = anthropic_api_key() !== '';
   .busy { display: none; font-size: 12px; color: var(--text-dim); }
   form.generating .busy { display: block; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php render_profile_barrier($conn); ?>

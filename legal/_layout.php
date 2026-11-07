@@ -22,6 +22,8 @@ function legal_page_start(string $slug, string $title, string $summary): void {
 <link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <?php astra_compliance_css(); ?>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= $b ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body class="legal-page" data-atmosphere-scene-off>
 <a class="sr-only" href="#legal-main">Skip to content</a>

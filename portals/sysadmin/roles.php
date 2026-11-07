@@ -302,6 +302,8 @@ foreach ($company_sections as $sec) {
   .sending-spinner::after { content: ''; display: block; width: 28px; height: 28px; border: 2px solid var(--border-dim); border-top-color: var(--red); border-radius: 50%; margin: 12px auto 0; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

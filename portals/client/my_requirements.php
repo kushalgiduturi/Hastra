@@ -447,6 +447,8 @@ $status_order = ["pending_review", "under_review", "approved"];
   }
   .modal-btn-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

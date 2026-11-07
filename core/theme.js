@@ -148,6 +148,12 @@
   const saved = localStorage.getItem(THEME_KEY) || localStorage.getItem(LEGACY_THEME_KEY) || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
 
+  // Spatial UI root class. Every rule in assets/css/theme-spatial.css is
+  // scoped under html.sp-ui; which pages actually wear the spatial system is
+  // decided by whether they link that stylesheet (portals, auth, labs, legal),
+  // so setting the class here, before first paint, is enough.
+  document.documentElement.classList.add('sp-ui');
+
   // Update button once DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {

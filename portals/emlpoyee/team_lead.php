@@ -576,6 +576,8 @@ function format_bytes($bytes) {
     .form-row-2 { grid-template-columns: 1fr; }
   }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

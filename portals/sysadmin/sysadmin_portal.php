@@ -43,6 +43,8 @@ $logged_in_name   = $logged_in_data["name"] ?? $_SESSION["user_name"];
   .page-header h1 { font-size: 24px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; margin-bottom: 4px; }
   .page-header p { font-size: 13px; color: var(--text-dim); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 
