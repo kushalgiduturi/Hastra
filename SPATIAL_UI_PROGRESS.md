@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4f done (client portal).** Next: 4g shared flows (portals/index.php, projects/signoff, deliveries/dossier + terminal, security/scan_center, user/profile + newuser_portal).
+**Phase 4g done (shared flows).** Next: 4h Labs (labs/index, crypto, siem, syllabus, auth; tools-cyber.css, labs-showcase.css, .lx-out readable in both themes, guides/popovers, FAQ accordion).
 
 ## Tool status (2026-11-07)
 
@@ -118,6 +118,17 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - core/client_pages.css rewritten on the spatial tokens: its duplicate top bar, theme toggle, logout/profile buttons and boxed shell are gone (the uppercase theme label came from there); messages, metric strip, upload hints, pill buttons, roster import grid (problem/note rows tinted instead of 3px side markers), team pills, documentation rows, code chips, severity text and the one-time secret well remain.
 - project_view, team and doc_view were not captured (need ids or an IT manager); they use the same layer.
 - Suite 310/310. Detector: 0 findings after the grid fix.
+
+## Phase 4g notes
+
+- Panel selector extended to `.sc-main` (Scan Center), `.ht-terminal` (handover terminal) and `.workspace-index > main` (workspace landing).
+- Workspace landing: its own bar carries `sp-glass sp-d3` and floats as the island; tiles flat with tilt; role chip and theme toggle restyled.
+- dashboard.php welcome card carries `sp-glass sp-auth-card` (auth card styles).
+- profile.php and newuser_portal.php now link sidebar-nav.css (after their inline styles) so their own top bars become the island; nav-link, logout and profile pills, profile labels and tabs restyled.
+- Handover terminal: terminal is the panel, console and payload are inset wells, state pills, mono code field. Scan Center: drop zones, flat stage and matrix, severity chips, flat table, glass drawer and toast; the "SECURITY" eyebrow is hidden (craft floor).
+- Dead grid backgrounds removed from portals/index.php, dashboard.php (with its accent glow), dossier.php and signoff.php.
+- signoff and newuser_portal not captured (need state); dossier and terminal shown in their empty states.
+- Test tweak: 10_visual_architecture panel check matches the selector prefix (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings.
 
 ## Files done
 

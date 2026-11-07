@@ -117,13 +117,9 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: var(--navy); color: var(--text); font-family: var(--font-sans);
-         background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-         background-size: 40px 40px; }
-  .main { max-width: 760px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+  body { margin: 0; min-height: 100vh; background: var(--navy); color: var(--text); font-family: var(--font-sans); }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
   .lede { color: var(--text-dim); font-size: 13px; margin: 0 0 1.4rem; line-height: 1.6; }
-  .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; padding: 1.4rem; margin-bottom: 1.4rem; }
   .alert { border-radius: 3px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 13px; border-left: 3px solid; line-height: 1.6; }
   .alert.success { background: var(--green-bg); border-color: var(--green); color: #86efac; }
   .alert.error   { background: var(--red-bg);   border-color: var(--red);   color: #fca5a5; }
@@ -143,9 +139,6 @@ $nav_path = $user_role === 'client' ? 'client' : ($user_role === 'employee' ? 'e
   .payload-box { font-family: 'Share Tech Mono', monospace; font-size: 13px; background: #0d1424; border: 1px solid var(--border-dim);
                  border-radius: 3px; padding: 1rem; white-space: pre-wrap; word-break: break-word; color: #e2e8f0; }
   .shred-note { color: var(--red); font-size: 12px; margin-top: 10px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-  th { text-align: left; padding: 8px 10px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; text-transform: uppercase; font-size: 10px; border-bottom: 1px solid var(--border-dim); }
-  td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .badge { padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
   .badge.live { background: var(--green-bg); color: #86efac; }
   .badge.shredded { background: var(--red-bg); color: #fca5a5; }

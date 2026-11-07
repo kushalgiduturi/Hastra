@@ -20,10 +20,6 @@ verify_session($conn, ["client", "pending_employee"]);
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
@@ -151,14 +147,6 @@ verify_session($conn, ["client", "pending_employee"]);
   }
 
   /* ── MAIN ── */
-  .main {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
   /* ── WELCOME CARD ── */
   .welcome-card {
@@ -376,7 +364,8 @@ verify_session($conn, ["client", "pending_employee"]);
     50%       { opacity: 0.4; }
   }
 </style>
-<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<!-- spatial UI: the shared top bar, then the spatial layer, last in the cascade -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/sidebar-nav.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>

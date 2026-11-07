@@ -71,7 +71,7 @@
   display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px;
   border: 0; border-radius: var(--sp-r-pill, 999px); cursor: pointer;
   background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
-  font: 550 var(--sp-fs-sm, 13px)/1 var(--sp-font-ui);
+  font: 550 var(--sp-fs-sm, 13px)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
   transition: background var(--sp-dur-2, .2s);
 }
 .btn-theme-toggle:hover { background: var(--sp-press); }

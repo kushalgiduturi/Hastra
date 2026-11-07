@@ -99,7 +99,7 @@ t('dashboards sit on the spatial panel; deliverables carry cloth and the handove
     // spatial UI (phase 4d): the per-page plate class is gone; every portal
     // .main is the depth-2 glass panel from theme-spatial.css (part 5)
     $sp = file_get_contents(ASTRA_ROOT . '/assets/css/theme-spatial.css');
-    expect(str_contains($sp, 'html.sp-ui.nf-portal :is(.main, .wrap) {') && str_contains($sp, 'background: var(--sp-fill-2);'), 'portal pages lost the spatial panel');
+    expect(str_contains($sp, 'html.sp-ui.nf-portal :is(.main, .wrap') && str_contains($sp, 'background: var(--sp-fill-2);'), 'portal pages lost the spatial panel');
     foreach (['portals/admin/admin_portal.php', 'portals/emlpoyee/employee_portal.php', 'portals/emlpoyee/testing_portal.php', 'portals/client/client_portal.php'] as $p)
         expect(str_contains(file_get_contents(ASTRA_ROOT . "/$p"), '<div class="main">') && !str_contains(file_get_contents(ASTRA_ROOT . "/$p"), 'portal-surface-scrim'), "$p still wears the old plate");
     foreach (['portals/deliveries/dossier.php' => 'dossier', 'portals/projects/signoff.php' => 'certificate', 'portals/security/scan_center.php' => 'report'] as $p => $kind)

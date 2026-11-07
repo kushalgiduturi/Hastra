@@ -24,11 +24,6 @@ if (!isset($_SESSION["user_id"])) {
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%),
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: auto, 40px 40px, 40px 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -287,7 +282,7 @@ if (!isset($_SESSION["user_id"])) {
   <div class="pulse p2"></div>
 </div>
 
-<div class="card">
+<div class="card sp-glass sp-auth-card">
 
   <div class="brand">
     <div class="brand-icon">
