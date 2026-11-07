@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4d done (admin portal).** Next: 4e employee portal (employee_portal, my_tasks, team_lead, testing_portal, deployment_portal).
+**Phase 4e done (employee portal).** Next: 4f client portal (client_portal, my_projects, my_requirements, requirements_diff, submit_requirement, project_view, delivery_billing, team, docs, doc_view, security_view).
 
 ## Tool status (2026-11-07)
 
@@ -103,6 +103,14 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - core/theme.css: the light input/OTP/attempt-dot exclusion now also skips portal panels and modals (`:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *)`), and 21 more structural light rules (project/request/bug/team cards and headers) skip spatial portals.
 - doc_editor was not captured (needs a doc id); it inherits the portal layer.
 - Test changed: 10_visual_architecture plate test (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings.
+
+## Phase 4e notes
+
+- Dead generic inline rules stripped from the five employee pages.
+- Part 6 section 51: team lead's task form as a raised depth-3 group (no blur), member chips as pills, project block and task rows flat, progress track, deployment bug counters as tinted pills, priority badges, native file pickers.
+- core/theme.css: the light "All primary buttons" and green deploy blocks now skip spatial surfaces (they forced a hover glow, and a green deploy button by day only).
+- Known small leftover: the testing portal's evidence picker row and an empty-state outline under the team lead form keep their page styles; revisit in the phase 6 sweep.
+- Suite 310/310. Detector: 0 findings.
 
 ## Files done
 

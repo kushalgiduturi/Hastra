@@ -115,19 +115,11 @@ $leave_period_label = ($company["leave_cycle"] ?? 'monthly') === 'yearly_rollove
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p  { font-size: 13px; color: var(--text-dim); }
 
   /* ── Leave modal ── */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }

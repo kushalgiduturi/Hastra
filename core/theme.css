@@ -344,45 +344,45 @@ html:not(.nf-portal)[data-theme="light"] .member-row select:not(.sp-glass *, .nf
 }
 
 /* ── All primary buttons ── */
-[data-theme="light"] .btn-save,
-[data-theme="light"] .btn-create,
-[data-theme="light"] .btn-submit,
-[data-theme="light"] .btn-login,
-[data-theme="light"] .btn-send,
-[data-theme="light"] .btn-register,
-[data-theme="light"] .btn-reset,
-[data-theme="light"] .btn-create-task,
-[data-theme="light"] .btn-create-project,
-[data-theme="light"] .btn-report,
-[data-theme="light"] .btn-deploy,
-[data-theme="light"] .btn-comment,
-[data-theme="light"] .btn-save-review,
-[data-theme="light"] .btn-update-status,
-[data-theme="light"] .btn-verify,
-[data-theme="light"] .btn-confirm-add,
-[data-theme="light"] .btn-confirm,
-[data-theme="light"] .modal-btn-confirm,
-[data-theme="light"] .btn-login.btn-login {
+[data-theme="light"] .btn-save:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-submit:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-login:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-send:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-register:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-reset:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create-task:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create-project:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-report:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-deploy:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-comment:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-save-review:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-update-status:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-verify:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-confirm-add:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-confirm:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .modal-btn-confirm:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-login.btn-login:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: var(--accent-bright) !important;
   color: #ffffff !important;
   border-color: var(--accent-bright) !important;
 }
-[data-theme="light"] .btn-save:hover,
-[data-theme="light"] .btn-create:hover,
-[data-theme="light"] .btn-submit:hover,
-[data-theme="light"] .btn-login:hover,
-[data-theme="light"] .btn-send:hover,
-[data-theme="light"] .btn-register:hover,
-[data-theme="light"] .btn-reset:hover,
-[data-theme="light"] .btn-create-task:hover,
-[data-theme="light"] .btn-create-project:hover,
-[data-theme="light"] .btn-report:hover,
-[data-theme="light"] .btn-deploy:hover,
-[data-theme="light"] .btn-comment:hover,
-[data-theme="light"] .btn-save-review:hover,
-[data-theme="light"] .btn-update-status:hover,
-[data-theme="light"] .btn-verify:hover,
-[data-theme="light"] .btn-confirm-add:hover {
+[data-theme="light"] .btn-save:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-submit:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-login:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-send:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-register:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-reset:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create-task:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-create-project:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-report:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-deploy:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-comment:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-save-review:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-update-status:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-verify:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *),
+[data-theme="light"] .btn-confirm-add:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: var(--accent-dim) !important;
   border-color: var(--accent-dim) !important;
   box-shadow: 0 0 18px rgba(var(--accent-rgb),0.25) !important;
@@ -437,12 +437,12 @@ html:not(.nf-portal)[data-theme="light"] .member-row select:not(.sp-glass *, .nf
 }
 
 /* ── Green special button (deploy) ── */
-[data-theme="light"] .btn-deploy {
+[data-theme="light"] .btn-deploy:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: #16a34a !important;
   border-color: #16a34a !important;
   color: #ffffff !important;
 }
-[data-theme="light"] .btn-deploy:hover {
+[data-theme="light"] .btn-deploy:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal) *) {
   background: #15803d !important;
   border-color: #15803d !important;
 }
