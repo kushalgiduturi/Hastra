@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 2 done (tokens, fallbacks, wiring).** Owner picked direction A, Quiet glass, on 2026-11-07. Next: Phase 3, the component library (theme-spatial.css part 2), assets/js/spatial-fx.js and docs/spatial-ui/styleguide.html, then STOP for the owner's approval before any rollout.
+**Phase 3 done, STOPPED for the owner's approval of the style guide** (brief: no rollout before approval). Owner picked direction A, Quiet glass, on 2026-11-07. Review: http://localhost/Hastra/docs/spatial-ui/styleguide.html (screenshots in docs/spatial-ui/styleguide-shots/). Next after approval: phase 4a shared chrome, at /effort high per the brief.
 
 ## Tool status (2026-11-07)
 
@@ -53,11 +53,20 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Deliberate sequencing choice: the brief's phase 2 says to replace the nf-portal / netflix-bento loading path, but removing it before the components exist would strip every portal back to the old boxed core/theme.css look and break the boxless tests mid-branch. Those files stay loaded and their rules are deleted surface by surface in phase 4 (non-negotiable 3), with the files themselves removed in phase 6.
 - Tests after phase 2: 310 / 310 pass.
 
+## Phase 3 notes
+
+- theme-spatial.css part 2: every component in the brief's list as opt-in `.sp-*` classes (live pages are unchanged until phase 4 adds the classes). `.is-hover` / `.is-focus` / `.is-active` force states for the guide only. Nested glass loses its blur by rule, so backdrop-filter can never nest.
+- assets/js/spatial-fx.js: pointer light, tilt for [data-sp-tilt], and the sliding indicators of .sp-seg / .sp-tabs (MutationObserver on aria-selected). Delegated, passive, rAF. Glow and tilt off under reduced motion, coarse pointer, low-perf. Not yet loaded by core/theme.js (that is phase 4a).
+- docs/spatial-ui/styleguide.html: static, not routed; mounts the temple world exactly like the portals (landing-host.js + kage-scene.js, sky-only), `?theme=light`, `?perf=low`.
+- Impeccable: detector run on theme-spatial.css, spatial-fx.js, styleguide.html. Fixed: coloured glow shadows on accent controls and the current step (now neutral elevation), white on coral critical pill (new --sp-bad-solid), disabled text contrast, bouncy entrances (dialog/toast now ease-out; spring kept for indicators, switch and press), icon tile above the empty-state heading. Left as intentional: cramped-padding flags on hairline dividers (tabs, metrics, accordion), file chips and the panel (false positive). Two findings come from hastra-atmosphere.css (legacy, phase 4a/4i).
+- Impeccable extract/critique/polish as separate commands not run yet: the loop is planned per surface group in phase 4.
+
 ## Files done
 
 - PRODUCT.md, docs/spatial-ui/INVENTORY.md, REFERENCES.md, COMPONENTS.md, DIRECTIONS.md, mocks/dashboard.html, mocks/shots/*.png
 - .gitignore: `.local/` and `docs/spatial-ui/baseline/`
 - Phase 2: assets/css/theme-spatial.css (part 1), core/theme.js (sp-ui class), spatial link in 53 pages
+- Phase 3: theme-spatial.css part 2, assets/js/spatial-fx.js, docs/spatial-ui/styleguide.html, styleguide-shots/
 
 ## Files remaining
 

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en" class="sp-ui nf-portal" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hastra spatial UI style guide</title>
+<meta name="robots" content="noindex, nofollow">
+<script>
+  /* Static style guide (not routed in the app). ?theme=dark|light, ?perf=low previews low-perf mode. */
+  (function () {
+    var q = new URLSearchParams(location.search), r = document.documentElement;
+    var t = q.get('theme') || (function () { try { return localStorage.getItem('astra_theme'); } catch (e) { return null; } })();
+    if (t === 'light' || t === 'dark') r.dataset.theme = t;
+    if (q.get('perf') === 'low') r.classList.add('low-perf-mode');
+  })();
+</script>
+<link rel="stylesheet" href="../../assets/css/fonts.css">
+<link rel="stylesheet" href="../../assets/css/hastra-atmosphere.css">
+<link rel="stylesheet" href="../../assets/css/theme-spatial.css">
+<style>
+  /* guide-only layout; nothing here ships */
+  body { margin: 0; background: #050505; overflow-x: clip; }
+  html[data-theme="light"] body { background: #eef1f5; }
+  .sg-wash { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--sp-world-wash); }
+  .sg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--sp-6); }
+  .sg-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+  .sg-cap { display: block; margin: var(--sp-5) 0 var(--sp-2); font-size: var(--sp-fs-xs); font-weight: 500; color: var(--sp-text-3); }
+  .sg-cap:first-child { margin-top: 0; }
+  .sg-static { position: static !important; transform: none !important; inset: auto !important; }
+  .sg-swatch { display: grid; gap: 6px; font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+  .sg-swatch i { display: block; height: 56px; border-radius: var(--sp-r-ctl); box-shadow: var(--sp-edge), var(--sp-shadow-3); }
+  .sg-depth { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-4); }
+  .sg-depth > div { min-height: 96px; padding: var(--sp-4); font-size: var(--sp-fs-sm); }
+  .sg-type > * { margin: 0 0 var(--sp-3); }
+  .sg-toc { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-6); }
+  .sg-drawer-demo { position: relative; height: 380px; }
+  .sg-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-6); align-items: start; }
+</style>
+</head>
+<body>
+<div class="sg-wash" aria-hidden="true"></div>
+
+<!-- Navigation: floating bar (depth 3) -->
+<header class="sp-bar sp-glass sp-d3">
+  <button class="sp-btn sp-btn--ghost sp-btn--icon" type="button" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <a class="sp-bar-brand" href="#top"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3h3v7h8V3h3v18h-3v-8H8v8H5z"/></svg>HASTRA</a>
+  <span class="sp-role">Style guide</span>
+  <span class="sp-bar-spacer"></span>
+  <button class="sp-btn sp-btn--secondary sp-btn--theme" id="themeToggleBtn" type="button"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg><span class="theme-label">Switch theme</span></button>
+  <span class="sp-bar-who">Signed in as <b>Spatial Admin</b></span>
+  <span class="sp-avatar" aria-hidden="true">S</span>
+</header>
+
+<main class="sp-page" id="top">
+  <div class="sp-panel sp-glass">
+
+    <section class="sp-section">
+      <div class="sp-page-header">
+        <div>
+          <h1 class="sp-title">Spatial UI style guide</h1>
+          <p class="sp-lede">Every component of the Quiet glass system, in each state. Switch the theme in the bar; add <code>?perf=low</code> to preview low-performance mode.</p>
+        </div>
+        <div class="sp-actions"><a class="sp-btn sp-btn--primary" href="#buttons">Jump to buttons</a></div>
+      </div>
+      <nav class="sg-toc" aria-label="Sections">
+        <a class="sp-chip" href="#depth">Depth</a><a class="sp-chip" href="#type">Type</a><a class="sp-chip" href="#buttons">Buttons</a>
+        <a class="sp-chip" href="#forms">Forms</a><a class="sp-chip" href="#pills">Pills</a><a class="sp-chip" href="#tabs">Tabs</a>
+        <a class="sp-chip" href="#data">Data</a><a class="sp-chip" href="#feedback">Feedback</a><a class="sp-chip" href="#overlays">Overlays</a>
+        <a class="sp-chip" href="#misc">Files, calendar, console</a>
+      </nav>
+    </section>
+
+    <!-- Depth and colour -->
+    <section class="sp-section" id="depth">
+      <div class="sp-section-head"><h2 class="sp-section-title">Depth and colour</h2></div>
+      <div class="sg-depth">
+        <div class="sp-inset"><b>Depth 1</b><br><span class="sp-muted">Inset: fields, tracks, consoles. No blur.</span></div>
+        <div class="sp-raised"><b>Depth 3 in a panel</b><br><span class="sp-muted">Raised group. The panel already blurs.</span></div>
+        <div class="sp-protect" style="flex-direction:column;align-items:flex-start;gap:4px"><b>Protection tint</b><span class="sp-muted">Verified and signed-off states.</span></div>
+      </div>
+      <span class="sg-cap">Brand and status, both text-safe on the panel</span>
+      <div class="sg-depth">
+        <div class="sg-swatch"><i style="background:var(--sp-accent)"></i>Accent</div>
+        <div class="sg-swatch"><i style="background:var(--sp-ok)"></i>OK</div>
+        <div class="sg-swatch"><i style="background:var(--sp-warn)"></i>Warning</div>
+        <div class="sg-swatch"><i style="background:var(--sp-bad)"></i>Danger</div>
+        <div class="sg-swatch"><i style="background:var(--sp-info)"></i>Info</div>
+      </div>
+    </section>
+
+    <!-- Type -->
+    <section class="sp-section sg-type" id="type">
+      <div class="sp-section-head"><h2 class="sp-section-title">Type</h2></div>
+      <p class="sp-title">Delivery dossier sealed</p>
+      <p style="font-size:var(--sp-fs-xl);font-weight:600;letter-spacing:-.015em">Milestone 3 awaits the client's key</p>
+      <p class="sp-section-title">Requirements awaiting review</p>
+      <p style="max-width:68ch">Body copy runs in Onest at 15px with a 1.55 line height. Every credential placed in a dossier is encrypted, shown to the client once, and then wiped, so nobody can open it again later, administrators included.</p>
+      <p class="sp-muted" style="font-size:var(--sp-fs-sm)">Secondary text for supporting detail and timestamps in sentences.</p>
+      <p class="sp-mono" style="font-size:var(--sp-fs-sm)">REQ-0142 · block 587 · 23 Sep 2026, 08:35</p>
+    </section>
+
+    <!-- Buttons -->
+    <section class="sp-section" id="buttons">
+      <div class="sp-section-head"><h2 class="sp-section-title">Buttons</h2></div>
+      <span class="sg-cap">Default</span>
+      <div class="sg-row">
+        <button class="sp-btn sp-btn--primary" type="button">Approve requirement</button>
+        <button class="sp-btn sp-btn--secondary" type="button">Ask for clarification</button>
+        <button class="sp-btn sp-btn--ghost" type="button">Cancel</button>
+        <button class="sp-btn sp-btn--danger" type="button">Reject</button>
+        <button class="sp-btn sp-btn--danger-solid" type="button">Delete account</button>
+        <button class="sp-btn sp-btn--secondary sp-btn--icon" type="button" aria-label="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg></button>
+        <button class="sp-btn sp-btn--secondary sp-btn--sm" type="button">Small</button>
+      </div>
+      <span class="sg-cap">Hover</span>
+      <div class="sg-row">
+        <button class="sp-btn sp-btn--primary is-hover" type="button">Approve requirement</button>
+        <button class="sp-btn sp-btn--secondary is-hover" type="button">Ask for clarification</button>
+        <button class="sp-btn sp-btn--ghost is-hover" type="button">Cancel</button>
+        <button class="sp-btn sp-btn--danger is-hover" type="button">Reject</button>
+      </div>
+      <span class="sg-cap">Focus visible, active, disabled, loading</span>
+      <div class="sg-row">
+        <button class="sp-btn sp-btn--primary is-focus" type="button">Focused</button>
+        <button class="sp-btn sp-btn--secondary is-active" type="button">Pressed</button>
+        <button class="sp-btn sp-btn--primary" type="button" disabled>Disabled</button>
+        <button class="sp-btn sp-btn--secondary" type="button" aria-disabled="true">Unavailable</button>
+        <button class="sp-btn sp-btn--primary" type="button" aria-busy="true">Saving changes</button>
+        <button class="sp-btn sp-btn--secondary" type="button" aria-busy="true">Verifying</button>
+      </div>
+    </section>
+
+    <!-- Forms -->
+    <section class="sp-section" id="forms">
+      <div class="sp-section-head"><h2 class="sp-section-title">Forms</h2></div>
+      <div class="sg-grid">
+        <div class="sp-field"><label class="sp-label" for="f1">Work email</label><input class="sp-input" id="f1" type="email" placeholder="you@company.com"><span class="sp-hint">We send the sign-in code here.</span></div>
+        <div class="sp-field"><label class="sp-label" for="f2">Hover</label><input class="sp-input is-hover" id="f2" value="Northwind Retail"></div>
+        <div class="sp-field"><label class="sp-label" for="f3">Focus</label><input class="sp-input is-focus" id="f3" value="Customer portal SSO"></div>
+        <div class="sp-field"><label class="sp-label" for="f4">Error</label><input class="sp-input" id="f4" value="northwind@" aria-invalid="true" aria-describedby="f4e"><span class="sp-error" id="f4e">Enter a full email address, like name@company.com.</span></div>
+        <div class="sp-field"><label class="sp-label" for="f5">Disabled</label><input class="sp-input" id="f5" value="Locked by the organization" disabled></div>
+        <div class="sp-field"><label class="sp-label" for="f6">Password</label><div class="sp-input-group"><input class="sp-input" id="f6" type="password" value="correct-horse"><button class="sp-btn sp-btn--ghost sp-btn--icon" type="button" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+        <div class="sp-field"><label class="sp-label" for="f7">Priority</label><select class="sp-select" id="f7"><option>High</option><option>Medium</option><option>Low</option></select></div>
+        <div class="sp-field" style="grid-column:1 / -1"><label class="sp-label" for="f8">Requirement detail</label><textarea class="sp-textarea" id="f8" placeholder="Describe what the client needs and why."></textarea></div>
+      </div>
+      <div class="sg-two" style="margin-top:var(--sp-6)">
+        <div>
+          <span class="sg-cap">Custom dropdown (open)</span>
+          <button class="sp-select" type="button" style="text-align:left;max-width:280px">Project Manager</button>
+          <ul class="sp-menu sp-popover sp-glass sp-d4" role="listbox" style="margin-top:8px;max-width:280px">
+            <li><button class="sp-menu-item" role="option" aria-selected="false">IT Manager</button></li>
+            <li><button class="sp-menu-item" role="option" aria-selected="true">Project Manager</button></li>
+            <li><button class="sp-menu-item is-hover" role="option" aria-selected="false">Finance</button></li>
+            <li class="sp-menu-sep" role="separator"></li>
+            <li><button class="sp-menu-item" role="option" aria-selected="false">Viewer</button></li>
+          </ul>
+        </div>
+        <div>
+          <span class="sg-cap">Checkbox, radio, switch</span>
+          <label class="sp-choice"><input class="sp-check" type="checkbox" checked> Email the client on approval</label><br>
+          <label class="sp-choice"><input class="sp-check" type="checkbox"> Require both keys for sign-off</label><br>
+          <label class="sp-choice"><input class="sp-check is-focus" type="checkbox"> Focused</label><br>
+          <label class="sp-choice"><input class="sp-radio" type="radio" name="r" checked> Full organization</label>
+          <label class="sp-choice" style="margin-left:var(--sp-4)"><input class="sp-radio" type="radio" name="r"> Solo developer</label><br>
+          <label class="sp-choice"><input class="sp-switch" type="checkbox" role="switch" checked> Analytics consent</label><br>
+          <label class="sp-choice"><input class="sp-switch" type="checkbox" role="switch"> Third-party integrations</label><br>
+          <label class="sp-choice"><input class="sp-switch" type="checkbox" role="switch" disabled checked> Essential cookies (always on)</label>
+          <span class="sg-cap">One-time code</span>
+          <div class="sp-otp" role="group" aria-label="Sign-in code">
+            <input inputmode="numeric" maxlength="1" value="4" aria-label="Digit 1"><input inputmode="numeric" maxlength="1" value="8" aria-label="Digit 2"><input inputmode="numeric" maxlength="1" value="1" aria-label="Digit 3" class="is-focus"><input inputmode="numeric" maxlength="1" aria-label="Digit 4"><input inputmode="numeric" maxlength="1" aria-label="Digit 5"><input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pills -->
+    <section class="sp-section" id="pills">
+      <div class="sp-section-head"><h2 class="sp-section-title">Badges, status, priority and severity</h2></div>
+      <span class="sg-cap">Status</span>
+      <div class="sg-row">
+        <span class="sp-pill sp-pill--dot sp-pill--accent">New</span><span class="sp-pill sp-pill--dot sp-pill--warn">Clarifying</span><span class="sp-pill sp-pill--dot sp-pill--ok">Approved</span><span class="sp-pill sp-pill--dot sp-pill--bad">Rejected</span><span class="sp-pill sp-pill--dot sp-pill--info">Deploying</span><span class="sp-pill sp-pill--neutral">Draft</span>
+      </div>
+      <span class="sg-cap">Priority and severity</span>
+      <div class="sg-row">
+        <span class="sp-pill sp-pill--critical">Critical</span><span class="sp-pill sp-pill--high">High</span><span class="sp-pill sp-pill--medium">Medium</span><span class="sp-pill sp-pill--low">Low</span><span class="sp-role">Admin</span>
+      </div>
+      <span class="sg-cap">Filter chips</span>
+      <div class="sg-row">
+        <button class="sp-chip" aria-pressed="true" type="button">All companies</button><button class="sp-chip" aria-pressed="false" type="button">Northwind</button><button class="sp-chip is-hover" aria-pressed="false" type="button">Juniper Labs</button>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="sp-section" id="tabs">
+      <div class="sp-section-head"><h2 class="sp-section-title">Tabs and segmented control</h2></div>
+      <div class="sp-tabs" role="tablist" aria-label="Profile">
+        <button class="sp-tab" role="tab" aria-selected="true" type="button">Profile</button><button class="sp-tab" role="tab" aria-selected="false" type="button">Email</button><button class="sp-tab" role="tab" aria-selected="false" type="button">Password</button><button class="sp-tab is-hover" role="tab" aria-selected="false" type="button">Sessions</button>
+      </div>
+      <div style="margin-top:var(--sp-6)">
+        <div class="sp-seg" role="tablist" aria-label="Filter requirements">
+          <button role="tab" aria-selected="true" type="button">New</button><button role="tab" aria-selected="false" type="button">Clarifying</button><button role="tab" aria-selected="false" type="button">Approved</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data -->
+    <section class="sp-section" id="data">
+      <div class="sp-section-head"><h2 class="sp-section-title">Metrics, tiles, table, list</h2></div>
+      <div class="sp-metrics" style="margin-top:0">
+        <a class="sp-metric" href="#data"><span class="sp-metric-value">7</span><span class="sp-metric-label">Requirements to review</span></a>
+        <div class="sp-metric" data-tone="warn"><span class="sp-metric-value">3</span><span class="sp-metric-label">Milestones awaiting sign-off</span></div>
+        <div class="sp-metric"><span class="sp-metric-value">2</span><span class="sp-metric-label">Unpaid invoices</span></div>
+        <div class="sp-metric" data-tone="ok"><span class="sp-metric-value">0</span><span class="sp-metric-label">Failed deployments</span></div>
+      </div>
+      <span class="sg-cap">Quick-link tiles (the only tilt targets)</span>
+      <nav class="sp-tiles" aria-label="Admin areas">
+        <a class="sp-tile" href="#data" data-sp-tilt><span class="sp-tile-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9l5 5v15H6zM14 3v5h5"/></svg></span>Requirement Review</a>
+        <a class="sp-tile is-hover" href="#data" data-sp-tilt><span class="sp-tile-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h11v9H3zm11 3h4l3 3v3h-7z"/></svg></span>Delivery</a>
+        <a class="sp-tile" href="#data" data-sp-tilt><span class="sp-tile-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/></svg></span>Scan Center</a>
+      </nav>
+      <span class="sg-cap">Table: the panel is the surface, rows stay flat</span>
+      <div class="sp-table-wrap">
+        <table class="sp-table">
+          <thead><tr><th scope="col"><input class="sp-check" type="checkbox" aria-label="Select all"></th><th scope="col">Requirement</th><th scope="col" class="is-hide-sm">Client</th><th scope="col">Status</th><th scope="col" class="sp-num is-hide-sm">Amount</th><th scope="col"><span class="sp-sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td><input class="sp-check" type="checkbox" aria-label="Select REQ-0142"></td><td>Customer portal SSO<span class="sp-sub sp-mono">REQ-0142 · v3</span></td><td class="is-hide-sm">Northwind Retail</td><td><span class="sp-pill sp-pill--dot sp-pill--accent">New</span></td><td class="sp-num is-hide-sm">4,200.00</td><td class="sp-num"><button class="sp-btn sp-btn--secondary sp-btn--sm" type="button">Review</button></td></tr>
+            <tr class="is-hover"><td><input class="sp-check" type="checkbox" aria-label="Select REQ-0139"></td><td>Invoice export to CSV<span class="sp-sub sp-mono">REQ-0139 · v2</span></td><td class="is-hide-sm">Juniper Labs</td><td><span class="sp-pill sp-pill--dot sp-pill--warn">Clarifying</span></td><td class="sp-num is-hide-sm">1,150.00</td><td class="sp-num"><button class="sp-btn sp-btn--secondary sp-btn--sm" type="button">Review</button></td></tr>
+            <tr aria-selected="true"><td><input class="sp-check" type="checkbox" checked aria-label="Select REQ-0137"></td><td>Audit trail for refunds<span class="sp-sub sp-mono">REQ-0137 · v1</span></td><td class="is-hide-sm">Northwind Retail</td><td><span class="sp-pill sp-pill--dot sp-pill--ok">Approved</span></td><td class="sp-num is-hide-sm">2,800.00</td><td class="sp-num"><button class="sp-btn sp-btn--secondary sp-btn--sm" type="button">Open</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sp-table-foot"><span>1 selected · 3 of 7</span><div class="sg-row"><button class="sp-btn sp-btn--ghost sp-btn--sm" type="button" disabled>Previous</button><button class="sp-btn sp-btn--secondary sp-btn--sm" type="button">Next</button></div></div>
+      <span class="sg-cap">List rows</span>
+      <ul class="sp-list">
+        <li><a class="sp-list-row" href="#data"><span class="sp-avatar sp-avatar--muted">NR</span><span class="sp-grow">Northwind Retail<span class="sp-sub">3 projects · client company</span></span><span class="sp-pill sp-pill--neutral">PM</span></a></li>
+        <li><a class="sp-list-row is-hover" href="#data"><span class="sp-avatar sp-avatar--muted">JL</span><span class="sp-grow">Juniper Labs<span class="sp-sub">1 project · client company</span></span><span class="sp-pill sp-pill--neutral">IT Manager</span></a></li>
+      </ul>
+      <span class="sg-cap">Accordion</span>
+      <div class="sp-accordion">
+        <details open><summary>What does dual-key sign-off mean?</summary><div class="sp-accordion-body">A milestone only counts as signed off when both the project manager and the client approve it. Neither side can close it alone.</div></details>
+        <details><summary>When is a delivery released?</summary><div class="sp-accordion-body">As soon as the invoice tied to the milestone is settled.</div></details>
+      </div>
+      <span class="sg-cap">Progress and pipeline steps</span>
+      <div class="sp-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="Testing progress" style="--sp-value:64%"><span></span></div>
+      <ol class="sp-steps" style="margin-top:var(--sp-6)">
+        <li class="sp-step is-done"><span class="sp-step-check" aria-hidden="true"></span>Requirement</li>
+        <li class="sp-step is-done"><span class="sp-step-check" aria-hidden="true"></span>Build</li>
+        <li class="sp-step is-current" aria-current="step">Testing</li>
+        <li class="sp-step">Sign-off</li>
+        <li class="sp-step">Delivery</li>
+      </ol>
+    </section>
+
+    <!-- Feedback -->
+    <section class="sp-section" id="feedback">
+      <div class="sp-section-head"><h2 class="sp-section-title">Alerts, toasts, protection, empty, skeleton, loader</h2></div>
+      <div class="sg-grid">
+        <div class="sp-alert sp-alert--info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div><strong>Version 3 submitted</strong><p>Compare it with version 2 before approving.</p></div></div>
+        <div class="sp-alert sp-alert--ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg><div><strong>Milestone signed off</strong><p>Both keys turned on 23 Sep.</p></div></div>
+        <div class="sp-alert sp-alert--warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2zM12 10v4M12 17h.01"/></svg><div><strong>Invoice overdue</strong><p>Delivery stays locked until it is paid.</p></div></div>
+        <div class="sp-alert sp-alert--bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg><div><strong>Could not send the code</strong><p>Check the address and try again in a minute.</p></div></div>
+      </div>
+      <span class="sg-cap">Toast</span>
+      <div class="sp-toast sp-glass sp-d4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>Link copied<button class="sp-btn sp-btn--ghost sp-btn--sm" type="button">Undo</button></div>
+      <span class="sg-cap">Protection strip</span>
+      <div class="sp-protect"><span class="sp-protect-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><p><b>Audit ledger intact.</b> Every log entry is chained to the one before it with an HMAC-SHA256 hash. <span class="sp-mono">Last verified: block 587, 23 Sep 2026, 08:35</span></p><button class="sp-btn sp-btn--secondary" type="button">Verify audit ledger</button></div>
+      <div class="sp-protect" data-tone="bad" style="margin-top:var(--sp-3)"><span class="sp-protect-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM12 9v4M12 16h.01"/></svg></span><p><b>Chain broken at block 412.</b> An entry was edited or removed after it was written.</p><button class="sp-btn sp-btn--danger" type="button">Open the breach report</button></div>
+      <div class="sg-two" style="margin-top:var(--sp-6)">
+        <div class="sp-empty">
+          <span class="sp-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6zM14 3v5h5"/></svg></span>
+          <h3>No requirements yet</h3>
+          <p>When a client submits one, it lands here for review.</p>
+          <button class="sp-btn sp-btn--secondary" type="button">Invite a client</button>
+        </div>
+        <div>
+          <span class="sg-cap">Skeleton</span>
+          <span class="sp-skeleton" style="width:60%"></span><span class="sp-skeleton"></span><span class="sp-skeleton" style="width:80%"></span>
+          <span class="sg-cap">Loader</span>
+          <div class="sp-loader" role="status"><div class="sp-loader-orbit"></div><p class="sp-loader-text">Fetching SDLC project pipeline</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overlays -->
+    <section class="sp-section" id="overlays">
+      <div class="sp-section-head"><h2 class="sp-section-title">Overlays</h2><button class="sp-btn sp-btn--primary" type="button" id="openDialog">Open a live dialog</button></div>
+      <div class="sg-two">
+        <div>
+          <span class="sg-cap">Dialog</span>
+          <div class="sp-dialog sp-glass sp-d4" role="dialog" aria-labelledby="dlgT" style="width:auto">
+            <h2 id="dlgT">Reject this requirement?</h2>
+            <p>The client is emailed with your reason and can submit a new version.</p>
+            <div class="sp-dialog-actions"><button class="sp-btn sp-btn--ghost" type="button">Cancel</button><button class="sp-btn sp-btn--danger-solid" type="button">Reject requirement</button></div>
+          </div>
+          <span class="sg-cap">Tooltip and popover</span>
+          <div class="sg-row" style="padding-top:36px">
+            <button class="sp-btn sp-btn--secondary sp-btn--icon is-hover" type="button" data-sp-tip="Copy the dossier link" aria-label="Copy the dossier link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg></button>
+          </div>
+        </div>
+        <div>
+          <span class="sg-cap">Command palette (Ctrl+K)</span>
+          <div class="sp-palette sp-glass sp-d4" style="width:auto">
+            <div class="sp-palette-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" value="sign" aria-label="Search pages"><span class="sp-kbd">Esc</span></div>
+            <ul class="sp-palette-results" role="listbox">
+              <li><button class="sp-menu-item is-hover" role="option" aria-selected="false">Milestone Sign-Off<span class="sp-kbd" style="margin-left:auto">Enter</span></button></li>
+              <li><button class="sp-menu-item" role="option" aria-selected="false">Sign out</button></li>
+              <li><button class="sp-menu-item" role="option" aria-selected="false">Signing keys</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <span class="sg-cap">Drawer</span>
+      <div class="sg-drawer-demo">
+        <nav class="sp-drawer sp-glass sp-d4 sg-static" aria-label="Admin navigation" style="height:100%">
+          <a class="sp-bar-brand" href="#top"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h3v7h8V3h3v18h-3v-8H8v8H5z"/></svg>HASTRA</a>
+          <div class="sp-drawer-group"><div class="sp-drawer-label">Work</div>
+            <a class="sp-nav-link" href="#top" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>Admin Portal</a>
+            <a class="sp-nav-link is-hover" href="#top"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9l5 5v15H6z"/></svg>Requirements</a>
+            <a class="sp-nav-link" href="#top"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v12H3z"/></svg>Billing</a>
+          </div>
+          <div class="sp-drawer-group"><div class="sp-drawer-label">Account</div>
+            <a class="sp-nav-link" href="#top"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0z"/></svg>Profile</a>
+          </div>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Files, calendar, console -->
+    <section class="sp-section" id="misc">
+      <div class="sp-section-head"><h2 class="sp-section-title">Files, avatars, calendar, console, code</h2></div>
+      <div class="sg-two">
+        <div>
+          <label class="sp-dropzone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><strong>Drop files to attach</strong><span>or choose from your computer. PDF, ZIP or images up to 20 MB.</span><input type="file" class="sp-sr"></label>
+          <div class="sg-row" style="margin-top:var(--sp-3)">
+            <span class="sp-file"><span class="sp-file-name">signed-scope-v3.pdf</span><span class="sp-file-size">1.2 MB</span><button class="sp-btn sp-btn--ghost sp-btn--icon sp-btn--sm" type="button" aria-label="Remove signed-scope-v3.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>
+            <span class="sp-file"><span class="sp-file-name">release-1.4.zip</span><span class="sp-file-size">18 MB</span></span>
+          </div>
+          <span class="sg-cap">Avatars</span>
+          <div class="sg-row"><span class="sp-avatar sp-avatar--sm">A</span><span class="sp-avatar">KG</span><span class="sp-avatar sp-avatar--lg">SA</span><span class="sp-avatars"><span class="sp-avatar sp-avatar--muted">NR</span><span class="sp-avatar sp-avatar--muted">JL</span><span class="sp-avatar sp-avatar--muted">+3</span></span></div>
+        </div>
+        <div>
+          <div class="sp-cal" role="grid" aria-label="September 2026">
+            <span class="sp-cal-head">Mon</span><span class="sp-cal-head">Tue</span><span class="sp-cal-head">Wed</span><span class="sp-cal-head">Thu</span><span class="sp-cal-head">Fri</span><span class="sp-cal-head">Sat</span><span class="sp-cal-head">Sun</span>
+            <button class="sp-cal-day is-muted" type="button">31</button><button class="sp-cal-day" data-mark="present" type="button">1</button><button class="sp-cal-day" data-mark="present" type="button">2</button><button class="sp-cal-day" data-mark="leave" type="button">3</button><button class="sp-cal-day" data-mark="present" type="button">4</button><button class="sp-cal-day" type="button">5</button><button class="sp-cal-day" type="button">6</button>
+            <button class="sp-cal-day" data-mark="present" type="button">7</button><button class="sp-cal-day" data-mark="absent" type="button">8</button><button class="sp-cal-day is-today" type="button">9</button><button class="sp-cal-day" aria-selected="true" type="button">10</button><button class="sp-cal-day is-hover" type="button">11</button><button class="sp-cal-day" type="button">12</button><button class="sp-cal-day" type="button">13</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-two" style="margin-top:var(--sp-6)">
+        <div>
+          <div class="sp-console-head"><span>Handover terminal</span><span class="sp-pill sp-pill--dot sp-pill--ok">Sealed</span></div>
+<div class="sp-console sp-scroll"><span class="is-dim">$</span> dossier open --project 3
+<span class="is-ok">verified</span> client key matches escrow record
+<span class="is-warn">notice</span> credentials will be wiped after this view
+<span class="is-dim">$</span> _</div>
+        </div>
+        <div>
+          <div class="sp-console-head"><span>Code</span></div>
+<pre class="sp-code"><code>astra_audit_verify($conn);
+// recomputes every block, returns the first break</code></pre>
+          <p class="sp-muted" style="font-size:var(--sp-fs-sm)">Inline <code>REQ-0142</code> uses the mono face.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<nav class="sp-dock sp-glass sp-d4" aria-label="Quick navigation">
+  <a class="sp-dock-item" href="#top" aria-current="page" aria-label="Home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg></a>
+  <a class="sp-dock-item" href="#data" aria-label="Projects"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6a2 2 0 012-2h5l2 2h7a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></a>
+  <a class="sp-dock-item" href="#forms" aria-label="Billing"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v12H3zm2 3v2h14V9z"/></svg></a>
+  <a class="sp-dock-item" href="#feedback" aria-label="Security"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/></svg></a>
+</nav>
+
+<dialog class="sp-dialog sp-glass sp-d4" id="liveDialog" aria-labelledby="liveT">
+  <h2 id="liveT">Seal this delivery dossier?</h2>
+  <p>The client can open it once. After that the credentials are wiped for everyone.</p>
+  <form method="dialog" class="sp-dialog-actions"><button class="sp-btn sp-btn--ghost">Cancel</button><button class="sp-btn sp-btn--primary">Seal dossier</button></form>
+</dialog>
+
+<!-- the temple world, mounted exactly as portals mount it (nf-portal above
+     only selects the portal sky; netflix CSS is not loaded here) -->
+<script src="../../assets/js/landing-host.js"></script>
+<script src="../../assets/js/kage-scene.js"></script>
+<script src="../../assets/js/spatial-fx.js"></script>
+<script>
+  (function () {
+    var r = document.documentElement;
+    document.getElementById('themeToggleBtn').addEventListener('click', function () {
+      var next = r.dataset.theme === 'light' ? 'dark' : 'light';
+      r.dataset.theme = next;
+      try { localStorage.setItem('astra_theme', next); } catch (e) {}
+      document.dispatchEvent(new CustomEvent('hastra:themechange', { detail: { theme: next } }));
+    });
+    document.querySelectorAll('.sp-seg, .sp-tabs').forEach(function (g) {
+      g.addEventListener('click', function (e) {
+        var b = e.target.closest('[role="tab"]'); if (!b) return;
+        g.querySelectorAll('[role="tab"]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); });
+      });
+    });
+    document.querySelectorAll('.sp-chip[aria-pressed]').forEach(function (c) {
+      c.addEventListener('click', function () { c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true')); });
+    });
+    document.getElementById('openDialog').addEventListener('click', function () { document.getElementById('liveDialog').showModal(); });
+  })();
+</script>
+</body>
+</html>
