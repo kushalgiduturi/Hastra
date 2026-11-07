@@ -2022,3 +2022,148 @@ html.sp-ui.nf-portal .main .profile-info-label { font: 500 var(--sp-fs-sm)/1.3 v
 html.sp-ui.nf-portal .main :is(.profile-tabs, .tab-bar) { border-color: var(--sp-hair); }
 html.sp-ui.nf-portal .main .tab-btn { font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
 html.sp-ui.nf-portal .main :is(.tab-btn.active, .tab-btn:hover) { color: var(--sp-text); border-bottom-color: var(--sp-accent); }
+
+/* ── 53. Hastra Labs (phase 4h) ────────────────────────────────────────── */
+/* the Labs token layer (assets/css/tools-cyber.css) follows the spatial tokens */
+html.sp-ui {
+  --lx-accent: var(--sp-accent);
+  --lx-accent-rgb: var(--sp-accent-rgb);
+  --lx-accent-2: var(--sp-accent-text);
+  --lx-text: var(--sp-text);
+  --lx-dim: var(--sp-text-2);
+  --lx-mute: var(--sp-text-3);
+  --lx-hair: var(--sp-hair);
+  --lx-hair-strong: var(--sp-hair-strong);
+  --lx-plate: var(--sp-fill-3);
+  --lx-plate-2: var(--sp-fill-3);
+  --lx-field: var(--sp-fill-1);
+  --lx-ok: var(--sp-ok); --lx-warn: var(--sp-warn); --lx-crit: var(--sp-bad); --lx-info: var(--sp-info);
+  --lx-mono: var(--sp-font-mono);
+  --lx-sans: var(--sp-font-ui);
+  --lx-radius: var(--sp-r-card);
+}
+/* no laser beams: focus has the ring, hover has the fill */
+html.sp-ui .lx-body :is(.btn-beam, .lx-btn, .lx-chip, .lx-tab, .lx-card, .lx-drop, .lx-subnav button, .lx-seg-opt input + span)::before { content: none; }
+
+/* header: the floating island; module tabs: a pill row under it */
+html.sp-ui .lx-top {
+  top: var(--sp-bar-inset); margin: var(--sp-bar-inset) var(--sp-bar-inset) 0; min-height: var(--sp-bar-h); padding: 6px var(--sp-2) 6px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3)); backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+@media (max-width: 760px) { html.sp-ui .lx-top { border-radius: 20px; } }
+html.sp-ui .lx-brand-tx b { font: 650 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .14em; }
+html.sp-ui .lx-brand-tx i { font: 500 var(--sp-fs-xs)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui .lx-tabs { gap: var(--sp-1); margin: var(--sp-3) auto 0; padding: 0 clamp(16px, 4vw, 48px); border: 0; background: none; }
+html.sp-ui .lx-tab {
+  min-height: 40px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none;
+}
+html.sp-ui .lx-tab:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .lx-tab.is-active { color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3); border: 0; box-shadow: var(--sp-edge), var(--sp-shadow-3); }
+html.sp-ui .lx-tab-num { font-family: var(--sp-font-ui); color: var(--sp-text-3); }
+html.sp-ui .lx-tab:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* the page panel: everything in .lx-main sits on one depth-2 glass */
+html.sp-ui .lx-main {
+  box-sizing: border-box; isolation: isolate;
+  width: min(1320px, calc(100% - 2 * var(--sp-gutter))); margin: var(--sp-5) auto var(--sp-8); padding: var(--sp-panel-pad);
+  border-radius: var(--sp-r-panel); background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2)); backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2);
+}
+@media (max-width: 760px) { html.sp-ui .lx-main { width: calc(100% - 16px); border-radius: 24px; } }
+html.sp-ui .lx-hero { padding: 0 0 var(--sp-6); }
+html.sp-ui .lx-eyebrow { display: none; }
+html.sp-ui .lx-h1 { font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display); }
+/* emphasis in titles comes from weight, not a second colour */
+html.sp-ui .lx-h1 em { color: inherit; font-weight: 650; }
+html.sp-ui .lx-h2 { font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; }
+html.sp-ui .lx-h3 { font: 600 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .lx-lead { color: var(--sp-text-2); font-size: var(--sp-fs-md); }
+
+/* panes inside the panel are raised groups (depth 3, no blur: the panel already blurs) */
+html.sp-ui .lx-pane {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-3);
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+html.sp-ui[data-theme="light"] .lx-pane { background: rgba(255, 255, 255, .7); }
+html.sp-ui .lx-pane--danger { box-shadow: var(--sp-edge), var(--sp-shadow-3), inset 0 0 0 1.5px rgba(var(--sp-bad-rgb), .35); }
+/* tool cards on the Labs home: flat tiles that tilt */
+html.sp-ui .lx-card {
+  border: 0; border-radius: var(--sp-r-card); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+  transform-style: preserve-3d; transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui .lx-card:hover { background: var(--sp-hover); transform: none; }
+html.sp-ui .lx-card-icon { border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text); }
+html.sp-ui .lx-card-go { font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+
+/* labels, fields, drop zones */
+html.sp-ui .lx-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui :is(.lx-input, .lx-textarea, .lx-select) {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font-family: var(--sp-font-ui);
+}
+html.sp-ui :is(.lx-input, .lx-textarea, .lx-select):focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .lx-drop {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2);
+}
+html.sp-ui :is(.lx-drop:hover, .lx-drop:focus-visible, .lx-drop.is-over) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui .lx-help { color: var(--sp-text-2); }
+html.sp-ui .lx-kv dt { font: 500 var(--sp-fs-xs)/1.6 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+
+/* segmented choices (encrypt / decrypt, engines) */
+html.sp-ui .lx-seg-opt span {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-hover); box-shadow: inset 0 0 0 1px var(--sp-hair); color: var(--sp-text-2);
+}
+html.sp-ui .lx-seg-opt input:checked + span { background: rgba(var(--sp-accent-rgb), .12); box-shadow: inset 0 0 0 1.5px rgba(var(--sp-accent-rgb), .6); }
+html.sp-ui .lx-seg-opt input:focus-visible + span { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* buttons: pills in sentence case */
+html.sp-ui .lx-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent); filter: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2), box-shadow var(--sp-dur-3) var(--sp-ease-out);
+}
+html.sp-ui .lx-btn:hover:not(:disabled) { filter: none; background: color-mix(in srgb, var(--sp-accent) 88%, #fff); transform: translateY(var(--sp-lift)); }
+html.sp-ui .lx-btn--ghost { background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); }
+html.sp-ui .lx-btn--ghost:hover:not(:disabled) { background: var(--sp-press); }
+html.sp-ui .lx-btn--ghost[aria-pressed="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; }
+html.sp-ui .lx-btn--danger { background: var(--sp-bad-solid); }
+html.sp-ui .lx-btn--sm { min-height: 32px; padding: 0 var(--sp-3); font-size: var(--sp-fs-xs); border-radius: var(--sp-r-pill); }
+html.sp-ui .lx-btn:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui :is(.lx-chip, .lx-badge) {
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text-2);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; box-shadow: none;
+}
+html.sp-ui .lx-subnav button { border: 0; border-radius: var(--sp-r-pill); font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .lx-subnav button[aria-selected="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); }
+
+/* the result viewport: a console well, readable in both themes */
+html.sp-ui .lx-out {
+  border: 0; border-radius: var(--sp-r-card); box-shadow: var(--sp-inset);
+  background: rgba(3, 4, 7, .62); color: var(--sp-text); font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono);
+}
+html.sp-ui[data-theme="light"] .lx-out { background: var(--sp-fill-1); color: var(--sp-text); }
+html.sp-ui .lx-body code { border: 0; background: var(--sp-hover); font-family: var(--sp-font-mono); }
+
+/* tables, toast, guides, rules */
+html.sp-ui .lx-table :is(th) { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3); border-color: var(--sp-hair); }
+html.sp-ui .lx-table td { border-color: var(--sp-hair); }
+html.sp-ui .lx-toast { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text); }
+html.sp-ui .lx-guide {
+  border: 0; border-radius: 18px; background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html.sp-ui .lx-guide-tag { font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+html.sp-ui .lx-rules li.is-hit::before { box-shadow: none; }
+html.sp-ui .lx-footwrap { color: var(--sp-text-2); }
+html.sp-ui .lx-enterprise { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border-radius: var(--sp-r-pill); font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+html.sp-ui .lx-enterprise:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .lx-card-icon { display: grid; place-items: center; width: 40px; height: 40px; }
+html.sp-ui :has(> .hx-copy--corner) > :is(.lx-out, pre) { padding-right: 84px; }

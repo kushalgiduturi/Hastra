@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4g done (shared flows).** Next: 4h Labs (labs/index, crypto, siem, syllabus, auth; tools-cyber.css, labs-showcase.css, .lx-out readable in both themes, guides/popovers, FAQ accordion).
+**Phase 4h done (Labs).** Next: 4i public pages (legal/*.php + _layout + cookie banner, 404.php, index.php host and the HTML/CSS chrome of landing-pages/hastra.html; no 3D code).
 
 ## Tool status (2026-11-07)
 
@@ -129,6 +129,13 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Dead grid backgrounds removed from portals/index.php, dashboard.php (with its accent glow), dossier.php and signoff.php.
 - signoff and newuser_portal not captured (need state); dossier and terminal shown in their empty states.
 - Test tweak: 10_visual_architecture panel check matches the selector prefix (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings.
+
+## Phase 4h notes
+
+- Labs is layered in theme-spatial.css section 53 (tools-cyber.css untouched so the Labs tests keep reading it): the --lx-* tokens map onto the spatial tokens, laser beams are off, the header is the island and module tabs a pill row, .lx-main is the one depth-2 panel, panes are raised groups (no blur, so the panel stays the only blurred layer besides the bar), home tool cards are flat tilting tiles, labels and buttons are sentence case, segmented choices tinted, the result viewport is a console well in both themes, guides and toast are solid popovers.
+- The eyebrows ("MODULE 01 ...") are hidden and title emphasis uses weight instead of a second colour (craft floor).
+- core/theme.css light exclusions now also skip .lx-main, .sc-main and .ht-terminal.
+- Suite 310/310. Detector: 0 findings.
 
 ## Files done
 
