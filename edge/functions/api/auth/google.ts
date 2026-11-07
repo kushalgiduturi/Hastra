@@ -123,11 +123,13 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     details: "Google sign-in",
   });
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "/",
-      "Set-Cookie": [cookie, `${PENDING_COOKIE}=; Path=/api/auth/google; Max-Age=0`].join(", "),
-    },
-  });
+  // One Set-Cookie header per cookie. Browsers do not split a single header
+  // on commas, so a joined value would read the pending cookie's
+  // Path and Max-Age=0 as attributes of the session cookie and drop it.
+  // Same landing as an OTP sign-in (src/routes/auth/Otp.tsx): only the
+  // sysadmin portal is ported in the pilot, other roles go back to sign-in.
+  const headers = new Headers({ Location: user.role === "sysadmin" ? "/workspace/sysadmin" : "/signin" });
+  headers.append("Set-Cookie", cookie);
+  headers.append("Set-Cookie", `${PENDING_COOKIE}=; Path=/api/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+  return new Response(null, { status: 302, headers });
 };
