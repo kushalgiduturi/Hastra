@@ -1075,3 +1075,298 @@ html.sp-ui .consent-btn:hover { background: var(--sp-press); border-color: trans
 html.sp-ui .consent-btn--primary { background: var(--sp-accent); color: var(--sp-on-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); }
 html.sp-ui .consent-btn--primary:hover { background: color-mix(in srgb, var(--sp-accent) 88%, #fff); }
 @media (max-width: 760px) { html.sp-ui .consent-in { padding: var(--sp-5); } }
+
+/* ==========================================================================
+   Part 4: auth pages (phase 4b). Sign-in, registration, OTP, forgot, reset
+   and set-password screens. Each card carries .sp-glass .sp-auth-card; the
+   overview beside the sign-in and sign-up cards carries .sp-glass
+   .sp-auth-info (it replaces the old text fog). Scoped under the card so the
+   pages' own layout rules keep working; selectors here only restyle.
+   ========================================================================== */
+
+/* ── 29. The card: depth-2 glass, the page's one reading surface ──────── */
+html.sp-ui .sp-auth-card {
+  --_radius: var(--sp-r-panel);
+  max-width: 440px;
+  padding: var(--sp-8) clamp(20px, 5vw, 36px) var(--sp-6);
+  border: 0;
+  color: var(--sp-text);
+  font-family: var(--sp-font-ui);
+}
+html.sp-ui .sp-auth-card::before { content: none; }
+html.sp-ui .sp-auth-card .brand { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-6); }
+html.sp-ui .sp-auth-card .brand-icon { width: 28px; height: 28px; background: none; border: 0; border-radius: 0; box-shadow: none; }
+html.sp-ui .sp-auth-card .brand-icon svg { width: 28px; height: 28px; }
+html.sp-ui .sp-auth-card .brand-text { display: flex; align-items: center; }
+html.sp-ui .sp-auth-card .brand-text .title {
+  font: 650 var(--sp-fs-lg)/1 var(--sp-font-ui); letter-spacing: .01em; text-transform: none;
+  color: var(--sp-text); background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui .sp-auth-card .brand-text .sub { display: none; }
+html.sp-ui .sp-auth-card :is(h1, h2) {
+  margin: 0 0 6px; font: 650 var(--sp-fs-xl)/1.2 var(--sp-font-ui); letter-spacing: -.015em; color: var(--sp-text);
+  text-transform: none; background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui .sp-auth-card :is(.subtitle, p.sub) { margin: 0 0 var(--sp-6); font-size: var(--sp-fs-sm); line-height: 1.55; color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .divider { height: 1px; border: 0; background: var(--sp-hair); margin: var(--sp-5) 0; }
+
+/* fields */
+html.sp-ui .sp-auth-card .field { margin-bottom: var(--sp-4); }
+html.sp-ui .sp-auth-card label {
+  display: block; margin-bottom: 6px; font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  color: var(--sp-text);
+}
+html.sp-ui .sp-auth-card :is(input[type="email"], input[type="password"], input[type="text"], input[type="tel"], input[type="number"], input[type="url"], select, textarea):not(.otp-box) {
+  box-sizing: border-box; width: 100%; min-height: 44px; padding: 10px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.4 var(--sp-font-ui); letter-spacing: 0;
+  transition: box-shadow var(--sp-dur-2) var(--sp-ease-out);
+}
+html.sp-ui .sp-auth-card :is(input, textarea)::placeholder { color: var(--sp-text-3); opacity: 1; }
+html.sp-ui .sp-auth-card :is(input[type="email"], input[type="password"], input[type="text"], input[type="tel"], input[type="number"], input[type="url"], select, textarea):not(.otp-box):focus {
+  outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0;
+  box-shadow: var(--sp-inset), inset 0 0 0 1px transparent;
+}
+html.sp-ui .sp-auth-card [aria-invalid="true"]:not(.otp-box) { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+html.sp-ui .sp-auth-card .input-wrap { position: relative; }
+html.sp-ui .sp-auth-card .input-wrap input { padding-right: 52px; }
+html.sp-ui .sp-auth-card .eye-btn {
+  position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%;
+  background: none; color: var(--sp-text-2); cursor: pointer;
+}
+html.sp-ui .sp-auth-card .eye-btn:hover { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .eye-btn svg { width: 18px; height: 18px; fill: currentColor; }
+html.sp-ui .sp-auth-card :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--sp-accent); width: 18px; height: 18px; }
+html.sp-ui .sp-auth-card .row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin: var(--sp-2) 0 var(--sp-4); font-size: var(--sp-fs-sm); }
+html.sp-ui .sp-auth-card .row label { display: inline-flex; align-items: center; gap: var(--sp-2); margin: 0; min-height: 44px; font-weight: 500; }
+
+/* actions */
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, a.btn-primary, .btn-reset, .btn-verify, .btn-register) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  width: 100%; min-height: 48px; padding: 0 var(--sp-5); margin-top: var(--sp-2);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent);
+  font: 650 var(--sp-fs-md)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  cursor: pointer; filter: none;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2);
+}
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, a.btn-primary, .btn-reset, .btn-verify, .btn-register):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sp-accent) 88%, #fff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift);
+  transform: translateY(var(--sp-lift));
+}
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, .btn-reset, .btn-verify, .btn-register):active { transform: scale(.98); }
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, .btn-reset, .btn-verify, .btn-register):disabled {
+  background: var(--sp-hover); color: var(--sp-text-disabled); box-shadow: none; cursor: not-allowed; transform: none; opacity: 1;
+}
+html.sp-ui .sp-auth-card :is(button, a) svg { flex: none; }
+html.sp-ui .sp-auth-card .btn-back {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); min-height: 44px; padding: 0 var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); text-transform: none; letter-spacing: 0; cursor: pointer; box-shadow: var(--sp-edge);
+}
+html.sp-ui .sp-auth-card .btn-back:hover { background: var(--sp-press); }
+html.sp-ui .sp-auth-card :is(.footer-links, .resend-link) { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .footer-links { margin-top: var(--sp-5); text-align: center; }
+html.sp-ui .sp-auth-card :is(.footer-links a, .resend-link a, a.resend-link, .forgot-link) {
+  color: var(--sp-text); font-weight: 550; text-decoration: underline; text-decoration-color: var(--sp-hair-strong); text-underline-offset: 3px;
+}
+html.sp-ui .sp-auth-card :is(.footer-links a, .resend-link a, a.resend-link, .forgot-link):hover { color: var(--sp-accent-text); text-decoration-color: currentColor; }
+
+/* alerts */
+html.sp-ui .sp-auth-card .alert {
+  display: flex; gap: var(--sp-3); align-items: flex-start; margin: 0 0 var(--sp-4); padding: var(--sp-3) var(--sp-4);
+  border: 0; border-radius: var(--sp-r-card); font-size: var(--sp-fs-sm); line-height: 1.5;
+  background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text);
+}
+html.sp-ui .sp-auth-card .alert.error { background: rgba(var(--sp-bad-rgb), .12); }
+html.sp-ui .sp-auth-card .alert.success { background: rgba(var(--sp-ok-rgb), .12); }
+html.sp-ui .sp-auth-card .alert.warning { background: rgba(var(--sp-warn-rgb), .12); }
+html.sp-ui .sp-auth-card .alert svg { flex: none; width: 18px; height: 18px; margin-top: 1px; fill: currentColor; }
+html.sp-ui .sp-auth-card .alert.error svg { color: var(--sp-bad); }
+html.sp-ui .sp-auth-card .alert.success svg { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .alert.warning svg { color: var(--sp-warn); }
+
+/* one-time code boxes */
+html.sp-ui .sp-auth-card .otp-wrap { display: flex; gap: var(--sp-2); justify-content: center; margin: var(--sp-2) 0 var(--sp-4); }
+html.sp-ui .sp-auth-card .otp-box {
+  box-sizing: border-box; width: 48px; height: 56px; padding: 0; text-align: center;
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 600 var(--sp-fs-xl)/1 var(--sp-font-mono); caret-color: var(--sp-accent);
+}
+html.sp-ui .sp-auth-card .otp-box:focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .sp-auth-card :is(.otp-box.error, .otp-box[aria-invalid="true"]) { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+@media (max-width: 400px) { html.sp-ui .sp-auth-card .otp-box { width: 42px; height: 52px; } }
+html.sp-ui .sp-auth-card :is(.attempts-label, .timer-wrap) { font-size: var(--sp-fs-xs); color: var(--sp-text-2); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+/* unused attempts are neutral; a used attempt is marked in the danger colour */
+html.sp-ui .sp-auth-card .attempt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; border: 0; }
+html.sp-ui .sp-auth-card .attempt-dot.used { background: var(--sp-bad); }
+
+/* step progress (forgot, reset, verify) */
+html.sp-ui .sp-auth-card .progress-wrap { margin-bottom: var(--sp-6); }
+html.sp-ui .sp-auth-card .progress-labels { display: flex; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+html.sp-ui .sp-auth-card .progress-step { font: 500 var(--sp-fs-xs)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .sp-auth-card .progress-step.active { color: var(--sp-text); font-weight: 650; }
+html.sp-ui .sp-auth-card .progress-step.done { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .progress-bar { height: 6px; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow: hidden; border: 0; }
+html.sp-ui .sp-auth-card .progress-fill { height: 100%; border-radius: inherit; background: var(--sp-accent); box-shadow: none; }
+
+/* password requirements and match message */
+html.sp-ui .sp-auth-card .req-box { margin: var(--sp-2) 0 var(--sp-4); padding: var(--sp-3) var(--sp-4); border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui .sp-auth-card .req-item { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .req-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; }
+html.sp-ui .sp-auth-card .req-item.valid { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .req-item.valid .dot { background: var(--sp-ok); }
+html.sp-ui .sp-auth-card .req-item.invalid { color: var(--sp-bad); }
+html.sp-ui .sp-auth-card .req-item.invalid .dot { background: var(--sp-bad); }
+html.sp-ui .sp-auth-card .match-msg { font-size: var(--sp-fs-xs); }
+html.sp-ui .sp-auth-card .match-msg.ok { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .match-msg.err { color: var(--sp-bad); }
+
+/* success screens */
+html.sp-ui .sp-auth-card .success-wrap { text-align: center; }
+html.sp-ui .sp-auth-card .success-icon { width: 56px; height: 56px; margin: 0 auto var(--sp-4); border-radius: 50%; display: grid; place-items: center; background: rgba(var(--sp-ok-rgb), .14); color: var(--sp-ok); border: 0; box-shadow: none; }
+html.sp-ui .sp-auth-card .success-icon svg { width: 26px; height: 26px; fill: currentColor; }
+html.sp-ui .sp-auth-card .success-wrap h3 { margin: 0 0 6px; font: 650 var(--sp-fs-lg)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .success-wrap p { margin: 0 0 var(--sp-4); font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+
+/* theme switch inside the card */
+html.sp-ui .sp-auth-card .btn-theme-toggle {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px;
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+}
+html.sp-ui .sp-auth-card .btn-theme-toggle:hover { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .btn-theme-toggle .theme-icon svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ── 30. The overview beside the sign-in and sign-up cards ─────────────── */
+html.sp-ui .sp-auth-info {
+  --_radius: var(--sp-r-panel);
+  padding: clamp(24px, 4vw, 40px);
+  color: var(--sp-text); text-shadow: none;
+}
+html.sp-ui .sp-auth-info :is(.info-title, .info-sub, .info-body, .info-feats li, .info-flow, .info-flow b, .info-badge) { text-shadow: none; }
+html.sp-ui .sp-auth-info .info-badge {
+  display: inline-flex; align-items: center; gap: 8px; height: 26px; padding: 0 12px; border: 0; border-radius: var(--sp-r-pill);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: .04em; color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14);
+}
+html.sp-ui .sp-auth-info .info-title { color: var(--sp-text); }
+html.sp-ui .sp-auth-info .info-title .info-portal { color: var(--sp-accent-text); }
+html.sp-ui .sp-auth-info .info-sub { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-auth-info :is(.info-body, .info-flow) { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-info .info-feats li { color: var(--sp-text); }
+html.sp-ui .sp-auth-info .info-flow b { color: var(--sp-text); }
+
+/* ── 31. Sign-in and sign-up widgets ──────────────────────────────────── */
+/* the two-portal switch and the registration tabs are segmented controls */
+html.sp-ui .sp-auth-card :is(.portal-toggle, .registration-tabs, .registration-subtoggle) {
+  display: flex; gap: 4px; padding: 4px; margin: 0 0 var(--sp-5);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+}
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub) {
+  flex: 1 1 0; min-height: 40px; padding: 0 var(--sp-3); margin: 0;
+  border: 0; border-radius: var(--sp-r-pill); background: none; color: var(--sp-text-2);
+  font: 550 var(--sp-fs-sm)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+  box-shadow: none; transition: background var(--sp-dur-3) var(--sp-ease-out), color var(--sp-dur-2);
+}
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub):not(.active):hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub).active {
+  color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3);
+  box-shadow: var(--sp-edge), 0 4px 12px -4px rgba(0, 0, 0, .4);
+}
+html.sp-ui[data-theme="light"] .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub).active { background: #fff; box-shadow: inset 0 1px 0 #fff, 0 2px 8px -2px rgba(15, 23, 42, .18); }
+
+/* registration steps */
+html.sp-ui .sp-auth-card .sheet-steps li { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .sp-auth-card .sheet-steps .step-num {
+  width: 24px; height: 24px; border: 0; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); color: var(--sp-text-2);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui);
+}
+html.sp-ui .sp-auth-card .sheet-steps li.current { color: var(--sp-text); font-weight: 650; }
+html.sp-ui .sp-auth-card .sheet-steps li.current .step-num { background: var(--sp-accent); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); }
+html.sp-ui .sp-auth-card .sheet-steps li.done { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .sheet-steps li.done .step-num { background: var(--sp-ok); color: #fff; box-shadow: none; }
+html.sp-ui .sp-auth-card .step-actions { gap: var(--sp-2); }
+
+/* workspace navbar preview, logo finder and drop zone */
+html.sp-ui .sp-auth-card .navbar-preview .np-label { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .navbar-preview .np-bar { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-3); box-shadow: var(--sp-edge), var(--sp-shadow-3); }
+html.sp-ui .sp-auth-card .navbar-preview .np-hastra { font: 650 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: .12em; color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-finder-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-tile { border: 0; border-radius: var(--sp-r-ctl); background: #fff; box-shadow: 0 0 0 1px var(--sp-hair), var(--sp-shadow-3); transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-2); }
+html.sp-ui .sp-auth-card .logo-tile.selected { box-shadow: 0 0 0 2px var(--sp-accent), var(--sp-shadow-3); }
+html.sp-ui .sp-auth-card .logo-dropzone {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px;
+}
+html.sp-ui .sp-auth-card :is(.logo-dropzone:hover, .logo-dropzone.drag-over) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-icon { border: 0; background: var(--sp-hover); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-text { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-text b { color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-status { color: var(--sp-text-2); }
+
+/* overview: the flow note is a tinted block, not a coloured side rule */
+html.sp-ui .sp-auth-info .info-flow { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-accent-rgb), .08); }
+html.sp-ui .sp-auth-info .info-badge i { box-shadow: none; background: var(--sp-accent); }
+html.sp-ui .sp-auth-info .info-feats li::before { background: var(--sp-accent); }
+
+/* Google sign-in: a neutral secondary pill (assets/css/compliance.css keeps
+   the base for non-spatial pages) */
+html.sp-ui .sp-auth-card .btn-google-sso {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 48px; padding: 0 var(--sp-5);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge), inset 0 0 0 1px var(--sp-hair);
+  font: 600 var(--sp-fs-sm)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .sp-auth-card .btn-google-sso:hover { background: var(--sp-press); transform: translateY(var(--sp-lift)); }
+html.sp-ui[data-theme="light"] .sp-auth-card .btn-google-sso { background: #fff; }
+html.sp-ui[data-theme="light"] .sp-auth-card .btn-google-sso:hover { background: #f8fafc; }
+
+/* the registration card pads its own head and sheet */
+html.sp-ui .sp-auth-card#reg-card { padding: 0; max-width: 560px; }
+
+/* ── 32. Custom select and range (assets/js/hastra-select.js) ──────────── */
+html.sp-ui .ax-select-btn {
+  box-sizing: border-box; min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  transition: box-shadow var(--sp-dur-2) var(--sp-ease-out);
+}
+html.sp-ui .ax-select-btn:hover { box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair-strong); background: var(--sp-fill-1); }
+html.sp-ui .ax-select-btn:focus-visible, html.sp-ui .ax-select.open .ax-select-btn { outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset); }
+html.sp-ui .ax-select-btn.is-invalid { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+html.sp-ui .ax-select-btn.is-placeholder .ax-select-value { color: var(--sp-text-3); }
+html.sp-ui .ax-select-btn:disabled { color: var(--sp-text-disabled); background: transparent; cursor: not-allowed; }
+html.sp-ui .ax-select-chev { color: var(--sp-text-2); }
+html.sp-ui .ax-select-list {
+  padding: 6px; border: 0; border-radius: 18px; z-index: var(--sp-z-popover);
+  background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4);
+}
+html.sp-ui .ax-select-list [role="option"] { min-height: 40px; padding: 0 var(--sp-3); border-radius: var(--sp-r-sm); color: var(--sp-text); font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; display: flex; align-items: center; }
+html.sp-ui .ax-select-list [role="option"].is-active { background: var(--sp-hover); }
+html.sp-ui .ax-select-list [role="option"][aria-selected="true"] { color: var(--sp-accent-text); font-weight: 600; background: none; }
+html.sp-ui .ax-select-list [role="option"][aria-selected="true"].is-active { background: var(--sp-hover); }
+html.sp-ui .ax-range { accent-color: var(--sp-accent); }
+html.sp-ui .ax-range-head label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .ax-range-head output { font: 600 var(--sp-fs-sm)/1 var(--sp-font-mono); color: var(--sp-text); }
+
+/* legal footer under the auth card: a small depth-3 glass strip */
+html.sp-ui .legal-foot--below {
+  border-radius: 20px; padding: var(--sp-3) var(--sp-5);
+  background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+  color: var(--sp-text-2); font-family: var(--sp-font-ui);
+}
+html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a) { color: var(--sp-text-2); text-underline-offset: 3px; }
+html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a):hover { color: var(--sp-text); }
+html.sp-ui .legal-foot--card { border-top-color: var(--sp-hair); color: var(--sp-text-2); }

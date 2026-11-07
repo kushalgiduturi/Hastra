@@ -120,15 +120,19 @@ t('light contrast: status and accent tokens clear AA on white and on pale fills'
     }
     expect((bool)preg_match('~placeholder\s*\{[^}]*color:\s*(#[0-9a-f]{6})~is', $css, $pm) && ui_contrast($pm[1], '#eef2ff') >= 4.5, 'placeholder colour below AA on the field');
 });
-t('text fog: sign-in and sign-up hero text is jet black / pure white on a feathered fog, never a box', function () {
+t('auth heroes: jet black / pure white text, now on a spatial glass overview beside a glass card', function () {
     $css = file_get_contents(ASTRA_ROOT . '/assets/css/theme-contrast.css');
     $fog = file_get_contents(ASTRA_ROOT . '/assets/css/theme-fog-boxless.css');
     expect((bool)preg_match('~\.auth-info\s*\{[^}]*color:\s*#000000~', $css), 'light hero text is not #000000');
     expect((bool)preg_match('~\.text-fog-scrim::before\s*\{[^}]*mask-image:[^}]*transparent 0[^}]*transparent 100%~s', $fog), 'fog must feather out on every edge');
     expect(!preg_match('~\.text-fog-scrim::before\s*\{[^}]*(border|box-shadow|outline)\s*:~s', $fog), 'fog must have no edge');
     expect((bool)preg_match('~:root\s*\{[^}]*--fog-ink:\s*3, 5, 10~', $fog) && (bool)preg_match('~html\[data-theme="light"\]\s*\{[^}]*--fog-ink:\s*248, 250, 252~', $fog), 'black fog by night / white fog by day');
+    // spatial UI (phase 4b): the fog behind the overview became a glass card
     foreach (['auth/login.php', 'auth/register.php'] as $f) {
-        expect(str_contains(file_get_contents(ASTRA_ROOT . "/$f"), 'class="auth-info text-fog-scrim"'), "$f hero lacks the fog");
+        expect(str_contains(file_get_contents(ASTRA_ROOT . "/$f"), 'class="auth-info sp-glass sp-auth-info"'), "$f overview is not spatial glass");
+    }
+    foreach (['login', 'register', 'otp', 'forgot', 'forgot_otp', 'reset', 'set_password', 'verify_register'] as $f) {
+        expect(str_contains(file_get_contents(ASTRA_ROOT . "/auth/$f.php"), 'sp-glass sp-auth-card'), "auth/$f.php card is not spatial glass");
     }
 });
 t('strict tokens: white / crimson by night, black / cobalt by day', function () {

@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4a done (shared chrome).** Style guide approved by the owner on 2026-11-07. Next: 4b auth pages.
+**Phase 4b done (auth pages).** Next: 4c sysadmin portal (sysadmin_portal, roles, logs, insights, migrate, security_dashboard, delete_user).
 
 ## Tool status (2026-11-07)
 
@@ -70,8 +70,18 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Deleted 95 lines of legacy chrome rules (theme.css light topnav/dock/nav, theme-netflix top bar, drawer, dock).
 - core/theme.js now loads assets/js/spatial-fx.js on every themed page.
 - Test changed: 06_governance barrier test (see docs/spatial-ui/TEST-CHANGES.md). Suite 310/310. Impeccable detector: 0 findings on the chrome files.
-- Open: 10 added lines in this diff contain long dashes (most likely legacy comment lines re-emitted by line-ending rewrites); check `git show HEAD | grep` and strip any that are new.
+- The long-dash flag was a false positive: an exact Unicode check over every spatial commit finds no en or em dashes (the shell grep matched the box-drawing characters in comment headers).
 - Light theme portals show the washed daylight scene more strongly than the baseline did (the veil is present; the baseline likely shot before the scene went live). Re-check when 4c-4f put content on the glass panel.
+
+## Phase 4b notes
+
+- All eight auth cards carry `sp-glass sp-auth-card`; login and register overviews swap `text-fog-scrim` for `sp-glass sp-auth-info`. theme-spatial.css part 4 restyles card, brand, headings, fields, OTP boxes, actions, alerts, step progress, password rules, success screens, the in-card theme switch, the overview, the two-portal switch and registration tabs (segmented), registration steps, navbar preview, logo tiles and drop zone, the Google button, the legal footer strip and the shared ax-select / ax-range controls.
+- Deleted the identical 84-line AuthKit !important block from six simple auth pages (45 !important each, now 0) and the card-visual half of the login and register blocks (kept their stage, slider, cursor and layout rules). Removed the dead 40px grid backgrounds and a bouncy icon easing from all auth pages.
+- Global light-theme input, OTP and attempt-dot rules in core/theme.css (all !important) now skip anything inside `.sp-glass` via `:not(.sp-glass *)`, so unmigrated pages keep them and spatial surfaces do not fight them. compliance.css lost the Google button !important override (only existed to beat the deleted AuthKit rules).
+- register.php: the stacked (<=1000px) overview is no longer sticky, so the form card does not slide over it.
+- The intro sequence on login is long; screenshots need about 6 s before the card has fully emerged.
+- OTP and forgot-OTP screens were checked through the harness (session with a pending code); reset, set_password and verify_register need token state and were not shot.
+- Test changed: 08_ui auth hero test (docs/spatial-ui/TEST-CHANGES.md). Suite 310/310. Detector: only two hidden-image false positives on register (no src until a file is chosen).
 
 ## Files done
 

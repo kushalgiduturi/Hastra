@@ -34,19 +34,7 @@
 }
 .btn-google-sso:hover { background: rgba(199, 211, 234, 0.12); border-color: rgba(var(--accent-rgb), .45); transform: translateY(-1px); }
 .btn-google-sso .google-icon { flex: none; background: #fff; border-radius: 50%; padding: 2px; width: 22px; height: 22px; }
-/* auth cards style every submit button as the primary action with !important;
-   the Google button is a neutral secondary action whichever element it is */
-.btn-google-sso, .card .btn-google-sso, [data-theme] .card .btn-google-sso {
-  background: rgba(199, 211, 234, 0.06) !important; border: 1px solid var(--color-glass-edge, var(--border-dim)) !important;
-  color: var(--color-ice-highlight, var(--text)) !important; box-shadow: none !important;
-  border-radius: var(--radius-control, 6px) !important; text-transform: none !important;
-  font: 600 14px/1.2 var(--font-sans) !important; letter-spacing: .01em !important;
-}
-.btn-google-sso:hover, .card .btn-google-sso:hover, [data-theme] .card .btn-google-sso:hover {
-  background: rgba(199, 211, 234, 0.12) !important; border-color: rgba(var(--accent-rgb), .45) !important;
-}
-[data-theme="light"] .btn-google-sso, [data-theme="light"] .card .btn-google-sso { background: #fff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
-[data-theme="light"] .btn-google-sso:hover, [data-theme="light"] .card .btn-google-sso:hover { background: #f8fafc !important; }
+/* on spatial auth cards the button is restyled in assets/css/theme-spatial.css (part 4) */
 
 .sso-divider {
   display: flex; align-items: center; gap: 12px; margin: 14px 0;

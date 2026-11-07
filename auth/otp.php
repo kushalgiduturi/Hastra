@@ -93,10 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -389,90 +385,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .card { opacity: 1; transform: none; filter: none; animation: none; }
   }
 
-  /* ═══ AuthKit Frosted Glass Cathedral: deep-glass card, void-violet
-     submit ═══ — token-based (var(--surface-deep-glass) etc.), so unlike
-     auth/login.php's card this one follows the light/dark toggle rather
-     than staying permanently dark; theme-authkit.css defines both sides. */
-  .card {
-    background: var(--surface-deep-glass) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid var(--color-glass-edge) !important;
-    border-radius: var(--radius-card) !important;
-    box-shadow: var(--shadow-modal) !important;
-  }
-  .card::before { display: none !important; }
-
-  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.6rem !important; }
-  .brand-icon {
-    width: 26px !important; height: 26px !important;
-    background: none !important; border-radius: 0 !important;
-  }
-  .brand-icon svg { width: 26px !important; height: 26px !important; fill: var(--color-frost-glow) !important; }
-  .brand-text { display: flex; align-items: center; }
-  .brand-text .title {
-    font-family: var(--font-sans) !important;
-    font-size: 21px !important; font-weight: 700 !important;
-    letter-spacing: .01em !important; text-transform: none !important;
-    background: var(--gradient-skywash) !important;
-    -webkit-background-clip: text !important; background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-  }
-  .brand-text .sub { display: none !important; }
-
-  .card h1, .card h2 {
-    font-family: var(--font-sans) !important;
-    font-size: 19px !important; font-weight: 600 !important;
-    letter-spacing: .005em !important; margin: 0 0 4px !important;
-    color: var(--color-ice-highlight) !important;
-  }
-  .card .subtitle, .card p.sub {
-    font-size: 13.5px !important; margin: 0 0 1.8rem !important;
-    color: var(--color-moon-mist) !important;
-  }
-
-  .card label {
-    font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
-    color: var(--color-moon-mist) !important;
-  }
-
-  .card input[type="email"], .card input[type="password"], .card input[type="text"],
-  .card input[type="tel"], .card select, .card textarea {
-    background: rgba(199, 211, 234, 0.06) !important;
-    border: 1px solid var(--color-glass-edge) !important;
-    border-radius: var(--radius-control) !important;
-    color: var(--color-ice-highlight) !important;
-    padding: 11px 13px !important;
-  }
-  .card input[type="email"]::placeholder, .card input[type="password"]::placeholder,
-  .card input[type="text"]::placeholder, .card input[type="tel"]::placeholder {
-    color: rgba(199, 211, 234, 0.6) !important;
-  }
-  .card input[type="email"]:focus, .card input[type="password"]:focus,
-  .card input[type="text"]:focus, .card input[type="tel"]:focus {
-    border-color: var(--color-void-violet) !important;
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18) !important;
-  }
-
-  .card button[type="submit"], .card .btn-login, .card .btn-send,
-  .card .btn-submit, .card .btn-primary, .card a.btn-primary {
-    background: var(--color-void-violet) !important;
-    color: #ffffff !important;
-    border-radius: var(--radius-control) !important;
-    font-family: var(--font-sans) !important;
-    font-weight: 600 !important;
-    letter-spacing: .02em !important;
-    text-transform: none !important;
-    box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.5) !important;
-    transition: transform .15s, box-shadow .15s, background .15s !important;
-  }
-  .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
-  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover {
-    background: var(--accent-dim) !important;
-    transform: translateY(-1px);
-  }
-
-  .card .footer-links a, .card .forgot-link { color: var(--color-frost-glow) !important; }
+  /* spatial UI: the card, fields and actions are styled by assets/css/theme-spatial.css (part 4) */
 </style>
 <!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
@@ -486,7 +399,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="pulse p2"></div>
 </div>
 
-<div class="card">
+<div class="card sp-glass sp-auth-card">
 
   <div class="brand">
     <div class="brand-icon">
