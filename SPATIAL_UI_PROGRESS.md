@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4e done (employee portal).** Next: 4f client portal (client_portal, my_projects, my_requirements, requirements_diff, submit_requirement, project_view, delivery_billing, team, docs, doc_view, security_view).
+**Phase 4f done (client portal).** Next: 4g shared flows (portals/index.php, projects/signoff, deliveries/dossier + terminal, security/scan_center, user/profile + newuser_portal).
 
 ## Tool status (2026-11-07)
 
@@ -111,6 +111,13 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - core/theme.css: the light "All primary buttons" and green deploy blocks now skip spatial surfaces (they forced a hover glow, and a green deploy button by day only).
 - Known small leftover: the testing portal's evidence picker row and an empty-state outline under the team lead form keep their page styles; revisit in the phase 6 sweep.
 - Suite 310/310. Detector: 0 findings.
+
+## Phase 4f notes
+
+- Dead generic inline rules stripped from the client pages; requirements_diff lost its grid background.
+- core/client_pages.css rewritten on the spatial tokens: its duplicate top bar, theme toggle, logout/profile buttons and boxed shell are gone (the uppercase theme label came from there); messages, metric strip, upload hints, pill buttons, roster import grid (problem/note rows tinted instead of 3px side markers), team pills, documentation rows, code chips, severity text and the one-time secret well remain.
+- project_view, team and doc_view were not captured (need ids or an IT manager); they use the same layer.
+- Suite 310/310. Detector: 0 findings after the grid fix.
 
 ## Files done
 

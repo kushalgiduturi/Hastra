@@ -127,41 +127,16 @@ unset($dr);
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
 
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p  { font-size: 13px; color: var(--text-dim); }
 
-  .section {
-    background: var(--navy-card);
-    border: 1px solid var(--border-dim);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-  }
 
-  .section-header {
-    display: flex; align-items: center; gap: 8px;
-    padding: 1rem 1.4rem;
-    border-bottom: 1px solid var(--border-dim);
-    background: var(--section-header-bg);
-    font-size: 13px; font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.03em; text-transform: uppercase;
-  }
   .section-header svg { width: 15px; height: 15px; fill: var(--accent-bright); }
 
-  .section-body { padding: 1.4rem; }
 
   .req-id-badge {
     font-family: 'Share Tech Mono', monospace;
