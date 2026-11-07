@@ -164,7 +164,7 @@ Browser requests a page
 |---|---|---|---|
 | `index.php` | `/` | Landing host: SEO and JSON-LD, hosts the landing document full-screen, keeps the theme in sync | `core/seo.php`, `assets/js/landing-host.js` |
 | `landing-pages/hastra.html` | (iframe) | The temple world and the marketing document: hero, chapters, arsenal, dossier simulator, footer. Also the render-only background (`?scene=bg`) | `secret-pathways-assets/three.min.js` (Three.js, MIT, 2023 build), COBE globe, `assets/css/fonts.css` |
-| `auth/login.php` | `/signin` | Two-portal sign-in (Client Gateway / Enterprise Workspace), sliding overview panel with the text fog, reCAPTCHA, email code | `core/db.php`, `core/legal.php`, `assets/css/theme-authkit.css` |
+| `auth/login.php` | `/signin` | Two-portal sign-in (Client Gateway / Enterprise Workspace), sliding overview on a glass panel beside the glass sign-in card, reCAPTCHA, email code | `core/db.php`, `core/legal.php`, `assets/css/theme-authkit.css` |
 | `auth/register.php` | `/signup` | Company, individual and enterprise sign-up; country list and dial-code validation; logo lookup (third-party consent) | `core/countries.php`, `core/company.php` |
 | `auth/otp.php`, `forgot.php`, `forgot_otp.php`, `reset.php`, `set_password.php`, `verify_register.php` | `/verify`, `/forgot-password`, … | The email-code steps of sign-in, password reset, invitation and sign-up | `astra_mail_send()` |
 | `core/google_oauth.php` | `/auth/google_auth` | Google sign-in and sign-up (PKCE, state, nonce) | Google OAuth |
@@ -177,7 +177,7 @@ Browser requests a page
 | `labs/auth.php` | `/labs/auth` | Password-free Labs session with a recovery code | `labs_profiles`, `labs_devices` |
 | `legal/*.php` | `/legal/<doc>` | Privacy, Terms, Cookies, Refunds; "Last updated" date | `legal/_layout.php` |
 | `legal/delete-data.php` | `/privacy/delete-data` | Self-service erasure, confirmed by email | `core/data_deletion.php` |
-| `404.php` | any unknown address | Boxless brand 404 over the grid; works with the database down | none |
+| `404.php` | any unknown address | Standalone brand 404: one glass card over a calm gradient, no scripts or shared CSS, works with the database down | none |
 | `robots.php`, `sitemap.php` | `/robots.txt`, `/sitemap.xml` | Crawler directives and the public URL list, built from `APP_URL` | `config/config.php` |
 
 ### 2.2 Styles and theme
@@ -186,9 +186,11 @@ Browser requests a page
 |---|---|
 | `core/theme.css` | Design tokens for both themes (dark: `--text #ffffff`, `--accent #e50914`), base components, focus ring, overflow guard, 44 px touch targets, print stylesheet |
 | `assets/css/theme-contrast.css` | Light-theme floor: `--text #000000`, `--accent #2563eb`, AA status colours, placeholders, sign-up card opacity |
-| `assets/css/theme-fog-boxless.css` | The text fog: `.text-fog-scrim` (Black Fog by night, White Fog by day), feathered on every edge, no border or shadow |
-| `assets/css/theme-netflix.css`, `netflix-bento.css` | Portal design system: boxless containers over the temple, hairline tables |
-| `assets/css/theme-authkit.css` | Sign-in and sign-up glass card (the one panel the boxless rule allows) |
+| `assets/css/theme-spatial.css` | The spatial UI ("Quiet glass"), linked last on every themed page: tokens for both themes and the legacy-token bridge, the fallbacks, the `.sp-*` components, and the auth, portal and per-group layers. Reference: `docs/spatial-ui/DESIGN.md` |
+| `assets/css/landing-spatial.css` | The same recipe for the landing page chrome (nav island, text panels, footer), with its own `--lsp-*` tokens; the 3-D scene is untouched |
+| `assets/js/spatial-fx.js` | Pointer glow, 3-degree tilt on quick links and dashboard cards, tab and segment indicators; off on touch, reduced motion and weak devices |
+| `assets/css/theme-authkit.css` | Sign-in and sign-up structure; the card's glass comes from theme-spatial.css part 4 |
+| `assets/css/sidebar-nav.css`, `core/dock.css` | The floating top bar, the glass drawer and the dock |
 | `assets/css/hastra-ux.css` | Skip link, dialogs, inline errors, search palette, drawer, floating controls, copy buttons |
 | `assets/css/tools-cyber.css` | Labs visual system, guides, result viewport, FAQ |
 | `assets/css/fonts.css` + `assets/fonts/` | Self-hosted Share Tech Mono and Onest (SIL OFL), no Google Fonts requests |
@@ -205,7 +207,7 @@ Browser requests a page
 | `assets/js/sakura-petals-cursor.js` | Single-lobe asymmetrical sakura petals with flip and drift physics (no hearts); off switch |
 | `assets/js/hybrid-hand-cursor.js` | Pointer engine that feeds the petal field, card tilt, performance governors |
 | `assets/js/hastra-ux.js` | Skip link, accessible dialogs, inline validation, Ctrl/Cmd+K search, drawer, progress line, back to top, contact, copy buttons, error reporting, consent-gated analytics |
-| `assets/js/profile-barrier.js` | First-login gender and role selector (boxless, underline active state) |
+| `assets/js/profile-barrier.js` | First-login gender and role selector (a depth-4 glass dialog; the chosen option is a raised pill) |
 | `assets/js/cookie-consent.js` | Consent banner state and the third-party embed guard (`HastraConsent`) |
 | `assets/js/pqc-crypto.js` | Labs cryptography: AES-256-GCM, ChaCha20-Poly1305, ML-KEM, X-Wing, X25519, RSA-OAEP, ML-DSA, hashing, the HLX1 envelope |
 | `assets/js/labs-crypto-ui.js` | Labs crypto page wiring, envelope anatomy view, weak-passphrase dialog |
@@ -234,28 +236,39 @@ Browser requests a page
 
 ### 2.5 Tests
 
-`tests/runner.php` clones the database, runs `tests/suites/*.php` against the clone through php-cgi, and drops it. 307 checks at the time of writing, including the boxless rule, contrast tokens, the fog, the no-hearts petal, RBAC rules, erasure, telemetry scrubbing and the purge guards.
+`tests/runner.php` clones the database, runs `tests/suites/*.php` against the clone through php-cgi, and drops it. 316 checks at the time of writing, including the spatial UI contract (tokens, fallbacks, blur budget and 148 computed text-on-glass contrast pairs), the no-hearts petal, RBAC rules, erasure, telemetry scrubbing and the purge guards.
 
 ---
 
 ## 3. Function-by-Function Flow Description
 
-### 3.1 Visual scrim and theme engine
+### 3.1 Spatial glass and theme engine
 
-**Boxless mandate.** Content never sits in a bordered, filled or shadowed card, tile or pill. Text, icons and controls sit straight on the page over the grid and glow, separated by typography, hairline rules and underlines. Portals enforce this in `netflix-bento.css`; a test fails if a portal container gains a border, fill or shadow. The sign-in and sign-up glass card is the one panel the owner asked to keep; real primary buttons are allowed, and ghost buttons become text links with an accent underline.
+**Spatial mandate ("Quiet glass").** Glass only where something floats: the top bar, one panel per page, the dock, the drawer, dialogs, popovers and toasts. Everything inside a panel is flat, separated by space and hairlines; there is never a box inside a box. Depth comes from fill density, a bright top edge and a longer, softer shadow, never from coloured glow. The full reference is `docs/spatial-ui/DESIGN.md`; `tests/suites/15_spatial_ui.php` enforces it.
 
-**Tokens.**
-
-| Token | Dark (default) | Light (`html[data-theme="light"]`) | Contrast |
+| Depth | Layer | Fill token | Blur |
 |---|---|---|---|
-| Primary type `--text`, `--text-primary` | `#ffffff` | `#000000` | 19.6:1 on `#090b10`; 21:1 on white |
-| Accent fill `--accent` | `#e50914` Crimson Red | `#2563eb` Cobalt Blue | white text on each: 4.8:1 and 5.2:1 |
-| Accent text `--accent-bright` | `#ff4655` | `#2563eb` | 5.8:1; 5.2:1 |
-| Fog `--fog-ink`, `--fog-alpha` | `3, 5, 10` at 0.72 (Black Fog) | `248, 250, 252` at 0.86 (White Fog) | |
+| 0 | The temple world (`#hastra-kage-scene`) | scene plus `--sp-world-wash` | by day `blur(6px)` on the scene itself |
+| 1 | Insets: fields, tracks, wells | `--sp-fill-1` | none |
+| 2 | The page panel | `--sp-fill-2` | 18px |
+| 3 | Floating bar, raised controls | `--sp-fill-3` | 16px |
+| 4 | Dock, drawer, dialogs, popovers, toasts | `--sp-fill-4` | 20px |
 
-Crimson `#e50914` is 4.1:1 on the dark background, under the 4.5:1 needed for small text, so in dark mode it colours fills, marks, underlines and focus rings while small accent text uses `#ff4655`. Cobalt passes as text, so light mode uses it everywhere.
+Budget: blur never above 24px, at most three blurred layers in a viewport, and never a blurred layer inside another (`.sp-glass .sp-glass` loses its blur by rule).
 
-**How the fog works.** An element with `.text-fog-scrim` becomes a positioned, isolated stacking context. Its `::before` sits behind the text (`z-index: -1`), extends 2.25 rem above and below and 3 rem to each side, and is filled with `rgba(var(--fog-ink), var(--fog-alpha))` plus a `backdrop-filter` blur. Two linear-gradient masks intersect so each edge fades from opaque to transparent over exactly the padding width. The text always sits on full-strength fog while the edge has no line, which is why it never reads as a box. On weak devices (`html.low-perf-mode`) the blur is dropped and the wash is denser; with `prefers-reduced-transparency` it becomes nearly solid. The landing document uses the same idea in its own CSS (`.hero::before`, `.sec::before`), tuned per section.
+**Tokens.** All on `html.sp-ui` (dark, the default) and `html.sp-ui[data-theme="light"]` in `assets/css/theme-spatial.css` part 1. Glass is translucent, so text contrast is measured on the glass composited over the brightest the world gets behind it by night (`#4a4a4a`) and the darkest by day (`#727478`), both sampled from the scene.
+
+| Token | Dark (default) | Light | Contrast |
+|---|---|---|---|
+| Primary type `--sp-text` | `#ffffff` | `#000000` | 16.0:1; 15.1:1 on the panel |
+| Accent fill `--sp-accent` | `#e50914` Crimson Red | `#2563eb` Cobalt Blue | white text on each: 4.8:1 and 5.2:1 |
+| Accent text `--sp-accent-text` | `#ff4655` | `#1e40af` | 4.8:1; 6.3:1 on the panel |
+| Status `--sp-ok`, `--sp-warn`, `--sp-bad`, `--sp-info` | `#4ade80`, `#fbbf24`, `#ff6b76`, `#67e8f9` | `#166534`, `#92400e`, `#a51d2d`, `#155e75` | all at least 4.5:1 on every fill |
+| Panel glass `--sp-fill-2` | `rgba(10, 11, 16, .64)` | `rgba(255, 255, 255, .74)` | |
+
+Crimson `#e50914` is 3.3:1 on the dark panel, under the 4.5:1 needed for small text, so in dark mode it colours fills, marks and focus rings while small accent text uses `#ff4655`. By day, small accent and status text use shades one step deeper than their fills, because white glass greys over the darker parts of the scene. The legacy tokens (`--navy-card`, `--text-dim`, `--accent-bright`, `--bg-card`, `--hairline` and the auth-kit glass names) are bridged onto these, so inline page styles follow the system.
+
+**How the glass works.** A glass layer has a translucent fill, a `backdrop-filter` blur with a little saturation, a specular edge drawn with inset shadows (bright top, dim sides) and a depth shadow. Two page-level fixes keep it clean. `html.sp-ui body` fades in with `animation-fill-mode: backwards`, because a held opacity animation makes `<body>` a backdrop root and the glass would sample the page instead of the scene (the old light-theme "mosaic"). By day the scene itself is softened (`blur(6px) saturate(1.15) brightness(1.08)`) and washed, so glass never samples hard detail. On weak devices (`html.low-perf-mode`) and with `prefers-reduced-transparency` the blur is dropped and the fills switch to a dense set; `prefers-reduced-motion` removes tilt and springs; `forced-colors` turns every glass layer into a system `Canvas` surface with a real border. The landing document uses the same recipe in `assets/css/landing-spatial.css`; its nav keeps the glass on a `::before` layer, because a `backdrop-filter` on the bar would trap the fixed mobile menu sheet inside it.
 
 **Theme switching.** `core/theme.js` applies the saved theme before first paint, `toggleTheme()` flips `data-theme` on `<html>` and dispatches `hastra:themechange`, and `landing-host.js` mirrors it into the landing iframe as `data-hastra-day` and swaps the lighting.
 
@@ -273,14 +286,14 @@ Extras in `applyCamera()`: `fitAspect()` steps the camera back and widens the FO
 
 **The ten rings.** Ten engraved torus meshes in a circle behind the wordmark, each tilted about its radial axis so neighbours pass through one another (the depth buffer does the weaving). The circle turns, every ring spins, runes pulse, and lightning arcs between neighbours. Sized from the laid-out word so they frame the letters at every aspect ratio. Night: gunmetal with electric-cyan runes. Day: polished brass with amber runes.
 
-**Hero layout.** Monumental HASTRA wordmark centred with the rings through it; top-left eyebrow, uppercase headline and description; bottom-left scroll cue and chapter index; boxless navigation with a Sign in link and a Get started pill.
+**Hero layout.** Monumental HASTRA wordmark centred with the rings through it; top-left uppercase headline and description; bottom-left scroll cue and chapter index; a floating glass navigation island with Sign in and Get started pills (landing-spatial.css).
 
 ### 3.3 Authentication and RBAC engine
 
 | Brief's function | Real implementation | What it does |
 |---|---|---|
 | `evaluateUserAccess()` | `verify_session($conn, $role)` in `core/db.php`, then `astra_profile_barrier_needed()` and `astra_profile_role_context()` in `core/auth_check.php` | Confirms the session belongs to this device and holds the page's role, then decides whether first-login details are missing and whether the person's role is locked by an organization |
-| `renderOnboardingScreen()` | `render_profile_barrier($conn)` | Prints an unclosable, boxless dialog over the portal: gender as three radio buttons with an underline on the active one; for independents a search box and a scrollable list of the 11 roles grouped in four sections; for organization members the assigned role, read-only, with the lock notice |
+| `renderOnboardingScreen()` | `render_profile_barrier($conn)` | Prints an unclosable depth-4 glass dialog over the portal (the scrim dims without blurring): gender as three radio buttons, the active one a raised pill; for independents a search box and a scrollable list of the 11 roles grouped in four sections; for organization members the assigned role, read-only, with the lock notice |
 | underline gender selector | `assets/js/profile-barrier.js`, `assets/css/profile-barrier.css` | `role="radiogroup"` of buttons with `aria-checked`; Enter and Space activate them (keyboard parity in `core/theme.js`); underline accent on the selected option; live search filter over the role list |
 | `directAccessRouter()` | `astra_focus_landing($key)` + the `redirect` field returned by `api/complete_profile.php` | Students and faculty land in the Syllabus lab; SOC analysts and threat-intel engineers in the SIEM lab; PQC, security engineers, architects and penetration testers in the Crypto lab; client stakeholders and auditors stay in their workspace |
 
@@ -376,103 +389,213 @@ In the Firestore model (`firestore.rules`), the same rule is expressed with `org
 
 Each listing below is the file exactly as committed. The 3D world itself (`landing-pages/hastra.html`, 5,924 lines including its shaders, geometry and copy) is too large to reproduce here; its camera rig and scroll mapping (§8 and §9 of that file) are included in full, together with the scene host and flight director that drive it.
 
-### 5.1 `assets/css/theme-fog-boxless.css`
+### 5.1 Spatial UI tokens: `assets/css/theme-spatial.css` part 1
 
-The dual-theme text fog and the strict type tokens. (87 lines)
+The whole spatial system is one stylesheet of 2233 lines, too long to reproduce; its parts are listed in `docs/spatial-ui/DESIGN.md`. Below are its two token blocks, dark and light, exactly as committed. (197 lines)
 
 ```css
-/* ========================================================
-   HASTRA TEXT FOG + BOXLESS TOKENS
-   Loaded after core/theme.css and assets/css/theme-contrast.css on every
-   themed page.
+/* ── 1. Tokens: dark (default) ─────────────────────────────────────────── */
+html.sp-ui {
+  /* type */
+  --sp-font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-font-mono: 'Share Tech Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --sp-fs-xs: .75rem;     /* 12 */
+  --sp-fs-sm: .8125rem;   /* 13 */
+  --sp-fs-md: .9375rem;   /* 15 body */
+  --sp-fs-lg: 1.125rem;   /* 18 section titles */
+  --sp-fs-xl: 1.5rem;     /* 24 */
+  --sp-fs-2xl: 2rem;      /* 32 metrics */
+  --sp-fs-display: clamp(1.875rem, 3.4vw, 2.625rem); /* 30-42 page titles */
+  --sp-lh-tight: 1.1;
+  --sp-lh-body: 1.55;
+  --sp-track-display: -.025em;
+  --sp-track-label: .02em;
 
-   Text that floats over the 3D temple never sits on the raw scene: a
-   .text-fog-scrim element carries a feathered fog behind it. By night it is
-   Black Fog under pure white type; by day it is White Fog under Jet Black
-   type. The fog fades to transparent over a fixed width at all four edges,
-   so the text always has a calm ground while there is no border, outline or
-   shadow that could read as a box.
+  /* spacing (4px base) */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
+  --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
+  --sp-gutter: clamp(12px, 3vw, 24px);
+  --sp-panel-pad: clamp(20px, 3.2vw, 40px);
+  --sp-bar-inset: 12px;
+  --sp-bar-h: 56px;
+  --sp-page-max: 1180px;
 
-   Strict type and accent tokens:
-     dark   type #ffffff on Black Fog    accent Crimson Red #e50914
-     light  type #000000 on White Fog    accent Cobalt Blue #2563eb
-   ======================================================== */
+  /* radii */
+  --sp-r-panel: 28px;
+  --sp-r-float: 24px;   /* dock, dialogs, popovers */
+  --sp-r-card: 16px;    /* inner groups, ledger strips */
+  --sp-r-ctl: 14px;     /* inputs, tiles */
+  --sp-r-sm: 10px;      /* icon wells, chips */
+  --sp-r-pill: 999px;
 
-:root {
-  --fog-ink: 3, 5, 10;              /* Black Fog: rgb of the night wash */
-  --fog-alpha: .72;
-  --fog-blur: 8px;
-  --color-ice-highlight: #ffffff;   /* sign-in card headings: pure white by night */
-}
-html[data-theme="light"] {
-  --fog-ink: 248, 250, 252;         /* White Fog */
-  --fog-alpha: .86;
-  --fog-blur: 10px;
+  /* brand (hue identity unchanged) */
+  --sp-accent: #e50914;           /* fills, marks, rings */
+  --sp-accent-text: #ff4655;      /* small accent text, 5.8:1 on the panel */
+  --sp-accent-rgb: 229, 9, 20;
+  --sp-on-accent: #ffffff;
+  --sp-ring: #ff4655;
+
+  /* text */
+  --sp-text: #ffffff;
+  --sp-text-2: rgba(255, 255, 255, .76);
+  --sp-text-3: rgba(255, 255, 255, .62);
+  --sp-text-disabled: rgba(255, 255, 255, .5);
+
+  /* status (text-safe on the panel fill) */
+  --sp-ok: #4ade80;     --sp-ok-rgb: 74, 222, 128;
+  --sp-warn: #fbbf24;   --sp-warn-rgb: 251, 191, 36;
+  --sp-bad: #ff6b76;    --sp-bad-rgb: 255, 107, 118;
+  --sp-bad-solid: #d42033;   /* white text 5.5:1 */
+  --sp-info: #67e8f9;   --sp-info-rgb: 103, 232, 249;
+
+  /* lines and washes */
+  --sp-hair: rgba(255, 255, 255, .09);
+  --sp-hair-strong: rgba(255, 255, 255, .16);
+  --sp-hover: rgba(255, 255, 255, .06);
+  --sp-press: rgba(255, 255, 255, .1);
+  --sp-row-hover: rgba(255, 255, 255, .04);
+
+  /* glass fills per depth (dark: obsidian, slightly cool) */
+  --sp-fill-1: rgba(9, 10, 14, .46);
+  --sp-fill-2: rgba(10, 11, 16, .64);
+  --sp-fill-3: rgba(18, 20, 27, .72);
+  --sp-fill-4: rgba(14, 15, 20, .86);
+  /* dense fills: no-blur fallbacks and unmigrated legacy surfaces */
+  --sp-solid-1: rgba(12, 13, 18, .9);
+  --sp-solid-2: rgba(12, 13, 18, .94);
+  --sp-solid-3: rgba(20, 22, 29, .96);
+  --sp-solid-4: rgba(16, 17, 23, .98);
+
+  /* blur and saturation per depth (depth 1 never blurs) */
+  --sp-blur-2: 18px;  --sp-sat-2: 1.35;
+  --sp-blur-3: 16px;  --sp-sat-3: 1.3;
+  --sp-blur-4: 20px;  --sp-sat-4: 1.3;
+
+  /* specular edge: bright top/left, dim bottom/right */
+  --sp-edge-hi: rgba(255, 255, 255, .14);
+  --sp-edge-side: rgba(255, 255, 255, .06);
+  --sp-edge-lo: rgba(255, 255, 255, .03);
+  --sp-edge: inset 0 1px 0 var(--sp-edge-hi), inset 1px 0 0 var(--sp-edge-side), inset 0 -1px 0 var(--sp-edge-lo);
+  --sp-inset: inset 0 1px 2px rgba(0, 0, 0, .28), inset 0 -1px 0 var(--sp-edge-lo);
+
+  /* shadows grow with depth: offset + soft blur, never a halo */
+  --sp-shadow-1: none;
+  --sp-shadow-2: 0 24px 60px -18px rgba(0, 0, 0, .65), 0 2px 6px rgba(0, 0, 0, .35);
+  --sp-shadow-3: 0 14px 34px -10px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4);
+  --sp-shadow-4: 0 28px 70px -16px rgba(0, 0, 0, .72), 0 4px 12px rgba(0, 0, 0, .4);
+  --sp-shadow-lift: 0 20px 40px -14px rgba(0, 0, 0, .6), 0 2px 6px rgba(0, 0, 0, .35);
+  /* accent controls lift with the same neutral shadow as everything else:
+     a coloured blurred shadow on a dark ground reads as a glow halo */
+  --sp-shadow-accent: 0 6px 16px -6px rgba(0, 0, 0, .6), 0 1px 2px rgba(0, 0, 0, .35);
+  --sp-shadow-accent-lift: 0 12px 24px -8px rgba(0, 0, 0, .65), 0 2px 4px rgba(0, 0, 0, .35);
+
+  /* the world under glass */
+  --sp-world-wash: radial-gradient(120% 80% at 50% 0%, rgba(5, 5, 5, .15), rgba(5, 5, 5, .55));
+  --sp-world-filter: none;
+  --sp-dim: rgba(3, 4, 7, .4);   /* dialog backdrop, never blurred */
+
+  /* motion */
+  --sp-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --sp-ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  /* spring, stiffness 280 / damping 25 / mass .8 (fluid-tabs), sampled */
+  --sp-ease-spring: linear(0, .32 8%, .72 18%, .96 28%, 1.04 38%, 1.03 48%, 1 62%, 1);
+  /* press, stiffness 550 / damping 15 / mass 1.1 (dock), one short overshoot */
+  --sp-ease-press: linear(0, .5 10%, 1.08 26%, 1.02 40%, .99 55%, 1);
+  --sp-dur-1: 150ms;  --sp-dur-2: 220ms;  --sp-dur-3: 280ms;  --sp-dur-4: 350ms;
+
+  /* pointer light and tilt (assets/js/spatial-fx.js writes --sp-mx / --sp-my) */
+  --sp-mx: 50%;
+  --sp-my: -40%;
+  --sp-glow: rgba(255, 255, 255, .07);
+  --sp-glow-size: 420px;
+  --sp-glow-opacity: 1;
+  --sp-tilt-max: 3deg;
+  --sp-lift: -1px;
+
+  /* z-index map (legacy overlays such as the tour keep their own values
+     until they are migrated in phase 4a) */
+  --sp-z-world: 0;
+  --sp-z-page: 1;
+  --sp-z-raised: 10;
+  --sp-z-sticky: 20;
+  --sp-z-bar: 50;
+  --sp-z-dock: 60;
+  --sp-z-drawer: 70;
+  --sp-z-popover: 80;
+  --sp-z-modal: 90;
+  --sp-z-toast: 95;
+  --sp-z-loader: 100;
+
+  color-scheme: dark;
 }
 
-.text-fog-scrim {
-  position: relative;
-  isolation: isolate;
-}
-.text-fog-scrim::before {
-  content: "";
-  position: absolute;
-  inset: var(--fog-inset-y, -2.25rem) var(--fog-inset-x, -3rem);
-  z-index: -1;
-  pointer-events: none;
-  background: rgba(var(--fog-ink), var(--fog-alpha));
-  -webkit-backdrop-filter: blur(var(--fog-blur)) saturate(1.1);
-          backdrop-filter: blur(var(--fog-blur)) saturate(1.1);
-  /* each edge fades to nothing over exactly the padding width, so the text
-     itself is always on full-strength fog */
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
-                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0, #000 3rem, #000 calc(100% - 3rem), transparent 100%),
-                      linear-gradient(to bottom, transparent 0, #000 2.25rem, #000 calc(100% - 2.25rem), transparent 100%);
-  -webkit-mask-composite: source-in;
-          mask-composite: intersect;
-}
-/* weak devices (assets/js/performance-guard.js): no blur, a slightly denser wash */
-html.low-perf-mode .text-fog-scrim::before {
-  -webkit-backdrop-filter: none;
-          backdrop-filter: none;
-  --fog-alpha: .82;
-}
-html.low-perf-mode[data-theme="light"] .text-fog-scrim::before { --fog-alpha: .9; }
-/* people who ask the OS for less transparency get solid ground */
-@media (prefers-reduced-transparency: reduce) {
-  .text-fog-scrim::before { --fog-alpha: .94; -webkit-backdrop-filter: none; backdrop-filter: none; }
-}
+/* ── 2. Tokens: light ──────────────────────────────────────────────────── */
+html.sp-ui[data-theme="light"] {
+  --sp-accent: #2563eb;
+  /* Small text by day sits on translucent white glass, which greys over the
+     darker parts of the scene (measured: the darkest 5% behind the panel is
+     #727478). Accent text and the status colours are one step deeper than
+     their fills so they clear 4.5:1 there too, inset fields included
+     (tests/suites/15_spatial_ui.php computes every pair). */
+  --sp-accent-text: #1e40af;
+  --sp-accent-rgb: 37, 99, 235;
+  --sp-ring: #2563eb;
 
-/* Night text on the fog: pure white, with a soft dark halo for the edges */
-.text-fog-scrim { color: #ffffff; text-shadow: 0 1px 14px rgba(3, 5, 10, .85); }
-html[data-theme="light"] .text-fog-scrim { color: #000000; text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8); }
+  --sp-text: #000000;
+  --sp-text-2: #2b3442;
+  --sp-text-3: #3d4756;
+  --sp-text-disabled: #6b7484;
 
-/* The sign-in and sign-up overview panels: every line pure white by night
-   (sign-up used the dimmed body token), accent words in the text-safe red. */
-.auth-info.text-fog-scrim .info-title,
-.auth-info.text-fog-scrim .info-sub,
-.auth-info.text-fog-scrim .info-body,
-.auth-info.text-fog-scrim .info-feats li,
-.auth-info.text-fog-scrim .info-flow,
-.auth-info.text-fog-scrim .info-flow b,
-.auth-info.text-fog-scrim .info-badge { color: #ffffff; }
-.auth-info.text-fog-scrim .info-badge { border-color: transparent; font-weight: 700; }
-.auth-info.text-fog-scrim .info-title .info-portal { color: var(--accent-bright); }
-.auth-info.text-fog-scrim .info-feats li::before { background: var(--accent); }
-html[data-theme="light"] .auth-info.text-fog-scrim .info-title,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-sub,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-body,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-feats li,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-flow,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-flow b,
-html[data-theme="light"] .auth-info.text-fog-scrim .info-badge { color: #000000; }
-html[data-theme="light"] .auth-info.text-fog-scrim .info-title .info-portal { color: #2563eb; }
+  --sp-ok: #166534;     --sp-ok-rgb: 22, 101, 52;
+  --sp-warn: #92400e;   --sp-warn-rgb: 146, 64, 14;
+  --sp-bad: #a51d2d;    --sp-bad-rgb: 165, 29, 45;
+  --sp-bad-solid: #c62031;
+  --sp-info: #155e75;   --sp-info-rgb: 21, 94, 117;
+
+  --sp-hair: rgba(15, 23, 42, .1);
+  --sp-hair-strong: rgba(15, 23, 42, .18);
+  --sp-hover: rgba(15, 23, 42, .05);
+  --sp-press: rgba(15, 23, 42, .09);
+  --sp-row-hover: rgba(15, 23, 42, .035);
+
+  --sp-fill-1: rgba(15, 23, 42, .05);
+  --sp-fill-2: rgba(255, 255, 255, .74);
+  --sp-fill-3: rgba(255, 255, 255, .8);
+  --sp-fill-4: rgba(255, 255, 255, .92);
+  --sp-solid-1: rgba(241, 244, 248, .96);
+  --sp-solid-2: rgba(250, 251, 253, .97);
+  --sp-solid-3: rgba(255, 255, 255, .98);
+  --sp-solid-4: #ffffff;
+
+  --sp-sat-2: 1.6;  --sp-sat-3: 1.5;  --sp-sat-4: 1.4;
+
+  --sp-edge-hi: rgba(255, 255, 255, .95);
+  --sp-edge-side: rgba(255, 255, 255, .5);
+  --sp-edge-lo: rgba(15, 23, 42, .06);
+  --sp-inset: inset 0 1px 2px rgba(15, 23, 42, .1), inset 0 -1px 0 rgba(255, 255, 255, .7);
+
+  --sp-shadow-2: 0 24px 60px -20px rgba(15, 23, 42, .28), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-3: 0 12px 30px -10px rgba(15, 23, 42, .25), 0 1px 3px rgba(15, 23, 42, .08);
+  --sp-shadow-4: 0 28px 70px -18px rgba(15, 23, 42, .32), 0 4px 12px rgba(15, 23, 42, .1);
+  --sp-shadow-lift: 0 18px 36px -14px rgba(15, 23, 42, .3), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-accent: 0 6px 16px -6px rgba(15, 23, 42, .3), 0 1px 2px rgba(15, 23, 42, .12);
+  --sp-shadow-accent-lift: 0 12px 24px -8px rgba(15, 23, 42, .32), 0 2px 4px rgba(15, 23, 42, .12);
+
+  /* by day the world is softened and washed, so glass never samples hard
+     detail (this replaces the frosted veil and avoids the old mosaic) */
+  --sp-world-wash: linear-gradient(180deg, rgba(244, 246, 250, .55), rgba(244, 246, 250, .35) 50%, rgba(244, 246, 250, .6));
+  --sp-world-filter: blur(6px) saturate(1.15) brightness(1.08);
+  --sp-dim: rgba(15, 23, 42, .28);
+
+  --sp-glow: rgba(37, 99, 235, .08);
+
+  color-scheme: light;
+}
 ```
 
 ### 5.2 Light-theme token floor: `assets/css/theme-contrast.css`
 
-Jet Black type, Cobalt Blue accent, AA status colours, placeholders and the light overview-panel type. (90 lines)
+Jet Black type, Cobalt Blue accent, AA status colours, placeholders and the light overview-panel type. (89 lines)
 
 ```css
 /* ========================================================
@@ -484,9 +607,9 @@ Jet Black type, Cobalt Blue accent, AA status colours, placeholders and the ligh
    computes the WCAG ratio of every visible text node. Targets: 4.5:1 for
    body text, 3:1 for large text (AA); most values below clear 7:1 (AAA).
 
-   Boxless by design (see DEPLOY/feedback): nothing here adds a border,
-   fill or shadow around content. The hero panels get a feathered wash that
-   fades to nothing at its edges instead of a bordered pill.
+   Adds no surfaces: nothing here draws a border, fill or shadow around
+   content. Surfaces (the glass panels, bars and dialogs) belong to the
+   spatial layer, assets/css/theme-spatial.css.
    ======================================================== */
 
 /* ── Tokens ────────────────────────────────────────────────────────────
@@ -531,9 +654,8 @@ html[data-theme="light"] textarea::placeholder {
 }
 
 /* ── Sign-in / sign-up overview panel (left column) ────────────────────
-   Jet Black type in daylight. The feathered fog behind it (white by day,
-   black by night) lives in assets/css/theme-fog-boxless.css as
-   .text-fog-scrim, so both themes share one implementation. */
+   Jet Black type in daylight. The panel itself is spatial glass
+   (assets/css/theme-spatial.css part 4, .sp-auth-info). */
 html[data-theme="light"] .auth-info {
   color: #000000;
   text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8);
@@ -1370,7 +1492,7 @@ function render_profile_barrier($conn) {
 
 ### 5.8 Onboarding client: `assets/js/profile-barrier.js`
 
-Boxless gender and role selection, live role search, and the redirect to the matching lab. (102 lines)
+Gender and role selection in a glass dialog, live role search, and the redirect to the matching lab. (102 lines)
 
 ```js
 // ── Mandatory profile-completion barrier controller ──────────────────────

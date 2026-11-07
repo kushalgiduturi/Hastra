@@ -3,8 +3,8 @@
    the portal cyber layer). Surfaces are frosted, not boxed: a translucent
    plate and one hairline, so the scene stays visible behind every tool.
    Active and focused controls trace the Hastra laser beam around their edge.
-   Tokens come from theme-netflix.css (html.nf-portal); fallbacks keep the page
-   usable if that sheet fails to load. */
+   Tokens come from the spatial bridge in theme-spatial.css (html.sp-ui);
+   fallbacks keep the page usable if that sheet fails to load. */
 
 :root {
   --lx-accent: var(--accent-primary, #E50914);

@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Landing-page chrome done; phase 4 complete.** Next: phase 6 (tests, docs, deleting netflix-bento.css / theme-fog-boxless.css / most of theme-netflix.css, final checks). Phase 5 (edge/ React pilot) is optional and needs the owner's go-ahead.
+**Phase 6 done; the rollout is complete.** All phases except the optional phase 5 (edge/ React pilot) are finished and committed on `spatial-ui`. Phase 5 needs the owner's go-ahead. Nothing is pushed or merged.
 
 ## Tool status (2026-11-07)
 
@@ -155,6 +155,20 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Pre-existing, not from this pass: in light theme at 768 and 390 the frame reports a wider scrollWidth (1064, 528) from the off-canvas sheet and foreground sprites; identical with landing-spatial.css removed. The security demo's WebGL canvas renders black in headless Chromium in both themes.
 - Suite 310/310. Detector: 0 findings.
 
+## Phase 6 notes
+
+- Deleted `assets/css/netflix-bento.css`, `theme-fog-boxless.css` and `theme-netflix.css` after a repo-wide search. The fog file was linked on 53 pages (links removed) but `.text-fog-scrim` had no markup left after 4b. theme-netflix.css was injected by core/theme.js before theme-spatial.css in the cascade, so the bridge already won; the four rules it still owned (clear canvas, sideways-overflow guard, accent scrollbar, brand-mark gradient) moved into theme-spatial.css section 33. theme.js now only adds `html.nf-portal`.
+- Before / after captures of all 52 pages at 1440, both themes: the UI layer is unchanged apart from the intended light status colours. Every other pixel difference is the 3-D scene (camera position, load timing under three parallel WebGL workers); a single-page probe confirmed the scene loads on portals in both themes.
+- Found and fixed a lost affordance: since 4c the submitting button got `.is-processing` but nothing styled it (the beam lived in netflix-bento.css). It now breathes with a progress cursor; static under reduced motion.
+- Contrast is now computed for glass as seen: the fill composited over the world behind it. Grounds measured from the captures (scene in the side margins, Gaussian-blurred 18px like the panel): night `#4a4a4a` (portal p99 `#23201a`, landing p95 `#44454a`), day `#727478` (portal p5). Dark passed everywhere (lowest 4.67:1). Light failed for small status and accent text (green and amber 3.62:1 on the panel), so the light shades went one step deeper: `--sp-ok #166534`, `--sp-warn #92400e`, `--sp-bad #a51d2d`, `--sp-info #155e75`, `--sp-accent-text #1e40af`. Fills, the cobalt accent and `--sp-bad-solid` are unchanged.
+- Tests: new `tests/suites/15_spatial_ui.php` (7 tests, 148 contrast pairs); 12_netflix_portals, 08_ui and 14_privacy_ux updated. Every change is logged in docs/spatial-ui/TEST-CHANGES.md. A mutation check (old light green restored) made the contrast test fail at 3.62:1 as expected.
+- `tests/tools/contrast-audit.js` gained `hastraGlassTokenAudit()`, the in-browser version of the same token-pair check.
+- Docs: README Interface section; HASTRA_ARCHITECTURE_AND_EXECUTION_GUIDE.md: every boxless and fog mention in sections 2 and 3 replaced, 2.2 rewritten, 3.1 rewritten and renamed "Spatial glass and theme engine", 5.1 now lists the spatial token blocks and 5.2 is refreshed; new docs/spatial-ui/DESIGN.md. theme-contrast.css header no longer says "boxless".
+- Final checks on login, admin portal, client portal, employee tasks and Labs index, both themes, 390 and 1440: CLS at most 0.003 (0 on portals); no horizontal overflow; 0 glass token pairs under AA; 0 visible-text failures in light (the page audit forces light by design). Reduced motion: tilt 0, durations 1ms, busy state static. Low-perf: blur 0, dense fill.
+- Frame rate, scene behind glass, GPU via ANGLE (RTX 4060 Laptop): landing 56.6 / 59.8 fps dark / light while scrolling, admin portal 60 fps both; p95 frame 16.7ms. Low-perf mode measures 60 fps throughout, so glass costs at most about 3.5 fps on the landing by night. The built-in browser pane was hidden, so its timings (1 fps, throttled) were discarded.
+- Tests: 310 before phase 6, 316 after (all green). Detector: 0 findings.
+- `C:\xampp\htdocs\_spatial_snap\` deleted after the comparisons.
+
 ## Files done
 
 - PRODUCT.md, docs/spatial-ui/INVENTORY.md, REFERENCES.md, COMPONENTS.md, DIRECTIONS.md, mocks/dashboard.html, mocks/shots/*.png
@@ -164,9 +178,11 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 
 ## Files remaining
 
-Phase 2 onward, per the brief.
+None for phases 0 to 6. Phase 5 (edge/ React pilot) is optional and not started.
 
 ## Open issues
 
-- Baseline bug to fix during rollout: in light theme the admin portal's audit-ledger copy is nearly invisible.
-- `C:\xampp\htdocs\_spatial_snap\` holds harness-rendered HTML with local data; delete it after Phase 4 comparisons.
+- Resolved: the light admin audit-ledger copy reads clearly on the spatial panel (checked in phase 6).
+- Resolved: `_spatial_snap` deleted.
+- Small leftovers noted earlier, still open: the testing portal evidence picker row, and the empty-state outline under the team lead form.
+- Pre-existing, not from this work: the landing frame is wider than the screen in light theme at 768 and 390 (off-canvas sheet and foreground sprites).

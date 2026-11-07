@@ -206,12 +206,17 @@ t('UX layer is mounted on every themed page and covers the agreed features', fun
     ];
     foreach ($needs as $what => $needle) expect(str_contains($js, $needle), "missing: $what");
 });
-t('UX styles stay boxless and readable: dialogs are words over a dimmed backdrop', function () {
+t('UX dialogs: structure in hastra-ux.css, depth-4 glass from the spatial layer', function () {
+    // spatial UI (phase 6): was "UX styles stay boxless". hastra-ux.css keeps the
+    // structure without a surface; theme-spatial.css (part 3) gives the dialog its glass
     $css = px_src('assets/css/hastra-ux.css');
     $dlg = preg_match('~\.hx-dlg \{([^}]*)\}~', $css, $m) ? $m[1] : '';
-    expect($dlg !== '' && !preg_match('~background|border\s*:|box-shadow~', $dlg), 'dialog has a box');
-    expect(preg_match('~\.hx-shade \{[^}]*backdrop-filter~', $css) === 1, 'no blurred backdrop');
+    expect($dlg !== '' && !preg_match('~background|border\s*:|box-shadow~', $dlg), 'hastra-ux.css paints its own dialog surface');
+    expect(preg_match('~\.hx-shade \{[^}]*backdrop-filter~', $css) === 1, 'no backdrop rule');
     expect(str_contains($css, 'prefers-reduced-motion'), 'ignores reduced motion');
+    $sp = px_src('assets/css/theme-spatial.css');
+    $glass = preg_match('~html\.sp-ui \.hx-dlg \{([^}]*)\}~', $sp, $g) ? $g[1] : '';
+    expect(str_contains($glass, 'background: var(--sp-fill-4);') && str_contains($glass, 'backdrop-filter: blur(var(--sp-blur-4))'), 'dialog is not depth-4 glass');
 });
 t('print stylesheet, overflow guard and 44px touch targets are global', function () {
     $css = px_src('core/theme.css');

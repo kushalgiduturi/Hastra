@@ -240,19 +240,11 @@
     const css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = base + 'assets/css/hastra-atmosphere.css' + q;
     document.head.appendChild(css);
-    // Signed-in portals keep the portal tokens (theme-netflix.css). The old
-    // boxless layer (netflix-bento.css) is replaced by the spatial portal
-    // layer in assets/css/theme-spatial.css (part 5), so it is not loaded.
-    // Loaded here, in <head>, so the first paint is already themed.
+    // Signed-in portals (and Hastra Labs) are marked html.nf-portal, which
+    // switches on the spatial portal layer in assets/css/theme-spatial.css
+    // (part 5). Set here, in <head>, so the first paint is already themed.
     const nf = /\/(portals|workspace|labs)\/|\/dashboard(\.php)?$/.test(location.pathname);
-    if (nf) {
-      document.documentElement.classList.add('nf-portal');
-      ['theme-netflix'].forEach(function(name) {
-        const l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = base + 'assets/css/' + name + '.css' + q;
-        document.head.appendChild(l);
-      });
-    }
+    if (nf) document.documentElement.classList.add('nf-portal');
     function go() {
       const b = document.body;
       if (!b || b.hasAttribute('data-atmosphere-off')) return;

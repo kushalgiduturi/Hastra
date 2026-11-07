@@ -156,7 +156,12 @@ html.sp-ui {
 /* ── 2. Tokens: light ──────────────────────────────────────────────────── */
 html.sp-ui[data-theme="light"] {
   --sp-accent: #2563eb;
-  --sp-accent-text: #1d4ed8;
+  /* Small text by day sits on translucent white glass, which greys over the
+     darker parts of the scene (measured: the darkest 5% behind the panel is
+     #727478). Accent text and the status colours are one step deeper than
+     their fills so they clear 4.5:1 there too, inset fields included
+     (tests/suites/15_spatial_ui.php computes every pair). */
+  --sp-accent-text: #1e40af;
   --sp-accent-rgb: 37, 99, 235;
   --sp-ring: #2563eb;
 
@@ -165,11 +170,11 @@ html.sp-ui[data-theme="light"] {
   --sp-text-3: #3d4756;
   --sp-text-disabled: #6b7484;
 
-  --sp-ok: #15803d;     --sp-ok-rgb: 21, 128, 61;
-  --sp-warn: #b45309;   --sp-warn-rgb: 180, 83, 9;
-  --sp-bad: #c62031;    --sp-bad-rgb: 198, 32, 49;
+  --sp-ok: #166534;     --sp-ok-rgb: 22, 101, 52;
+  --sp-warn: #92400e;   --sp-warn-rgb: 146, 64, 14;
+  --sp-bad: #a51d2d;    --sp-bad-rgb: 165, 29, 45;
   --sp-bad-solid: #c62031;
-  --sp-info: #0e7490;   --sp-info-rgb: 14, 116, 144;
+  --sp-info: #155e75;   --sp-info-rgb: 21, 94, 117;
 
   --sp-hair: rgba(15, 23, 42, .1);
   --sp-hair-strong: rgba(15, 23, 42, .18);
@@ -249,7 +254,7 @@ html.sp-ui {
   --section-header-bg: transparent;
   --shadow: none;
 
-  /* assets/css/theme-netflix.css */
+  /* portal token names (the retired portal token sheet) */
   --bg-canvas: transparent;
   --bg-surface: var(--sp-solid-1);
   --bg-card: var(--sp-solid-2);
@@ -272,13 +277,13 @@ html.sp-ui {
      must stay a paint: a flat one in the text colour, no gradient text */
   --gradient-headline: linear-gradient(var(--sp-text), var(--sp-text));
 
-  /* assets/css/netflix-bento.css and the Labs layer */
+  /* hairlines and the Labs layer */
   --hairline: var(--sp-hair);
   --hairline-accent: rgba(var(--sp-accent-rgb), .35);
   --lx-text: var(--sp-text);
   --lx-accent: var(--sp-accent);
 
-  /* theme-fog-boxless.css glass names used by the auth pages */
+  /* auth-kit glass names used by the auth pages */
   --surface-deep-glass: var(--sp-solid-2);
   --color-glass-edge: var(--sp-hair);
   --color-ice-highlight: var(--sp-text);
@@ -480,6 +485,15 @@ html.sp-ui .sp-btn[aria-busy="true"]::after {
 }
 html.sp-ui .sp-btn[aria-busy="true"] svg { opacity: 0; }
 @keyframes sp-spin { to { transform: rotate(360deg); } }
+/* A form's submitting button (assets/js/netflix-spotlight.js adds
+   .is-processing until the next page shows): it breathes and takes the
+   progress cursor. No pseudo-element, so buttons that use ::before or
+   ::after for their own marks are untouched. */
+html.sp-ui button.is-processing { cursor: progress; animation: sp-processing 1.1s var(--sp-ease-in-out) infinite alternate; }
+@keyframes sp-processing { from { opacity: 1; } to { opacity: .58; } }
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui button.is-processing { animation: none; opacity: .72; }
+}
 
 /* ── 11. Form fields ───────────────────────────────────────────────────── */
 html.sp-ui .sp-field { display: grid; gap: 6px; min-width: 0; align-content: start; }
@@ -1372,8 +1386,8 @@ html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkb
 html.sp-ui .legal-foot--card { border-top-color: var(--sp-hair); color: var(--sp-text-2); }
 
 /* ==========================================================================
-   Part 5: the signed-in portals (phase 4c onward). Replaces the boxless
-   portal layer (assets/css/netflix-bento.css, no longer loaded): each page's
+   Part 5: the signed-in portals (phase 4c onward). Replaced the boxless
+   portal layer (deleted in phase 6): each page's
    .main (or .wrap) is the one depth-2 glass panel; everything inside it is
    flat, separated by space and hairlines only where they divide data.
    The shared hooks below are the portal-wide classes; page-specific inline
@@ -1391,6 +1405,13 @@ html.sp-ui.hastra-kage body::before {
 }
 html.sp-ui.nf-portal, html.sp-ui.nf-portal body { color: var(--sp-text); }
 html.sp-ui.nf-portal :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: none; }
+/* Carried over from the retired portal token sheet: the canvas stays clear so
+   the scene shows, decorative bleeds (cloth canvases) never scroll sideways,
+   the scrollbar takes the accent, and the brand mark keeps its gradient. */
+html.sp-ui.nf-portal, html.sp-ui.nf-portal body { background: transparent !important; overflow-x: clip; }
+html.sp-ui.nf-portal { scrollbar-color: rgba(var(--sp-accent-rgb), .45) transparent; }
+html.sp-ui.nf-portal[data-theme="dark"] .hastra-primary-fill { fill: url(#hastra-crimson) !important; }
+html.sp-ui.nf-portal[data-theme="light"] .hastra-primary-fill { fill: url(#hastra-cobalt) !important; }
 
 /* ── 34. The page panel ────────────────────────────────────────────────── */
 html.sp-ui.nf-portal :is(.main, .wrap, .sc-main, .ht-terminal, .workspace-index > main) {
