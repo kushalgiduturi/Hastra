@@ -36,3 +36,8 @@ tests/.results/
 
 # Docker production settings (secrets)
 .env
+
+# Local-only notes (test accounts etc.), never committed
+.local/
+# Baseline screenshots show local DB data (names, emails); kept local
+docs/spatial-ui/baseline/
