@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4i done for legal pages and 404; landing-page chrome is OPEN, waiting on the owner** (landing-pages/hastra.html is a 315 KB single file with its own inline styles and the 3D scene; a chrome-only pass is a separate, careful job). After that: phase 6 (tests, docs, deleting netflix-bento.css / theme-fog-boxless.css / most of theme-netflix.css, final checks). Phase 5 (edge/ React pilot) is optional and needs the owner's go-ahead.
+**Landing-page chrome done; phase 4 complete.** Next: phase 6 (tests, docs, deleting netflix-bento.css / theme-fog-boxless.css / most of theme-netflix.css, final checks). Phase 5 (edge/ React pilot) is optional and needs the owner's go-ahead.
 
 ## Tool status (2026-11-07)
 
@@ -143,6 +143,16 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - 404.php stays standalone (no scripts, no shared CSS) but is rewritten inline on the spatial recipe: one glass card over a calm gradient (no grid), solid numerals (no neon outline or glow), pill buttons, light theme via prefers-color-scheme, reduced-transparency fallback. It links fonts.css only. Copy is unchanged (13_labs checks it).
 - core/theme.css light exclusions also skip `.legal-doc`.
 - The cookie banner was already restyled in 4a.
+- Suite 310/310. Detector: 0 findings.
+
+## Landing chrome notes
+
+- New `assets/css/landing-spatial.css`, linked last in `landing-pages/hastra.html` (the only change to that file). Self-contained `--lsp-*` tokens, dark and `[data-theme="light"]`, low-perf and reduced-transparency fallbacks. It does not load theme-spatial.css, whose legacy bridge would recolour the page's own variables. The 3D scene, camera rig and canvases are untouched.
+- Nav: a floating island (12px inset, 60px, pill; 20px radius under 760px). The glass sits on `.nav::before`, never on `.nav`: a backdrop-filter on the bar would trap the fixed mobile menu sheet inside it (the page documents the same trap). Scroll-hide transform clears the inset. Sheet links keep their 17px touch size.
+- One glass panel per copy block: labs showcase / arsenal inner, governance copy, the delivery timeline list, the footer grid. Content inside is flat. Eyebrows and numbered section labels are hidden; labels, tags, badges and actions are sentence-case pills.
+- Footer link, heading and legal colours come from the panel tokens (the page's own fixed pale blues were unreadable on the light panel).
+- Verified through the real host (`/Hastra/`, which mirrors the theme and switches the scene to day) in dark and light at 1440, 768 and 390, plus the mobile sheet and scroll-hide states.
+- Pre-existing, not from this pass: in light theme at 768 and 390 the frame reports a wider scrollWidth (1064, 528) from the off-canvas sheet and foreground sprites; identical with landing-spatial.css removed. The security demo's WebGL canvas renders black in headless Chromium in both themes.
 - Suite 310/310. Detector: 0 findings.
 
 ## Files done
