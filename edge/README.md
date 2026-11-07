@@ -77,21 +77,23 @@ npx wrangler pages dev dist --compatibility-date=2026-09-28
 ## 4. Deploy
 
 ```bash
-npx wrangler pages project create hastra-edge
-npx wrangler pages secret put SUPABASE_URL
-npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY
-npx wrangler pages secret put HASTRA_DB_ENC_KEY
-npx wrangler pages secret put HASTRA_DB_INDEX_KEY
-npx wrangler pages secret put HASTRA_SESSION_KEY
-npx wrangler pages secret put HASTRA_RECAPTCHA_SECRET
-npx wrangler pages secret put HASTRA_GOOGLE_CLIENT_ID
-npx wrangler pages secret put HASTRA_GOOGLE_CLIENT_SECRET
-npx wrangler pages secret put HASTRA_MAIL_API_KEY
+npx wrangler pages project create hastra --production-branch main
+npx wrangler pages secret put SUPABASE_URL --project-name hastra
+npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY --project-name hastra
+npx wrangler pages secret put HASTRA_DB_ENC_KEY --project-name hastra
+npx wrangler pages secret put HASTRA_DB_INDEX_KEY --project-name hastra
+npx wrangler pages secret put HASTRA_SESSION_KEY --project-name hastra
+npx wrangler pages secret put HASTRA_RECAPTCHA_SECRET --project-name hastra
+npx wrangler pages secret put HASTRA_GOOGLE_CLIENT_ID --project-name hastra
+npx wrangler pages secret put HASTRA_GOOGLE_CLIENT_SECRET --project-name hastra
+npx wrangler pages secret put HASTRA_MAIL_API_KEY --project-name hastra
+npx wrangler pages secret put HASTRA_MAIL_FROM --project-name hastra
+npx wrangler pages secret put HASTRA_MAIL_NAME --project-name hastra
 npm run deploy
 ```
 
 Then in Google Cloud Console, add
-`https://<your-project>.pages.dev/api/auth/google` as an authorised redirect
+`https://hastra.pages.dev/api/auth/google` as an authorised redirect
 URI on the OAuth client (a **separate** client from the PHP app's, or add
 this as an additional redirect URI on the same one).
 
