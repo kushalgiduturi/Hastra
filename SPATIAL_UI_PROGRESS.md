@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 4b done (auth pages).** Next: 4c sysadmin portal (sysadmin_portal, roles, logs, insights, migrate, security_dashboard, delete_user).
+**Phase 4c done (sysadmin portal + the shared portal layer).** Next: 4d admin portal (admin_portal, project_portal, requirements, delivery, deployments, billing, attendance, leave_management, directory, create_employee, doc_editor, security, testing).
 
 ## Tool status (2026-11-07)
 
@@ -82,6 +82,17 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - The intro sequence on login is long; screenshots need about 6 s before the card has fully emerged.
 - OTP and forgot-OTP screens were checked through the harness (session with a pending code); reset, set_password and verify_register need token state and were not shot.
 - Test changed: 08_ui auth hero test (docs/spatial-ui/TEST-CHANGES.md). Suite 310/310. Detector: only two hidden-image false positives on register (no src until a file is chosen).
+
+## Phase 4c notes
+
+- netflix-bento.css is no longer loaded (core/theme.js loads only theme-netflix). Its job is done by theme-spatial.css part 5: `.main` / `.wrap` is each portal page's one depth-2 glass panel; sections, metrics (strip), quick-link tiles (tilt via spatial-fx), pills, tables (flat rows), toolbars, list rows, fields, modals and the portal cursor (no glow) are styled there. The world wash replaces the veil and the body glow.
+- theme-netflix.css lost its 112-line !important component layer (gradient titles, underlined fields, mono uppercase labels/buttons, outlined danger, tabs, alerts, modals, ambient glow); tokens, legacy mapping, scrollbar, overflow guard and brand fill stay.
+- core/theme.css: 57 structural light-theme rules (cards, sections, stat cards, quick-links, table rows, filter bars, the sysadmin light-fix section) are guarded with `html:not(.nf-portal)` so they skip spatial portals.
+- Part 6: shared portal controls (save/primary, secondary/clear/more/back, delete/danger, modal confirm/cancel, alerts and notes without side rules, company chips, grouped tables) plus sysadmin specifics (security dashboard strip and control rows, migration steps and console, insights segmented range and quiet actions). Gooey search and custom dropdowns (cd-*) restyled globally.
+- Dead generic inline rules (grid backgrounds, boxed shell, stat cards, table base) deleted from sysadmin_portal, roles and logs.
+- This layer touches every portal page at once. Groups 4d-4g still need their own inline styles migrated (example: admin project_portal project blocks are still boxed in light theme, section titles uppercase).
+- delete_user.php is an endpoint (no markup); nothing to restyle.
+- Test changed: 12_netflix_portals stack test (TEST-CHANGES.md). Suite 310/310. Detector: 0 findings on the 4c files.
 
 ## Files done
 

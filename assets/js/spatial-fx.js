@@ -81,7 +81,8 @@
       glass.style.setProperty('--sp-my', (e.clientY - r.top).toFixed(0) + 'px');
     }
 
-    var k = t.closest('[data-sp-tilt]');
+    // legacy quick-link hooks (portal section nav, workspace index) tilt too
+    var k = t.closest('[data-sp-tilt], .nf-portal .section-nav-card, .nf-portal .dash-card');
     if (tilted && tilted !== k) untilt();
     if (k) {
       var max = parseFloat(getComputedStyle(k).getPropertyValue('--sp-tilt-max')) || 0;

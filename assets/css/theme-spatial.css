@@ -1370,3 +1370,429 @@ html.sp-ui .legal-foot--below {
 html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a) { color: var(--sp-text-2); text-underline-offset: 3px; }
 html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a):hover { color: var(--sp-text); }
 html.sp-ui .legal-foot--card { border-top-color: var(--sp-hair); color: var(--sp-text-2); }
+
+/* ==========================================================================
+   Part 5: the signed-in portals (phase 4c onward). Replaces the boxless
+   portal layer (assets/css/netflix-bento.css, no longer loaded): each page's
+   .main (or .wrap) is the one depth-2 glass panel; everything inside it is
+   flat, separated by space and hairlines only where they divide data.
+   The shared hooks below are the portal-wide classes; page-specific inline
+   styles are migrated per surface group (4c sysadmin, 4d admin, ...).
+   ========================================================================== */
+
+/* ── 33. The world under the portals ───────────────────────────────────── */
+/* core/theme.css draws a fading accent glow in body::before; the spatial
+   wash takes the element over (no veil, no glow halo). */
+html.sp-ui.hastra-kage body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  width: auto; height: auto; top: 0; left: 0; transform: none;
+  opacity: 1; animation: none; border-radius: 0;
+  background: var(--sp-world-wash);
+}
+html.sp-ui.nf-portal, html.sp-ui.nf-portal body { color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: none; }
+
+/* ── 34. The page panel ────────────────────────────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) {
+  box-sizing: border-box; position: relative; isolation: isolate;
+  width: min(var(--sp-page-max), calc(100% - 2 * var(--sp-gutter)));
+  max-width: none;
+  margin: var(--sp-6) auto 136px;
+  padding: var(--sp-panel-pad);
+  border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2);
+  font-family: var(--sp-font-ui); font-size: var(--sp-fs-md); line-height: var(--sp-lh-body);
+}
+@media (max-width: 760px) {
+  html.sp-ui.nf-portal :is(.main, .wrap) { margin-top: var(--sp-4); border-radius: 24px; width: calc(100% - 16px); }
+}
+
+/* ── 35. Page header and titles ────────────────────────────────────────── */
+html.sp-ui.nf-portal .page-header { margin: 0 0 var(--sp-8); padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.page-header h1, .wrap > h1, .main > h1, .sc-header h1, .ht-main h1, .workspace-index h1) {
+  margin: 0; font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display);
+  text-transform: none; text-shadow: none; filter: none; text-wrap: balance;
+  color: var(--sp-text); background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui.nf-portal :is(.page-header h1, .wrap > h1, .main > h1, .sc-header h1, .ht-main h1, .workspace-index h1) .word {
+  background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui.nf-portal :is(.page-header p, .wrap > .lede, .main > .lede) { margin: var(--sp-2) 0 0; max-width: 62ch; color: var(--sp-text-2); font-size: var(--sp-fs-md); }
+
+/* ── 36. Sections: a title row, then flat content ──────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section, .card, .panel, .box) {
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; border-radius: 0;
+  background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section, .card, .panel, .box):last-child { margin-bottom: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header {
+  display: flex; align-items: center; justify-content: flex-start; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap;
+  margin: 0 0 var(--sp-3); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header::before,
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header::after { content: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-title {
+  display: inline-flex; align-items: center; gap: var(--sp-2); margin: 0 auto 0 0;
+  font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-title svg { width: 18px; height: 18px; fill: var(--sp-accent-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-body { padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section-count, .count) { color: var(--sp-text-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* ── 37. Metrics: a strip of numbers, thin dividers, no capsules ───────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.stats-row, .stat-grid, .stats-grid) {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0;
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card {
+  position: relative; min-height: 0; margin: 0; padding: var(--sp-1) var(--sp-6);
+  border: 0; border-left: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 2px;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card:first-child { padding-left: 0; border-left: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card::before,
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card > *::after { content: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card .stat-label {
+  font: 500 var(--sp-fs-sm)/1.35 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card .stat-value {
+  font: 600 var(--sp-fs-2xl)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card :is(.stat-sub, .stat-hint) { font-size: var(--sp-fs-xs); color: var(--sp-text-3); order: -1; }
+@media (max-width: 760px) {
+  html.sp-ui.nf-portal :is(.main, .wrap) :is(.stats-row, .stat-grid, .stats-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--sp-5); }
+  html.sp-ui.nf-portal :is(.main, .wrap) .stat-card:nth-child(odd) { padding-left: 0; border-left: 0; }
+  html.sp-ui.nf-portal :is(.main, .wrap) .stat-card { padding-right: var(--sp-3); }
+}
+
+/* ── 38. Quick-link tiles (the in-page section nav) ────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-2);
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-card {
+  display: flex; align-items: center; gap: var(--sp-3); min-height: 56px; padding: 10px 14px;
+  border: 0; border-radius: var(--sp-r-ctl); background: none; box-shadow: none;
+  color: var(--sp-text); text-decoration: none;
+  transform-style: preserve-3d;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-card:hover { background: var(--sp-hover); }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-icon {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center;
+  border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-icon svg { width: 16px; height: 16px; fill: currentColor; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+
+/* ── 39. Badges and status pills (colours stay with each badge's own class) ─ */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.badge, .type-badge, .sev-badge, .project-code-badge, .status-badge, .role-badge, .tag, .pill) {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px;
+  border: 0; border-radius: var(--sp-r-pill); text-shadow: none; white-space: nowrap;
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.badge, .status-badge, .sev-badge)::before { animation: none; box-shadow: none; }
+
+/* ── 40. Tables: the panel is the surface, rows are flat ───────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.table-wrap, .tbl-wrap, .table-responsive, .table-container, .table-card-wrapper) {
+  overflow-x: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table { width: 100%; border-collapse: collapse; border-spacing: 0; background: none; font-size: var(--sp-fs-sm); }
+html.sp-ui.nf-portal :is(.main, .wrap) table thead th {
+  padding: 0 var(--sp-3) var(--sp-3); border: 0; background: none; text-align: left; white-space: nowrap;
+  font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody td {
+  padding: var(--sp-4) var(--sp-3); border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0;
+  background: none; color: var(--sp-text); vertical-align: middle;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table :is(th, td):first-child { padding-left: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) table :is(th, td):last-child { padding-right: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr { background: none; transition: background var(--sp-dur-1); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr:hover { background: var(--sp-row-hover); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr.changed td { background: rgba(var(--sp-accent-rgb), .07); }
+html.sp-ui.nf-portal :is(.main, .wrap) table td :is(.mono, code, time) { font-family: var(--sp-font-mono); color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr:only-child td[colspan] { text-align: center; color: var(--sp-text-2); }
+
+/* ── 41. Toolbars, filters, list rows, empty states ───────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.filters, .filter-bar, .toolbar, .controls, .company-index, .user-search) {
+  border: 0; border-radius: 0; background: none; box-shadow: none; padding-left: 0; padding-right: 0;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-card, .task-card, .req-card, .project-card, .proj-card, .project-block, .member-row, .team-member) {
+  margin: 0; padding: var(--sp-4) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .company-block { margin: 0; padding: var(--sp-6) 0 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .empty-state { padding: var(--sp-10) var(--sp-6); text-align: center; color: var(--sp-text-2); font: 400 var(--sp-fs-md)/1.5 var(--sp-font-ui); letter-spacing: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-title) { font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-meta, .bug-code) { color: var(--sp-text-2); }
+
+/* ── 42. Fields inside the panel ───────────────────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input[type="text"], input[type="email"], input[type="search"], input[type="number"], input[type="date"], input[type="url"], input[type="tel"], input[type="password"], select, textarea):not(.ax-native, .sp-input, .sp-select, .sp-textarea, .gooey-input, .cd-native-select) {
+  box-sizing: border-box; min-height: 40px; padding: 8px var(--sp-3);
+  border: 0; border-radius: var(--sp-r-ctl);
+  background-color: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-sm)/1.35 var(--sp-font-ui);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input, select, textarea):not(.ax-native, .gooey-input, [type="checkbox"], [type="radio"], [type="range"]):focus {
+  outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input, textarea)::placeholder { color: var(--sp-text-3); opacity: 1; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) select option { background: var(--sp-solid-4); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--sp-accent); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) label { color: var(--sp-text); }
+
+/* ── 43. Modals (core/theme.css .modal-overlay / .modal) ───────────────── */
+html.sp-ui .modal-overlay { background: var(--sp-dim); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.sp-ui .modal-overlay .modal, html.sp-ui .modal.sp-glass {
+  box-sizing: border-box; padding: var(--sp-8); border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui); text-shadow: none;
+}
+html.sp-ui .modal-overlay .modal :is(h2, h3, .modal-title) { font: 650 var(--sp-fs-xl)/1.25 var(--sp-font-ui); letter-spacing: -.015em; text-transform: none; color: var(--sp-text); }
+html.sp-ui .modal-overlay .modal p { color: var(--sp-text-2); }
+
+/* ── 44. Portal cursor (assets/js/netflix-cursor.js), without glow halos ── */
+#nf-cursor-dot, #nf-cursor-ring, #nf-cursor-glow {
+  position: fixed; top: 0; left: 0; pointer-events: none; opacity: 0; will-change: transform;
+  transition: opacity .3s ease;
+}
+#nf-cursor-dot {
+  z-index: 2147483001; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sp-accent, #e50914); box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  transition: opacity .3s ease, width .15s ease, height .15s ease;
+}
+#nf-cursor-ring {
+  z-index: 2147483001; width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(var(--sp-accent-rgb, 229, 9, 20), .55);
+}
+#nf-cursor-ring::after {
+  content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--sp-accent, #e50914);
+  opacity: 0; transform: scale(.6); transition: opacity .25s ease, transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+#nf-cursor-ring.is-hot::after { opacity: .9; transform: scale(1.3); }
+#nf-cursor-glow { display: none; }
+html.nf-cursor-on #nf-cursor-dot, html.nf-cursor-on #nf-cursor-ring { opacity: 1; }
+@media (hover: none) and (pointer: coarse) { #nf-cursor-dot, #nf-cursor-ring { display: none; } }
+@media (prefers-reduced-motion: reduce) { #nf-cursor-dot, #nf-cursor-ring { display: none; } }
+
+/* ── 45. Workspace index tiles (portals/index.php) ─────────────────────── */
+html.sp-ui.nf-portal .dash-card {
+  display: flex; gap: var(--sp-3); padding: var(--sp-4); border: 0; border-radius: var(--sp-r-ctl);
+  background: none; box-shadow: none; transform-style: preserve-3d;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui.nf-portal .dash-card:hover { background: var(--sp-hover); }
+html.sp-ui.nf-portal .dash-icon { border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text); }
+html.sp-ui.nf-portal .role-chip { font: 600 11px/1 var(--sp-font-ui); letter-spacing: .06em; border: 0; border-radius: var(--sp-r-pill); color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14); }
+html.sp-ui.nf-portal .workspace-index { text-shadow: none; }
+
+/* ── 46. Shared portal controls (classes many portal pages define inline) ─ */
+/* primary actions */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); filter: none; cursor: pointer;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit) svg { width: 16px; height: 16px; fill: currentColor; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sp-accent) 88%, #fff); transform: translateY(var(--sp-lift));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift);
+}
+/* the roles page lights its save button while edits are pending: a neutral lift, not a glow */
+html.sp-ui.nf-portal .main:has(tr.changed) .btn-save { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift); }
+/* secondary and quiet actions */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger)) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 40px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none; cursor: pointer;
+  transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger)):hover:not(:disabled) { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.btn-clear.active, .role-filters .btn-clear.active) { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; font-weight: 650; }
+/* destructive actions: soft in tables, solid in the confirming dialog */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger) {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 32px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  background: rgba(var(--sp-bad-rgb), .13); color: var(--sp-bad); box-shadow: none;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+  transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger):hover:not(:disabled) { background: rgba(var(--sp-bad-rgb), .22); }
+html.sp-ui.nf-portal .wrap .actions button.danger { min-height: 40px; padding: 0 var(--sp-4); font-size: var(--sp-fs-sm); }
+html.sp-ui .modal :is(.modal-btn-confirm) {
+  min-height: 44px; border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-bad-solid); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), var(--sp-shadow-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; filter: none;
+}
+html.sp-ui .modal .modal-btn-confirm:hover:not(:disabled) { background: color-mix(in srgb, var(--sp-bad-solid) 90%, #fff); }
+html.sp-ui .modal .modal-btn-confirm:disabled { background: var(--sp-hover); color: var(--sp-text-disabled); box-shadow: none; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(button, .btn):disabled { cursor: not-allowed; }
+html.sp-ui .modal::before { content: none; }
+html.sp-ui .modal .modal-btns { gap: var(--sp-2); }
+html.sp-ui .modal .otp-box {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font-family: var(--sp-font-mono); caret-color: var(--sp-accent);
+}
+html.sp-ui .modal .otp-box:focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+
+/* alerts and notes: tinted, never a coloured side rule */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert, .modal-alert, .migration-note, .ins-flash, .ins-note, .notice) {
+  border: 0; border-radius: var(--sp-r-card); padding: var(--sp-3) var(--sp-4);
+  font-size: var(--sp-fs-sm); line-height: 1.5; color: var(--sp-text); background: rgba(var(--sp-info-rgb), .1);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert.success, .modal-alert.success) { background: rgba(var(--sp-ok-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert.error, .modal-alert.error) { background: rgba(var(--sp-bad-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .migration-note { background: rgba(var(--sp-warn-rgb), .12); margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.alert.success svg) { fill: var(--sp-ok); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.alert.error svg) { fill: var(--sp-bad); }
+
+/* company chips and grouped tables (roles) */
+html.sp-ui.nf-portal :is(.main, .wrap) .company-index { gap: var(--sp-2); padding: 0; margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip {
+  border: 0; border-radius: var(--sp-r-ctl); padding: 8px 14px; background: var(--sp-hover); color: var(--sp-text);
+  box-shadow: inset 0 0 0 1px var(--sp-hair); transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip:hover { background: var(--sp-press); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip.active { background: rgba(var(--sp-accent-rgb), .14); box-shadow: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip.active .chip-name { color: var(--sp-accent-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .chip-meta { font: 400 var(--sp-fs-xs)/1.3 var(--sp-font-mono); letter-spacing: 0; color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-head { padding: 0 0 var(--sp-3); border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-name { font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-meta { font: 400 var(--sp-fs-xs)/1.4 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-meta b { font-family: var(--sp-font-mono); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.company-empty, .cell-note) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) td.muted { font-family: var(--sp-font-mono); font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .filters { gap: var(--sp-2); margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) .filters.user-search { margin: 0 0 var(--sp-4); }
+
+/* ── 47. Sysadmin pages (phase 4c) ─────────────────────────────────────── */
+/* security dashboard: snapshot numbers as a metric strip, controls as rows */
+html.sp-ui.nf-portal .wrap .snap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: var(--sp-8) 0 var(--sp-10); }
+html.sp-ui.nf-portal .wrap .snap-card { padding: var(--sp-1) var(--sp-6); border: 0; border-left: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none; }
+html.sp-ui.nf-portal .wrap .snap-card:first-child { padding-left: 0; border-left: 0; }
+html.sp-ui.nf-portal .wrap .snap-card .n { font: 600 var(--sp-fs-2xl)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .snap-card.good .n { color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .snap-card.warn .n { color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap .snap-card .l { margin-top: 2px; font: 500 var(--sp-fs-sm)/1.35 var(--sp-font-ui); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap :is(h2.section, h2) {
+  margin: var(--sp-10) 0 var(--sp-3); padding: 0;
+  font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal .wrap .schema-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+html.sp-ui.nf-portal .wrap .chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  background: var(--sp-hover); color: var(--sp-text);
+}
+html.sp-ui.nf-portal .wrap .chip.on { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .chip.off { background: rgba(var(--sp-warn-rgb), .13); color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap a.chip:hover { background: var(--sp-press); }
+html.sp-ui.nf-portal .wrap .controls { display: block; margin: 0; padding: 0; }
+html.sp-ui.nf-portal .wrap .ctrl {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; column-gap: var(--sp-3); align-items: start;
+  margin: 0; padding: var(--sp-4) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .wrap .ctrl .dot { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; }
+html.sp-ui.nf-portal .wrap .ctrl.on .dot { background: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .ctrl h3 { margin: 0; font: 600 var(--sp-fs-md)/1.4 var(--sp-font-ui); color: var(--sp-text); text-transform: none; letter-spacing: 0; }
+html.sp-ui.nf-portal .wrap .ctrl p { margin: 2px 0 0; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ctrl .state {
+  position: static; display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--sp-r-pill);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal .wrap .ctrl.on .state { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+
+/* migration: status line, numbered steps as rows, a console for results */
+html.sp-ui.nf-portal .wrap .status { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); margin: var(--sp-6) 0; font: 500 var(--sp-fs-xs)/1.5 var(--sp-font-ui); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .status b { font-family: var(--sp-font-mono); color: var(--sp-text); font-weight: 400; }
+html.sp-ui.nf-portal .wrap :is(.status .ok, .ok) { color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap :is(.status .warn, .warn) { color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap .steps { display: block; margin: 0; padding: 0; }
+html.sp-ui.nf-portal .wrap .step {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-6); flex-wrap: wrap;
+  margin: 0; padding: var(--sp-5) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .wrap .step h2 { margin: 0 0 4px; font: 600 var(--sp-fs-md)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .step p { margin: 0; max-width: 60ch; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .step .num {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; margin-right: var(--sp-2); border-radius: 50%; vertical-align: 1px;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text);
+}
+html.sp-ui.nf-portal .wrap .actions { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+html.sp-ui.nf-portal .wrap label.confirm { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 44px; font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .result { margin-top: var(--sp-6); padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal .wrap .result h3 { margin: 0 0 var(--sp-2); font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap pre {
+  margin: 0; padding: var(--sp-4) var(--sp-5); border: 0; border-radius: var(--sp-r-card);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow: auto;
+  font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono); color: var(--sp-text); white-space: pre-wrap;
+}
+html.sp-ui.nf-portal:not([data-theme="light"]) .wrap pre { background: rgba(3, 4, 7, .55); }
+html.sp-ui.nf-portal .wrap pre.error { color: var(--sp-bad); }
+
+/* insights: sentence-case labels, a segmented range switch, quiet actions */
+html.sp-ui.nf-portal .wrap :is(.ins-filters span, h3, .ins-tableview summary) { font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .wrap h3 { margin: var(--sp-6) 0 var(--sp-2); font-size: var(--sp-fs-sm); font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .ins-filters span { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ins-seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .wrap .ins-seg a {
+  display: inline-flex; align-items: center; min-height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); color: var(--sp-text-2); text-decoration: none;
+}
+html.sp-ui.nf-portal .wrap .ins-seg a:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui.nf-portal .wrap .ins-seg a[aria-current="true"] { color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3); box-shadow: var(--sp-edge), 0 4px 12px -4px rgba(0, 0, 0, .4); }
+html.sp-ui[data-theme="light"].nf-portal .wrap .ins-seg a[aria-current="true"] { background: #fff; }
+html.sp-ui.nf-portal .wrap .ins-fig .v { font-weight: 600; letter-spacing: -.02em; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .ins-fig .l { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap :is(.ins-export, .ins-note a) { color: var(--sp-accent-text); }
+html.sp-ui.nf-portal .wrap .ins-bar { background: var(--sp-accent); border-radius: 4px 4px 0 0; }
+html.sp-ui.nf-portal .wrap .ins-rk-bar { background: var(--sp-accent); border-radius: 2px; }
+html.sp-ui.nf-portal .wrap :is(.ins-tick, .ins-rk-val small, .ins-loc) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ins-tag { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text-2); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .wrap :is(.ins-resolve, .ins-bulk) {
+  min-height: 36px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+}
+html.sp-ui.nf-portal .wrap .ins-bulk { min-height: 40px; font-size: var(--sp-fs-sm); }
+html.sp-ui.nf-portal .wrap :is(.ins-resolve, .ins-bulk):hover { background: var(--sp-press); }
+
+/* ── 48. Gooey search and custom dropdowns (assets/js/gooey-search.js,
+   custom-dropdowns.js), shared by several portal pages ─────────────────── */
+html.sp-ui .gooey-trigger {
+  height: 40px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  transition: width var(--sp-dur-4) var(--sp-ease-out), box-shadow var(--sp-dur-2);
+}
+html.sp-ui .gooey-trigger:focus-within { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .gooey-search-root .gooey-trigger .gooey-input { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; outline: none; color: var(--sp-text); font: 400 var(--sp-fs-sm)/1 var(--sp-font-ui); }
+html.sp-ui .gooey-search-root .gooey-trigger .gooey-input::placeholder { color: var(--sp-text-3); }
+html.sp-ui .gooey-icon-btn { color: var(--sp-text-2); }
+html.sp-ui .cd-trigger {
+  min-height: 40px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui .cd-trigger:hover { background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair-strong); }
+html.sp-ui :is(.cd-trigger:focus-visible, .cd-trigger.cd-open) { outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset); }
+html.sp-ui .cd-trigger.cd-disabled, html.sp-ui .cd-trigger:disabled { color: var(--sp-text-disabled); background: transparent; }
+html.sp-ui .cd-chevron { color: var(--sp-text-2); }
+html.sp-ui .cd-menu {
+  padding: 6px; border: 0; border-radius: 18px; z-index: var(--sp-z-popover);
+  background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4);
+}
+html.sp-ui .cd-option { min-height: 38px; padding: 0 var(--sp-3); border-radius: var(--sp-r-sm); color: var(--sp-text); font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; display: flex; align-items: center; }
+html.sp-ui :is(.cd-option:hover, .cd-option.cd-option-highlight) { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .cd-option.cd-option-active { color: var(--sp-accent-text); font-weight: 600; background: none; }
+html.sp-ui .cd-option.cd-option-disabled { color: var(--sp-text-disabled); }

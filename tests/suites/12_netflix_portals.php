@@ -57,10 +57,14 @@ t('precision cursor: 12px dot, 48px trailing ring, 600px glow, off on touch', fu
     expect(!str_contains($js, 'cursor: none'), 'the system cursor must stay visible');
 });
 
-t('theme.js gives portals (and Hastra Labs) the Netflix stack, and nothing else', function () {
+t('theme.js gives portals (and Hastra Labs) the portal tokens and the spatial layer, and nothing else', function () {
     $js = file_get_contents(ASTRA_ROOT . '/core/theme.js');
     expect(str_contains($js, "const nf = /\\/(portals|workspace|labs)\\/|\\/dashboard(\\.php)?$/.test(location.pathname);"), 'portal detection changed');
-    expect(str_contains($js, "['theme-netflix', 'netflix-bento']"), 'portal stylesheets not loaded');
+    // spatial UI (phase 4c): the boxless netflix-bento layer is no longer loaded;
+    // the portal tokens stay and theme-spatial.css (linked by every page) does the rest
+    expect(str_contains($js, "['theme-netflix'].forEach"), 'portal token stylesheet not loaded');
+    expect(!str_contains($js, "'netflix-bento'"), 'the retired boxless layer is still loaded');
+    expect(str_contains(file_get_contents(ASTRA_ROOT . '/portals/admin/admin_portal.php'), 'assets/css/theme-spatial.css'), 'portal pages do not link the spatial layer');
     expect(str_contains($js, "? ['landing-host', 'kage-scene', 'kage-cyber', 'netflix-spotlight', 'netflix-cursor', 'handover-seal', 'view-director']"), 'portal script stack changed');
     expect(str_contains($js, ": ['landing-host', 'kage-scene', 'sakura-petals-cursor', 'hybrid-hand-cursor'"), 'non-portal pages lost their scene');
     foreach (['/Hastra/workspace/admin/', '/Hastra/workspace/client/my-projects', '/Hastra/portals/projects/signoff', '/Hastra/dashboard.php', '/Hastra/labs/', '/Hastra/labs/crypto'] as $p)

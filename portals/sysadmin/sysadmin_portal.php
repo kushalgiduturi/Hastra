@@ -29,19 +29,11 @@ $logged_in_name   = $logged_in_data["name"] ?? $_SESSION["user_name"];
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p { font-size: 13px; color: var(--text-dim); }
 </style>
 <!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
