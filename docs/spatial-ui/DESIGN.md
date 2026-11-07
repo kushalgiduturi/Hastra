@@ -92,6 +92,7 @@ No eyebrow labels, no numbered section chips, no coloured side rules, no glow ha
 |---|---|
 | `assets/css/theme-spatial.css` | the whole system: tokens and bridge (part 1), components (part 2), shared chrome (part 3), auth (part 4), portals (part 5), per-group sections (part 6) |
 | `assets/css/landing-spatial.css` | the same recipe for the landing page chrome, with its own `--lsp-*` tokens (the landing page keeps its own variables and does not load theme-spatial.css) |
+| `edge/src/styles/spatial.css` | the same tokens for the React pilot on Tailwind v4, mapped onto Watermelon UI's colour names; the components are in `edge/src/components/watermelon/` (see COMPONENTS.md) |
 | `assets/js/spatial-fx.js` | pointer glow, 3-degree tilt on quick links and dashboard cards, tab and segment indicators |
 | `core/theme.js` | adds `html.sp-ui`, applies the theme before first paint, mounts spatial-fx.js |
 | `assets/css/sidebar-nav.css`, `core/dock.css` | the bar, drawer and dock |

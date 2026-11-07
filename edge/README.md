@@ -13,6 +13,26 @@ portal roles, escrow/milestone sign-off, the SAST scanner, ephemeral
 dossiers, Hastra Labs' backend, and the webhook APIs — is deferred to
 follow-up passes once this pilot is validated end-to-end.
 
+## Interface
+
+The screens use the same spatial UI as the PHP app ("Quiet glass", see
+`../docs/spatial-ui/DESIGN.md`), built on Tailwind v4 with Watermelon UI
+components used directly.
+
+- `src/styles/spatial.css`: the spatial tokens (the same values as
+  `../assets/css/theme-spatial.css`), mapped onto the colour names the
+  Watermelon components use, plus the glass recipe and the fallbacks.
+- `src/components/watermelon/`: the vendored Watermelon components (button,
+  Button 9 loading dots, badge, label, table, Floating Input, Input OTP 10,
+  Fluid Tabs), restyled on the tokens. Each file names its source.
+- `src/components/spatial/`: the auth shell, the page panel, the brand mark,
+  the theme switch, icons and the inline status message.
+- The theme key is the PHP app's (`localStorage.astra_theme`), falling back
+  to the system preference. Fonts are self-hosted in `public/fonts/`.
+- `tests/pilot/spatial-ui.test.ts` pins the tokens (and their parity with
+  the PHP app), the fallbacks, the focus ring and AA contrast for every
+  text-on-glass pair.
+
 ## Prerequisites
 
 - A free [Supabase](https://supabase.com) project.

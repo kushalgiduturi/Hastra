@@ -1,0 +1,242 @@
+/* Hastra edge pilot: the spatial UI ("Quiet glass", docs/spatial-ui/DESIGN.md
+   in the PHP app) on Tailwind v4.
+
+   The --sp-* values are the same as assets/css/theme-spatial.css part 1, so
+   both apps share one palette and one depth stack. The @theme block maps
+   them onto the colour names the Watermelon UI components use (background,
+   foreground, primary, muted-foreground, border, input, ring...), so the
+   vendored components in src/components/watermelon render in the spatial
+   palette without per-component colour overrides.
+
+   Depth stack: 0 the world (body), 1 insets (fields, tracks), 2 the page
+   panel, 3 the floating bar and raised controls, 4 dialogs and toasts.
+   Budget: blur <= 24px, at most three blurred layers in a viewport, never
+   nested. Light theme: html[data-theme="light"] (src/lib/theme.ts). */
+
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/onest-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Onest';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/onest-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Share Tech Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/share-tech-mono-latin.woff2') format('woff2');
+}
+
+/* ── Tokens: dark (default) ─────────────────────────────────────────────── */
+:root {
+  --sp-font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-font-mono: 'Share Tech Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --sp-accent: #e50914;
+  --sp-accent-text: #ff4655;
+  --sp-accent-rgb: 229, 9, 20;
+  --sp-on-accent: #ffffff;
+  --sp-ring: #ff4655;
+
+  --sp-text: #ffffff;
+  --sp-text-2: rgba(255, 255, 255, .76);
+  --sp-text-3: rgba(255, 255, 255, .62);
+  --sp-text-disabled: rgba(255, 255, 255, .5);
+
+  --sp-ok: #4ade80;     --sp-ok-rgb: 74, 222, 128;
+  --sp-warn: #fbbf24;   --sp-warn-rgb: 251, 191, 36;
+  --sp-bad: #ff6b76;    --sp-bad-rgb: 255, 107, 118;
+  --sp-bad-solid: #d42033;
+  --sp-info: #67e8f9;   --sp-info-rgb: 103, 232, 249;
+
+  --sp-hair: rgba(255, 255, 255, .09);
+  --sp-hair-strong: rgba(255, 255, 255, .16);
+  --sp-hover: rgba(255, 255, 255, .06);
+  --sp-press: rgba(255, 255, 255, .1);
+  --sp-row-hover: rgba(255, 255, 255, .04);
+
+  --sp-fill-1: rgba(9, 10, 14, .46);
+  --sp-fill-2: rgba(10, 11, 16, .64);
+  --sp-fill-3: rgba(18, 20, 27, .72);
+  --sp-fill-4: rgba(14, 15, 20, .86);
+  --sp-solid-2: rgba(12, 13, 18, .94);
+  --sp-solid-3: rgba(20, 22, 29, .96);
+  --sp-solid-4: rgba(16, 17, 23, .98);
+
+  --sp-blur-2: 18px;  --sp-sat-2: 1.35;
+  --sp-blur-3: 16px;  --sp-sat-3: 1.3;
+  --sp-blur-4: 20px;  --sp-sat-4: 1.3;
+
+  --sp-edge: inset 0 1px 0 rgba(255, 255, 255, .14), inset 1px 0 0 rgba(255, 255, 255, .06), inset 0 -1px 0 rgba(255, 255, 255, .03);
+  /* Insets (fields, OTP slots, tracks). The PHP app's dark inset is a darker
+     wash over a lit 3-D scene; here the world is a dark field, so a dark
+     wash vanishes. By night the inset lifts slightly instead and carries a
+     hairline ring, so every field stays findable. */
+  --sp-inset-fill: rgba(255, 255, 255, .055);
+  --sp-inset: inset 0 1px 2px rgba(0, 0, 0, .28), inset 0 0 0 1px rgba(255, 255, 255, .12);
+  --sp-shadow-2: 0 24px 60px -18px rgba(0, 0, 0, .65), 0 2px 6px rgba(0, 0, 0, .35);
+  --sp-shadow-3: 0 14px 34px -10px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4);
+  --sp-shadow-accent: 0 6px 16px -6px rgba(0, 0, 0, .6), 0 1px 2px rgba(0, 0, 0, .35);
+
+  /* the world: no 3-D scene in the pilot, so a calm lit field */
+  --sp-world: radial-gradient(ellipse 70% 55% at 22% 12%, rgba(229, 9, 20, .16), transparent 62%),
+              radial-gradient(ellipse 60% 50% at 88% 92%, rgba(120, 20, 16, .14), transparent 60%), #06070a;
+
+  --sp-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --sp-ease-spring: linear(0, .32 8%, .72 18%, .96 28%, 1.04 38%, 1.03 48%, 1 62%, 1);
+
+  /* brand mark gradient: crimson by night */
+  --sp-brand-a: #7a1224; --sp-brand-b: #e11d3c;
+
+  color-scheme: dark;
+}
+
+/* ── Tokens: light ──────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --sp-accent: #2563eb;
+  /* small text on white glass: one step deeper than the fills (see the
+     contrast notes in theme-spatial.css part 1) */
+  --sp-accent-text: #1e40af;
+  --sp-accent-rgb: 37, 99, 235;
+  --sp-ring: #2563eb;
+
+  --sp-text: #000000;
+  --sp-text-2: #2b3442;
+  --sp-text-3: #3d4756;
+  --sp-text-disabled: #6b7484;
+
+  --sp-ok: #166534;     --sp-ok-rgb: 22, 101, 52;
+  --sp-warn: #92400e;   --sp-warn-rgb: 146, 64, 14;
+  --sp-bad: #a51d2d;    --sp-bad-rgb: 165, 29, 45;
+  --sp-bad-solid: #c62031;
+  --sp-info: #155e75;   --sp-info-rgb: 21, 94, 117;
+
+  --sp-hair: rgba(15, 23, 42, .1);
+  --sp-hair-strong: rgba(15, 23, 42, .18);
+  --sp-hover: rgba(15, 23, 42, .05);
+  --sp-press: rgba(15, 23, 42, .09);
+  --sp-row-hover: rgba(15, 23, 42, .035);
+
+  --sp-fill-1: rgba(15, 23, 42, .05);
+  --sp-fill-2: rgba(255, 255, 255, .74);
+  --sp-fill-3: rgba(255, 255, 255, .8);
+  --sp-fill-4: rgba(255, 255, 255, .92);
+  --sp-solid-2: rgba(250, 251, 253, .97);
+  --sp-solid-3: rgba(255, 255, 255, .98);
+  --sp-solid-4: #ffffff;
+
+  --sp-sat-2: 1.6;  --sp-sat-3: 1.5;  --sp-sat-4: 1.4;
+
+  --sp-edge: inset 0 1px 0 rgba(255, 255, 255, .95), inset 1px 0 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(15, 23, 42, .06);
+  --sp-inset-fill: rgba(15, 23, 42, .05);
+  --sp-inset: inset 0 1px 2px rgba(15, 23, 42, .1), inset 0 0 0 1px rgba(15, 23, 42, .06);
+  --sp-shadow-2: 0 24px 60px -20px rgba(15, 23, 42, .28), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-3: 0 12px 30px -10px rgba(15, 23, 42, .25), 0 1px 3px rgba(15, 23, 42, .08);
+  --sp-shadow-accent: 0 6px 16px -6px rgba(15, 23, 42, .3), 0 1px 2px rgba(15, 23, 42, .12);
+
+  --sp-world: radial-gradient(ellipse 70% 55% at 22% 12%, rgba(37, 99, 235, .14), transparent 62%),
+              radial-gradient(ellipse 60% 50% at 88% 92%, rgba(254, 215, 102, .25), transparent 60%), #eef1f5;
+
+  /* brand mark gradient: cobalt by day */
+  --sp-brand-a: #1e3a8a; --sp-brand-b: #3b82f6;
+
+  color-scheme: light;
+}
+
+/* ── Fallbacks ──────────────────────────────────────────────────────────── */
+/* both selectors: the light block is more specific than :root alone, and
+   would otherwise keep its translucent fills */
+@media (prefers-reduced-transparency: reduce) {
+  :root, :root[data-theme="light"] { --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px; --sp-fill-2: var(--sp-solid-2); --sp-fill-3: var(--sp-solid-3); --sp-fill-4: var(--sp-solid-4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --sp-ease-spring: linear; }
+  *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* ── Tailwind theme: Watermelon's colour names on the spatial tokens ────── */
+@theme inline {
+  --font-sans: var(--sp-font-ui);
+  --font-mono: var(--sp-font-mono);
+
+  --color-background: var(--sp-fill-2);
+  --color-foreground: var(--sp-text);
+  --color-primary: var(--sp-accent);
+  --color-primary-foreground: var(--sp-on-accent);
+  --color-secondary: var(--sp-hover);
+  --color-secondary-foreground: var(--sp-text);
+  --color-muted: var(--sp-row-hover);
+  --color-muted-foreground: var(--sp-text-3);
+  --color-accent: var(--sp-hover);
+  --color-accent-foreground: var(--sp-text);
+  --color-destructive: var(--sp-bad-solid);
+  --color-border: var(--sp-hair);
+  --color-input: var(--sp-inset-fill);
+  --color-ring: var(--sp-ring);
+
+  --color-sp-text-2: var(--sp-text-2);
+  --color-sp-accent-text: var(--sp-accent-text);
+  --color-sp-ok: var(--sp-ok);
+  --color-sp-warn: var(--sp-warn);
+  --color-sp-bad: var(--sp-bad);
+  --color-sp-info: var(--sp-info);
+  --color-sp-hair-strong: var(--sp-hair-strong);
+  --color-sp-press: var(--sp-press);
+
+  --radius-panel: 28px;
+  --radius-card: 16px;
+  --radius-ctl: 14px;
+}
+
+/* ── Base: the world and the browser surfaces ───────────────────────────── */
+@layer base {
+  html { background: var(--sp-world); background-attachment: fixed; min-height: 100%; }
+  body {
+    margin: 0; min-height: 100dvh; color: var(--sp-text); background: transparent;
+    font-family: var(--sp-font-ui); font-size: .9375rem; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  ::selection { background: rgba(var(--sp-accent-rgb), .32); color: var(--sp-text); }
+  :focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+  input, select, textarea { caret-color: var(--sp-accent-text); }
+  html { scrollbar-color: var(--sp-hair-strong) transparent; }
+  a { text-underline-offset: 3px; }
+  table { font-variant-numeric: tabular-nums; }
+  h1, h2 { text-wrap: balance; }
+}
+
+/* ── Glass: one recipe, three depths ────────────────────────────────────── */
+@layer components {
+  .sp-glass {
+    position: relative; isolation: isolate;
+    --_fill: var(--sp-fill-2); --_blur: var(--sp-blur-2); --_sat: var(--sp-sat-2); --_shadow: var(--sp-shadow-2);
+    background: var(--_fill);
+    -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+    backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+    box-shadow: var(--sp-edge), var(--_shadow);
+  }
+  .sp-d3 { --_fill: var(--sp-fill-3); --_blur: var(--sp-blur-3); --_sat: var(--sp-sat-3); --_shadow: var(--sp-shadow-3); }
+  .sp-d4 { --_fill: var(--sp-fill-4); --_blur: var(--sp-blur-4); --_sat: var(--sp-sat-4); --_shadow: var(--sp-shadow-3); }
+  /* never a blurred layer inside another */
+  .sp-glass .sp-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .sp-inset { background: var(--sp-inset-fill); box-shadow: var(--sp-inset); }
+}
+
+@media (forced-colors: active) {
+  .sp-glass, .sp-inset {
+    background: Canvas !important; color: CanvasText; border: 1px solid CanvasText;
+    box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+}

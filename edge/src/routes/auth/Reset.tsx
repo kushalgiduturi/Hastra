@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../../lib/api";
+import { AuthShell } from "../../components/spatial/AuthShell";
+import { Message } from "../../components/spatial/Message";
+import { FloatingInput } from "../../components/watermelon/floating-input";
+import InputOtp10 from "../../components/watermelon/input-otp-10";
+import { Button } from "../../components/watermelon/button";
 
 export default function Reset() {
   const [params] = useSearchParams();
@@ -26,20 +31,25 @@ export default function Reset() {
   }
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "sans-serif" }}>
-      <h1>Set a new password</h1>
-      <form onSubmit={onSubmit}>
-        <label>
-          Code
-          <input value={code} onChange={(e) => setCode(e.target.value)} inputMode="numeric" maxLength={6} required style={{ display: "block", width: "100%" }} />
-        </label>
-        <label>
-          New password
-          <input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" required style={{ display: "block", width: "100%" }} />
-        </label>
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? "Saving…" : "Set password"}</button>
+    <AuthShell
+      title="Set a new password"
+      lead={
+        email ? (
+          <>
+            Use the code we sent to
+            <span className="block font-semibold [overflow-wrap:anywhere] text-foreground">{email}</span>
+          </>
+        ) : (
+          "Use the code from your email."
+        )
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-5">
+        <InputOtp10 label="Reset code" value={code} onChange={setCode} autoFocus />
+        <FloatingInput label="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} type="password" autoComplete="new-password" required />
+        {error && <Message tone="error">{error}</Message>}
+        <Button type="submit" size="lg" loading={busy} loadingLabel="Saving">Set password</Button>
       </form>
-    </main>
+    </AuthShell>
   );
 }

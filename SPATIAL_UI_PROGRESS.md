@@ -4,7 +4,7 @@ Brief: `SPATIAL_UI_PROMPT.md` (untracked, repo root). Branch: `spatial-ui`. Neve
 
 ## Current phase
 
-**Phase 6 done; the rollout is complete.** All phases except the optional phase 5 (edge/ React pilot) are finished and committed on `spatial-ui`. Phase 5 needs the owner's go-ahead. Nothing is pushed or merged.
+**All phases done, including the optional phase 5 (edge/ React pilot), which the owner asked for on 2026-11-08.** Everything is committed on `spatial-ui`; nothing is pushed or merged.
 
 ## Tool status (2026-11-07)
 
@@ -155,6 +155,17 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 - Pre-existing, not from this pass: in light theme at 768 and 390 the frame reports a wider scrollWidth (1064, 528) from the off-canvas sheet and foreground sprites; identical with landing-spatial.css removed. The security demo's WebGL canvas renders black in headless Chromium in both themes.
 - Suite 310/310. Detector: 0 findings.
 
+## Phase 5 notes (edge/ React pilot)
+
+- Owner go-ahead: "Start phase 5" (2026-11-08). Scope per the brief: port the tokens, rebuild Nav, Login, Register, Otp, Forgot, Reset, SysadminPortal, Roles and Logs with Watermelon UI components used directly, run vitest and a build. `edge/functions/` (the backend), the Supabase migrations and the secrets were not touched or read.
+- New dependencies in edge/package.json: tailwindcss and @tailwindcss/vite (v4), motion, clsx, tailwind-merge, class-variance-authority, @radix-ui/react-slot, @radix-ui/react-label, input-otp. npm reports audit advisories in the existing dependency tree (not investigated in this phase).
+- `edge/src/styles/spatial.css`: the spatial tokens with the same values as theme-spatial.css part 1 (a vitest test pins the parity), mapped onto Watermelon's colour names in a Tailwind `@theme inline` block. Fonts self-hosted in `edge/public/fonts/`. Theme key shared with the PHP app (`astra_theme`). The pilot has no 3-D scene, so its depth-0 world is a calm lit field (the 404 page's), and the dark inset lifts slightly with a hairline ring instead of darkening, or fields vanished.
+- Vendored Watermelon components in `edge/src/components/watermelon/` (button, Button 9, badge, label, table with Data Table 1's treatment, Floating Input, Input OTP 10 with the input-otp primitives, Fluid Tabs). Listed with their changes in COMPONENTS.md.
+- Screens: same API calls, redirects, reCAPTCHA flow and validation as before. Copy changes are limited to leads under the titles, sentence-case labels, an empty-table line, "Not recorded" in place of the long-dash placeholder, and the reCAPTCHA loading message without its long dash. The Roles lead says role changes are audited, checked against functions/api/sysadmin/roles.ts; status and severity tones follow the schema's values.
+- Found and fixed while verifying: (1) the OTP slots overflowed the card at 390 wide; (2) the vendored `outline-none` (with Tailwind v4 semantics) hid keyboard focus on the nav tabs, buttons, fields and the role select, so it is gone and the base focus ring draws everywhere; (3) the reduced-transparency fallback did not reach the light theme (the light token block is more specific), in the pilot and in the PHP app too, so both now name the light selector, and the PHP suite asserts it; (4) the detector flagged Button 9's bounce, now a staggered fade.
+- Verified with `vite preview` and Playwright, `/api` answered with fixture data and reCAPTCHA blocked (the only external host, as before): 8 screens, both themes, 1440 / 768 / 390, no horizontal overflow, no console errors besides the blocked reCAPTCHA; login error state, OTP typing, audit verify, nav switching and empty tables exercised. Keyboard focus ring present; forced colours turn glass into Canvas with a border; reduced motion collapses transitions; reduced transparency gives near-solid fills in both themes.
+- Tests: edge vitest 19/19 (10 existing + 9 new); `npm run build` passes (tsc and vite); PHP suite 316/316 (the new check sits inside the existing fallbacks test). Detector: 0 findings on the edge styles and components.
+
 ## Phase 6 notes
 
 - Deleted `assets/css/netflix-bento.css`, `theme-fog-boxless.css` and `theme-netflix.css` after a repo-wide search. The fog file was linked on 53 pages (links removed) but `.text-fog-scrim` had no markup left after 4b. theme-netflix.css was injected by core/theme.js before theme-spatial.css in the cascade, so the bridge already won; the four rules it still owned (clear canvas, sideways-overflow guard, accent scrollbar, brand-mark gradient) moved into theme-spatial.css section 33. theme.js now only adds `html.nf-portal`.
@@ -178,7 +189,7 @@ Owner asked for self-made local test credentials. One account per role (sysadmin
 
 ## Files remaining
 
-None for phases 0 to 6. Phase 5 (edge/ React pilot) is optional and not started.
+None. Phases 0 to 6 are done; phase 5 (the optional edge/ React pilot) is done too.
 
 ## Open issues
 

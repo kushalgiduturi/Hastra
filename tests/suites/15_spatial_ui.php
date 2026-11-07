@@ -98,6 +98,8 @@ t('fallbacks: low-perf, reduced transparency, reduced motion, coarse pointer and
     $css = sp_src('assets/css/theme-spatial.css');
     $lp = sp_block($css, 'html.sp-ui.low-perf-mode');
     expect(str_contains($lp, '--sp-blur-2: 0px') && str_contains($lp, '--sp-fill-2: var(--sp-solid-2)'), 'low-perf mode keeps blur or translucent fills');
+    // the light token block outranks html.sp-ui alone, so the fallback must name it too
+    expect((bool)preg_match('~@media \(prefers-reduced-transparency: reduce\) \{\s*html\.sp-ui, html\.sp-ui\[data-theme="light"\] \{~', $css), 'reduced transparency does not reach the light theme');
     foreach (['prefers-reduced-transparency: reduce' => '--sp-fill-2: var(--sp-solid-2)', 'prefers-reduced-motion: reduce' => '--sp-tilt-max: 0deg',
               'pointer: coarse' => '--sp-glow-opacity: 0', 'forced-colors: active' => 'background: Canvas !important'] as $mq => $needle) {
         $at = strpos($css, "@media ($mq)");

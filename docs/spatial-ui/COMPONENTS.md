@@ -20,3 +20,19 @@ Hastra is plain PHP with no build step, so Watermelon's React + Tailwind + Motio
 | Pointer glow and tilt | none suitable as React source | Own vanilla module (spatial-fx.js): one delegated pointermove listener, rAF-throttled, writes `--sp-mx` / `--sp-my` on the hovered `.sp-panel` or `[data-sp-tilt]`, tilt capped at 3 degrees. Off under low-perf, reduced motion and coarse pointers. |
 
 Watermelon gaps worth noting: no true backdrop-filter recipes beyond dialog-1, no pointer-glow or tilt component, no empty state. Those are designed here rather than ported.
+
+## Edge pilot (phase 5): used directly
+
+The React pilot in `edge/` installs the sources rather than porting them (Tailwind v4, Radix Slot and Label, class-variance-authority, Motion, input-otp). They live in `edge/src/components/watermelon/`, each file naming its registry source, restyled through the token mapping in `edge/src/styles/spatial.css`.
+
+| Pilot use | Watermelon source | Changes |
+|---|---|---|
+| Every button | registry `button` | Pills in sentence case: accent primary, glass secondary, text ghost. A `loading` prop. |
+| Busy state | `components/button-9` | Three dots after the label; a staggered fade instead of the original bounce (bounce easing is off the craft floor). |
+| Status and severity pills | registry `badge`, `components/badge-8` | Status variants (ok, warn, destructive, info) as a 12% tint with solid AA text. |
+| Field labels | registry `label` | Token colours. |
+| Email, password, name fields | `animated-components/floating-input` | The field is a depth-1 inset and the label rises inside it; a notch cut into a border cannot sit on translucent glass. |
+| Sign-in and reset codes | `components/input-otp-10` with the input-otp primitives | Controlled, digits only, six inset slots with the accent dot between the halves; slots shrink under 640px. |
+| Roles and audit tables | registry `table`, `components/data-table-1` (header and row treatment) | No box of its own: the panel is the surface, rows flat with hairlines, tabular numbers. |
+| Portal section switcher | `animated-components/fluid-tabs` | Router links, a depth-3 pill on a depth-1 track, authored SVG icons in place of react-icons, `MotionConfig reducedMotion="user"`. `outline-none` removed so keyboard focus shows. |
+

@@ -315,9 +315,11 @@ html.sp-ui.low-perf-mode {
   --sp-tilt-max: 0deg;
   --sp-world-filter: none;
 }
-/* Users who ask for less transparency get near-solid surfaces. */
+/* Users who ask for less transparency get near-solid surfaces. Both
+   selectors: the light token block is more specific than html.sp-ui alone
+   and would otherwise keep its translucent fills. */
 @media (prefers-reduced-transparency: reduce) {
-  html.sp-ui {
+  html.sp-ui, html.sp-ui[data-theme="light"] {
     --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
     --sp-fill-1: var(--sp-solid-1);
     --sp-fill-2: var(--sp-solid-2);

@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../lib/api";
+import { readTheme } from "../../lib/theme";
+import { AuthShell } from "../../components/spatial/AuthShell";
+import { Message } from "../../components/spatial/Message";
+import { FloatingInput } from "../../components/watermelon/floating-input";
+import { Button } from "../../components/watermelon/button";
 
 const RECAPTCHA_SCRIPT_ID = "recaptcha-api-script";
 
@@ -16,7 +21,8 @@ function useRecaptcha(container: HTMLElement | null) {
     function render() {
       if (!window.grecaptcha || renderedRef.current) return;
       renderedRef.current = true;
-      setWidgetId(window.grecaptcha.render(container!, { sitekey: siteKey }));
+      // the widget follows the current theme so it sits in the card, not on it
+      setWidgetId(window.grecaptcha.render(container!, { sitekey: siteKey, theme: readTheme() }));
     }
 
     if (window.grecaptcha?.render) {
@@ -55,7 +61,7 @@ export default function Login() {
     setError(null);
 
     if (widgetId === null || !grecaptchaRef.current) {
-      setError("reCAPTCHA is still loading — try again in a moment.");
+      setError("reCAPTCHA is still loading. Try again in a moment.");
       return;
     }
     const recaptchaToken = grecaptchaRef.current.getResponse(widgetId);
@@ -77,22 +83,23 @@ export default function Login() {
   }
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "sans-serif" }}>
-      <h1>Sign in to Hastra</h1>
-      <form onSubmit={onSubmit}>
-        <label>
-          Email
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required style={{ display: "block", width: "100%" }} />
-        </label>
-        <label>
-          Password
-          <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required style={{ display: "block", width: "100%" }} />
-        </label>
-        <div ref={setRecaptchaEl} style={{ margin: "1rem 0" }} />
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
+    <AuthShell
+      title="Sign in to Hastra"
+      lead="After your password we email you a one-time code."
+      footer={
+        <span className="flex flex-wrap justify-between gap-3">
+          <Link to="/forgot" className="font-medium text-sp-accent-text hover:underline">Forgot password?</Link>
+          <Link to="/register" className="font-medium text-sp-accent-text hover:underline">Create an account</Link>
+        </span>
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <FloatingInput label="Email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" required />
+        <FloatingInput label="Password" value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="current-password" required />
+        <div ref={setRecaptchaEl} className="min-h-[78px]" />
+        {error && <Message tone="error">{error}</Message>}
+        <Button type="submit" size="lg" loading={busy} loadingLabel="Signing in">Sign in</Button>
       </form>
-      <p><Link to="/forgot">Forgot password?</Link> · <Link to="/register">Create an account</Link></p>
-    </main>
+    </AuthShell>
   );
 }

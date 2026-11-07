@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../../lib/api";
+import { AuthShell } from "../../components/spatial/AuthShell";
+import { Message } from "../../components/spatial/Message";
+import InputOtp10 from "../../components/watermelon/input-otp-10";
+import { Button } from "../../components/watermelon/button";
 
 export default function Otp() {
   const [params] = useSearchParams();
@@ -32,14 +36,20 @@ export default function Otp() {
   }
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "sans-serif" }}>
-      <h1>Enter your code</h1>
-      <p>We emailed a code to {email}.</p>
-      <form onSubmit={onSubmit}>
-        <input value={code} onChange={(e) => setCode(e.target.value)} inputMode="numeric" maxLength={6} required style={{ display: "block", width: "100%" }} />
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-        <button type="submit" disabled={busy}>{busy ? "Verifying…" : "Verify"}</button>
+    <AuthShell
+      title="Enter your code"
+      lead={
+        <>
+          We emailed a code to
+          <span className="block font-semibold [overflow-wrap:anywhere] text-foreground">{email}</span>
+        </>
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-6">
+        <InputOtp10 label="Verification code" value={code} onChange={setCode} autoFocus />
+        {error && <Message tone="error">{error}</Message>}
+        <Button type="submit" size="lg" loading={busy} loadingLabel="Verifying">Verify</Button>
       </form>
-    </main>
+    </AuthShell>
   );
 }
