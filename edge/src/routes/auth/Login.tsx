@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../lib/api";
-import { readTheme } from "../../lib/theme";
+import { readTheme, THEME_EVENT, type Theme } from "../../lib/theme";
 import { AuthShell } from "../../components/spatial/AuthShell";
 import { Message } from "../../components/spatial/Message";
 import { FloatingInput } from "../../components/watermelon/floating-input";
@@ -9,37 +9,52 @@ import { Button } from "../../components/watermelon/button";
 
 const RECAPTCHA_SCRIPT_ID = "recaptcha-api-script";
 
-/** Loads Google's reCAPTCHA API once and renders an explicit v2 widget into `container`. */
+/**
+ * Loads Google's reCAPTCHA API once and renders an explicit v2 widget into
+ * `container`, in the current theme. Google cannot recolour a widget or
+ * render twice into one element, so each render (first load, or a theme
+ * switch) goes into a fresh inner slot and replaces the old widget. A
+ * half-done challenge is reset by a switch, the same as an expired token.
+ */
 function useRecaptcha(container: HTMLElement | null) {
   const [widgetId, setWidgetId] = useState<number | null>(null);
-  const renderedRef = useRef(false); // guards against StrictMode's dev-mode double-invoke
+  const [theme, setTheme] = useState<Theme>(() => readTheme());
 
   useEffect(() => {
-    if (!container || renderedRef.current) return;
+    const onTheme = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);
+    window.addEventListener(THEME_EVENT, onTheme);
+    return () => window.removeEventListener(THEME_EVENT, onTheme);
+  }, []);
+
+  useEffect(() => {
+    if (!container) return;
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    let cancelled = false; // StrictMode runs effects twice in dev; only the live run renders
 
     function render() {
-      if (!window.grecaptcha || renderedRef.current) return;
-      renderedRef.current = true;
-      // the widget follows the current theme so it sits in the card, not on it
-      setWidgetId(window.grecaptcha.render(container!, { sitekey: siteKey, theme: readTheme() }));
+      if (cancelled || !window.grecaptcha?.render) return;
+      const slot = document.createElement("div");
+      container!.replaceChildren(slot);
+      setWidgetId(window.grecaptcha.render(slot, { sitekey: siteKey, theme }));
     }
 
     if (window.grecaptcha?.render) {
       render();
-      return;
+    } else {
+      window.onRecaptchaApiLoad = render;
+      if (!document.getElementById(RECAPTCHA_SCRIPT_ID)) {
+        const script = document.createElement("script");
+        script.id = RECAPTCHA_SCRIPT_ID;
+        script.src = "https://www.google.com/recaptcha/api.js?onload=onRecaptchaApiLoad&render=explicit";
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
     }
-
-    window.onRecaptchaApiLoad = render;
-    if (!document.getElementById(RECAPTCHA_SCRIPT_ID)) {
-      const script = document.createElement("script");
-      script.id = RECAPTCHA_SCRIPT_ID;
-      script.src = "https://www.google.com/recaptcha/api.js?onload=onRecaptchaApiLoad&render=explicit";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, [container]);
+    return () => {
+      cancelled = true;
+    };
+  }, [container, theme]);
 
   return widgetId;
 }

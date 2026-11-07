@@ -18,6 +18,10 @@ export function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
 }
 
+// Same event name as the PHP app's core/theme.js. Widgets that cannot follow
+// CSS (the reCAPTCHA iframe) listen for it and redraw.
+export const THEME_EVENT = "hastra:themechange";
+
 export function saveTheme(theme: Theme) {
   applyTheme(theme);
   try {
@@ -25,4 +29,5 @@ export function saveTheme(theme: Theme) {
   } catch {
     /* the choice still applies for this visit */
   }
+  window.dispatchEvent(new CustomEvent<Theme>(THEME_EVENT, { detail: theme }));
 }
