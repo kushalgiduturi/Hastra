@@ -33,6 +33,15 @@ components used directly.
   the PHP app), the fallbacks, the focus ring and AA contrast for every
   text-on-glass pair.
 
+The home page at `/` is the PHP app's hero (`../landing-pages/hastra.html`),
+not a React screen. `scripts/sync-landing.mjs` copies it and the files it
+loads into `public/landing/` before every `dev` and `build` (the copies are
+gitignored), pointing Sign in and Get Started at `/signin` and `/register`
+and the Labs and legal links at the PHP app. `public/landing/index.html` is
+the frame host, the edge copy of `../index.php`, and `public/_redirects`
+serves it at `/`. `tests/pilot/landing.test.ts` pins the link rewrites and
+the asset list.
+
 ## Prerequisites
 
 - A free [Supabase](https://supabase.com) project.

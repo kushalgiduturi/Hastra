@@ -4,8 +4,9 @@
   "version": "0.1.0-pilot",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "sync:landing": "node scripts/sync-landing.mjs",
+    "dev": "npm run sync:landing && vite",
+    "build": "npm run sync:landing && tsc -b && vite build",
     "preview": "wrangler pages dev dist --compatibility-date=2026-09-28",
     "test": "vitest run",
     "deploy": "npm run build && wrangler pages deploy dist"
