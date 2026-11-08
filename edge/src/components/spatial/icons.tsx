@@ -36,6 +36,12 @@ export const IconShieldCheck = (p: SVGProps<SVGSVGElement>) => (
 export const IconAlert = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5v5.5M12 16.4v.1" /></svg>
 );
+export const IconEye = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="2.75" /></svg>
+);
+export const IconEyeOff = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M9.9 5.75A9.4 9.4 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.4 3.1M6.6 6.9C4 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9 9 0 0 0 4.6-1.25" /><path d="M10 10.1a2.75 2.75 0 0 0 3.9 3.9M3.5 3.5l17 17" /></svg>
+);
 export const IconArrowRight = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5" /></svg>
 );

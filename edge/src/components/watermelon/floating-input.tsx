@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 
 interface FloatingInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  /** A control inside the field's right edge, such as a show-password button. */
+  trailing?: React.ReactNode;
 }
 
-export function FloatingInput({ label, className, id, onChange, onFocus, onBlur, ...props }: FloatingInputProps) {
+export function FloatingInput({ label, trailing, className, id, onChange, onFocus, onBlur, ...props }: FloatingInputProps) {
   const autoId = useId();
   const inputId = id ?? autoId;
   const [focused, setFocused] = useState(false);
@@ -24,6 +26,7 @@ export function FloatingInput({ label, className, id, onChange, onFocus, onBlur,
         className={cn(
           "peer sp-inset h-14 w-full rounded-[var(--radius-ctl)] border-0 px-4 pt-5 pb-1.5 text-[15px] text-foreground",
           "transition-shadow duration-200",
+          trailing && "pr-12",
           className,
         )}
         placeholder=" "
@@ -52,6 +55,7 @@ export function FloatingInput({ label, className, id, onChange, onFocus, onBlur,
       >
         {label}
       </label>
+      {trailing && <div className="absolute inset-y-0 right-1.5 flex items-center">{trailing}</div>}
     </div>
   );
 }
