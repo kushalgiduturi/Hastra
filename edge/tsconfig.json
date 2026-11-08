@@ -11,6 +11,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "paths": { "@/*": ["./src/*"] },
     "types": ["@cloudflare/workers-types", "vite/client"]
   },
   "include": ["src", "functions", "tests"]

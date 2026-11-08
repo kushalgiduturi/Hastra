@@ -275,7 +275,7 @@ if ($employees) {
 <title>Attendance · Hastra</title>
 <?php astra_page_meta('Attendance · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/calendar-authkit.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
@@ -285,19 +285,11 @@ if ($employees) {
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1300px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p { font-size: 13px; color: var(--text-dim); }
 
   .month-nav { display: flex; align-items: center; gap: 10px; }
   .month-nav a { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; background: var(--input-bg); border: 1px solid var(--border-dim); color: var(--text); text-decoration: none; }
@@ -321,11 +313,6 @@ if ($employees) {
   table.grid th.day-focus { color: #fff; background: var(--color-void-violet, var(--accent)); }
   .month-label { font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.05em; min-width: 110px; text-align: center; }
 
-  .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim); background: var(--section-header-bg); flex-wrap: wrap; gap: 10px; }
-  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
-  .section-title svg { width: 15px; height: 15px; fill: var(--accent-bright); }
-  .section-body { padding: 1.2rem 1.4rem; }
 
   .alert { display: flex; align-items: flex-start; gap: 8px; border-radius: 3px; padding: 10px 14px; margin-bottom: 1.2rem; font-size: 13px; border-left: 3px solid; line-height: 1.5; }
   .alert.success { background: var(--green-bg); border-color: var(--green); color: #86efac; }
@@ -335,7 +322,6 @@ if ($employees) {
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
   .legend .dot { width: 10px; height: 10px; border-radius: 2px; }
 
-  .tbl-wrap { overflow-x: auto; }
   table.grid { border-collapse: collapse; font-size: 12px; white-space: nowrap; }
   table.grid th, table.grid td { border: 1px solid var(--border-dim); padding: 0; text-align: center; }
   table.grid th { background: var(--section-header-bg); font-size: 10.5px; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); padding: 6px 4px; }
@@ -403,6 +389,8 @@ if ($employees) {
   .modal-btn-confirm { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px; cursor: pointer; }
   .modal-btn-cancel { background: var(--input-bg); color: var(--text-dim); border: 1px solid var(--border-dim); border-radius: 3px; font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 9px 16px; cursor: pointer; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 

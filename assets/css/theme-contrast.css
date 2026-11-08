@@ -7,9 +7,9 @@
    computes the WCAG ratio of every visible text node. Targets: 4.5:1 for
    body text, 3:1 for large text (AA); most values below clear 7:1 (AAA).
 
-   Boxless by design (see DEPLOY/feedback): nothing here adds a border,
-   fill or shadow around content. The hero panels get a feathered wash that
-   fades to nothing at its edges instead of a bordered pill.
+   Adds no surfaces: nothing here draws a border, fill or shadow around
+   content. Surfaces (the glass panels, bars and dialogs) belong to the
+   spatial layer, assets/css/theme-spatial.css.
    ======================================================== */
 
 /* ── Tokens ────────────────────────────────────────────────────────────
@@ -54,9 +54,8 @@ html[data-theme="light"] textarea::placeholder {
 }
 
 /* ── Sign-in / sign-up overview panel (left column) ────────────────────
-   Jet Black type in daylight. The feathered fog behind it (white by day,
-   black by night) lives in assets/css/theme-fog-boxless.css as
-   .text-fog-scrim, so both themes share one implementation. */
+   Jet Black type in daylight. The panel itself is spatial glass
+   (assets/css/theme-spatial.css part 4, .sp-auth-info). */
 html[data-theme="light"] .auth-info {
   color: #000000;
   text-shadow: 0 1px 12px rgba(248, 250, 252, .95), 0 0 2px rgba(248, 250, 252, .8);

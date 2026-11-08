@@ -12,8 +12,8 @@ interface Me {
 /**
  * Layout route: confirms the session belongs to `requiredRole` before
  * rendering the nested portal routes, redirecting to /signin otherwise.
- * Mirrors the role check every portals/sysadmin/*.php page does server-side
- * — this is the client-side complement, not a replacement for it; every API
+ * Mirrors the role check every portals/sysadmin/*.php page does server-side.
+ * This is the client-side complement, not a replacement for it; every API
  * route still enforces its own role check independently.
  */
 export default function RoleGate({ requiredRole }: { requiredRole: string }) {

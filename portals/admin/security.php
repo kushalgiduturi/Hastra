@@ -78,7 +78,7 @@ $action_labels = [
 <title>System Security · Hastra</title>
 <?php astra_page_meta('System Security · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   * { box-sizing: border-box; }
@@ -120,6 +120,8 @@ $action_labels = [
   .export-link { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent-bright); text-decoration: none; letter-spacing: 0.04em; }
   .export-link:hover { text-decoration: underline; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'security'; include __DIR__ . '/_nav.php'; ?>

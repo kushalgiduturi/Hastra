@@ -188,62 +188,11 @@ input, select, textarea, button { font-family: var(--font-sans); }
    unused now.) */
 
 
-/* ── Topnav ── */
-[data-theme="light"] .topnav {
-  background: rgba(246,248,252,0.98) !important;
-  border-bottom-color: rgba(var(--accent-rgb),0.15) !important;
-  box-shadow: 0 1px 3px rgba(15,23,42,0.08) !important;
-  /* A blurred pane over the 40px grid pattern is what causes the
-     pixelated/mosaic rendering reported in light theme — the topnav's
-     own background is already ~98% opaque, so dropping the blur costs
-     nothing visually and removes the artifact. */
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
 
-/* ── Floating dock quick-nav (core/dock.css) — was hardcoded dark with
-   no light-theme rule at all, so it showed as a dark blurred pill on an
-   otherwise light page. ── */
-[data-theme="light"] .hastra-dock {
-  background: rgba(255,255,255,0.92) !important;
-  border-color: rgba(15,23,42,0.1) !important;
-  box-shadow: 0 10px 30px -5px rgba(15,23,42,0.12), 0 0 0 1px rgba(15,23,42,0.05) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-[data-theme="light"] .hastra-dock-item {
-  background: #ffffff !important;
-  border-color: rgba(15,23,42,0.1) !important;
-  color: #334155 !important;
-}
-[data-theme="light"] .hastra-dock-item:hover,
-[data-theme="light"] .hastra-dock-item.is-current {
-  color: var(--accent-bright) !important;
-  border-color: rgba(var(--accent-rgb),0.35) !important;
-  background: rgba(var(--accent-rgb),0.1) !important;
-}
-[data-theme="light"] .hastra-dock-tooltip {
-  background: #0f172a !important;
-  border-color: rgba(15,23,42,0.15) !important;
-  color: #f8fafc !important;
-}
 
-[data-theme="light"] .nav-title { color: #0f172a !important; }
 [data-theme="light"] .nav-divider { background: rgba(15,23,42,0.12) !important; }
 
-[data-theme="light"] .nav-badge {
-  color: #0891b2 !important;
-  background: rgba(8,145,178,0.08) !important;
-  border-color: rgba(8,145,178,0.2) !important;
-}
-[data-theme="light"] .nav-badge.lead {
-  color: var(--purple) !important;
-  background: rgba(var(--purple-rgb),0.08) !important;
-  border-color: rgba(var(--purple-rgb),0.2) !important;
-}
 
-[data-theme="light"] .nav-user { color: #334155 !important; }
-[data-theme="light"] .nav-user span { color: #0f172a !important; }
 
 [data-theme="light"] .nav-link {
   color: #334155 !important;
@@ -285,22 +234,12 @@ input, select, textarea, button { font-family: var(--font-sans); }
   color: var(--accent-bright) !important;
 }
 
-/* ── Theme toggle button ── */
-[data-theme="light"] .btn-theme-toggle {
-  background: rgba(15,23,42,0.05) !important;
-  border-color: rgba(15,23,42,0.12) !important;
-  color: #334155 !important;
-}
-[data-theme="light"] .btn-theme-toggle:hover {
-  background: rgba(var(--accent-rgb),0.08) !important;
-  color: var(--accent-bright) !important;
-}
 
 /* ── Auth card (login, register, otp, forgot, reset, verify) ──
    Translucent, not flat solid, so the cinematic background still shows
    through — the blur is what caused the mosaic artifact, not the
    transparency, so drop only the blur and keep the glass tint. */
-[data-theme="light"] .card {
+html:not(.nf-portal)[data-theme="light"] .card {
   background: rgba(255,255,255,0.72) !important;
   border-color: rgba(var(--accent-rgb),0.18) !important;
   /* Crisp shadow + 1px ring instead of a hazy blur-glass card — same
@@ -310,7 +249,7 @@ input, select, textarea, button { font-family: var(--font-sans); }
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-[data-theme="light"] .card::before {
+html:not(.nf-portal)[data-theme="light"] .card::before {
   background: linear-gradient(90deg, transparent, var(--accent-bright), transparent) !important;
 }
 
@@ -324,70 +263,70 @@ input, select, textarea, button { font-family: var(--font-sans); }
 [data-theme="light"] .divider { background: rgba(15,23,42,0.1) !important; }
 
 /* ── Sections ── */
-[data-theme="light"] .section {
+html:not(.nf-portal)[data-theme="light"] .section {
   background: #ffffff !important;
   border-color: rgba(15,23,42,0.1) !important;
   box-shadow: 0 10px 30px -8px rgba(15,23,42,0.1), 0 0 0 1px rgba(15,23,42,0.05) !important;
 }
-[data-theme="light"] .section-header {
+html:not(.nf-portal)[data-theme="light"] .section-header {
   background: rgba(15,23,42,0.025) !important;
   border-bottom-color: rgba(15,23,42,0.08) !important;
 }
-[data-theme="light"] .section-title { color: #0f172a !important; }
-[data-theme="light"] .section-title svg { fill: var(--accent-bright) !important; }
+html:not(.nf-portal)[data-theme="light"] .section-title { color: #0f172a !important; }
+html:not(.nf-portal)[data-theme="light"] .section-title svg { fill: var(--accent-bright) !important; }
 
 /* ── Stat cards ── */
-[data-theme="light"] .stat-card {
+html:not(.nf-portal)[data-theme="light"] .stat-card {
   background: #ffffff !important;
   border-color: rgba(15,23,42,0.1) !important;
   box-shadow: 0 10px 30px -8px rgba(15,23,42,0.1), 0 0 0 1px rgba(15,23,42,0.05) !important;
 }
-[data-theme="light"] .section-nav-card {
+html:not(.nf-portal)[data-theme="light"] .section-nav-card {
   box-shadow: 0 10px 24px -10px rgba(15,23,42,0.1), 0 0 0 1px rgba(15,23,42,0.05) !important;
 }
-[data-theme="light"] .section-nav-card:hover {
+html:not(.nf-portal)[data-theme="light"] .section-nav-card:hover {
   box-shadow: 0 14px 28px -14px rgba(var(--accent-rgb),0.28), 0 0 0 1px rgba(var(--accent-rgb),0.15) !important;
 }
 [data-theme="light"] .stat-label { color: #334155 !important; }
 [data-theme="light"] .stat-value { color: #0f172a !important; }
 
 /* ── All inputs, textareas, selects ── */
-[data-theme="light"] input[type="text"],
-[data-theme="light"] input[type="email"],
-[data-theme="light"] input[type="tel"],
-[data-theme="light"] input[type="url"],
-[data-theme="light"] input[type="password"],
-[data-theme="light"] input[type="date"],
-[data-theme="light"] input[type="number"],
-[data-theme="light"] textarea,
-[data-theme="light"] .field input[type="text"],
-[data-theme="light"] .field input[type="email"],
-[data-theme="light"] .field input[type="tel"],
-[data-theme="light"] .field input[type="url"],
-[data-theme="light"] .field input[type="password"],
-[data-theme="light"] .field textarea,
-[data-theme="light"] .field select,
-[data-theme="light"] .otp-box,
-[data-theme="light"] .role-select,
-[data-theme="light"] .status-select,
-[data-theme="light"] .comment-input,
-[data-theme="light"] .member-row select,
-[data-theme="light"] .add-member-row select,
-[data-theme="light"] .notes-field textarea {
+[data-theme="light"] input[type="text"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="email"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="tel"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="url"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="password"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="date"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] input[type="number"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field input[type="text"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field input[type="email"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field input[type="tel"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field input[type="url"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field input[type="password"]:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .field select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .otp-box:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .role-select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .status-select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .comment-input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+html:not(.nf-portal)[data-theme="light"] .member-row select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .add-member-row select:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .notes-field textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.22) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] input::placeholder,
-[data-theme="light"] textarea::placeholder,
-[data-theme="light"] .comment-input::placeholder { color: #9ca3af !important; }
+[data-theme="light"] input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *)::placeholder,
+[data-theme="light"] textarea:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *)::placeholder,
+[data-theme="light"] .comment-input:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *)::placeholder { color: #9ca3af !important; }
 
-[data-theme="light"] input:focus,
-[data-theme="light"] textarea:focus,
-[data-theme="light"] select:focus,
-[data-theme="light"] .otp-box:focus,
-[data-theme="light"] .comment-input:focus {
+[data-theme="light"] input:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] textarea:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] select:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .otp-box:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .comment-input:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   border-color: var(--accent-bright) !important;
   background: #e8eeff !important;
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.12) !important;
@@ -399,51 +338,51 @@ input, select, textarea, button { font-family: var(--font-sans); }
 }
 
 /* ── OTP boxes ── */
-[data-theme="light"] .otp-box.filled {
+[data-theme="light"] .otp-box.filled:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   border-color: rgba(var(--accent-rgb),0.5) !important;
   background: rgba(var(--accent-rgb),0.08) !important;
 }
 
 /* ── All primary buttons ── */
-[data-theme="light"] .btn-save,
-[data-theme="light"] .btn-create,
-[data-theme="light"] .btn-submit,
-[data-theme="light"] .btn-login,
-[data-theme="light"] .btn-send,
-[data-theme="light"] .btn-register,
-[data-theme="light"] .btn-reset,
-[data-theme="light"] .btn-create-task,
-[data-theme="light"] .btn-create-project,
-[data-theme="light"] .btn-report,
-[data-theme="light"] .btn-deploy,
-[data-theme="light"] .btn-comment,
-[data-theme="light"] .btn-save-review,
-[data-theme="light"] .btn-update-status,
-[data-theme="light"] .btn-verify,
-[data-theme="light"] .btn-confirm-add,
-[data-theme="light"] .btn-confirm,
-[data-theme="light"] .modal-btn-confirm,
-[data-theme="light"] .btn-login.btn-login {
+[data-theme="light"] .btn-save:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-submit:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-login:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-send:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-register:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-reset:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create-task:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create-project:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-report:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-deploy:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-comment:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-save-review:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-update-status:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-verify:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-confirm-add:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-confirm:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .modal-btn-confirm:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-login.btn-login:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: var(--accent-bright) !important;
   color: #ffffff !important;
   border-color: var(--accent-bright) !important;
 }
-[data-theme="light"] .btn-save:hover,
-[data-theme="light"] .btn-create:hover,
-[data-theme="light"] .btn-submit:hover,
-[data-theme="light"] .btn-login:hover,
-[data-theme="light"] .btn-send:hover,
-[data-theme="light"] .btn-register:hover,
-[data-theme="light"] .btn-reset:hover,
-[data-theme="light"] .btn-create-task:hover,
-[data-theme="light"] .btn-create-project:hover,
-[data-theme="light"] .btn-report:hover,
-[data-theme="light"] .btn-deploy:hover,
-[data-theme="light"] .btn-comment:hover,
-[data-theme="light"] .btn-save-review:hover,
-[data-theme="light"] .btn-update-status:hover,
-[data-theme="light"] .btn-verify:hover,
-[data-theme="light"] .btn-confirm-add:hover {
+[data-theme="light"] .btn-save:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-submit:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-login:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-send:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-register:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-reset:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create-task:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-create-project:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-report:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-deploy:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-comment:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-save-review:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-update-status:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-verify:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *),
+[data-theme="light"] .btn-confirm-add:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: var(--accent-dim) !important;
   border-color: var(--accent-dim) !important;
   box-shadow: 0 0 18px rgba(var(--accent-rgb),0.25) !important;
@@ -498,30 +437,30 @@ input, select, textarea, button { font-family: var(--font-sans); }
 }
 
 /* ── Green special button (deploy) ── */
-[data-theme="light"] .btn-deploy {
+[data-theme="light"] .btn-deploy:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: #16a34a !important;
   border-color: #16a34a !important;
   color: #ffffff !important;
 }
-[data-theme="light"] .btn-deploy:hover {
+[data-theme="light"] .btn-deploy:hover:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: #15803d !important;
   border-color: #15803d !important;
 }
 
 /* ── Tables ── */
 [data-theme="light"] table { color: #0f172a !important; }
-[data-theme="light"] thead tr {
+html:not(.nf-portal)[data-theme="light"] thead tr {
   background: rgba(15,23,42,0.03) !important;
   border-bottom-color: rgba(15,23,42,0.1) !important;
 }
 [data-theme="light"] th { color: #334155 !important; }
-[data-theme="light"] tbody tr { border-bottom-color: rgba(15,23,42,0.06) !important; }
-[data-theme="light"] tbody tr:hover { background: rgba(var(--accent-rgb),0.04) !important; }
+html:not(.nf-portal)[data-theme="light"] tbody tr { border-bottom-color: rgba(15,23,42,0.06) !important; }
+html:not(.nf-portal)[data-theme="light"] tbody tr:hover { background: rgba(var(--accent-rgb),0.04) !important; }
 [data-theme="light"] td { color: #0f172a !important; }
 [data-theme="light"] td.muted { color: #475569 !important; }
-[data-theme="light"] tbody tr.changed { background: rgba(180,83,9,0.06) !important; }
-[data-theme="light"] tbody tr.critical-row { background: rgba(var(--red-rgb),0.04) !important; }
-[data-theme="light"] tbody tr.deletion-row { background: rgba(var(--red-rgb),0.04) !important; }
+html:not(.nf-portal)[data-theme="light"] tbody tr.changed { background: rgba(180,83,9,0.06) !important; }
+html:not(.nf-portal)[data-theme="light"] tbody tr.critical-row { background: rgba(var(--red-rgb),0.04) !important; }
+html:not(.nf-portal)[data-theme="light"] tbody tr.deletion-row { background: rgba(var(--red-rgb),0.04) !important; }
 
 /* ── Alerts ── */
 [data-theme="light"] .alert.success {
@@ -549,32 +488,32 @@ input, select, textarea, button { font-family: var(--font-sans); }
 
 /* ── Cards / panels inside portals ── */
 [data-theme="light"] .navy-card,
-[data-theme="light"] .review-panel,
+html:not(.nf-portal)[data-theme="light"] .review-panel,
 [data-theme="light"] .create-task-form,
-[data-theme="light"] .project-card,
-[data-theme="light"] .project-block,
-[data-theme="light"] .proj-card,
-[data-theme="light"] .bug-card,
-[data-theme="light"] .req-card,
-[data-theme="light"] .team-member,
+html:not(.nf-portal)[data-theme="light"] .project-card,
+html:not(.nf-portal)[data-theme="light"] .project-block,
+html:not(.nf-portal)[data-theme="light"] .proj-card,
+html:not(.nf-portal)[data-theme="light"] .bug-card,
+html:not(.nf-portal)[data-theme="light"] .req-card,
+html:not(.nf-portal)[data-theme="light"] .team-member,
 [data-theme="light"] .member-chip,
 [data-theme="light"] .file-chip,
 [data-theme="light"] .steps-box,
-[data-theme="light"] .req-box,
+html:not(.nf-portal)[data-theme="light"] .req-box,
 [data-theme="light"] .drop-zone,
 [data-theme="light"] .file-attach-field {
   background: #f8faff !important;
   border-color: rgba(var(--accent-rgb),0.14) !important;
 }
 
-[data-theme="light"] .project-card-header,
-[data-theme="light"] .proj-card-header,
-[data-theme="light"] .project-block-header {
+html:not(.nf-portal)[data-theme="light"] .project-card-header,
+html:not(.nf-portal)[data-theme="light"] .proj-card-header,
+html:not(.nf-portal)[data-theme="light"] .project-block-header {
   background: rgba(15,23,42,0.02) !important;
   border-bottom-color: rgba(15,23,42,0.08) !important;
 }
-[data-theme="light"] .project-block-header:hover,
-[data-theme="light"] .proj-card-header:hover {
+html:not(.nf-portal)[data-theme="light"] .project-block-header:hover,
+html:not(.nf-portal)[data-theme="light"] .proj-card-header:hover {
   background: rgba(var(--accent-rgb),0.04) !important;
 }
 
@@ -584,12 +523,12 @@ input, select, textarea, button { font-family: var(--font-sans); }
 [data-theme="light"] .review-form { background: rgba(15,23,42,0.015) !important; }
 
 /* ── Filter bar ── */
-[data-theme="light"] .filter-bar {
+html:not(.nf-portal)[data-theme="light"] .filter-bar {
   background: rgba(15,23,42,0.015) !important;
   border-bottom-color: rgba(15,23,42,0.08) !important;
 }
-[data-theme="light"] .filter-bar input,
-[data-theme="light"] .filter-bar select {
+html:not(.nf-portal)[data-theme="light"] .filter-bar input,
+html:not(.nf-portal)[data-theme="light"] .filter-bar select {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.2) !important;
   color: #0f172a !important;
@@ -781,22 +720,22 @@ input, select, textarea, button { font-family: var(--font-sans); }
 [data-theme="light"] .step-line { background: rgba(15,23,42,0.1) !important; }
 
 /* ── Requirement card (client portal) ── */
-[data-theme="light"] .req-card {
+html:not(.nf-portal)[data-theme="light"] .req-card {
   background: #f8faff !important;
   border-color: rgba(var(--accent-rgb),0.12) !important;
 }
-[data-theme="light"] .req-card:hover {
+html:not(.nf-portal)[data-theme="light"] .req-card:hover {
   border-color: var(--accent-bright) !important;
   box-shadow: 0 0 12px rgba(var(--accent-rgb),0.1) !important;
 }
-[data-theme="light"] .req-card.selected {
+html:not(.nf-portal)[data-theme="light"] .req-card.selected {
   border-color: var(--accent-bright) !important;
   background: rgba(var(--accent-rgb),0.05) !important;
   box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.2) !important;
 }
-[data-theme="light"] .req-card-id    { color: var(--accent-bright) !important; }
-[data-theme="light"] .req-card-title { color: #0f172a !important; }
-[data-theme="light"] .req-card-sub   { color: #334155 !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-id    { color: var(--accent-bright) !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-title { color: #0f172a !important; }
+html:not(.nf-portal)[data-theme="light"] .req-card-sub   { color: #334155 !important; }
 
 /* ── Detail rows / inline panels ── */
 [data-theme="light"] .detail-cell { background: rgba(var(--accent-rgb),0.02) !important; }
@@ -850,7 +789,7 @@ input, select, textarea, button { font-family: var(--font-sans); }
 }
 
 /* ── Password req box ── */
-[data-theme="light"] .req-box {
+html:not(.nf-portal)[data-theme="light"] .req-box {
   background: rgba(15,23,42,0.025) !important;
   border-color: rgba(15,23,42,0.1) !important;
 }
@@ -972,8 +911,8 @@ input, select, textarea, button { font-family: var(--font-sans); }
 [data-theme="light"] .recaptcha-wrap { filter: invert(0) !important; }
 
 /* ── Attempt dots ── */
-[data-theme="light"] .attempt-dot { background: rgba(15,23,42,0.1) !important; }
-[data-theme="light"] .attempt-dot.used { background: var(--red) !important; box-shadow: 0 0 5px rgba(var(--red-rgb),0.4) !important; }
+[data-theme="light"] .attempt-dot:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) { background: rgba(15,23,42,0.1) !important; }
+[data-theme="light"] .attempt-dot.used:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) { background: var(--red) !important; box-shadow: 0 0 5px rgba(var(--red-rgb),0.4) !important; }
 [data-theme="light"] .attempts-label { color: #475569 !important; }
 
 /* ── Countdown / timer ── */
@@ -1057,199 +996,199 @@ input, select, textarea, button { font-family: var(--font-sans); }
 
 /* ── SYSADMIN PORTAL LIGHT THEME FIXES ── */
 
-[data-theme="light"] .btn-save {
+html:not(.nf-portal)[data-theme="light"] .btn-save {
   background: var(--accent-bright) !important;
   color: #ffffff !important;
   border-color: var(--accent-bright) !important;
 }
 
-[data-theme="light"] .role-select {
+html:not(.nf-portal)[data-theme="light"] .role-select {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.22) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .role-select option {
+html:not(.nf-portal)[data-theme="light"] .role-select option {
   background: #ffffff !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .btn-delete {
+html:not(.nf-portal)[data-theme="light"] .btn-delete {
   background: rgba(var(--red-rgb),0.08) !important;
   border-color: rgba(var(--red-rgb),0.25) !important;
   color: var(--red) !important;
 }
 
-[data-theme="light"] .btn-delete:hover {
+html:not(.nf-portal)[data-theme="light"] .btn-delete:hover {
   background: rgba(var(--red-rgb),0.15) !important;
   border-color: rgba(var(--red-rgb),0.4) !important;
 }
 
-[data-theme="light"] .btn-cancel-delete {
+html:not(.nf-portal)[data-theme="light"] .btn-cancel-delete {
   background: rgba(180,83,9,0.08) !important;
   border-color: rgba(180,83,9,0.25) !important;
   color: #b45309 !important;
 }
 
-[data-theme="light"] .btn-more {
+html:not(.nf-portal)[data-theme="light"] .btn-more {
   background: rgba(var(--accent-rgb),0.08) !important;
   border-color: rgba(var(--accent-rgb),0.25) !important;
   color: var(--accent-bright) !important;
 }
 
-[data-theme="light"] .btn-clear {
+html:not(.nf-portal)[data-theme="light"] .btn-clear {
   background: rgba(15,23,42,0.05) !important;
   border-color: rgba(15,23,42,0.12) !important;
   color: #374151 !important;
 }
 
-[data-theme="light"] .btn-clear:hover {
+html:not(.nf-portal)[data-theme="light"] .btn-clear:hover {
   background: rgba(15,23,42,0.1) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .collapse-btn {
+html:not(.nf-portal)[data-theme="light"] .collapse-btn {
   color: #374151 !important;
 }
 
-[data-theme="light"] .collapse-btn:hover {
+html:not(.nf-portal)[data-theme="light"] .collapse-btn:hover {
   background: rgba(15,23,42,0.06) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .modal {
+html:not(.nf-portal)[data-theme="light"] .modal {
   background: #ffffff !important;
   border-color: rgba(var(--accent-rgb),0.18) !important;
 }
 
-[data-theme="light"] .modal h3 { color: #0f172a !important; }
-[data-theme="light"] .modal p  { color: #334155 !important; }
+html:not(.nf-portal)[data-theme="light"] .modal h3 { color: #0f172a !important; }
+html:not(.nf-portal)[data-theme="light"] .modal p  { color: #334155 !important; }
 
-[data-theme="light"] .modal-btn-confirm {
+html:not(.nf-portal)[data-theme="light"] .modal-btn-confirm {
   background: var(--red) !important;
   color: #ffffff !important;
   border-color: var(--red) !important;
 }
 
-[data-theme="light"] .modal-btn-cancel {
+html:not(.nf-portal)[data-theme="light"] .modal-btn-cancel {
   background: rgba(15,23,42,0.05) !important;
   border-color: rgba(15,23,42,0.12) !important;
   color: #374151 !important;
 }
 
-[data-theme="light"] .otp-box {
+html:not(.nf-portal)[data-theme="light"] .otp-box:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.22) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .otp-box:focus {
+html:not(.nf-portal)[data-theme="light"] .otp-box:focus:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   border-color: var(--red) !important;
   background: #fee2e2 !important;
   box-shadow: 0 0 0 3px rgba(var(--red-rgb),0.12) !important;
 }
 
-[data-theme="light"] .otp-box.filled {
+html:not(.nf-portal)[data-theme="light"] .otp-box.filled:not(.sp-glass *, .nf-portal :is(.main, .wrap, .modal, .lx-main, .sc-main, .ht-terminal) *, .legal-doc *) {
   border-color: rgba(var(--red-rgb),0.4) !important;
   background: rgba(var(--red-rgb),0.05) !important;
 }
 
-[data-theme="light"] .sending-spinner {
+html:not(.nf-portal)[data-theme="light"] .sending-spinner {
   color: #334155 !important;
 }
 
-[data-theme="light"] .sending-spinner::after {
+html:not(.nf-portal)[data-theme="light"] .sending-spinner::after {
   border-color: rgba(15,23,42,0.1) !important;
   border-top-color: var(--red) !important;
 }
 
-[data-theme="light"] .collapsible-body {
+html:not(.nf-portal)[data-theme="light"] .collapsible-body {
   background: #ffffff !important;
   border-top-color: rgba(15,23,42,0.08) !important;
 }
 
-[data-theme="light"] .filters input,
-[data-theme="light"] .filters select {
+html:not(.nf-portal)[data-theme="light"] .filters input,
+html:not(.nf-portal)[data-theme="light"] .filters select {
   background: #eef2ff !important;
   border-color: rgba(var(--accent-rgb),0.2) !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] .filters input::placeholder {
+html:not(.nf-portal)[data-theme="light"] .filters input::placeholder {
   color: #9ca3af !important;
 }
 
-[data-theme="light"] .own-row td {
+html:not(.nf-portal)[data-theme="light"] .own-row td {
   color: #475569 !important;
 }
 
-[data-theme="light"] tbody tr.changed {
+html:not(.nf-portal)[data-theme="light"] tbody tr.changed {
   background: rgba(180,83,9,0.06) !important;
 }
 
-[data-theme="light"] tbody tr.deletion-row {
+html:not(.nf-portal)[data-theme="light"] tbody tr.deletion-row {
   background: rgba(var(--red-rgb),0.04) !important;
 }
 
-[data-theme="light"] .badge-sysadmin {
+html:not(.nf-portal)[data-theme="light"] .badge-sysadmin {
   background: rgba(var(--purple-rgb),0.08) !important;
   color: var(--purple) !important;
   border-color: rgba(var(--purple-rgb),0.2) !important;
 }
 
-[data-theme="light"] .badge-admin {
+html:not(.nf-portal)[data-theme="light"] .badge-admin {
   background: rgba(22,163,74,0.08) !important;
   color: #15803d !important;
   border-color: rgba(22,163,74,0.2) !important;
 }
 
-[data-theme="light"] .badge-employee {
+html:not(.nf-portal)[data-theme="light"] .badge-employee {
   background: rgba(var(--accent-rgb),0.08) !important;
   color: var(--accent-bright) !important;
   border-color: rgba(var(--accent-rgb),0.2) !important;
 }
 
-[data-theme="light"] .badge-client {
+html:not(.nf-portal)[data-theme="light"] .badge-client {
   background: rgba(var(--purple-rgb),0.07) !important;
   color: var(--purple) !important;
   border-color: rgba(var(--purple-rgb),0.2) !important;
 }
 
-[data-theme="light"] .badge-pending_employee {
+html:not(.nf-portal)[data-theme="light"] .badge-pending_employee {
   background: rgba(180,83,9,0.07) !important;
   color: #b45309 !important;
   border-color: rgba(180,83,9,0.2) !important;
 }
 
-[data-theme="light"] .badge-success {
+html:not(.nf-portal)[data-theme="light"] .badge-success {
   background: rgba(22,163,74,0.08) !important;
   color: #15803d !important;
   border-color: rgba(22,163,74,0.2) !important;
 }
 
-[data-theme="light"] .badge-warning {
+html:not(.nf-portal)[data-theme="light"] .badge-warning {
   background: rgba(180,83,9,0.07) !important;
   color: #b45309 !important;
   border-color: rgba(180,83,9,0.2) !important;
 }
 
-[data-theme="light"] .badge-danger {
+html:not(.nf-portal)[data-theme="light"] .badge-danger {
   background: rgba(var(--red-rgb),0.07) !important;
   color: var(--red) !important;
   border-color: rgba(var(--red-rgb),0.18) !important;
 }
 
-[data-theme="light"] .badge-info {
+html:not(.nf-portal)[data-theme="light"] .badge-info {
   background: rgba(var(--accent-rgb),0.08) !important;
   color: var(--blue-bright) !important;
   border-color: rgba(var(--accent-rgb),0.2) !important;
 }
 
-[data-theme="light"] .log-meta {
+html:not(.nf-portal)[data-theme="light"] .log-meta {
   color: #475569 !important;
 }
 
-[data-theme="light"] .geo-cell {
+html:not(.nf-portal)[data-theme="light"] .geo-cell {
   color: #475569 !important;
 }
 

@@ -25,7 +25,7 @@ mysqli_stmt_execute($__qa_check);
 mysqli_stmt_store_result($__qa_check);
 $has_qa_access = mysqli_stmt_num_rows($__qa_check) > 0;
 ?>
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>

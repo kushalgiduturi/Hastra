@@ -1,6 +1,6 @@
 /* Hastra — bento card spotlight (About.jsx / Expertise.jsx).
    One delegated pointer listener writes the pointer position into the hovered
-   card's --mouse-x / --mouse-y; netflix-bento.css paints the radial glow there.
+   card's --mouse-x / --mouse-y (the spatial layer keeps the glow off).
    Delegation means cards rendered later (modals, AJAX lists) work too. */
 (function () {
   'use strict';
@@ -27,8 +27,8 @@
   }, { passive: true });
 })();
 
-/* the button that submitted a form traces a faster laser beam while the
-   request is in flight (netflix-bento.css, button.is-processing) */
+/* the button that submitted a form shows a busy state while the request is
+   in flight (theme-spatial.css, button.is-processing) */
 document.addEventListener('submit', function (e) {
   if (e.defaultPrevented) return;
   const b = e.submitter || (e.target.querySelector && e.target.querySelector('button[type="submit"]'));

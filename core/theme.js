@@ -148,6 +148,12 @@
   const saved = localStorage.getItem(THEME_KEY) || localStorage.getItem(LEGACY_THEME_KEY) || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
 
+  // Spatial UI root class. Every rule in assets/css/theme-spatial.css is
+  // scoped under html.sp-ui; which pages actually wear the spatial system is
+  // decided by whether they link that stylesheet (portals, auth, labs, legal),
+  // so setting the class here, before first paint, is enough.
+  document.documentElement.classList.add('sp-ui');
+
   // Update button once DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -234,19 +240,11 @@
     const css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = base + 'assets/css/hastra-atmosphere.css' + q;
     document.head.appendChild(css);
-    // Signed-in portals wear the Netflix design system (theme-netflix.css +
-    // netflix-bento.css): a boxless UI over the temple world with its cyber
-    // layer, laser-beam controls and the dot-plus-ring cursor.
-    // Loaded here, in <head>, so the first paint is already themed.
+    // Signed-in portals (and Hastra Labs) are marked html.nf-portal, which
+    // switches on the spatial portal layer in assets/css/theme-spatial.css
+    // (part 5). Set here, in <head>, so the first paint is already themed.
     const nf = /\/(portals|workspace|labs)\/|\/dashboard(\.php)?$/.test(location.pathname);
-    if (nf) {
-      document.documentElement.classList.add('nf-portal');
-      ['theme-netflix', 'netflix-bento'].forEach(function(name) {
-        const l = document.createElement('link');
-        l.rel = 'stylesheet'; l.href = base + 'assets/css/' + name + '.css' + q;
-        document.head.appendChild(l);
-      });
-    }
+    if (nf) document.documentElement.classList.add('nf-portal');
     function go() {
       const b = document.body;
       if (!b || b.hasAttribute('data-atmosphere-off')) return;
@@ -298,6 +296,13 @@
     s.src = base + 'assets/js/hastra-ux.js' + q;
     s.defer = true;
     document.head.appendChild(s);
+    // spatial UI motion layer: pointer light, tilt and tab indicators. It only
+    // acts on .sp-* markup, and switches itself off for reduced motion,
+    // touch screens and low-perf mode (assets/js/spatial-fx.js).
+    const fx = document.createElement('script');
+    fx.src = base + 'assets/js/spatial-fx.js' + q;
+    fx.defer = true;
+    document.head.appendChild(fx);
   })();
 
 })();

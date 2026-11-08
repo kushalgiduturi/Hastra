@@ -7,7 +7,7 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === realpath(__FILE__)) { http_r
 $nav_current   = $nav_current ?? '';
 $display_name  = $logged_in_name ?? ($_SESSION['user_name'] ?? '');
 ?>
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>

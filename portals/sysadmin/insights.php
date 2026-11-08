@@ -194,7 +194,7 @@ $csrf = generate_csrf_token();
 <title>Analytics &amp; Errors · Hastra</title>
 <?php astra_page_meta('Analytics & Errors · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   * { box-sizing: border-box; }
@@ -268,6 +268,8 @@ $csrf = generate_csrf_token();
   .ins-note { color: var(--text-dim); font-size: 12.5px; line-height: 1.6; max-width: 80ch; margin-top: 2.4rem; }
   .ins-note a { color: var(--accent-bright); text-underline-offset: 3px; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <?php $nav_current = 'insights'; include __DIR__ . '/_nav.php'; ?>

@@ -31,3 +31,43 @@ window.hastraContrastAudit = function () {
   }
   return out.sort((a, b) => a.ratio - b.ratio);
 };
+
+// Spatial UI: call hastraGlassTokenAudit() on any themed page. Reads the live
+// --sp-* tokens in both themes and reports every text-on-glass pair, with the
+// glass composited over a reference ground for the world behind it (defaults
+// match tests/suites/15_spatial_ui.php: #4a4a4a by night, #727478 by day).
+// Returns rows sorted worst first; anything under 4.5 fails AA for body text.
+window.hastraGlassTokenAudit = function (grounds) {
+  grounds = grounds || { dark: [74, 74, 74], light: [114, 116, 120] };
+  const root = document.documentElement, was = root.getAttribute('data-theme');
+  const probe = document.createElement('i');
+  probe.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  document.body.appendChild(probe);
+  const rgb = (name) => {
+    probe.style.color = 'var(' + name + ')';
+    const m = getComputedStyle(probe).color.match(/rgba?\(([^)]+)\)/);
+    if (!m) return null;
+    const p = m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);
+    return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+  };
+  const over = (t, b) => ({ r: t.r * t.a + b.r * (1 - t.a), g: t.g * t.a + b.g * (1 - t.a), b: t.b * t.a + b.b * (1 - t.a), a: 1 });
+  const lum = ({ r, g, b }) => { const f = (v) => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; return .2126 * f(r) + .7152 * f(g) + .0722 * f(b); };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const texts = ['--sp-text', '--sp-text-2', '--sp-text-3', '--sp-accent-text', '--sp-ok', '--sp-warn', '--sp-bad', '--sp-info'];
+  const fills = ['--sp-fill-2', '--sp-fill-3', '--sp-fill-4', '--sp-solid-1', '--sp-solid-2', '--sp-solid-3', '--sp-solid-4'];
+  const out = [];
+  for (const theme of ['dark', 'light']) {
+    root.setAttribute('data-theme', theme);
+    const g = { r: grounds[theme][0], g: grounds[theme][1], b: grounds[theme][2], a: 1 };
+    const surfaces = fills.map((f) => [f, over(rgb(f), g)]);
+    surfaces.push(['--sp-fill-1 in the panel', over(rgb('--sp-fill-1'), over(rgb('--sp-fill-2'), g))]);
+    for (const [sname, bg] of surfaces)
+      for (const t of texts) {
+        const fg = over(rgb(t), bg);
+        out.push({ theme, text: t, on: sname, ratio: +ratio(fg, bg).toFixed(2) });
+      }
+  }
+  probe.remove();
+  if (was === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', was);
+  return out.sort((a, b) => a.ratio - b.ratio);
+};

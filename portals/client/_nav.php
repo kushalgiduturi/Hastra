@@ -8,7 +8,7 @@ $__can_projects = client_can($ctx, 'view_projects');
 // "roster" is dead weight (see core/company.php's astra_is_solo_company()).
 $__can_team     = client_can($ctx, 'manage_team') && !astra_is_solo_company($ctx['company'] ?? null);
 ?>
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <button id="sidebar-toggle" class="hamburger-btn" aria-expanded="false" aria-controls="hastra-sidebar" aria-label="Open menu">
       <span></span><span></span><span></span>

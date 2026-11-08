@@ -4,17 +4,27 @@
   "version": "0.1.0-pilot",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "sync:landing": "node scripts/sync-landing.mjs",
+    "dev": "npm run sync:landing && vite",
+    "build": "npm run sync:landing && tsc -b && vite build",
     "preview": "wrangler pages dev dist --compatibility-date=2026-09-28",
     "test": "vitest run",
     "deploy": "npm run build && wrangler pages deploy dist"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.17",
+    "@radix-ui/react-slot": "^1.5.0",
     "@supabase/supabase-js": "^2.45.4",
+    "@tailwindcss/vite": "^4.3.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "input-otp": "^1.5.0",
+    "motion": "^12.43.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2"
+    "react-router-dom": "^6.26.2",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250927.0",

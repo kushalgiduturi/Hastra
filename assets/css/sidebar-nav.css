@@ -1,170 +1,160 @@
-/* ── Simplified top bar + slide-out sidebar drawer ──────────────────────────
-   Shared across every portal's _nav.php. Solid backgrounds only (no
-   backdrop-filter blur) — the fine grid page background moirés under blur,
-   see core/theme.css's light-theme notes for the same lesson learned there. */
+/* ── Floating top bar + slide-out sidebar drawer (spatial UI) ───────────────
+   Shared across every portal's _nav.php. Layout and behaviour live here; the
+   glass itself comes from the .sp-glass .sp-d3 / .sp-d4 classes the markup
+   carries (assets/css/theme-spatial.css), so the recipe exists once.
+
+   The bar is an island: sticky, inset from the viewport edges, so it floats
+   over the page without being taken out of the flow (no page needs extra
+   top padding). Ids, aria hooks and assets/js/sidebar-nav.js are unchanged. */
 
 .topnav {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--topnav-bg, rgba(10,15,30,0.96));
-  border-bottom: 1px solid var(--border);
-  padding: 0 1.4rem; height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: var(--sp-bar-inset, 12px); z-index: var(--sp-z-bar, 50);
+  margin: var(--sp-bar-inset, 12px) var(--sp-bar-inset, 12px) 0;
+  height: var(--sp-bar-h, 56px); padding: 0 var(--sp-2, 8px);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3, 12px);
 }
+@media (max-width: 760px) { .topnav.sp-glass { --_radius: 20px; } }
 
 /* ── Left cluster: hamburger + brand + role badge ── */
-.nav-left { display: flex; align-items: center; gap: 12px; }
+.nav-left { display: flex; align-items: center; gap: var(--sp-2, 8px); min-width: 0; }
 
 .hamburger-btn {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px;
-  width: 34px; height: 34px;
-  background: var(--input-bg); border: 1px solid var(--border-dim); border-radius: 4px;
-  cursor: pointer; padding: 0; flex-shrink: 0;
-  transition: background 0.2s, border-color 0.2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: 44px; height: 44px; padding: 0; flex-shrink: 0;
+  background: transparent; border: 0; border-radius: var(--sp-r-pill, 999px); cursor: pointer;
+  transition: background var(--sp-dur-2, .2s);
 }
-.hamburger-btn:hover { background: var(--hover-bg); border-color: var(--border); }
+.hamburger-btn:hover { background: var(--sp-hover); }
 .hamburger-btn span {
-  display: block; width: 16px; height: 2px; border-radius: 1px;
-  background: var(--text); transition: transform 0.25s ease, opacity 0.2s ease;
+  display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--sp-text);
+  transition: transform var(--sp-dur-3, .28s) var(--sp-ease-out), opacity var(--sp-dur-2, .2s);
 }
 .hamburger-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .hamburger-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .hamburger-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 .nav-brand-link {
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 var(--sp-2, 8px);
+  border-radius: var(--sp-r-pill, 999px); text-decoration: none;
 }
-.nav-icon {
-  width: 30px; height: 30px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.nav-icon svg { width: 16px; height: 16px; }
+.nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.nav-icon svg { width: 20px; height: 20px; }
 .nav-title {
-  font-family: 'Share Tech Mono', monospace; font-size: 14px;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text);
-  line-height: 1;
+  font: 650 var(--sp-fs-sm, 13px)/1 var(--sp-font-ui); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--sp-text);
 }
-
 .nav-badge {
-  font-size: 11px; font-family: 'Share Tech Mono', monospace;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--blue-bright); background: rgba(59,130,246,0.1);
-  border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px;
-  text-decoration: none; cursor: pointer; display: inline-block;
+  display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--sp-r-pill, 999px);
+  font: 600 11px/1 var(--sp-font-ui); letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14);
+  transition: background var(--sp-dur-2, .2s);
 }
-.nav-badge.lead { color: var(--accent-bright); background: rgba(var(--accent-rgb),0.1); }
+.nav-badge:hover { background: rgba(var(--sp-accent-rgb), .22); }
 
-/* ── Center: the signed-in user's company logo, alongside the Hastra mark ──
-   Absolutely centered so it never disrupts the left/right flex clusters;
-   .topnav's own `position: sticky` already establishes the containing block. */
+/* ── Center: the signed-in user's company logo ── */
 .nav-center-logo {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   display: flex; align-items: center; gap: 8px; pointer-events: none;
 }
 .nav-center-logo img {
-  width: 26px; height: 26px; border-radius: 50%; object-fit: contain;
-  background: #fff; border: 1px solid var(--border-dim);
+  width: 28px; height: 28px; border-radius: 50%; object-fit: contain;
+  background: #fff; box-shadow: 0 0 0 1px var(--sp-hair), var(--sp-shadow-3);
 }
-@media (max-width: 640px) { .nav-center-logo { display: none; } }
+@media (max-width: 760px) { .nav-center-logo { display: none; } }
 
 /* ── Right cluster: theme toggle + user ── */
-.nav-right { display: flex; align-items: center; gap: 12px; }
-.nav-user { font-size: 13px; color: var(--text-dim); }
-.nav-user span { color: var(--text); font-weight: 500; }
+.nav-right { display: flex; align-items: center; gap: var(--sp-3, 12px); min-width: 0; }
+.nav-user { font-size: var(--sp-fs-sm, 13px); color: var(--sp-text-2); white-space: nowrap; }
+.nav-user span { color: var(--sp-text); font-weight: 600; }
 
 .btn-theme-toggle {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--input-bg); border: 1px solid var(--border-dim);
-  color: var(--text-dim); font-family: var(--font-sans);
-  font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
-  padding: 6px 12px; border-radius: 3px; cursor: pointer; transition: var(--transition);
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px;
+  border: 0; border-radius: var(--sp-r-pill, 999px); cursor: pointer;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 550 var(--sp-fs-sm, 13px)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  transition: background var(--sp-dur-2, .2s);
 }
-.btn-theme-toggle:hover { background: var(--hover-bg); color: var(--text); border-color: var(--border); }
-.btn-theme-toggle .theme-icon svg { width: 13px; height: 13px; vertical-align: middle; fill: currentColor; }
+.btn-theme-toggle:hover { background: var(--sp-press); }
+.btn-theme-toggle .theme-icon { display: inline-flex; }
+.btn-theme-toggle .theme-icon svg { width: 15px; height: 15px; fill: currentColor; }
 
 .nav-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(var(--accent-rgb),0.15); border: 1px solid rgba(var(--accent-rgb),0.4);
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: var(--accent-bright);
-  font-family: 'Share Tech Mono', monospace; flex-shrink: 0;
-  text-decoration: none;
+  background: var(--sp-accent); color: var(--sp-on-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
+  font: 650 var(--sp-fs-sm, 13px)/1 var(--sp-font-ui); text-decoration: none;
+  transition: transform var(--sp-dur-3) var(--sp-ease-press);
 }
+.nav-avatar:active { transform: scale(.94); }
 
-/* ── Backdrop ── */
+@media (max-width: 760px) {
+  .nav-user { display: none; }
+  .btn-theme-toggle { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .btn-theme-toggle .theme-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .nav-title { letter-spacing: .1em; }
+}
+@media (max-width: 380px) { .nav-badge { display: none; } }
+
+/* ── Scrim: dims, never blurs (one fewer blurred layer) ── */
 .sidebar-backdrop {
-  position: fixed; inset: 0; z-index: 199;
-  background: rgba(2, 4, 10, 0.6);
+  position: fixed; inset: 0; z-index: calc(var(--sp-z-drawer, 70) - 1);
+  background: var(--sp-dim);
   opacity: 0; pointer-events: none;
-  transition: opacity 0.25s ease;
+  transition: opacity var(--sp-dur-3, .28s) var(--sp-ease-out);
 }
 .sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
 
-/* ── Drawer ── */
+/* ── Drawer: a depth-4 glass sheet floating inside the viewport ── */
 .sidebar-drawer {
-  position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
-  width: 280px; max-width: 84vw;
-  background: var(--navy-card);
-  border-right: 1px solid var(--border-dim);
-  box-shadow: 0 0 40px rgba(0,0,0,0.35);
+  position: fixed; z-index: var(--sp-z-drawer, 70);
+  top: var(--sp-bar-inset, 12px); bottom: var(--sp-bar-inset, 12px); left: var(--sp-bar-inset, 12px);
+  width: 300px; max-width: calc(100vw - 2 * var(--sp-bar-inset, 12px));
   display: flex; flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(calc(-100% - 2 * var(--sp-bar-inset, 12px)));
+  visibility: hidden;
+  transition: transform var(--sp-dur-4, .35s) var(--sp-ease-out), visibility 0s linear var(--sp-dur-4, .35s);
 }
-.sidebar-drawer.open { transform: translateX(0); }
+.sidebar-drawer.sp-glass { --_radius: var(--sp-r-panel, 28px); }
+.sidebar-drawer.open { transform: translateX(0); visibility: visible; transition: transform var(--sp-dur-4, .35s) var(--sp-ease-out), visibility 0s; }
 
-.sidebar-head {
-  display: flex; align-items: center; gap: 10px;
-  padding: 1.1rem 1.2rem; border-bottom: 1px solid var(--border-dim);
-  flex-shrink: 0;
-}
-.sidebar-head .nav-title { font-size: 15px; }
+.sidebar-head { display: flex; align-items: center; gap: 10px; padding: var(--sp-4, 16px) var(--sp-3, 12px) var(--sp-2, 8px) var(--sp-5, 20px); flex-shrink: 0; }
+.sidebar-head .nav-title { font-size: var(--sp-fs-sm, 13px); }
 .sidebar-close {
-  margin-left: auto;
-  width: 28px; height: 28px; border-radius: 4px;
+  margin-left: auto; width: 44px; height: 44px; border: 0; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: transparent; border: 1px solid transparent; color: var(--text-dim);
-  cursor: pointer; transition: background 0.2s, color 0.2s;
+  background: transparent; color: var(--sp-text-2); cursor: pointer;
+  transition: background var(--sp-dur-2, .2s), color var(--sp-dur-2, .2s);
 }
-.sidebar-close:hover { background: var(--hover-bg); color: var(--text); }
-.sidebar-close svg { width: 15px; height: 15px; fill: currentColor; }
+.sidebar-close:hover { background: var(--sp-hover); color: var(--sp-text); }
+.sidebar-close svg { width: 18px; height: 18px; fill: currentColor; }
 
 .sidebar-body {
-  flex: 1 1 auto; overflow-y: auto; padding: 0.9rem 0.8rem;
-  display: flex; flex-direction: column; gap: 1.3rem;
+  flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: var(--sp-2, 8px) var(--sp-3, 12px);
+  display: flex; flex-direction: column; gap: var(--sp-5, 20px);
+  scrollbar-width: thin; scrollbar-color: var(--sp-hair-strong) transparent;
 }
 .sidebar-section-label {
-  font-family: 'Share Tech Mono', monospace; font-size: 10.5px;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
-  padding: 0 0.5rem; margin-bottom: 0.5rem;
+  padding: 0 var(--sp-3, 12px) var(--sp-2, 8px);
+  font: 600 var(--sp-fs-xs, 12px)/1.2 var(--sp-font-ui); color: var(--sp-text-3);
 }
 .sidebar-links { display: flex; flex-direction: column; gap: 2px; }
 .sidebar-link {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; box-sizing: border-box;
-  padding: 8px 10px; border-radius: 5px;
-  background: transparent; border: 1px solid transparent;
-  font-family: var(--font-sans); font-size: 13px; font-weight: 400;
-  color: var(--text-dim); text-decoration: none; text-align: left;
-  cursor: pointer; appearance: none;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  display: flex; align-items: center; gap: var(--sp-3, 12px);
+  width: 100%; min-height: 44px; padding: 0 var(--sp-3, 12px); box-sizing: border-box;
+  border: 0; border-radius: var(--sp-r-ctl, 14px); background: transparent; appearance: none;
+  font: 500 var(--sp-fs-sm, 13px)/1.3 var(--sp-font-ui); color: var(--sp-text-2); text-decoration: none; text-align: left;
+  cursor: pointer; transition: background var(--sp-dur-2, .2s), color var(--sp-dur-2, .2s);
 }
-.sidebar-link svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
-.sidebar-link:hover { background: var(--hover-bg); color: var(--text); }
-.sidebar-link.current {
-  color: var(--accent-bright); background: rgba(var(--accent-rgb),0.1);
-  border-color: rgba(var(--accent-rgb),0.28);
-}
+.sidebar-link svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+.sidebar-link:hover { background: var(--sp-hover); color: var(--sp-text); }
+.sidebar-link.current { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); font-weight: 600; }
 
 .sidebar-foot {
-  flex-shrink: 0; border-top: 1px solid var(--border-dim);
-  padding: 0.9rem 0.8rem 1.1rem;
-  display: flex; flex-direction: column; gap: 1.3rem;
+  flex-shrink: 0; margin: 0 var(--sp-3, 12px); padding: var(--sp-3, 12px) 0 var(--sp-4, 16px);
+  border-top: 1px solid var(--sp-hair);
 }
-
-.sidebar-link.logout { color: #fca5a5; }
-.sidebar-link.logout:hover { background: rgba(var(--red-rgb),0.12); color: #fca5a5; }
+.sidebar-link.logout { color: var(--sp-bad); }
+.sidebar-link.logout:hover { background: rgba(var(--sp-bad-rgb), .12); color: var(--sp-bad); }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar-drawer, .sidebar-backdrop, .hamburger-btn span { transition: none; }

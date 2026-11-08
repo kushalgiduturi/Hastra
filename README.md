@@ -32,7 +32,9 @@ Plain PHP 8 and MySQL/MariaDB, no framework, no build step. Designed to run unde
 
 **Interface**
 - Animated landing page and login rendered over a three.js temple scene
-- Dark (crimson) and light (cobalt) themes
+- Spatial "Quiet glass" UI: a few frosted glass layers (a floating top bar, one panel per page, the dock and dialogs) float over the scene, with flat content inside. One stylesheet, `assets/css/theme-spatial.css`; the design reference is [docs/spatial-ui/DESIGN.md](docs/spatial-ui/DESIGN.md)
+- Dark (crimson) and light (cobalt) themes, with AA contrast computed for every text-on-glass pair
+- Respects low-power devices, reduced motion, reduced transparency and Windows high contrast
 
 **Hastra Labs: free community tools and student hub** (`/labs/`, no enterprise account needed)
 - *Cryptography & File Armor:* encrypt text or any file with AES-256-GCM, ChaCha20-Poly1305, RSA-4096-OAEP, X25519, ML-KEM-768/1024 (FIPS 203) or the X-Wing hybrid (ML-KEM-768 + X25519); ML-DSA-65/87 signatures (FIPS 204); a credential hasher that separates human passwords (Argon2id, bcrypt) from machine tokens (HMAC-SHA256, PBKDF2-SHA512, keyed BLAKE3), with a verifier and a pattern-aware strength estimate; a built-in self-test with published known-answer vectors
@@ -79,7 +81,7 @@ Production runs as a Docker stack (app on PHP 8.2 + Apache, MariaDB, and Caddy f
 C:\xampp\php\php.exe tests\runner.php
 ```
 
-The suite clones the database into a throwaway `myapp_test`, runs every endpoint through `php-cgi` against the clone with a local SMTP sink, and drops the clone afterwards. It covers encryption, authentication, registration, governance, web exposure, the security scanner, visual architecture, compliance, the portal design system and Hastra Labs. Use `--only=<text>` to run matching tests.
+The suite clones the database into a throwaway `myapp_test`, runs every endpoint through `php-cgi` against the clone with a local SMTP sink, and drops the clone afterwards. It covers encryption, authentication, registration, governance, web exposure, the security scanner, visual architecture, compliance, the portal scene, Hastra Labs and the spatial UI. Use `--only=<text>` to run matching tests.
 
 ## Project layout
 

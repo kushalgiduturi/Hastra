@@ -109,17 +109,13 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
 <title>Requirement Revisions · Hastra</title>
 <?php astra_page_meta('Requirement Revisions · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: var(--navy); color: var(--text); font-family: var(--font-sans);
-         background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-         background-size: 40px 40px; }
-  .main { max-width: 900px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+  body { margin: 0; min-height: 100vh; background: var(--navy); color: var(--text); font-family: var(--font-sans); }
   h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
   .lede { color: var(--text-dim); font-size: 13px; margin: 0 0 1.4rem; }
-  .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; padding: 1.4rem; margin-bottom: 1.4rem; }
   .alert { border-radius: 3px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 13px; border-left: 3px solid; }
   .alert.success { background: var(--green-bg); border-color: var(--green); color: #86efac; }
   .alert.error   { background: var(--red-bg);   border-color: var(--red);   color: #fca5a5; }
@@ -142,6 +138,8 @@ $nav_path = $user_role === 'admin' ? 'admin' : 'client';
   .badge.ack { background: var(--green-bg); color: #86efac; }
   .back { font-size: 12px; color: var(--text-dim); text-decoration: none; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 <div class="main">

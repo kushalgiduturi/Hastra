@@ -320,9 +320,11 @@ function labs_head(string $title, string $active, ?array $profile): void {
 <meta name="labs-base" content="<?= labs_e($lb) ?>">
 <meta name="labs-signed-in" content="<?= ($profile || labs_enterprise_signed_in()) ? '1' : '0' ?>">
 <script src="<?= $b ?>core/theme.js?v=<?= $v ?>"></script>
-<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= $v ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= $v ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-fog-boxless.css?v=<?= $v ?>">
+<link rel="stylesheet" href="<?= $b ?>core/theme.css?v=<?= $v ?>"><link rel="stylesheet" href="<?= $b ?>assets/css/theme-contrast.css?v=<?= $v ?>">
 <link rel="stylesheet" href="<?= $b ?>assets/css/tools-cyber.css?v=<?= $v ?>">
 <script type="importmap"><?= json_encode(['imports' => labs_import_map()], JSON_UNESCAPED_SLASHES) ?></script>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= $b ?>assets/css/theme-spatial.css?v=<?= $v ?>">
 </head>
 <body class="lx-body" data-labs-page="<?= labs_e($active) ?>">
 <a class="lx-skip" href="#lx-main">Skip to content</a>

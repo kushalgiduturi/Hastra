@@ -356,7 +356,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
 <title>My Profile · Hastra</title>
 <?php astra_page_meta('My Profile · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
@@ -366,10 +366,6 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
@@ -473,10 +469,6 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   }
 
   /* ── LAYOUT ── */
-  .main { max-width: 900px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p  { font-size: 13px; color: var(--text-dim); }
 
   /* ── TABS ── */
   .tab-bar {
@@ -496,18 +488,7 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .tab-panel.active { display: block; }
 
   /* ── SECTION ── */
-  .section {
-    background: var(--navy-card); border: 1px solid var(--border-dim);
-    border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem;
-  }
-  .section-header {
-    display: flex; align-items: center; gap: 8px;
-    padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim);
-    background: var(--section-header-bg);
-    font-size: 13px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
-  }
   .section-header svg { width: 15px; height: 15px; fill: var(--accent-bright); }
-  .section-body { padding: 1.4rem; }
 
   /* ── ALERT ── */
   .alert {
@@ -648,18 +629,6 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
   .badge-client    { background: rgba(var(--purple-rgb),0.1);  color: var(--purple);      border: 1px solid rgba(var(--purple-rgb),0.2); }
 
   /* ── ACTIVITY TABLE ── */
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead tr { background: var(--section-header-bg); border-bottom: 1px solid var(--border-dim); }
-  th {
-    padding: 10px 14px; text-align: left; font-size: 11px;
-    font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--text-dim); font-weight: 400;
-  }
-  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
-  tbody tr:hover { background: var(--hover-bg); }
-  tbody tr:last-child { border-bottom: none; }
-  td { padding: 10px 14px; color: var(--text); vertical-align: middle; }
   td.muted { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
   .log-badge-success  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
@@ -716,12 +685,15 @@ $show_social = in_array($role, ['employee', 'admin', 'sysadmin']);
     .otp-wrap .otp-box { width: 40px; height: 46px; font-size: 18px; }
   }
 </style>
+<!-- spatial UI: the shared top bar, then the spatial layer, last in the cascade -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/sidebar-nav.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 
 <?php render_profile_barrier($conn); ?>
 
-<nav class="topnav">
+<nav class="topnav sp-glass sp-d3">
   <div class="nav-left">
     <a href="<?= get_base_url() ?>workspace/" class="nav-brand-link" title="All pages for your role">
     <div class="nav-icon">

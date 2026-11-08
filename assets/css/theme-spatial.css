@@ -1,0 +1,2234 @@
+/* ==========================================================================
+   Hastra spatial UI: "Quiet glass" (docs/spatial-ui/DIRECTIONS.md, A)
+
+   Everything is a layer in a depth stack over the 3-D temple world:
+     depth 0  the world (#hastra-kage-scene, assets/js/kage-scene.js)
+     depth 1  insets: fields, tracks, wells (no blur)
+     depth 2  the page panel (one per page, the main glass)
+     depth 3  floating bar and raised controls
+     depth 4  dock, drawer, dialogs, popovers, toasts
+   Glass only where something floats. Content inside a panel is flat.
+
+   Scope: html.sp-ui (set by core/theme.js). Loaded by a hard-coded <link>
+   after each page's legacy stylesheets, so it follows them in the cascade.
+   Budget: blur <= 24px, at most 3 blurred layers in a viewport, never nested,
+   never on rows or list items.
+
+   Part 1 (this phase): tokens, the legacy-token bridge and the fallbacks.
+   Part 2 (phase 3): components.
+   ========================================================================== */
+
+/* ── 1. Tokens: dark (default) ─────────────────────────────────────────── */
+html.sp-ui {
+  /* type */
+  --sp-font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sp-font-mono: 'Share Tech Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --sp-fs-xs: .75rem;     /* 12 */
+  --sp-fs-sm: .8125rem;   /* 13 */
+  --sp-fs-md: .9375rem;   /* 15 body */
+  --sp-fs-lg: 1.125rem;   /* 18 section titles */
+  --sp-fs-xl: 1.5rem;     /* 24 */
+  --sp-fs-2xl: 2rem;      /* 32 metrics */
+  --sp-fs-display: clamp(1.875rem, 3.4vw, 2.625rem); /* 30-42 page titles */
+  --sp-lh-tight: 1.1;
+  --sp-lh-body: 1.55;
+  --sp-track-display: -.025em;
+  --sp-track-label: .02em;
+
+  /* spacing (4px base) */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
+  --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
+  --sp-gutter: clamp(12px, 3vw, 24px);
+  --sp-panel-pad: clamp(20px, 3.2vw, 40px);
+  --sp-bar-inset: 12px;
+  --sp-bar-h: 56px;
+  --sp-page-max: 1180px;
+
+  /* radii */
+  --sp-r-panel: 28px;
+  --sp-r-float: 24px;   /* dock, dialogs, popovers */
+  --sp-r-card: 16px;    /* inner groups, ledger strips */
+  --sp-r-ctl: 14px;     /* inputs, tiles */
+  --sp-r-sm: 10px;      /* icon wells, chips */
+  --sp-r-pill: 999px;
+
+  /* brand (hue identity unchanged) */
+  --sp-accent: #e50914;           /* fills, marks, rings */
+  --sp-accent-text: #ff4655;      /* small accent text, 5.8:1 on the panel */
+  --sp-accent-rgb: 229, 9, 20;
+  --sp-on-accent: #ffffff;
+  --sp-ring: #ff4655;
+
+  /* text */
+  --sp-text: #ffffff;
+  --sp-text-2: rgba(255, 255, 255, .76);
+  --sp-text-3: rgba(255, 255, 255, .62);
+  --sp-text-disabled: rgba(255, 255, 255, .5);
+
+  /* status (text-safe on the panel fill) */
+  --sp-ok: #4ade80;     --sp-ok-rgb: 74, 222, 128;
+  --sp-warn: #fbbf24;   --sp-warn-rgb: 251, 191, 36;
+  --sp-bad: #ff6b76;    --sp-bad-rgb: 255, 107, 118;
+  --sp-bad-solid: #d42033;   /* white text 5.5:1 */
+  --sp-info: #67e8f9;   --sp-info-rgb: 103, 232, 249;
+
+  /* lines and washes */
+  --sp-hair: rgba(255, 255, 255, .09);
+  --sp-hair-strong: rgba(255, 255, 255, .16);
+  --sp-hover: rgba(255, 255, 255, .06);
+  --sp-press: rgba(255, 255, 255, .1);
+  --sp-row-hover: rgba(255, 255, 255, .04);
+
+  /* glass fills per depth (dark: obsidian, slightly cool) */
+  --sp-fill-1: rgba(9, 10, 14, .46);
+  --sp-fill-2: rgba(10, 11, 16, .64);
+  --sp-fill-3: rgba(18, 20, 27, .72);
+  --sp-fill-4: rgba(14, 15, 20, .86);
+  /* dense fills: no-blur fallbacks and unmigrated legacy surfaces */
+  --sp-solid-1: rgba(12, 13, 18, .9);
+  --sp-solid-2: rgba(12, 13, 18, .94);
+  --sp-solid-3: rgba(20, 22, 29, .96);
+  --sp-solid-4: rgba(16, 17, 23, .98);
+
+  /* blur and saturation per depth (depth 1 never blurs) */
+  --sp-blur-2: 18px;  --sp-sat-2: 1.35;
+  --sp-blur-3: 16px;  --sp-sat-3: 1.3;
+  --sp-blur-4: 20px;  --sp-sat-4: 1.3;
+
+  /* specular edge: bright top/left, dim bottom/right */
+  --sp-edge-hi: rgba(255, 255, 255, .14);
+  --sp-edge-side: rgba(255, 255, 255, .06);
+  --sp-edge-lo: rgba(255, 255, 255, .03);
+  --sp-edge: inset 0 1px 0 var(--sp-edge-hi), inset 1px 0 0 var(--sp-edge-side), inset 0 -1px 0 var(--sp-edge-lo);
+  --sp-inset: inset 0 1px 2px rgba(0, 0, 0, .28), inset 0 -1px 0 var(--sp-edge-lo);
+
+  /* shadows grow with depth: offset + soft blur, never a halo */
+  --sp-shadow-1: none;
+  --sp-shadow-2: 0 24px 60px -18px rgba(0, 0, 0, .65), 0 2px 6px rgba(0, 0, 0, .35);
+  --sp-shadow-3: 0 14px 34px -10px rgba(0, 0, 0, .6), 0 1px 3px rgba(0, 0, 0, .4);
+  --sp-shadow-4: 0 28px 70px -16px rgba(0, 0, 0, .72), 0 4px 12px rgba(0, 0, 0, .4);
+  --sp-shadow-lift: 0 20px 40px -14px rgba(0, 0, 0, .6), 0 2px 6px rgba(0, 0, 0, .35);
+  /* accent controls lift with the same neutral shadow as everything else:
+     a coloured blurred shadow on a dark ground reads as a glow halo */
+  --sp-shadow-accent: 0 6px 16px -6px rgba(0, 0, 0, .6), 0 1px 2px rgba(0, 0, 0, .35);
+  --sp-shadow-accent-lift: 0 12px 24px -8px rgba(0, 0, 0, .65), 0 2px 4px rgba(0, 0, 0, .35);
+
+  /* the world under glass */
+  --sp-world-wash: radial-gradient(120% 80% at 50% 0%, rgba(5, 5, 5, .15), rgba(5, 5, 5, .55));
+  --sp-world-filter: none;
+  --sp-dim: rgba(3, 4, 7, .4);   /* dialog backdrop, never blurred */
+
+  /* motion */
+  --sp-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --sp-ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  /* spring, stiffness 280 / damping 25 / mass .8 (fluid-tabs), sampled */
+  --sp-ease-spring: linear(0, .32 8%, .72 18%, .96 28%, 1.04 38%, 1.03 48%, 1 62%, 1);
+  /* press, stiffness 550 / damping 15 / mass 1.1 (dock), one short overshoot */
+  --sp-ease-press: linear(0, .5 10%, 1.08 26%, 1.02 40%, .99 55%, 1);
+  --sp-dur-1: 150ms;  --sp-dur-2: 220ms;  --sp-dur-3: 280ms;  --sp-dur-4: 350ms;
+
+  /* pointer light and tilt (assets/js/spatial-fx.js writes --sp-mx / --sp-my) */
+  --sp-mx: 50%;
+  --sp-my: -40%;
+  --sp-glow: rgba(255, 255, 255, .07);
+  --sp-glow-size: 420px;
+  --sp-glow-opacity: 1;
+  --sp-tilt-max: 3deg;
+  --sp-lift: -1px;
+
+  /* z-index map (legacy overlays such as the tour keep their own values
+     until they are migrated in phase 4a) */
+  --sp-z-world: 0;
+  --sp-z-page: 1;
+  --sp-z-raised: 10;
+  --sp-z-sticky: 20;
+  --sp-z-bar: 50;
+  --sp-z-dock: 60;
+  --sp-z-drawer: 70;
+  --sp-z-popover: 80;
+  --sp-z-modal: 90;
+  --sp-z-toast: 95;
+  --sp-z-loader: 100;
+
+  color-scheme: dark;
+}
+
+/* ── 2. Tokens: light ──────────────────────────────────────────────────── */
+html.sp-ui[data-theme="light"] {
+  --sp-accent: #2563eb;
+  /* Small text by day sits on translucent white glass, which greys over the
+     darker parts of the scene (measured: the darkest 5% behind the panel is
+     #727478). Accent text and the status colours are one step deeper than
+     their fills so they clear 4.5:1 there too, inset fields included
+     (tests/suites/15_spatial_ui.php computes every pair). */
+  --sp-accent-text: #1e40af;
+  --sp-accent-rgb: 37, 99, 235;
+  --sp-ring: #2563eb;
+
+  --sp-text: #000000;
+  --sp-text-2: #2b3442;
+  --sp-text-3: #3d4756;
+  --sp-text-disabled: #6b7484;
+
+  --sp-ok: #166534;     --sp-ok-rgb: 22, 101, 52;
+  --sp-warn: #92400e;   --sp-warn-rgb: 146, 64, 14;
+  --sp-bad: #a51d2d;    --sp-bad-rgb: 165, 29, 45;
+  --sp-bad-solid: #c62031;
+  --sp-info: #155e75;   --sp-info-rgb: 21, 94, 117;
+
+  --sp-hair: rgba(15, 23, 42, .1);
+  --sp-hair-strong: rgba(15, 23, 42, .18);
+  --sp-hover: rgba(15, 23, 42, .05);
+  --sp-press: rgba(15, 23, 42, .09);
+  --sp-row-hover: rgba(15, 23, 42, .035);
+
+  --sp-fill-1: rgba(15, 23, 42, .05);
+  --sp-fill-2: rgba(255, 255, 255, .74);
+  --sp-fill-3: rgba(255, 255, 255, .8);
+  --sp-fill-4: rgba(255, 255, 255, .92);
+  --sp-solid-1: rgba(241, 244, 248, .96);
+  --sp-solid-2: rgba(250, 251, 253, .97);
+  --sp-solid-3: rgba(255, 255, 255, .98);
+  --sp-solid-4: #ffffff;
+
+  --sp-sat-2: 1.6;  --sp-sat-3: 1.5;  --sp-sat-4: 1.4;
+
+  --sp-edge-hi: rgba(255, 255, 255, .95);
+  --sp-edge-side: rgba(255, 255, 255, .5);
+  --sp-edge-lo: rgba(15, 23, 42, .06);
+  --sp-inset: inset 0 1px 2px rgba(15, 23, 42, .1), inset 0 -1px 0 rgba(255, 255, 255, .7);
+
+  --sp-shadow-2: 0 24px 60px -20px rgba(15, 23, 42, .28), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-3: 0 12px 30px -10px rgba(15, 23, 42, .25), 0 1px 3px rgba(15, 23, 42, .08);
+  --sp-shadow-4: 0 28px 70px -18px rgba(15, 23, 42, .32), 0 4px 12px rgba(15, 23, 42, .1);
+  --sp-shadow-lift: 0 18px 36px -14px rgba(15, 23, 42, .3), 0 2px 6px rgba(15, 23, 42, .08);
+  --sp-shadow-accent: 0 6px 16px -6px rgba(15, 23, 42, .3), 0 1px 2px rgba(15, 23, 42, .12);
+  --sp-shadow-accent-lift: 0 12px 24px -8px rgba(15, 23, 42, .32), 0 2px 4px rgba(15, 23, 42, .12);
+
+  /* by day the world is softened and washed, so glass never samples hard
+     detail (this replaces the frosted veil and avoids the old mosaic) */
+  --sp-world-wash: linear-gradient(180deg, rgba(244, 246, 250, .55), rgba(244, 246, 250, .35) 50%, rgba(244, 246, 250, .6));
+  --sp-world-filter: blur(6px) saturate(1.15) brightness(1.08);
+  --sp-dim: rgba(15, 23, 42, .28);
+
+  --sp-glow: rgba(37, 99, 235, .08);
+
+  color-scheme: light;
+}
+
+/* ── 3. Legacy token bridge ────────────────────────────────────────────────
+   Pages not yet migrated keep their inline styles (var(--navy-card),
+   var(--text-dim), var(--hairline)...). These map them onto the spatial
+   tokens. Surface tokens map to the DENSE fills: an unmigrated box has no
+   backdrop blur, so a translucent fill would put text straight on the scene.
+   Declared on html.sp-ui, which follows html.nf-portal and
+   html[data-theme] blocks in the cascade at equal or higher specificity. */
+html.sp-ui {
+  --font-sans: var(--sp-font-ui);
+  --font-mono: var(--sp-font-mono);
+
+  /* core/theme.css */
+  --navy: transparent;
+  --navy-deep: var(--sp-solid-1);
+  --navy-mid: var(--sp-solid-1);
+  --navy-card: var(--sp-solid-2);
+  --accent: var(--sp-accent);
+  --accent-bright: var(--sp-accent-text);
+  --accent-dim: color-mix(in srgb, var(--sp-accent) 78%, #000);
+  --accent-rgb: var(--sp-accent-rgb);
+  --accent-glow: rgba(var(--sp-accent-rgb), .3);
+  --accent-soft: rgba(var(--sp-accent-rgb), .12);
+  --border: var(--sp-hair-strong);
+  --border-dim: var(--sp-hair);
+  --text: var(--sp-text);
+  --text-dim: var(--sp-text-2);
+  --red: var(--sp-bad);       --red-rgb: var(--sp-bad-rgb);   --red-bg: rgba(var(--sp-bad-rgb), .12);
+  --green: var(--sp-ok);      --green-bg: rgba(var(--sp-ok-rgb), .12);
+  --yellow: var(--sp-warn);   --yellow-bg: rgba(var(--sp-warn-rgb), .12);
+  --cyan: var(--sp-info);
+  --purple: var(--sp-text-3);
+  --grid-line: transparent;
+  --topnav-bg: var(--sp-fill-3);
+  --input-bg: var(--sp-fill-1);
+  --hover-bg: var(--sp-hover);
+  --section-header-bg: transparent;
+  --shadow: none;
+
+  /* portal token names (the retired portal token sheet) */
+  --bg-canvas: transparent;
+  --bg-surface: var(--sp-solid-1);
+  --bg-card: var(--sp-solid-2);
+  --bg-card-hover: var(--sp-solid-3);
+  --border-subtle: var(--sp-hair);
+  --border-accent: rgba(var(--sp-accent-rgb), .5);
+  --accent-primary: var(--sp-accent);
+  --accent-primary-rgb: var(--sp-accent-rgb);
+  --text-primary: var(--sp-text);
+  --text-secondary: var(--sp-text-2);
+  --text-muted: var(--sp-text-3);
+  --badge-bg: rgba(var(--sp-accent-rgb), .12);
+  --badge-border: transparent;
+  --badge-text: var(--sp-accent-text);
+  --chip-bg: var(--sp-hover);
+  --shadow-card: var(--sp-shadow-3);
+  --spotlight-color: transparent;
+  --ambient-glow: transparent;
+  /* headlines are clipped to this gradient (transparent text colour), so it
+     must stay a paint: a flat one in the text colour, no gradient text */
+  --gradient-headline: linear-gradient(var(--sp-text), var(--sp-text));
+
+  /* hairlines and the Labs layer */
+  --hairline: var(--sp-hair);
+  --hairline-accent: rgba(var(--sp-accent-rgb), .35);
+  --lx-text: var(--sp-text);
+  --lx-accent: var(--sp-accent);
+
+  /* auth-kit glass names used by the auth pages */
+  --surface-deep-glass: var(--sp-solid-2);
+  --color-glass-edge: var(--sp-hair);
+  --color-ice-highlight: var(--sp-text);
+  --color-frost-glow: var(--sp-text-2);
+  --color-moon-mist: var(--sp-text-2);
+  --color-fog-veil: var(--sp-text-3);
+}
+
+/* ── 4. Page-level fixes that the glass depends on ──────────────────────── */
+/* Glass must sample the scene. core/theme.css fades body in with fill mode
+   `both`, which keeps an opacity animation held on <body> forever and makes
+   body a backdrop root: backdrop-filter inside the page then only sees the
+   page (the old light-theme "mosaic"). `backwards` plays the same fade and
+   holds nothing once it ends. */
+html.sp-ui body { animation-fill-mode: backwards; }
+html.sp-ui ::selection { background: rgba(var(--sp-accent-rgb), .32); color: var(--sp-text); }
+html.sp-ui #hastra-kage-scene { filter: var(--sp-world-filter); }
+html.sp-ui[data-theme="light"] #hastra-kage-scene { transform: scale(1.04); }
+html.sp-ui :focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+/* ── 5. Fallbacks ──────────────────────────────────────────────────────── */
+/* Weak devices (assets/js/performance-guard.js): no blur, dense tint. */
+html.sp-ui.low-perf-mode {
+  --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+  --sp-fill-2: var(--sp-solid-2);
+  --sp-fill-3: var(--sp-solid-3);
+  --sp-fill-4: var(--sp-solid-4);
+  --sp-glow-opacity: 0;
+  --sp-tilt-max: 0deg;
+  --sp-world-filter: none;
+}
+/* Users who ask for less transparency get near-solid surfaces. Both
+   selectors: the light token block is more specific than html.sp-ui alone
+   and would otherwise keep its translucent fills. */
+@media (prefers-reduced-transparency: reduce) {
+  html.sp-ui, html.sp-ui[data-theme="light"] {
+    --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+    --sp-fill-1: var(--sp-solid-1);
+    --sp-fill-2: var(--sp-solid-2);
+    --sp-fill-3: var(--sp-solid-3);
+    --sp-fill-4: var(--sp-solid-4);
+    --sp-glow-opacity: 0;
+  }
+}
+/* No tilt, no spring, no parallax; transitions collapse to near-instant. */
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui {
+    --sp-ease-spring: linear;
+    --sp-ease-press: linear;
+    --sp-dur-1: 1ms; --sp-dur-2: 1ms; --sp-dur-3: 1ms; --sp-dur-4: 1ms;
+    --sp-tilt-max: 0deg;
+    --sp-lift: 0px;
+  }
+}
+/* Touch: no pointer light, no tilt. */
+@media (pointer: coarse) {
+  html.sp-ui { --sp-glow-opacity: 0; --sp-tilt-max: 0deg; }
+}
+/* Windows high contrast and similar: system colours, real borders, no
+   translucency, no decorative shadow or glow. */
+@media (forced-colors: active) {
+  html.sp-ui {
+    --sp-blur-2: 0px; --sp-blur-3: 0px; --sp-blur-4: 0px;
+    --sp-glow-opacity: 0;
+    --sp-tilt-max: 0deg;
+  }
+  html.sp-ui :is(.sp-glass, .sp-panel, .sp-bar, .sp-dock, .sp-dialog, .sp-popover, .sp-drawer, .sp-toast, .sp-palette) {
+    background: Canvas !important;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    forced-color-adjust: none;
+  }
+  html.sp-ui :focus-visible { outline-color: Highlight; }
+}
+
+/* ==========================================================================
+   Part 2: components (phase 3). Opt-in classes, all prefixed .sp-.
+   `.is-hover`, `.is-focus`, `.is-active` force a state for the style guide
+   (docs/spatial-ui/styleguide.html) and visual tests; markup never ships them.
+   ========================================================================== */
+
+/* ── 6. Base type inside spatial surfaces ──────────────────────────────── */
+html.sp-ui :is(.sp-page, .sp-glass, .sp-inset, .sp-raised, .sp-bar, .sp-dock),
+html.sp-ui :is(.sp-page, .sp-glass, .sp-bar, .sp-dock) *,
+html.sp-ui :is(.sp-page, .sp-glass) *::before,
+html.sp-ui :is(.sp-page, .sp-glass) *::after { box-sizing: border-box; }
+html.sp-ui .sp-page,
+html.sp-ui .sp-glass { font-family: var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .sp-mono { font-family: var(--sp-font-mono); font-variant-numeric: tabular-nums; }
+html.sp-ui .sp-num { font-variant-numeric: tabular-nums; }
+html.sp-ui .sp-muted { color: var(--sp-text-2); }
+html.sp-ui .sp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── 7. Glass recipe and depth ─────────────────────────────────────────── */
+html.sp-ui .sp-glass {
+  --_fill: var(--sp-fill-2); --_blur: var(--sp-blur-2); --_sat: var(--sp-sat-2);
+  --_shadow: var(--sp-shadow-2); --_radius: var(--sp-r-panel);
+  isolation: isolate;
+  background: var(--_fill);
+  border-radius: var(--_radius);
+  -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+  backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+  box-shadow: var(--sp-edge), var(--_shadow);
+}
+html.sp-ui .sp-d3 { --_fill: var(--sp-fill-3); --_blur: var(--sp-blur-3); --_sat: var(--sp-sat-3); --_shadow: var(--sp-shadow-3); --_radius: var(--sp-r-pill); }
+html.sp-ui .sp-d4 { --_fill: var(--sp-fill-4); --_blur: var(--sp-blur-4); --_sat: var(--sp-sat-4); --_shadow: var(--sp-shadow-4); --_radius: var(--sp-r-float); }
+/* positioned so the pointer light can sit under the content; zero specificity,
+   so chrome that is fixed or sticky (top bar, dock, drawer) keeps its own */
+:where(html.sp-ui .sp-glass) { position: relative; }
+/* never nest backdrop-filter: a glass inside glass keeps its fill, loses its blur */
+html.sp-ui .sp-glass .sp-glass { -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* pointer light: painted under the content, only while hovered */
+html.sp-ui .sp-glass::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(var(--sp-glow-size) circle at var(--sp-mx) var(--sp-my), var(--sp-glow), transparent 60%);
+  opacity: 0; transition: opacity var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui .sp-glass:is(:hover, .is-hover)::after { opacity: var(--sp-glow-opacity); }
+html.sp-ui .sp-glass.sp-no-glow::after { content: none; }
+
+/* depth 1: an inset well (fields, tracks, consoles); never blurred */
+html.sp-ui .sp-inset { background: var(--sp-fill-1); box-shadow: var(--sp-inset); border-radius: var(--sp-r-ctl); }
+/* depth 3 inside a panel: raised group, no blur (the panel already blurs) */
+html.sp-ui .sp-raised { background: var(--sp-fill-3); box-shadow: var(--sp-edge), var(--sp-shadow-3); border-radius: var(--sp-r-card); }
+
+/* ── 8. Page, panel, header, sections ──────────────────────────────────── */
+html.sp-ui .sp-page {
+  position: relative; z-index: var(--sp-z-page);
+  max-width: var(--sp-page-max); margin: 0 auto;
+  padding: calc(var(--sp-bar-h) + var(--sp-bar-inset) * 2 + var(--sp-6)) var(--sp-gutter) 136px;
+  font-size: var(--sp-fs-md); line-height: var(--sp-lh-body);
+}
+html.sp-ui .sp-panel { padding: var(--sp-panel-pad); }
+html.sp-ui .sp-panel + .sp-panel { margin-top: var(--sp-6); }
+
+html.sp-ui .sp-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-6); flex-wrap: wrap; }
+html.sp-ui .sp-title { margin: 0; font-size: var(--sp-fs-display); line-height: var(--sp-lh-tight); font-weight: 650; letter-spacing: var(--sp-track-display); text-wrap: balance; color: var(--sp-text); }
+html.sp-ui .sp-lede { margin: var(--sp-2) 0 0; color: var(--sp-text-2); max-width: 62ch; }
+html.sp-ui .sp-actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
+
+html.sp-ui .sp-section { margin-top: var(--sp-10); }
+html.sp-ui .sp-section:first-child { margin-top: 0; }
+html.sp-ui .sp-section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-3); }
+html.sp-ui .sp-section-title { margin: 0; font-size: var(--sp-fs-lg); font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+html.sp-ui .sp-count { margin-left: var(--sp-2); color: var(--sp-text-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+html.sp-ui .sp-divider { height: 1px; border: 0; background: var(--sp-hair); margin: var(--sp-6) 0; }
+
+/* ── 9. Metrics (the stat card): numbers in a strip, no boxes ──────────── */
+html.sp-ui .sp-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: var(--sp-8) 0 var(--sp-2); }
+html.sp-ui .sp-metric { padding: var(--sp-1) var(--sp-6); border-left: 1px solid var(--sp-hair); min-width: 0; color: inherit; text-decoration: none; border-radius: 0; }
+html.sp-ui .sp-metric:first-child { padding-left: 0; border-left: 0; }
+html.sp-ui .sp-metric-value { display: block; font-size: var(--sp-fs-2xl); font-weight: 600; letter-spacing: -.02em; line-height: var(--sp-lh-tight); font-variant-numeric: tabular-nums; }
+html.sp-ui .sp-metric-label { display: block; margin-top: 2px; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .sp-metric-delta { display: inline-block; margin-top: var(--sp-1); font-size: var(--sp-fs-xs); font-weight: 600; color: var(--sp-text-2); }
+html.sp-ui .sp-metric[data-tone="warn"] .sp-metric-value { color: var(--sp-warn); }
+html.sp-ui .sp-metric[data-tone="bad"] .sp-metric-value { color: var(--sp-bad); }
+html.sp-ui .sp-metric[data-tone="ok"] .sp-metric-value { color: var(--sp-ok); }
+html.sp-ui a.sp-metric { transition: color var(--sp-dur-2); }
+html.sp-ui a.sp-metric:is(:hover, .is-hover) .sp-metric-label { color: var(--sp-text); }
+
+/* ── 10. Buttons ───────────────────────────────────────────────────────── */
+html.sp-ui .sp-btn {
+  --_bg: var(--sp-hover); --_fg: var(--sp-text); --_sh: var(--sp-edge);
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--_bg); color: var(--_fg); box-shadow: var(--_sh);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .005em; text-decoration: none; white-space: nowrap;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2), color var(--sp-dur-2);
+}
+html.sp-ui .sp-btn svg { width: 16px; height: 16px; flex: none; }
+html.sp-ui .sp-btn:is(:hover, .is-hover) { --_bg: var(--sp-press); }
+html.sp-ui .sp-btn:is(:active, .is-active) { transform: scale(.98); transition-timing-function: var(--sp-ease-press); }
+html.sp-ui .sp-btn.is-focus { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+html.sp-ui .sp-btn--primary { --_bg: var(--sp-accent); --_fg: var(--sp-on-accent); --_sh: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); }
+html.sp-ui .sp-btn--primary:is(:hover, .is-hover) { --_bg: color-mix(in srgb, var(--sp-accent) 88%, #fff); --_sh: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift); transform: translateY(var(--sp-lift)); }
+html.sp-ui .sp-btn--primary:is(:active, .is-active) { transform: translateY(0) scale(.98); }
+html.sp-ui .sp-btn--secondary { --_bg: var(--sp-hover); }
+html.sp-ui .sp-btn--ghost { --_bg: transparent; --_sh: none; }
+html.sp-ui .sp-btn--ghost:is(:hover, .is-hover) { --_bg: var(--sp-hover); }
+html.sp-ui .sp-btn--danger { --_bg: rgba(var(--sp-bad-rgb), .14); --_fg: var(--sp-bad); --_sh: none; }
+html.sp-ui .sp-btn--danger:is(:hover, .is-hover) { --_bg: rgba(var(--sp-bad-rgb), .22); }
+html.sp-ui .sp-btn--danger-solid { --_bg: var(--sp-bad-solid); --_fg: #fff; --_sh: inset 0 1px 0 rgba(255, 255, 255, .25), var(--sp-shadow-accent); }
+html.sp-ui .sp-btn--danger-solid:is(:hover, .is-hover) { --_bg: color-mix(in srgb, var(--sp-bad-solid) 90%, #fff); }
+html.sp-ui .sp-btn--sm { min-height: 32px; padding: 0 var(--sp-3); font-size: var(--sp-fs-xs); }
+html.sp-ui .sp-btn--icon { width: 44px; padding: 0; }
+html.sp-ui .sp-btn--icon.sp-btn--sm { width: 32px; }
+html.sp-ui .sp-btn--icon svg { width: 20px; height: 20px; }
+/* disabled: readable, clearly unavailable */
+html.sp-ui .sp-btn:is(:disabled, [aria-disabled="true"]) { --_bg: var(--sp-hover); --_fg: var(--sp-text-disabled); --_sh: none; cursor: not-allowed; transform: none; }
+/* loading keeps the width: the label stays for layout, a spinner sits on top */
+html.sp-ui .sp-btn[aria-busy="true"] { color: transparent; pointer-events: none; }
+html.sp-ui .sp-btn[aria-busy="true"]::after {
+  content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--_fg); border-right-color: transparent;
+  animation: sp-spin .7s linear infinite;
+}
+html.sp-ui .sp-btn[aria-busy="true"] svg { opacity: 0; }
+@keyframes sp-spin { to { transform: rotate(360deg); } }
+/* A form's submitting button (assets/js/netflix-spotlight.js adds
+   .is-processing until the next page shows): it breathes and takes the
+   progress cursor. No pseudo-element, so buttons that use ::before or
+   ::after for their own marks are untouched. */
+html.sp-ui button.is-processing { cursor: progress; animation: sp-processing 1.1s var(--sp-ease-in-out) infinite alternate; }
+@keyframes sp-processing { from { opacity: 1; } to { opacity: .58; } }
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui button.is-processing { animation: none; opacity: .72; }
+}
+
+/* ── 11. Form fields ───────────────────────────────────────────────────── */
+html.sp-ui .sp-field { display: grid; gap: 6px; min-width: 0; align-content: start; }
+html.sp-ui .sp-label { font-size: var(--sp-fs-sm); font-weight: 550; color: var(--sp-text); }
+html.sp-ui .sp-hint { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .sp-error { font-size: var(--sp-fs-xs); font-weight: 550; color: var(--sp-bad); display: flex; gap: 6px; align-items: center; }
+html.sp-ui :is(.sp-input, .sp-textarea, .sp-select) {
+  width: 100%; min-height: 44px; padding: 10px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.4 var(--sp-font-ui);
+  transition: box-shadow var(--sp-dur-2) var(--sp-ease-out), background var(--sp-dur-2);
+}
+html.sp-ui :is(.sp-input, .sp-textarea)::placeholder { color: var(--sp-text-3); opacity: 1; }
+html.sp-ui :is(.sp-input, .sp-textarea, .sp-select):is(:hover, .is-hover) { box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair-strong); }
+html.sp-ui :is(.sp-input, .sp-textarea, .sp-select):is(:focus, .is-focus) { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset), inset 0 0 0 1px transparent; }
+html.sp-ui :is(.sp-input, .sp-textarea, .sp-select)[aria-invalid="true"] { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+html.sp-ui :is(.sp-input, .sp-textarea, .sp-select):disabled { color: var(--sp-text-disabled); cursor: not-allowed; box-shadow: inset 0 0 0 1px var(--sp-hair); background: transparent; }
+html.sp-ui .sp-textarea { min-height: 112px; resize: vertical; line-height: var(--sp-lh-body); }
+html.sp-ui .sp-select {
+  appearance: none; padding-right: 44px; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 22px) 50%, calc(100% - 17px) 50%;
+  background-size: 5px 5px; background-repeat: no-repeat;
+}
+html.sp-ui .sp-select option { background: var(--sp-solid-4); color: var(--sp-text); }
+html.sp-ui .sp-input-group { position: relative; display: flex; align-items: center; }
+html.sp-ui .sp-input-group > .sp-input { padding-right: 52px; }
+html.sp-ui .sp-input-group > .sp-btn { position: absolute; right: 0; }
+
+/* custom dropdown (hastra-select / custom-dropdowns): trigger looks like .sp-select, list is a popover */
+html.sp-ui .sp-menu { min-width: 200px; padding: 6px; list-style: none; margin: 0; }
+html.sp-ui .sp-menu-item {
+  display: flex; align-items: center; gap: var(--sp-3); width: 100%; min-height: 40px; padding: 0 var(--sp-3);
+  border: 0; border-radius: var(--sp-r-sm); background: none; color: var(--sp-text); text-align: left;
+  font: 500 var(--sp-fs-sm) var(--sp-font-ui); cursor: pointer;
+}
+html.sp-ui .sp-menu-item:is(:hover, :focus-visible, .is-hover, [aria-selected="true"].is-active) { background: var(--sp-hover); outline: none; }
+html.sp-ui .sp-menu-item[aria-selected="true"] { color: var(--sp-accent-text); font-weight: 600; }
+html.sp-ui .sp-menu-item[aria-selected="true"]::after { content: ""; margin-left: auto; width: 10px; height: 6px; border: 2px solid currentColor; border-top: 0; border-right: 0; transform: rotate(-45deg) translateY(-2px); }
+html.sp-ui .sp-menu-sep { height: 1px; margin: 6px 4px; background: var(--sp-hair); }
+
+/* checkbox, radio, switch (native inputs, restyled) */
+html.sp-ui .sp-choice { display: inline-flex; align-items: center; gap: var(--sp-3); min-height: 44px; cursor: pointer; font-size: var(--sp-fs-md); }
+html.sp-ui :is(.sp-check, .sp-radio) {
+  appearance: none; flex: none; width: 20px; height: 20px; margin: 0; display: grid; place-items: center;
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong);
+  border-radius: 6px; cursor: pointer; transition: background var(--sp-dur-2), box-shadow var(--sp-dur-2);
+}
+html.sp-ui .sp-radio { border-radius: 50%; }
+html.sp-ui :is(.sp-check, .sp-radio):checked { background: var(--sp-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
+html.sp-ui .sp-check:checked::after { content: ""; width: 10px; height: 6px; border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+html.sp-ui .sp-check:indeterminate { background: var(--sp-accent); }
+html.sp-ui .sp-check:indeterminate::after { content: ""; width: 10px; height: 2px; background: #fff; border-radius: 1px; }
+html.sp-ui .sp-radio:checked::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+html.sp-ui .sp-switch {
+  appearance: none; flex: none; position: relative; width: 44px; height: 26px; margin: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); cursor: pointer;
+  transition: background var(--sp-dur-3) var(--sp-ease-out);
+}
+html.sp-ui .sp-switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .sp-switch:checked { background: var(--sp-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2); }
+html.sp-ui .sp-switch:checked::after { transform: translateX(18px); }
+html.sp-ui :is(.sp-check, .sp-radio, .sp-switch):disabled { opacity: .5; cursor: not-allowed; }
+html.sp-ui :is(.sp-check, .sp-radio, .sp-switch).is-focus { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+/* OTP boxes */
+html.sp-ui .sp-otp { display: flex; gap: var(--sp-2); }
+html.sp-ui .sp-otp input {
+  width: 48px; height: 56px; padding: 0; text-align: center; border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 600 var(--sp-fs-xl) var(--sp-font-mono); caret-color: var(--sp-accent);
+}
+html.sp-ui .sp-otp input:is(:focus, .is-focus) { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+html.sp-ui .sp-otp input[aria-invalid="true"] { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+
+/* ── 12. Badges, chips, status / priority / severity pills ─────────────── */
+html.sp-ui .sp-pill {
+  --_c: var(--sp-text-2); --_rgb: 127, 127, 127;
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); white-space: nowrap;
+  color: var(--_c); background: rgba(var(--_rgb), .14);
+}
+html.sp-ui .sp-pill--dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+html.sp-ui .sp-pill--accent { --_c: var(--sp-accent-text); --_rgb: var(--sp-accent-rgb); }
+html.sp-ui :is(.sp-pill--ok, .sp-pill--low) { --_c: var(--sp-ok); --_rgb: var(--sp-ok-rgb); }
+html.sp-ui :is(.sp-pill--warn, .sp-pill--medium) { --_c: var(--sp-warn); --_rgb: var(--sp-warn-rgb); }
+html.sp-ui :is(.sp-pill--bad, .sp-pill--high) { --_c: var(--sp-bad); --_rgb: var(--sp-bad-rgb); }
+html.sp-ui .sp-pill--critical { --_c: #fff; background: var(--sp-bad-solid); }
+html.sp-ui .sp-pill--info { --_c: var(--sp-info); --_rgb: var(--sp-info-rgb); }
+html.sp-ui .sp-pill--neutral { --_c: var(--sp-text-2); background: var(--sp-hover); }
+html.sp-ui .sp-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); font: 500 var(--sp-fs-sm) var(--sp-font-ui); cursor: pointer; text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--sp-hair); transition: background var(--sp-dur-2);
+}
+html.sp-ui .sp-chip:is(:hover, .is-hover) { background: var(--sp-press); }
+html.sp-ui .sp-chip[aria-pressed="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; font-weight: 600; }
+html.sp-ui .sp-role { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--sp-r-pill); font: 600 11px/1 var(--sp-font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14); }
+
+/* ── 13. Tabs and segmented control ────────────────────────────────────── */
+/* both get their indicator position from spatial-fx.js (--sp-ind-x / -w) */
+html.sp-ui .sp-tabs { position: relative; display: flex; gap: var(--sp-1); border-bottom: 1px solid var(--sp-hair); overflow-x: auto; scrollbar-width: none; }
+html.sp-ui .sp-tab {
+  position: relative; min-height: 44px; padding: 0 var(--sp-4); border: 0; background: none; cursor: pointer;
+  color: var(--sp-text-2); font: 500 var(--sp-fs-sm) var(--sp-font-ui); white-space: nowrap; border-radius: var(--sp-r-sm) var(--sp-r-sm) 0 0;
+  transition: color var(--sp-dur-2);
+}
+html.sp-ui .sp-tab:is(:hover, .is-hover) { color: var(--sp-text); }
+html.sp-ui .sp-tab[aria-selected="true"] { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-tabs::after {
+  content: ""; position: absolute; left: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--sp-accent);
+  width: var(--sp-ind-w, 0); transform: translateX(var(--sp-ind-x, 0));
+  transition: transform var(--sp-dur-4) var(--sp-ease-spring), width var(--sp-dur-4) var(--sp-ease-spring);
+}
+html.sp-ui .sp-seg {
+  position: relative; display: inline-flex; padding: 4px; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset); max-width: 100%; overflow-x: auto; scrollbar-width: none;
+}
+html.sp-ui .sp-seg > button {
+  position: relative; z-index: 1; flex: 1 0 auto; min-height: 36px; padding: 0 var(--sp-4); border: 0; background: none; cursor: pointer;
+  border-radius: var(--sp-r-pill); color: var(--sp-text-2); font: 500 var(--sp-fs-sm) var(--sp-font-ui); white-space: nowrap;
+  transition: color var(--sp-dur-2);
+}
+html.sp-ui .sp-seg > button:is(:hover, .is-hover) { color: var(--sp-text); }
+html.sp-ui .sp-seg > button[aria-selected="true"], html.sp-ui .sp-seg > button[aria-pressed="true"] { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-seg::before {
+  content: ""; position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 0; border-radius: var(--sp-r-pill);
+  width: var(--sp-ind-w, 0); transform: translateX(var(--sp-ind-x, 4px));
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .08));
+  box-shadow: inset 0 1px 0 var(--sp-edge-hi), 0 4px 12px -4px rgba(0, 0, 0, .4);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), width var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui[data-theme="light"] .sp-seg::before { background: #fff; box-shadow: inset 0 1px 0 #fff, 0 2px 8px -2px rgba(15, 23, 42, .18); }
+
+/* ── 14. Tables and list rows: the container is the surface ─────────────── */
+html.sp-ui .sp-table-wrap { overflow-x: auto; margin: 0 calc(var(--sp-2) * -1); padding: 0 var(--sp-2); }
+html.sp-ui .sp-table { width: 100%; border-collapse: collapse; font-size: var(--sp-fs-sm); }
+html.sp-ui .sp-table th {
+  text-align: left; padding: 0 var(--sp-3) var(--sp-3); white-space: nowrap;
+  font-size: var(--sp-fs-xs); font-weight: 500; letter-spacing: var(--sp-track-label); color: var(--sp-text-3);
+}
+html.sp-ui .sp-table td { padding: var(--sp-4) var(--sp-3); border-top: 1px solid var(--sp-hair); vertical-align: middle; }
+html.sp-ui .sp-table :is(th, td):first-child { padding-left: 0; }
+html.sp-ui .sp-table :is(th, td):last-child { padding-right: 0; }
+html.sp-ui .sp-table tbody tr { transition: background var(--sp-dur-1); }
+html.sp-ui .sp-table tbody tr:is(:hover, .is-hover) { background: var(--sp-row-hover); }
+html.sp-ui .sp-table tbody tr[aria-selected="true"] { background: rgba(var(--sp-accent-rgb), .07); }
+html.sp-ui .sp-table .sp-num, html.sp-ui .sp-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+html.sp-ui .sp-table .sp-sub { display: block; margin-top: 2px; color: var(--sp-text-2); font-size: var(--sp-fs-xs); }
+html.sp-ui .sp-table thead.is-sticky th { position: sticky; top: 0; z-index: var(--sp-z-sticky); background: var(--sp-solid-3); }
+html.sp-ui .sp-table-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding-top: var(--sp-4); border-top: 1px solid var(--sp-hair); color: var(--sp-text-2); font-size: var(--sp-fs-sm); }
+
+html.sp-ui .sp-list { list-style: none; margin: 0; padding: 0; }
+html.sp-ui .sp-list-row {
+  display: flex; align-items: center; gap: var(--sp-4); min-height: 56px; padding: var(--sp-3) var(--sp-2);
+  border-top: 1px solid var(--sp-hair); border-radius: 0; color: inherit; text-decoration: none;
+  transition: background var(--sp-dur-1);
+}
+html.sp-ui .sp-list-row:first-child { border-top: 0; }
+html.sp-ui :is(a, button).sp-list-row:is(:hover, .is-hover) { background: var(--sp-row-hover); }
+html.sp-ui .sp-list-row .sp-grow { flex: 1; min-width: 0; }
+html.sp-ui .sp-list-row .sp-sub { display: block; color: var(--sp-text-2); font-size: var(--sp-fs-xs); }
+
+/* ── 15. Accordion ─────────────────────────────────────────────────────── */
+html.sp-ui .sp-accordion { border-top: 1px solid var(--sp-hair); }
+html.sp-ui .sp-accordion > details { border-bottom: 1px solid var(--sp-hair); }
+html.sp-ui .sp-accordion summary {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); min-height: 52px; padding: var(--sp-3) 0;
+  list-style: none; cursor: pointer; font-weight: 550;
+}
+html.sp-ui .sp-accordion summary::-webkit-details-marker { display: none; }
+html.sp-ui .sp-accordion summary::after {
+  content: ""; flex: none; width: 8px; height: 8px; border: 2px solid var(--sp-text-2); border-top: 0; border-left: 0;
+  transform: rotate(45deg) translateY(-2px); transition: transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .sp-accordion details[open] > summary::after { transform: rotate(-135deg) translateY(-2px); }
+html.sp-ui .sp-accordion .sp-accordion-body { padding: 0 0 var(--sp-5); color: var(--sp-text-2); max-width: 72ch; }
+
+/* ── 16. Progress and pipeline steps ───────────────────────────────────── */
+html.sp-ui .sp-progress { height: 8px; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow: hidden; }
+html.sp-ui .sp-progress > span { display: block; height: 100%; width: var(--sp-value, 0%); border-radius: inherit; background: var(--sp-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); transition: width var(--sp-dur-4) var(--sp-ease-out); }
+html.sp-ui .sp-progress[data-tone="ok"] > span { background: var(--sp-ok); }
+html.sp-ui .sp-progress[data-tone="warn"] > span { background: var(--sp-warn); }
+html.sp-ui .sp-steps { display: flex; list-style: none; margin: 0; padding: 0; counter-reset: sp-step; }
+html.sp-ui .sp-step { position: relative; flex: 1; min-width: 0; padding-top: 36px; font-size: var(--sp-fs-sm); color: var(--sp-text-2); counter-increment: sp-step; }
+html.sp-ui .sp-step::before {
+  content: counter(sp-step); position: absolute; top: 0; left: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  font: 600 var(--sp-fs-xs) var(--sp-font-ui); background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); color: var(--sp-text-2);
+}
+html.sp-ui .sp-step::after { content: ""; position: absolute; top: 13px; left: 36px; right: 8px; height: 2px; border-radius: 2px; background: var(--sp-hair); }
+html.sp-ui .sp-step:last-child::after { content: none; }
+html.sp-ui .sp-step.is-done { color: var(--sp-text); }
+html.sp-ui .sp-step.is-done::before { content: ""; background: var(--sp-ok); box-shadow: none; }
+html.sp-ui .sp-step.is-done::after { background: var(--sp-ok); }
+html.sp-ui .sp-step.is-current { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-step.is-current::before { background: var(--sp-accent); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); }
+html.sp-ui .sp-step-check { position: absolute; top: 9px; left: 8px; width: 12px; height: 7px; border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg); }
+
+/* ── 17. Alerts and toasts ─────────────────────────────────────────────── */
+html.sp-ui .sp-alert {
+  --_c: var(--sp-info); --_rgb: var(--sp-info-rgb);
+  display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-4) var(--sp-5); border-radius: var(--sp-r-card);
+  background: rgba(var(--_rgb), .1); color: var(--sp-text); font-size: var(--sp-fs-sm);
+}
+html.sp-ui .sp-alert > svg { flex: none; width: 20px; height: 20px; color: var(--_c); margin-top: 1px; }
+html.sp-ui .sp-alert strong { display: block; font-weight: 600; margin-bottom: 2px; }
+html.sp-ui .sp-alert p { margin: 0; color: var(--sp-text-2); }
+html.sp-ui .sp-alert--ok { --_c: var(--sp-ok); --_rgb: var(--sp-ok-rgb); }
+html.sp-ui .sp-alert--warn { --_c: var(--sp-warn); --_rgb: var(--sp-warn-rgb); }
+html.sp-ui .sp-alert--bad { --_c: var(--sp-bad); --_rgb: var(--sp-bad-rgb); }
+html.sp-ui .sp-toast {
+  display: inline-flex; align-items: center; gap: var(--sp-3); min-height: 48px; padding: 0 var(--sp-2) 0 var(--sp-5);
+  font-size: var(--sp-fs-sm); font-weight: 500;
+}
+html.sp-ui .sp-toast.sp-glass { --_radius: var(--sp-r-pill); }
+html.sp-ui .sp-toast > svg { width: 18px; height: 18px; color: var(--sp-ok); flex: none; }
+html.sp-ui .sp-toast-stack { position: fixed; z-index: var(--sp-z-toast); right: var(--sp-4); bottom: calc(var(--sp-4) + 72px); display: grid; gap: var(--sp-2); justify-items: end; }
+html.sp-ui .sp-toast.is-entering { animation: sp-toast-in var(--sp-dur-4) var(--sp-ease-out) both; }
+@keyframes sp-toast-in { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+
+/* ── 18. Tooltip, popover, dialog, drawer, command palette ─────────────── */
+html.sp-ui [data-sp-tip] { position: relative; }
+html.sp-ui [data-sp-tip]::before {
+  content: attr(data-sp-tip); position: absolute; z-index: var(--sp-z-popover); left: 50%; bottom: calc(100% + 8px);
+  max-width: 240px; width: max-content; padding: 6px 10px; border-radius: var(--sp-r-sm);
+  background: var(--sp-solid-4); color: var(--sp-text); box-shadow: var(--sp-edge), var(--sp-shadow-3);
+  font: 500 var(--sp-fs-xs)/1.35 var(--sp-font-ui); text-align: center; white-space: normal; pointer-events: none;
+  opacity: 0; transform: translate(-50%, 4px); transition: opacity var(--sp-dur-2) var(--sp-ease-out), transform var(--sp-dur-2) var(--sp-ease-out);
+}
+html.sp-ui [data-sp-tip]:is(:hover, :focus-visible, .is-hover)::before { opacity: 1; transform: translate(-50%, 0); transition-delay: 300ms; }
+html.sp-ui [data-sp-tip].is-hover::before { transition-delay: 0ms; }
+
+html.sp-ui .sp-popover { padding: var(--sp-2); z-index: var(--sp-z-popover); }
+html.sp-ui .sp-popover.sp-glass { --_radius: 18px; }
+
+html.sp-ui .sp-dialog {
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: var(--sp-8); margin: auto;
+  border: 0; color: var(--sp-text); overflow: auto;
+}
+html.sp-ui .sp-dialog.sp-glass { --_radius: var(--sp-r-panel); }
+html.sp-ui .sp-dialog::backdrop { background: var(--sp-dim); }
+html.sp-ui .sp-dialog[open] { animation: sp-dialog-in var(--sp-dur-4) var(--sp-ease-out); }
+@keyframes sp-dialog-in { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+html.sp-ui .sp-dialog h2, html.sp-ui .sp-dialog .sp-dialog-title { margin: 0 0 var(--sp-2); font-size: var(--sp-fs-xl); font-weight: 650; letter-spacing: -.015em; }
+html.sp-ui .sp-dialog p { margin: 0; color: var(--sp-text-2); }
+html.sp-ui .sp-dialog-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); margin-top: var(--sp-8); flex-wrap: wrap-reverse; }
+html.sp-ui .sp-scrim { position: fixed; inset: 0; z-index: calc(var(--sp-z-drawer) - 1); background: var(--sp-dim); }
+
+html.sp-ui .sp-drawer {
+  position: fixed; z-index: var(--sp-z-drawer); top: var(--sp-bar-inset); bottom: var(--sp-bar-inset); left: var(--sp-bar-inset);
+  width: min(320px, calc(100vw - 24px)); padding: var(--sp-5) var(--sp-3); overflow-y: auto; overscroll-behavior: contain;
+}
+html.sp-ui .sp-drawer.sp-glass { --_radius: var(--sp-r-panel); }
+html.sp-ui .sp-drawer-group { margin-top: var(--sp-5); }
+html.sp-ui .sp-drawer-label { padding: 0 var(--sp-3) var(--sp-2); font-size: var(--sp-fs-xs); font-weight: 600; color: var(--sp-text-3); }
+html.sp-ui .sp-nav-link {
+  display: flex; align-items: center; gap: var(--sp-3); min-height: 44px; padding: 0 var(--sp-3); border-radius: var(--sp-r-ctl);
+  color: var(--sp-text-2); text-decoration: none; font-weight: 500; font-size: var(--sp-fs-sm); transition: background var(--sp-dur-2), color var(--sp-dur-2);
+}
+html.sp-ui .sp-nav-link svg { width: 18px; height: 18px; flex: none; }
+html.sp-ui .sp-nav-link:is(:hover, .is-hover) { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .sp-nav-link[aria-current="page"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); font-weight: 600; }
+
+html.sp-ui .sp-palette { width: min(640px, calc(100vw - 32px)); padding: 0; overflow: hidden; }
+html.sp-ui .sp-palette-input { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-5); border-bottom: 1px solid var(--sp-hair); }
+html.sp-ui .sp-palette-input svg { width: 18px; height: 18px; color: var(--sp-text-2); flex: none; }
+html.sp-ui .sp-palette-input input { flex: 1; min-height: 60px; border: 0; background: none; color: var(--sp-text); font: 400 var(--sp-fs-lg) var(--sp-font-ui); outline: none; }
+html.sp-ui .sp-palette-input input::placeholder { color: var(--sp-text-3); }
+html.sp-ui .sp-palette-results { list-style: none; margin: 0; padding: var(--sp-2); max-height: 360px; overflow-y: auto; }
+html.sp-ui .sp-palette-results .sp-menu-item { min-height: 48px; }
+html.sp-ui .sp-kbd { display: inline-flex; align-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; font: 500 11px var(--sp-font-mono); color: var(--sp-text-2); background: var(--sp-hover); box-shadow: inset 0 -1px 0 var(--sp-hair-strong); }
+
+/* ── 19. Dropzone and file chips ───────────────────────────────────────── */
+html.sp-ui .sp-dropzone {
+  display: grid; place-items: center; gap: var(--sp-2); padding: var(--sp-8) var(--sp-6); text-align: center; cursor: pointer;
+  border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2);
+  transition: background var(--sp-dur-2), outline-color var(--sp-dur-2);
+}
+html.sp-ui .sp-dropzone svg { width: 28px; height: 28px; color: var(--sp-text-2); }
+html.sp-ui .sp-dropzone strong { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-dropzone:is(:hover, .is-hover, .is-dragover) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui .sp-dropzone:focus-within { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+html.sp-ui .sp-file { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 36px; padding: 0 var(--sp-2) 0 var(--sp-3); border-radius: var(--sp-r-pill); background: var(--sp-hover); font-size: var(--sp-fs-sm); max-width: 100%; }
+html.sp-ui .sp-file .sp-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html.sp-ui .sp-file .sp-file-size { color: var(--sp-text-3); font: 400 var(--sp-fs-xs) var(--sp-font-mono); }
+
+/* ── 20. Avatar, empty state, skeleton, loader ─────────────────────────── */
+html.sp-ui .sp-avatar { display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--sp-accent); color: var(--sp-on-accent); font: 650 var(--sp-fs-sm) var(--sp-font-ui); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
+html.sp-ui .sp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+html.sp-ui .sp-avatar--sm { width: 28px; height: 28px; font-size: var(--sp-fs-xs); }
+html.sp-ui .sp-avatar--lg { width: 56px; height: 56px; font-size: var(--sp-fs-lg); }
+html.sp-ui .sp-avatar--muted { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui .sp-avatars { display: flex; }
+html.sp-ui .sp-avatars .sp-avatar { box-shadow: 0 0 0 2px var(--sp-solid-2); margin-left: -8px; }
+html.sp-ui .sp-avatars .sp-avatar:first-child { margin-left: 0; }
+
+html.sp-ui .sp-empty { display: grid; justify-items: center; gap: var(--sp-2); padding: var(--sp-12) var(--sp-6); text-align: center; }
+html.sp-ui .sp-empty-icon { display: block; color: var(--sp-text-3); margin-bottom: var(--sp-1); }
+html.sp-ui .sp-empty-icon svg { display: block; width: 28px; height: 28px; }
+html.sp-ui .sp-empty h3 { margin: 0; font-size: var(--sp-fs-lg); font-weight: 600; }
+html.sp-ui .sp-empty p { margin: 0 0 var(--sp-3); color: var(--sp-text-2); max-width: 44ch; }
+
+html.sp-ui .sp-skeleton {
+  display: block; height: 12px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--sp-hover) 0%, var(--sp-press) 50%, var(--sp-hover) 100%) 0 0 / 200% 100%;
+  animation: sp-shimmer 1.4s var(--sp-ease-in-out) infinite;
+}
+html.sp-ui .sp-skeleton + .sp-skeleton { margin-top: var(--sp-2); }
+@keyframes sp-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { html.sp-ui .sp-skeleton { animation: none; } }
+
+/* the orbital loader (core/theme.js #hastra-page-loader), restyled; its
+   timings and the data-loader-manual opt-out are untouched */
+html.sp-ui .sp-loader { display: grid; justify-items: center; gap: var(--sp-5); }
+html.sp-ui .sp-loader-orbit { position: relative; width: 56px; height: 56px; }
+html.sp-ui .sp-loader-orbit::before, html.sp-ui .sp-loader-orbit::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid transparent; border-top-color: var(--sp-accent); border-right-color: rgba(var(--sp-accent-rgb), .35);
+  animation: sp-spin 1s var(--sp-ease-in-out) infinite;
+}
+html.sp-ui .sp-loader-orbit::after { inset: 10px; border-top-color: var(--sp-text-2); border-right-color: transparent; animation-duration: 1.4s; animation-direction: reverse; }
+html.sp-ui .sp-loader-text { margin: 0; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+@media (prefers-reduced-motion: reduce) { html.sp-ui .sp-loader-orbit::before, html.sp-ui .sp-loader-orbit::after { animation-duration: 3s; } }
+
+/* scrollbars inside spatial scroll areas */
+html.sp-ui .sp-scroll { scrollbar-width: thin; scrollbar-color: var(--sp-hair-strong) transparent; }
+html.sp-ui .sp-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+html.sp-ui .sp-scroll::-webkit-scrollbar-thumb { background: var(--sp-hair-strong); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+html.sp-ui .sp-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* ── 21. Calendar cells ────────────────────────────────────────────────── */
+html.sp-ui .sp-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+html.sp-ui .sp-cal-head { padding: var(--sp-2) 0; text-align: center; font-size: var(--sp-fs-xs); font-weight: 500; color: var(--sp-text-3); }
+html.sp-ui .sp-cal-day {
+  position: relative; display: grid; place-items: center; aspect-ratio: 1; min-height: 40px; border: 0; border-radius: var(--sp-r-ctl);
+  background: none; color: var(--sp-text); font: 500 var(--sp-fs-sm) var(--sp-font-ui); font-variant-numeric: tabular-nums; cursor: pointer;
+  transition: background var(--sp-dur-1);
+}
+html.sp-ui .sp-cal-day:is(:hover, .is-hover) { background: var(--sp-hover); }
+html.sp-ui .sp-cal-day.is-muted { color: var(--sp-text-disabled); }
+html.sp-ui .sp-cal-day.is-today { box-shadow: inset 0 0 0 1.5px var(--sp-accent); }
+html.sp-ui .sp-cal-day[aria-selected="true"] { background: var(--sp-accent); color: var(--sp-on-accent); font-weight: 650; }
+html.sp-ui .sp-cal-day[data-mark]::after { content: ""; position: absolute; bottom: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--sp-ok); }
+html.sp-ui .sp-cal-day[data-mark="absent"]::after { background: var(--sp-bad); }
+html.sp-ui .sp-cal-day[data-mark="leave"]::after { background: var(--sp-warn); }
+
+/* ── 22. Console (handover terminal, scan center, Labs output) and code ─── */
+html.sp-ui .sp-console {
+  padding: var(--sp-4) var(--sp-5); border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono); color: var(--sp-text); overflow: auto; white-space: pre-wrap; word-break: break-word;
+}
+html.sp-ui:not([data-theme="light"]) .sp-console { background: rgba(3, 4, 7, .62); }
+html.sp-ui .sp-console .is-ok { color: var(--sp-ok); }
+html.sp-ui .sp-console .is-warn { color: var(--sp-warn); }
+html.sp-ui .sp-console .is-bad { color: var(--sp-bad); }
+html.sp-ui .sp-console .is-dim { color: var(--sp-text-3); }
+html.sp-ui .sp-console-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-2); font: 500 var(--sp-fs-xs) var(--sp-font-ui); color: var(--sp-text-2); }
+html.sp-ui :is(.sp-page, .sp-glass) :not(pre) > code { padding: 2px 6px; border-radius: 6px; background: var(--sp-hover); font: 400 .9em var(--sp-font-mono); }
+html.sp-ui .sp-code { margin: 0; padding: var(--sp-4) var(--sp-5); border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow-x: auto; font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono); color: var(--sp-text); tab-size: 2; }
+
+/* ── 23. Navigation ornaments: floating bar and dock ───────────────────── */
+html.sp-ui .sp-bar {
+  position: fixed; z-index: var(--sp-z-bar); top: var(--sp-bar-inset); left: var(--sp-bar-inset); right: var(--sp-bar-inset);
+  height: var(--sp-bar-h); display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-2);
+}
+html.sp-ui .sp-bar-brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 var(--sp-2); color: var(--sp-text); text-decoration: none; font: 650 var(--sp-fs-sm) var(--sp-font-ui); letter-spacing: .14em; border-radius: var(--sp-r-pill); }
+html.sp-ui .sp-bar-brand svg, html.sp-ui .sp-bar-brand img { width: 20px; height: 20px; color: var(--sp-accent); }
+html.sp-ui .sp-bar-spacer { flex: 1; }
+html.sp-ui .sp-bar-who { font-size: var(--sp-fs-sm); color: var(--sp-text-2); white-space: nowrap; }
+html.sp-ui .sp-bar-who b { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-bar .sp-btn--theme { min-height: 36px; padding: 0 var(--sp-4); }
+
+html.sp-ui .sp-dock {
+  position: fixed; z-index: var(--sp-z-dock); left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: flex; align-items: flex-end; gap: var(--sp-2); padding: var(--sp-2);
+}
+html.sp-ui .sp-dock-item {
+  position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; flex: none;
+  color: var(--sp-text-2); text-decoration: none;
+  transition: background var(--sp-dur-2), color var(--sp-dur-2), transform var(--sp-dur-3) var(--sp-ease-press);
+}
+html.sp-ui .sp-dock-item svg { width: 20px; height: 20px; }
+html.sp-ui .sp-dock-item:is(:hover, .is-hover) { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .sp-dock-item:is(:active, .is-active) { transform: scale(.92); }
+html.sp-ui .sp-dock-item:is([aria-current="page"], .is-current) { color: var(--sp-accent-text); }
+html.sp-ui .sp-dock-item:is([aria-current="page"], .is-current)::after { content: ""; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+/* ── 24. Tilt targets (assets/js/spatial-fx.js sets the transform) ──────── */
+html.sp-ui [data-sp-tilt] { transform-style: preserve-3d; transition: transform var(--sp-dur-4) var(--sp-ease-out), background var(--sp-dur-2), box-shadow var(--sp-dur-3) var(--sp-ease-out); will-change: auto; }
+html.sp-ui .sp-tile {
+  display: flex; align-items: center; gap: var(--sp-3); min-height: 56px; padding: 10px 14px; border-radius: var(--sp-r-ctl);
+  color: var(--sp-text); text-decoration: none; font-weight: 550; font-size: var(--sp-fs-sm);
+}
+html.sp-ui .sp-tile:is(:hover, .is-hover) { background: var(--sp-hover); }
+html.sp-ui .sp-tile-icon { width: 32px; height: 32px; border-radius: var(--sp-r-sm); display: grid; place-items: center; flex: none; color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .13); }
+html.sp-ui .sp-tile-icon svg { width: 16px; height: 16px; }
+html.sp-ui .sp-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--sp-2); }
+
+/* the protection strip (audit ledger, encryption, sign-off states) */
+html.sp-ui .sp-protect { display: flex; align-items: center; gap: var(--sp-5); padding: var(--sp-4) var(--sp-5); border-radius: 20px; background: rgba(var(--sp-ok-rgb), .08); flex-wrap: wrap; }
+html.sp-ui .sp-protect-icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; color: var(--sp-ok); background: rgba(var(--sp-ok-rgb), .15); }
+html.sp-ui .sp-protect-icon svg { width: 20px; height: 20px; }
+html.sp-ui .sp-protect p { margin: 0; flex: 1 1 280px; color: var(--sp-text-2); font-size: var(--sp-fs-sm); }
+html.sp-ui .sp-protect p b { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-protect p .sp-mono { display: block; margin-top: 2px; font-size: var(--sp-fs-xs); color: var(--sp-text-3); }
+html.sp-ui .sp-protect[data-tone="bad"] { background: rgba(var(--sp-bad-rgb), .1); }
+html.sp-ui .sp-protect[data-tone="bad"] .sp-protect-icon { color: var(--sp-bad); background: rgba(var(--sp-bad-rgb), .15); }
+
+/* ── 25. Small screens ─────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  html.sp-ui { --sp-bar-inset: 8px; }
+  html.sp-ui .sp-bar.sp-glass { --_radius: 20px; }
+  html.sp-ui .sp-bar-who { display: none; }
+  html.sp-ui .sp-bar { gap: var(--sp-2); }
+  html.sp-ui .sp-bar .sp-btn--theme { width: 44px; padding: 0; }
+  html.sp-ui .sp-bar .sp-btn--theme > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  html.sp-ui .sp-bar-brand { letter-spacing: .1em; }
+  html.sp-ui .sp-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--sp-5); }
+  html.sp-ui .sp-metric:nth-child(odd) { padding-left: 0; border-left: 0; }
+  html.sp-ui .sp-metric { padding-right: var(--sp-3); }
+  html.sp-ui .sp-seg { display: flex; width: 100%; }
+  html.sp-ui .sp-table .is-hide-sm { display: none; }
+  html.sp-ui .sp-steps { flex-direction: column; gap: var(--sp-4); }
+  html.sp-ui .sp-step { padding: 4px 0 0 40px; min-height: 28px; }
+  html.sp-ui .sp-step::after { content: none; }
+  html.sp-ui .sp-dialog { padding: var(--sp-6); }
+  html.sp-ui .sp-otp input { width: 42px; height: 52px; }
+}
+
+/* ==========================================================================
+   Part 3: shared chrome (phase 4a). These style hooks that other scripts
+   build (core/theme.js loader, assets/js/hastra-ux.js dialogs and palette,
+   the consent bar). Their base files (core/theme.css, hastra-ux.css,
+   compliance.css) also serve pages that are not spatial yet (the landing
+   page), so the spatial look is layered here, scoped to html.sp-ui, until
+   phase 4i moves those pages over and the old rules can go.
+   The top bar, drawer, dock, tour and profile barrier are restyled in their
+   own files (sidebar-nav.css, core/dock.css, tour.css, profile-barrier.css).
+   ========================================================================== */
+
+/* ── 26. Page loader (core/theme.js #hastra-page-loader); timings untouched ── */
+html.sp-ui #hastra-page-loader {
+  z-index: var(--sp-z-loader, 100);
+  background: var(--sp-solid-4);
+  background-image: none;
+}
+html.sp-ui .hastra-loader-spinner {
+  width: 56px; height: 56px; border: 0; box-shadow: none;
+  animation: none;
+}
+html.sp-ui .hastra-loader-spinner::before,
+html.sp-ui .hastra-loader-spinner::after {
+  content: ""; position: absolute; border-radius: 50%; border: 2px solid transparent;
+  animation: sp-spin 1s var(--sp-ease-in-out) infinite;
+}
+html.sp-ui .hastra-loader-spinner::before { inset: 0; border-top-color: var(--sp-accent); border-right-color: rgba(var(--sp-accent-rgb), .35); }
+html.sp-ui .hastra-loader-spinner::after { inset: 10px; border-top-color: var(--sp-text-2); border-bottom-color: transparent; animation-duration: 1.4s; animation-direction: reverse; }
+html.sp-ui .loader-status-text {
+  font: 500 var(--sp-fs-sm) var(--sp-font-ui); letter-spacing: 0; color: var(--sp-text-2);
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.sp-ui .hastra-loader-spinner::before, html.sp-ui .hastra-loader-spinner::after { animation-duration: 3s; }
+}
+
+/* ── 27. UX layer (assets/js/hastra-ux.js) ─────────────────────────────── */
+html.sp-ui .hx-skip {
+  z-index: 2147483000; padding: 0 var(--sp-5); min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: var(--sp-r-pill); background: var(--sp-accent); color: var(--sp-on-accent) !important;
+  font: 600 var(--sp-fs-sm) var(--sp-font-ui); box-shadow: var(--sp-shadow-3);
+}
+html.sp-ui .hx-skip:focus-visible { outline: 2px solid var(--sp-text); outline-offset: 3px; }
+
+/* dialogs: the shade dims (no blur), the dialog is depth-4 glass */
+html.sp-ui .hx-shade { background: var(--sp-dim); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.sp-ui .hx-dlg {
+  box-sizing: border-box; padding: var(--sp-8); border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui); text-shadow: none;
+  transition: transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui .hx-dlg-title { margin: 0 0 var(--sp-2); font-size: var(--sp-fs-xl); font-weight: 650; letter-spacing: -.015em; color: var(--sp-text); }
+html.sp-ui .hx-dlg-msg { margin: 0 0 var(--sp-6); font-size: var(--sp-fs-md); line-height: var(--sp-lh-body); color: var(--sp-text-2); }
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input) {
+  box-sizing: border-box; min-height: 48px; padding: 0 var(--sp-4); margin: 0 0 var(--sp-2);
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.3 var(--sp-font-ui);
+}
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input):focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui :is(.hx-dlg-input, .hx-pal-input)::placeholder { color: var(--sp-text-3); }
+html.sp-ui .hx-dlg-actions { justify-content: flex-end; gap: var(--sp-2); margin-top: var(--sp-6); }
+html.sp-ui .hx-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: var(--sp-accent); color: var(--sp-on-accent); text-shadow: none; text-decoration: none;
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2);
+}
+html.sp-ui .hx-btn:hover { transform: translateY(var(--sp-lift)); filter: none; }
+html.sp-ui .hx-btn:active { transform: scale(.98); }
+html.sp-ui .hx-btn--danger { background: var(--sp-bad-solid); }
+html.sp-ui .hx-link {
+  min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: transparent; color: var(--sp-text); text-decoration: none; text-shadow: none;
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui);
+}
+html.sp-ui .hx-link:hover { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui :is(.hx-btn, .hx-link, .hx-pal-input, .hx-dlg-input):focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+
+/* Ctrl+K palette */
+html.sp-ui .hx-pal { padding: var(--sp-4); }
+html.sp-ui .hx-pal-list { margin-top: var(--sp-2); }
+html.sp-ui .hx-pal-opt {
+  align-items: center; min-height: 48px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-sm);
+  color: var(--sp-text);
+}
+html.sp-ui .hx-pal-opt[aria-selected="true"] { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .hx-pal-title { font-size: var(--sp-fs-md); font-weight: 550; }
+html.sp-ui .hx-pal-group { font: 500 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui :is(.hx-pal-empty, .hx-pal-hint) { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+
+/* top progress line */
+html.sp-ui .hx-progress span { background: var(--sp-accent); }
+
+/* floating controls (back to top, contact): depth-3 glass buttons */
+html.sp-ui .hx-fabs { bottom: max(18px, env(safe-area-inset-bottom)); }
+html.sp-ui .hx-fab {
+  width: 48px; height: 48px;
+  background: var(--sp-fill-3); color: var(--sp-text);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2), opacity var(--sp-dur-2);
+}
+html.sp-ui .hx-fab:hover { filter: none; background: var(--sp-solid-3); transform: translateY(var(--sp-lift)); }
+html.sp-ui .hx-fab:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui .hx-contact { opacity: 1; }
+@media (max-width: 760px) { html.sp-ui .hx-fabs { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 72px); } }
+
+/* copy buttons: a small pill, not underlined mono text */
+html.sp-ui .hx-copy {
+  min-height: 32px; padding: 0 var(--sp-3); border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  transition: background var(--sp-dur-2), color var(--sp-dur-2);
+}
+html.sp-ui .hx-copy:hover { background: var(--sp-press); }
+html.sp-ui .hx-copy.is-done { background: rgba(var(--sp-ok-rgb), .14); color: var(--sp-ok); }
+html.sp-ui .hx-copy:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* inline field errors */
+html.sp-ui :is(.field-error, .hx-field-error) { color: var(--sp-bad); font-family: var(--sp-font-ui); }
+html.sp-ui .field-hint { color: var(--sp-text-2); }
+
+/* ── 28. Cookie consent bar (legal/_cookie_banner.php) ─────────────────── */
+html.sp-ui .consent-bar {
+  left: var(--sp-bar-inset); right: var(--sp-bar-inset); bottom: var(--sp-bar-inset);
+  border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui);
+}
+html.sp-ui .consent-in { padding: var(--sp-6) var(--sp-8); gap: var(--sp-4) var(--sp-8); }
+html.sp-ui .consent-copy h2 { font-size: var(--sp-fs-lg); font-weight: 650; color: var(--sp-text); }
+html.sp-ui .consent-copy p { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .consent-copy a { color: var(--sp-accent-text); text-underline-offset: 3px; }
+html.sp-ui .consent-toggle { min-height: 40px; font-size: var(--sp-fs-sm); color: var(--sp-text); }
+html.sp-ui .consent-toggle small { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .consent-switch { width: 44px; height: 26px; background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); }
+html.sp-ui .consent-switch::after { top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); transition: transform var(--sp-dur-3) var(--sp-ease-spring); }
+html.sp-ui .consent-toggle input:checked + .consent-switch { background: var(--sp-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2); }
+html.sp-ui .consent-toggle input:checked + .consent-switch::after { transform: translateX(18px); }
+html.sp-ui .consent-toggle input:focus-visible + .consent-switch { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui .consent-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui);
+  transition: background var(--sp-dur-2), transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .consent-btn:hover { background: var(--sp-press); border-color: transparent; }
+html.sp-ui .consent-btn--primary { background: var(--sp-accent); color: var(--sp-on-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); }
+html.sp-ui .consent-btn--primary:hover { background: color-mix(in srgb, var(--sp-accent) 88%, #fff); }
+@media (max-width: 760px) { html.sp-ui .consent-in { padding: var(--sp-5); } }
+
+/* ==========================================================================
+   Part 4: auth pages (phase 4b). Sign-in, registration, OTP, forgot, reset
+   and set-password screens. Each card carries .sp-glass .sp-auth-card; the
+   overview beside the sign-in and sign-up cards carries .sp-glass
+   .sp-auth-info (it replaces the old text fog). Scoped under the card so the
+   pages' own layout rules keep working; selectors here only restyle.
+   ========================================================================== */
+
+/* ── 29. The card: depth-2 glass, the page's one reading surface ──────── */
+html.sp-ui .sp-auth-card {
+  --_radius: var(--sp-r-panel);
+  max-width: 440px;
+  padding: var(--sp-8) clamp(20px, 5vw, 36px) var(--sp-6);
+  border: 0;
+  color: var(--sp-text);
+  font-family: var(--sp-font-ui);
+}
+html.sp-ui .sp-auth-card::before { content: none; }
+html.sp-ui .sp-auth-card .brand { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-6); }
+html.sp-ui .sp-auth-card .brand-icon { width: 28px; height: 28px; background: none; border: 0; border-radius: 0; box-shadow: none; }
+html.sp-ui .sp-auth-card .brand-icon svg { width: 28px; height: 28px; }
+html.sp-ui .sp-auth-card .brand-text { display: flex; align-items: center; }
+html.sp-ui .sp-auth-card .brand-text .title {
+  font: 650 var(--sp-fs-lg)/1 var(--sp-font-ui); letter-spacing: .01em; text-transform: none;
+  color: var(--sp-text); background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui .sp-auth-card .brand-text .sub { display: none; }
+html.sp-ui .sp-auth-card :is(h1, h2) {
+  margin: 0 0 6px; font: 650 var(--sp-fs-xl)/1.2 var(--sp-font-ui); letter-spacing: -.015em; color: var(--sp-text);
+  text-transform: none; background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui .sp-auth-card :is(.subtitle, p.sub) { margin: 0 0 var(--sp-6); font-size: var(--sp-fs-sm); line-height: 1.55; color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .divider { height: 1px; border: 0; background: var(--sp-hair); margin: var(--sp-5) 0; }
+
+/* fields */
+html.sp-ui .sp-auth-card .field { margin-bottom: var(--sp-4); }
+html.sp-ui .sp-auth-card label {
+  display: block; margin-bottom: 6px; font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  color: var(--sp-text);
+}
+html.sp-ui .sp-auth-card :is(input[type="email"], input[type="password"], input[type="text"], input[type="tel"], input[type="number"], input[type="url"], select, textarea):not(.otp-box) {
+  box-sizing: border-box; width: 100%; min-height: 44px; padding: 10px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.4 var(--sp-font-ui); letter-spacing: 0;
+  transition: box-shadow var(--sp-dur-2) var(--sp-ease-out);
+}
+html.sp-ui .sp-auth-card :is(input, textarea)::placeholder { color: var(--sp-text-3); opacity: 1; }
+html.sp-ui .sp-auth-card :is(input[type="email"], input[type="password"], input[type="text"], input[type="tel"], input[type="number"], input[type="url"], select, textarea):not(.otp-box):focus {
+  outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0;
+  box-shadow: var(--sp-inset), inset 0 0 0 1px transparent;
+}
+html.sp-ui .sp-auth-card [aria-invalid="true"]:not(.otp-box) { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+html.sp-ui .sp-auth-card .input-wrap { position: relative; }
+html.sp-ui .sp-auth-card .input-wrap input { padding-right: 52px; }
+html.sp-ui .sp-auth-card .eye-btn {
+  position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%;
+  background: none; color: var(--sp-text-2); cursor: pointer;
+}
+html.sp-ui .sp-auth-card .eye-btn:hover { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .eye-btn svg { width: 18px; height: 18px; fill: currentColor; }
+html.sp-ui .sp-auth-card :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--sp-accent); width: 18px; height: 18px; }
+html.sp-ui .sp-auth-card .row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin: var(--sp-2) 0 var(--sp-4); font-size: var(--sp-fs-sm); }
+html.sp-ui .sp-auth-card .row label { display: inline-flex; align-items: center; gap: var(--sp-2); margin: 0; min-height: 44px; font-weight: 500; }
+
+/* actions */
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, a.btn-primary, .btn-reset, .btn-verify, .btn-register) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  width: 100%; min-height: 48px; padding: 0 var(--sp-5); margin-top: var(--sp-2);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent);
+  font: 650 var(--sp-fs-md)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  cursor: pointer; filter: none;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2);
+}
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, a.btn-primary, .btn-reset, .btn-verify, .btn-register):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sp-accent) 88%, #fff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift);
+  transform: translateY(var(--sp-lift));
+}
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, .btn-reset, .btn-verify, .btn-register):active { transform: scale(.98); }
+html.sp-ui .sp-auth-card :is(button[type="submit"], .btn-login, .btn-send, .btn-submit, .btn-primary, .btn-reset, .btn-verify, .btn-register):disabled {
+  background: var(--sp-hover); color: var(--sp-text-disabled); box-shadow: none; cursor: not-allowed; transform: none; opacity: 1;
+}
+html.sp-ui .sp-auth-card :is(button, a) svg { flex: none; }
+html.sp-ui .sp-auth-card .btn-back {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); min-height: 44px; padding: 0 var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); text-transform: none; letter-spacing: 0; cursor: pointer; box-shadow: var(--sp-edge);
+}
+html.sp-ui .sp-auth-card .btn-back:hover { background: var(--sp-press); }
+html.sp-ui .sp-auth-card :is(.footer-links, .resend-link) { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .footer-links { margin-top: var(--sp-5); text-align: center; }
+html.sp-ui .sp-auth-card :is(.footer-links a, .resend-link a, a.resend-link, .forgot-link) {
+  color: var(--sp-text); font-weight: 550; text-decoration: underline; text-decoration-color: var(--sp-hair-strong); text-underline-offset: 3px;
+}
+html.sp-ui .sp-auth-card :is(.footer-links a, .resend-link a, a.resend-link, .forgot-link):hover { color: var(--sp-accent-text); text-decoration-color: currentColor; }
+
+/* alerts */
+html.sp-ui .sp-auth-card .alert {
+  display: flex; gap: var(--sp-3); align-items: flex-start; margin: 0 0 var(--sp-4); padding: var(--sp-3) var(--sp-4);
+  border: 0; border-radius: var(--sp-r-card); font-size: var(--sp-fs-sm); line-height: 1.5;
+  background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text);
+}
+html.sp-ui .sp-auth-card .alert.error { background: rgba(var(--sp-bad-rgb), .12); }
+html.sp-ui .sp-auth-card .alert.success { background: rgba(var(--sp-ok-rgb), .12); }
+html.sp-ui .sp-auth-card .alert.warning { background: rgba(var(--sp-warn-rgb), .12); }
+html.sp-ui .sp-auth-card .alert svg { flex: none; width: 18px; height: 18px; margin-top: 1px; fill: currentColor; }
+html.sp-ui .sp-auth-card .alert.error svg { color: var(--sp-bad); }
+html.sp-ui .sp-auth-card .alert.success svg { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .alert.warning svg { color: var(--sp-warn); }
+
+/* one-time code boxes */
+html.sp-ui .sp-auth-card .otp-wrap { display: flex; gap: var(--sp-2); justify-content: center; margin: var(--sp-2) 0 var(--sp-4); }
+html.sp-ui .sp-auth-card .otp-box {
+  box-sizing: border-box; width: 48px; height: 56px; padding: 0; text-align: center;
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 600 var(--sp-fs-xl)/1 var(--sp-font-mono); caret-color: var(--sp-accent);
+}
+html.sp-ui .sp-auth-card .otp-box:focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .sp-auth-card :is(.otp-box.error, .otp-box[aria-invalid="true"]) { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+@media (max-width: 400px) { html.sp-ui .sp-auth-card .otp-box { width: 42px; height: 52px; } }
+html.sp-ui .sp-auth-card :is(.attempts-label, .timer-wrap) { font-size: var(--sp-fs-xs); color: var(--sp-text-2); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+/* unused attempts are neutral; a used attempt is marked in the danger colour */
+html.sp-ui .sp-auth-card .attempt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; border: 0; }
+html.sp-ui .sp-auth-card .attempt-dot.used { background: var(--sp-bad); }
+
+/* step progress (forgot, reset, verify) */
+html.sp-ui .sp-auth-card .progress-wrap { margin-bottom: var(--sp-6); }
+html.sp-ui .sp-auth-card .progress-labels { display: flex; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+html.sp-ui .sp-auth-card .progress-step { font: 500 var(--sp-fs-xs)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .sp-auth-card .progress-step.active { color: var(--sp-text); font-weight: 650; }
+html.sp-ui .sp-auth-card .progress-step.done { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .progress-bar { height: 6px; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow: hidden; border: 0; }
+html.sp-ui .sp-auth-card .progress-fill { height: 100%; border-radius: inherit; background: var(--sp-accent); box-shadow: none; }
+
+/* password requirements and match message */
+html.sp-ui .sp-auth-card .req-box { margin: var(--sp-2) 0 var(--sp-4); padding: var(--sp-3) var(--sp-4); border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui .sp-auth-card .req-item { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .req-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; }
+html.sp-ui .sp-auth-card .req-item.valid { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .req-item.valid .dot { background: var(--sp-ok); }
+html.sp-ui .sp-auth-card .req-item.invalid { color: var(--sp-bad); }
+html.sp-ui .sp-auth-card .req-item.invalid .dot { background: var(--sp-bad); }
+html.sp-ui .sp-auth-card .match-msg { font-size: var(--sp-fs-xs); }
+html.sp-ui .sp-auth-card .match-msg.ok { color: var(--sp-ok); }
+html.sp-ui .sp-auth-card .match-msg.err { color: var(--sp-bad); }
+
+/* success screens */
+html.sp-ui .sp-auth-card .success-wrap { text-align: center; }
+html.sp-ui .sp-auth-card .success-icon { width: 56px; height: 56px; margin: 0 auto var(--sp-4); border-radius: 50%; display: grid; place-items: center; background: rgba(var(--sp-ok-rgb), .14); color: var(--sp-ok); border: 0; box-shadow: none; }
+html.sp-ui .sp-auth-card .success-icon svg { width: 26px; height: 26px; fill: currentColor; }
+html.sp-ui .sp-auth-card .success-wrap h3 { margin: 0 0 6px; font: 650 var(--sp-fs-lg)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .success-wrap p { margin: 0 0 var(--sp-4); font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+
+/* theme switch inside the card */
+html.sp-ui .sp-auth-card .btn-theme-toggle {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px;
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+}
+html.sp-ui .sp-auth-card .btn-theme-toggle:hover { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui .sp-auth-card .btn-theme-toggle .theme-icon svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ── 30. The overview beside the sign-in and sign-up cards ─────────────── */
+html.sp-ui .sp-auth-info {
+  --_radius: var(--sp-r-panel);
+  padding: clamp(24px, 4vw, 40px);
+  color: var(--sp-text); text-shadow: none;
+}
+html.sp-ui .sp-auth-info :is(.info-title, .info-sub, .info-body, .info-feats li, .info-flow, .info-flow b, .info-badge) { text-shadow: none; }
+html.sp-ui .sp-auth-info .info-badge {
+  display: inline-flex; align-items: center; gap: 8px; height: 26px; padding: 0 12px; border: 0; border-radius: var(--sp-r-pill);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: .04em; color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14);
+}
+html.sp-ui .sp-auth-info .info-title { color: var(--sp-text); }
+html.sp-ui .sp-auth-info .info-title .info-portal { color: var(--sp-accent-text); }
+html.sp-ui .sp-auth-info .info-sub { color: var(--sp-text); font-weight: 600; }
+html.sp-ui .sp-auth-info :is(.info-body, .info-flow) { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-info .info-feats li { color: var(--sp-text); }
+html.sp-ui .sp-auth-info .info-flow b { color: var(--sp-text); }
+
+/* ── 31. Sign-in and sign-up widgets ──────────────────────────────────── */
+/* the two-portal switch and the registration tabs are segmented controls */
+html.sp-ui .sp-auth-card :is(.portal-toggle, .registration-tabs, .registration-subtoggle) {
+  display: flex; gap: 4px; padding: 4px; margin: 0 0 var(--sp-5);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+}
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub) {
+  flex: 1 1 0; min-height: 40px; padding: 0 var(--sp-3); margin: 0;
+  border: 0; border-radius: var(--sp-r-pill); background: none; color: var(--sp-text-2);
+  font: 550 var(--sp-fs-sm)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+  box-shadow: none; transition: background var(--sp-dur-3) var(--sp-ease-out), color var(--sp-dur-2);
+}
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub):not(.active):hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub).active {
+  color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3);
+  box-shadow: var(--sp-edge), 0 4px 12px -4px rgba(0, 0, 0, .4);
+}
+html.sp-ui[data-theme="light"] .sp-auth-card :is(.portal-toggle button, .reg-tab, .reg-sub).active { background: #fff; box-shadow: inset 0 1px 0 #fff, 0 2px 8px -2px rgba(15, 23, 42, .18); }
+
+/* registration steps */
+html.sp-ui .sp-auth-card .sheet-steps li { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .sp-auth-card .sheet-steps .step-num {
+  width: 24px; height: 24px; border: 0; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-hair-strong); color: var(--sp-text-2);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui);
+}
+html.sp-ui .sp-auth-card .sheet-steps li.current { color: var(--sp-text); font-weight: 650; }
+html.sp-ui .sp-auth-card .sheet-steps li.current .step-num { background: var(--sp-accent); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); }
+html.sp-ui .sp-auth-card .sheet-steps li.done { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .sheet-steps li.done .step-num { background: var(--sp-ok); color: #fff; box-shadow: none; }
+html.sp-ui .sp-auth-card .step-actions { gap: var(--sp-2); }
+
+/* workspace navbar preview, logo finder and drop zone */
+html.sp-ui .sp-auth-card .navbar-preview .np-label { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .navbar-preview .np-bar { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-3); box-shadow: var(--sp-edge), var(--sp-shadow-3); }
+html.sp-ui .sp-auth-card .navbar-preview .np-hastra { font: 650 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: .12em; color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-finder-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-tile { border: 0; border-radius: var(--sp-r-ctl); background: #fff; box-shadow: 0 0 0 1px var(--sp-hair), var(--sp-shadow-3); transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-2); }
+html.sp-ui .sp-auth-card .logo-tile.selected { box-shadow: 0 0 0 2px var(--sp-accent), var(--sp-shadow-3); }
+html.sp-ui .sp-auth-card .logo-dropzone {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px;
+}
+html.sp-ui .sp-auth-card :is(.logo-dropzone:hover, .logo-dropzone.drag-over) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-icon { border: 0; background: var(--sp-hover); color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-text { color: var(--sp-text-2); }
+html.sp-ui .sp-auth-card .logo-dropzone .dz-text b { color: var(--sp-text); }
+html.sp-ui .sp-auth-card .logo-status { color: var(--sp-text-2); }
+
+/* overview: the flow note is a tinted block, not a coloured side rule */
+html.sp-ui .sp-auth-info .info-flow { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-accent-rgb), .08); }
+html.sp-ui .sp-auth-info .info-badge i { box-shadow: none; background: var(--sp-accent); }
+html.sp-ui .sp-auth-info .info-feats li::before { background: var(--sp-accent); }
+
+/* Google sign-in: a neutral secondary pill (assets/css/compliance.css keeps
+   the base for non-spatial pages) */
+html.sp-ui .sp-auth-card .btn-google-sso {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 48px; padding: 0 var(--sp-5);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge), inset 0 0 0 1px var(--sp-hair);
+  font: 600 var(--sp-fs-sm)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-3) var(--sp-ease-spring);
+}
+html.sp-ui .sp-auth-card .btn-google-sso:hover { background: var(--sp-press); transform: translateY(var(--sp-lift)); }
+html.sp-ui[data-theme="light"] .sp-auth-card .btn-google-sso { background: #fff; }
+html.sp-ui[data-theme="light"] .sp-auth-card .btn-google-sso:hover { background: #f8fafc; }
+
+/* the registration card pads its own head and sheet */
+html.sp-ui .sp-auth-card#reg-card { padding: 0; max-width: 560px; }
+
+/* ── 32. Custom select and range (assets/js/hastra-select.js) ──────────── */
+html.sp-ui .ax-select-btn {
+  box-sizing: border-box; min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-md)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  transition: box-shadow var(--sp-dur-2) var(--sp-ease-out);
+}
+html.sp-ui .ax-select-btn:hover { box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair-strong); background: var(--sp-fill-1); }
+html.sp-ui .ax-select-btn:focus-visible, html.sp-ui .ax-select.open .ax-select-btn { outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset); }
+html.sp-ui .ax-select-btn.is-invalid { box-shadow: var(--sp-inset), inset 0 0 0 1.5px var(--sp-bad); }
+html.sp-ui .ax-select-btn.is-placeholder .ax-select-value { color: var(--sp-text-3); }
+html.sp-ui .ax-select-btn:disabled { color: var(--sp-text-disabled); background: transparent; cursor: not-allowed; }
+html.sp-ui .ax-select-chev { color: var(--sp-text-2); }
+html.sp-ui .ax-select-list {
+  padding: 6px; border: 0; border-radius: 18px; z-index: var(--sp-z-popover);
+  background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4);
+}
+html.sp-ui .ax-select-list [role="option"] { min-height: 40px; padding: 0 var(--sp-3); border-radius: var(--sp-r-sm); color: var(--sp-text); font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; display: flex; align-items: center; }
+html.sp-ui .ax-select-list [role="option"].is-active { background: var(--sp-hover); }
+html.sp-ui .ax-select-list [role="option"][aria-selected="true"] { color: var(--sp-accent-text); font-weight: 600; background: none; }
+html.sp-ui .ax-select-list [role="option"][aria-selected="true"].is-active { background: var(--sp-hover); }
+html.sp-ui .ax-range { accent-color: var(--sp-accent); }
+html.sp-ui .ax-range-head label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .ax-range-head output { font: 600 var(--sp-fs-sm)/1 var(--sp-font-mono); color: var(--sp-text); }
+
+/* legal footer under the auth card: a small depth-3 glass strip */
+html.sp-ui .legal-foot--below {
+  border-radius: 20px; padding: var(--sp-3) var(--sp-5);
+  background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+  color: var(--sp-text-2); font-family: var(--sp-font-ui);
+}
+html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a) { color: var(--sp-text-2); text-underline-offset: 3px; }
+html.sp-ui :is(.legal-foot, .legal-foot--below) :is(.legal-links a, .legal-linkbtn, .legal-entity a):hover { color: var(--sp-text); }
+html.sp-ui .legal-foot--card { border-top-color: var(--sp-hair); color: var(--sp-text-2); }
+
+/* ==========================================================================
+   Part 5: the signed-in portals (phase 4c onward). Replaced the boxless
+   portal layer (deleted in phase 6): each page's
+   .main (or .wrap) is the one depth-2 glass panel; everything inside it is
+   flat, separated by space and hairlines only where they divide data.
+   The shared hooks below are the portal-wide classes; page-specific inline
+   styles are migrated per surface group (4c sysadmin, 4d admin, ...).
+   ========================================================================== */
+
+/* ── 33. The world under the portals ───────────────────────────────────── */
+/* core/theme.css draws a fading accent glow in body::before; the spatial
+   wash takes the element over (no veil, no glow halo). */
+html.sp-ui.hastra-kage body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  width: auto; height: auto; top: 0; left: 0; transform: none;
+  opacity: 1; animation: none; border-radius: 0;
+  background: var(--sp-world-wash);
+}
+html.sp-ui.nf-portal, html.sp-ui.nf-portal body { color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .sc-body, .ht-body) { text-shadow: none; }
+/* Carried over from the retired portal token sheet: the canvas stays clear so
+   the scene shows, decorative bleeds (cloth canvases) never scroll sideways,
+   the scrollbar takes the accent, and the brand mark keeps its gradient. */
+html.sp-ui.nf-portal, html.sp-ui.nf-portal body { background: transparent !important; overflow-x: clip; }
+html.sp-ui.nf-portal { scrollbar-color: rgba(var(--sp-accent-rgb), .45) transparent; }
+html.sp-ui.nf-portal[data-theme="dark"] .hastra-primary-fill { fill: url(#hastra-crimson) !important; }
+html.sp-ui.nf-portal[data-theme="light"] .hastra-primary-fill { fill: url(#hastra-cobalt) !important; }
+
+/* ── 34. The page panel ────────────────────────────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap, .sc-main, .ht-terminal, .workspace-index > main) {
+  box-sizing: border-box; position: relative; isolation: isolate;
+  width: min(var(--sp-page-max), calc(100% - 2 * var(--sp-gutter)));
+  max-width: none;
+  margin: var(--sp-6) auto 136px;
+  padding: var(--sp-panel-pad);
+  border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2);
+  font-family: var(--sp-font-ui); font-size: var(--sp-fs-md); line-height: var(--sp-lh-body);
+}
+@media (max-width: 760px) {
+  html.sp-ui.nf-portal :is(.main, .wrap, .sc-main, .ht-terminal, .workspace-index > main) { margin-top: var(--sp-4); border-radius: 24px; width: calc(100% - 16px); }
+}
+
+/* ── 35. Page header and titles ────────────────────────────────────────── */
+html.sp-ui.nf-portal .page-header { margin: 0 0 var(--sp-8); padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.page-header h1, .wrap > h1, .main > h1, .sc-header h1, .ht-main h1, .workspace-index h1) {
+  margin: 0; font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display);
+  text-transform: none; text-shadow: none; filter: none; text-wrap: balance;
+  color: var(--sp-text); background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui.nf-portal :is(.page-header h1, .wrap > h1, .main > h1, .sc-header h1, .ht-main h1, .workspace-index h1) .word {
+  background: none; -webkit-text-fill-color: currentColor;
+}
+html.sp-ui.nf-portal :is(.page-header p, .wrap > .lede, .main > .lede) { margin: var(--sp-2) 0 0; max-width: 62ch; color: var(--sp-text-2); font-size: var(--sp-fs-md); }
+
+/* ── 36. Sections: a title row, then flat content ──────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section, .card, .panel, .box) {
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; border-radius: 0;
+  background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section, .card, .panel, .box):last-child { margin-bottom: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header {
+  display: flex; align-items: center; justify-content: flex-start; gap: var(--sp-3) var(--sp-4); flex-wrap: wrap;
+  margin: 0 0 var(--sp-3); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header::before,
+html.sp-ui.nf-portal :is(.main, .wrap) .section-header::after { content: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-title {
+  display: inline-flex; align-items: center; gap: var(--sp-2); margin: 0 auto 0 0;
+  font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-title svg { width: 18px; height: 18px; fill: var(--sp-accent-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-body { padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.section-count, .count) { color: var(--sp-text-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* ── 37. Metrics: a strip of numbers, thin dividers, no capsules ───────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.stats-row, .stat-grid, .stats-grid) {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0;
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card {
+  position: relative; min-height: 0; margin: 0; padding: var(--sp-1) var(--sp-6);
+  border: 0; border-left: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 2px;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card:first-child { padding-left: 0; border-left: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card::before,
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card > *::after { content: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card .stat-label {
+  font: 500 var(--sp-fs-sm)/1.35 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card .stat-value {
+  font: 600 var(--sp-fs-2xl)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .stat-card :is(.stat-sub, .stat-hint) { font-size: var(--sp-fs-xs); color: var(--sp-text-3); order: -1; }
+@media (max-width: 760px) {
+  html.sp-ui.nf-portal :is(.main, .wrap) :is(.stats-row, .stat-grid, .stats-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--sp-5); }
+  html.sp-ui.nf-portal :is(.main, .wrap) .stat-card:nth-child(odd) { padding-left: 0; border-left: 0; }
+  html.sp-ui.nf-portal :is(.main, .wrap) .stat-card { padding-right: var(--sp-3); }
+}
+
+/* ── 38. Quick-link tiles (the in-page section nav) ────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-2);
+  margin: 0 0 var(--sp-10); padding: 0; border: 0; background: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-card {
+  display: flex; align-items: center; gap: var(--sp-3); min-height: 56px; padding: 10px 14px;
+  border: 0; border-radius: var(--sp-r-ctl); background: none; box-shadow: none;
+  color: var(--sp-text); text-decoration: none;
+  transform-style: preserve-3d;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-card:hover { background: var(--sp-hover); }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-icon {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center;
+  border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-icon svg { width: 16px; height: 16px; fill: currentColor; }
+html.sp-ui.nf-portal :is(.main, .wrap) .section-nav-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+
+/* ── 39. Badges and status pills (colours stay with each badge's own class) ─ */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.badge, .type-badge, .sev-badge, .project-code-badge, .status-badge, .role-badge, .tag, .pill) {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px;
+  border: 0; border-radius: var(--sp-r-pill); text-shadow: none; white-space: nowrap;
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.badge, .status-badge, .sev-badge)::before { animation: none; box-shadow: none; }
+
+/* ── 40. Tables: the panel is the surface, rows are flat ───────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.table-wrap, .tbl-wrap, .table-responsive, .table-container, .table-card-wrapper) {
+  overflow-x: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table { width: 100%; border-collapse: collapse; border-spacing: 0; background: none; font-size: var(--sp-fs-sm); }
+html.sp-ui.nf-portal :is(.main, .wrap) table thead th {
+  padding: 0 var(--sp-3) var(--sp-3); border: 0; background: none; text-align: left; white-space: nowrap;
+  font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody td {
+  padding: var(--sp-4) var(--sp-3); border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0;
+  background: none; color: var(--sp-text); vertical-align: middle;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) table :is(th, td):first-child { padding-left: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) table :is(th, td):last-child { padding-right: 0; }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr { background: none; transition: background var(--sp-dur-1); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr:hover { background: var(--sp-row-hover); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr.changed td { background: rgba(var(--sp-accent-rgb), .07); }
+html.sp-ui.nf-portal :is(.main, .wrap) table td :is(.mono, code, time) { font-family: var(--sp-font-mono); color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) table tbody tr:only-child td[colspan] { text-align: center; color: var(--sp-text-2); }
+
+/* ── 41. Toolbars, filters, list rows, empty states ───────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.filters, .filter-bar, .toolbar, .controls, .company-index, .user-search) {
+  border: 0; border-radius: 0; background: none; box-shadow: none; padding-left: 0; padding-right: 0;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-card, .task-card, .req-card, .project-card, .proj-card, .project-block, .member-row, .team-member) {
+  margin: 0; padding: var(--sp-4) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .company-block { margin: 0; padding: var(--sp-6) 0 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .empty-state { padding: var(--sp-10) var(--sp-6); text-align: center; color: var(--sp-text-2); font: 400 var(--sp-fs-md)/1.5 var(--sp-font-ui); letter-spacing: 0; border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-title) { font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.bug-meta, .bug-code) { color: var(--sp-text-2); }
+
+/* ── 42. Fields inside the panel ───────────────────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input[type="text"], input[type="email"], input[type="search"], input[type="number"], input[type="date"], input[type="url"], input[type="tel"], input[type="password"], select, textarea):not(.ax-native, .sp-input, .sp-select, .sp-textarea, .gooey-input, .cd-native-select) {
+  box-sizing: border-box; min-height: 40px; padding: 8px var(--sp-3);
+  border: 0; border-radius: var(--sp-r-ctl);
+  background-color: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-sm)/1.35 var(--sp-font-ui);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input, select, textarea):not(.ax-native, .gooey-input, [type="checkbox"], [type="radio"], [type="range"]):focus {
+  outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input, textarea)::placeholder { color: var(--sp-text-3); opacity: 1; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) select option { background: var(--sp-solid-4); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--sp-accent); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) label { color: var(--sp-text); }
+
+/* ── 43. Modals (core/theme.css .modal-overlay / .modal) ───────────────── */
+html.sp-ui .modal-overlay { background: var(--sp-dim); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.sp-ui .modal-overlay .modal, html.sp-ui .modal.sp-glass {
+  box-sizing: border-box; padding: var(--sp-8); border: 0; border-radius: var(--sp-r-panel);
+  background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4);
+  color: var(--sp-text); font-family: var(--sp-font-ui); text-shadow: none;
+}
+html.sp-ui .modal-overlay .modal :is(h2, h3, .modal-title) { font: 650 var(--sp-fs-xl)/1.25 var(--sp-font-ui); letter-spacing: -.015em; text-transform: none; color: var(--sp-text); }
+html.sp-ui .modal-overlay .modal p { color: var(--sp-text-2); }
+
+/* ── 44. Portal cursor (assets/js/netflix-cursor.js), without glow halos ── */
+#nf-cursor-dot, #nf-cursor-ring, #nf-cursor-glow {
+  position: fixed; top: 0; left: 0; pointer-events: none; opacity: 0; will-change: transform;
+  transition: opacity .3s ease;
+}
+#nf-cursor-dot {
+  z-index: 2147483001; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sp-accent, #e50914); box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  transition: opacity .3s ease, width .15s ease, height .15s ease;
+}
+#nf-cursor-ring {
+  z-index: 2147483001; width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(var(--sp-accent-rgb, 229, 9, 20), .55);
+}
+#nf-cursor-ring::after {
+  content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--sp-accent, #e50914);
+  opacity: 0; transform: scale(.6); transition: opacity .25s ease, transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+#nf-cursor-ring.is-hot::after { opacity: .9; transform: scale(1.3); }
+#nf-cursor-glow { display: none; }
+html.nf-cursor-on #nf-cursor-dot, html.nf-cursor-on #nf-cursor-ring { opacity: 1; }
+@media (hover: none) and (pointer: coarse) { #nf-cursor-dot, #nf-cursor-ring { display: none; } }
+@media (prefers-reduced-motion: reduce) { #nf-cursor-dot, #nf-cursor-ring { display: none; } }
+
+/* ── 45. Workspace index tiles (portals/index.php) ─────────────────────── */
+html.sp-ui.nf-portal .dash-card {
+  display: flex; gap: var(--sp-3); padding: var(--sp-4); border: 0; border-radius: var(--sp-r-ctl);
+  background: none; box-shadow: none; transform-style: preserve-3d;
+  transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui.nf-portal .dash-card:hover { background: var(--sp-hover); }
+html.sp-ui.nf-portal .dash-icon { border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text); }
+html.sp-ui.nf-portal .role-chip { font: 600 11px/1 var(--sp-font-ui); letter-spacing: .06em; border: 0; border-radius: var(--sp-r-pill); color: var(--sp-accent-text); background: rgba(var(--sp-accent-rgb), .14); }
+html.sp-ui.nf-portal .workspace-index { text-shadow: none; }
+
+/* ── 46. Shared portal controls (classes many portal pages define inline) ─ */
+/* primary actions */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent); filter: none; cursor: pointer;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), box-shadow var(--sp-dur-3) var(--sp-ease-out), background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve) svg { width: 16px; height: 16px; fill: currentColor; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-save, .btn-save-all, .btn-primary, button.primary, .btn-submit, .btn-create, .btn-create-project, .btn-create-task, .btn-save-review, .btn-save-attendance, .btn-save-policy, .btn-confirm-add, .btn-confirm, .btn-add-member, .btn-action, .btn-deploy, .btn-report, .btn-update-status, .btn-comment, .action-btn.approve):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sp-accent) 88%, #fff); transform: translateY(var(--sp-lift));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift);
+}
+/* the roles page lights its save button while edits are pending: a neutral lift, not a glow */
+html.sp-ui.nf-portal .main:has(tr.changed) .btn-save { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), var(--sp-shadow-accent-lift); }
+/* secondary and quiet actions */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger), .btn-expand, .btn-toggle-add, .btn-nav-portal, .btn-gen-secret, .ledger-btn, .btn-cancel, .btn-cancel-delete, .action-btn.clarify, .action-btn.retest, .action-btn.close, .action-btn.fix, .btn-back) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 40px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none; cursor: pointer;
+  transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-clear, .btn-more, .btn-secondary, .back, .modal-btn-cancel, .wrap .actions button:not(.primary, .danger), .btn-expand, .btn-toggle-add, .btn-nav-portal, .btn-gen-secret, .ledger-btn, .btn-cancel, .btn-cancel-delete, .action-btn.clarify, .action-btn.retest, .action-btn.close, .action-btn.fix, .btn-back):hover:not(:disabled) { background: var(--sp-press); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.btn-clear.active, .role-filters .btn-clear.active) { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; font-weight: 650; }
+/* destructive actions: soft in tables, solid in the confirming dialog */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger, .btn-remove-row, .btn-remove-member, .btn-delete-req, .btn-delete-task, .btn-delete-file, .action-btn.reject) {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 32px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  background: rgba(var(--sp-bad-rgb), .13); color: var(--sp-bad); box-shadow: none;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; cursor: pointer;
+  transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.btn-delete, .btn-danger, button.danger, .btn-remove-row, .btn-remove-member, .btn-delete-req, .btn-delete-task, .btn-delete-file, .action-btn.reject):hover:not(:disabled) { background: rgba(var(--sp-bad-rgb), .22); }
+html.sp-ui.nf-portal .wrap .actions button.danger { min-height: 40px; padding: 0 var(--sp-4); font-size: var(--sp-fs-sm); }
+html.sp-ui .modal :is(.modal-btn-confirm) {
+  min-height: 44px; border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-bad-solid); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), var(--sp-shadow-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; filter: none;
+}
+html.sp-ui .modal .modal-btn-confirm:hover:not(:disabled) { background: color-mix(in srgb, var(--sp-bad-solid) 90%, #fff); }
+html.sp-ui .modal .modal-btn-confirm:disabled { background: var(--sp-hover); color: var(--sp-text-disabled); box-shadow: none; }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(button, .btn):disabled { cursor: not-allowed; }
+html.sp-ui .modal::before { content: none; }
+html.sp-ui .modal .modal-btns { gap: var(--sp-2); }
+html.sp-ui .modal .otp-box {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font-family: var(--sp-font-mono); caret-color: var(--sp-accent);
+}
+html.sp-ui .modal .otp-box:focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+
+/* alerts and notes: tinted, never a coloured side rule */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert, .modal-alert, .migration-note, .ins-flash, .ins-note, .notice) {
+  border: 0; border-radius: var(--sp-r-card); padding: var(--sp-3) var(--sp-4);
+  font-size: var(--sp-fs-sm); line-height: 1.5; color: var(--sp-text); background: rgba(var(--sp-info-rgb), .1);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert.success, .modal-alert.success) { background: rgba(var(--sp-ok-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.alert.error, .modal-alert.error) { background: rgba(var(--sp-bad-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .migration-note { background: rgba(var(--sp-warn-rgb), .12); margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.alert.success svg) { fill: var(--sp-ok); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.alert.error svg) { fill: var(--sp-bad); }
+
+/* company chips and grouped tables (roles) */
+html.sp-ui.nf-portal :is(.main, .wrap) .company-index { gap: var(--sp-2); padding: 0; margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip {
+  border: 0; border-radius: var(--sp-r-ctl); padding: 8px 14px; background: var(--sp-hover); color: var(--sp-text);
+  box-shadow: inset 0 0 0 1px var(--sp-hair); transition: background var(--sp-dur-2);
+}
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip:hover { background: var(--sp-press); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip.active { background: rgba(var(--sp-accent-rgb), .14); box-shadow: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-chip.active .chip-name { color: var(--sp-accent-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .chip-meta { font: 400 var(--sp-fs-xs)/1.3 var(--sp-font-mono); letter-spacing: 0; color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-head { padding: 0 0 var(--sp-3); border: 0; background: none; }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-name { font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-meta { font: 400 var(--sp-fs-xs)/1.4 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .company-meta b { font-family: var(--sp-font-mono); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.company-empty, .cell-note) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) td.muted { font-family: var(--sp-font-mono); font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.main, .wrap) .filters { gap: var(--sp-2); margin: 0 0 var(--sp-4); }
+html.sp-ui.nf-portal :is(.main, .wrap) .filters.user-search { margin: 0 0 var(--sp-4); }
+
+/* ── 47. Sysadmin pages (phase 4c) ─────────────────────────────────────── */
+/* security dashboard: snapshot numbers as a metric strip, controls as rows */
+html.sp-ui.nf-portal .wrap .snap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: var(--sp-8) 0 var(--sp-10); }
+html.sp-ui.nf-portal .wrap .snap-card { padding: var(--sp-1) var(--sp-6); border: 0; border-left: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none; }
+html.sp-ui.nf-portal .wrap .snap-card:first-child { padding-left: 0; border-left: 0; }
+html.sp-ui.nf-portal .wrap .snap-card .n { font: 600 var(--sp-fs-2xl)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .snap-card.good .n { color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .snap-card.warn .n { color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap .snap-card .l { margin-top: 2px; font: 500 var(--sp-fs-sm)/1.35 var(--sp-font-ui); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap :is(h2.section, h2) {
+  margin: var(--sp-10) 0 var(--sp-3); padding: 0;
+  font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal .wrap .schema-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+html.sp-ui.nf-portal .wrap .chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+  background: var(--sp-hover); color: var(--sp-text);
+}
+html.sp-ui.nf-portal .wrap .chip.on { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .chip.off { background: rgba(var(--sp-warn-rgb), .13); color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap a.chip:hover { background: var(--sp-press); }
+html.sp-ui.nf-portal .wrap .controls { display: block; margin: 0; padding: 0; }
+html.sp-ui.nf-portal .wrap .ctrl {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; column-gap: var(--sp-3); align-items: start;
+  margin: 0; padding: var(--sp-4) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .wrap .ctrl .dot { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: var(--sp-hair-strong); box-shadow: none; }
+html.sp-ui.nf-portal .wrap .ctrl.on .dot { background: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap .ctrl h3 { margin: 0; font: 600 var(--sp-fs-md)/1.4 var(--sp-font-ui); color: var(--sp-text); text-transform: none; letter-spacing: 0; }
+html.sp-ui.nf-portal .wrap .ctrl p { margin: 2px 0 0; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ctrl .state {
+  position: static; display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--sp-r-pill);
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal .wrap .ctrl.on .state { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+
+/* migration: status line, numbered steps as rows, a console for results */
+html.sp-ui.nf-portal .wrap .status { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); margin: var(--sp-6) 0; font: 500 var(--sp-fs-xs)/1.5 var(--sp-font-ui); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .status b { font-family: var(--sp-font-mono); color: var(--sp-text); font-weight: 400; }
+html.sp-ui.nf-portal .wrap :is(.status .ok, .ok) { color: var(--sp-ok); }
+html.sp-ui.nf-portal .wrap :is(.status .warn, .warn) { color: var(--sp-warn); }
+html.sp-ui.nf-portal .wrap .steps { display: block; margin: 0; padding: 0; }
+html.sp-ui.nf-portal .wrap .step {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-6); flex-wrap: wrap;
+  margin: 0; padding: var(--sp-5) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .wrap .step h2 { margin: 0 0 4px; font: 600 var(--sp-fs-md)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .step p { margin: 0; max-width: 60ch; font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .step .num {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; margin-right: var(--sp-2); border-radius: 50%; vertical-align: 1px;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text);
+}
+html.sp-ui.nf-portal .wrap .actions { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+html.sp-ui.nf-portal .wrap label.confirm { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 44px; font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .result { margin-top: var(--sp-6); padding: 0; border: 0; background: none; }
+html.sp-ui.nf-portal .wrap .result h3 { margin: 0 0 var(--sp-2); font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap pre {
+  margin: 0; padding: var(--sp-4) var(--sp-5); border: 0; border-radius: var(--sp-r-card);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset); overflow: auto;
+  font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono); color: var(--sp-text); white-space: pre-wrap;
+}
+html.sp-ui.nf-portal:not([data-theme="light"]) .wrap pre { background: rgba(3, 4, 7, .55); }
+html.sp-ui.nf-portal .wrap pre.error { color: var(--sp-bad); }
+
+/* insights: sentence-case labels, a segmented range switch, quiet actions */
+html.sp-ui.nf-portal .wrap :is(.ins-filters span, h3, .ins-tableview summary) { font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .wrap h3 { margin: var(--sp-6) 0 var(--sp-2); font-size: var(--sp-fs-sm); font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .ins-filters span { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ins-seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .wrap .ins-seg a {
+  display: inline-flex; align-items: center; min-height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); color: var(--sp-text-2); text-decoration: none;
+}
+html.sp-ui.nf-portal .wrap .ins-seg a:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui.nf-portal .wrap .ins-seg a[aria-current="true"] { color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3); box-shadow: var(--sp-edge), 0 4px 12px -4px rgba(0, 0, 0, .4); }
+html.sp-ui[data-theme="light"].nf-portal .wrap .ins-seg a[aria-current="true"] { background: #fff; }
+html.sp-ui.nf-portal .wrap .ins-fig .v { font-weight: 600; letter-spacing: -.02em; color: var(--sp-text); }
+html.sp-ui.nf-portal .wrap .ins-fig .l { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap :is(.ins-export, .ins-note a) { color: var(--sp-accent-text); }
+html.sp-ui.nf-portal .wrap .ins-bar { background: var(--sp-accent); border-radius: 4px 4px 0 0; }
+html.sp-ui.nf-portal .wrap .ins-rk-bar { background: var(--sp-accent); border-radius: 2px; }
+html.sp-ui.nf-portal .wrap :is(.ins-tick, .ins-rk-val small, .ins-loc) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .wrap .ins-tag { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text-2); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .wrap :is(.ins-resolve, .ins-bulk) {
+  min-height: 36px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge);
+}
+html.sp-ui.nf-portal .wrap .ins-bulk { min-height: 40px; font-size: var(--sp-fs-sm); }
+html.sp-ui.nf-portal .wrap :is(.ins-resolve, .ins-bulk):hover { background: var(--sp-press); }
+
+/* ── 48. Gooey search and custom dropdowns (assets/js/gooey-search.js,
+   custom-dropdowns.js), shared by several portal pages ─────────────────── */
+html.sp-ui .gooey-trigger {
+  height: 40px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  transition: width var(--sp-dur-4) var(--sp-ease-out), box-shadow var(--sp-dur-2);
+}
+html.sp-ui .gooey-trigger:focus-within { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .gooey-search-root .gooey-trigger .gooey-input { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; outline: none; color: var(--sp-text); font: 400 var(--sp-fs-sm)/1 var(--sp-font-ui); }
+html.sp-ui .gooey-search-root .gooey-trigger .gooey-input::placeholder { color: var(--sp-text-3); }
+html.sp-ui .gooey-icon-btn { color: var(--sp-text-2); }
+html.sp-ui .cd-trigger {
+  min-height: 40px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); color: var(--sp-text); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair);
+  font: 400 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui .cd-trigger:hover { background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair-strong); }
+html.sp-ui :is(.cd-trigger:focus-visible, .cd-trigger.cd-open) { outline: 2px solid var(--sp-ring); outline-offset: 2px; border: 0; box-shadow: var(--sp-inset); }
+html.sp-ui .cd-trigger.cd-disabled, html.sp-ui .cd-trigger:disabled { color: var(--sp-text-disabled); background: transparent; }
+html.sp-ui .cd-chevron { color: var(--sp-text-2); }
+html.sp-ui .cd-menu {
+  padding: 6px; border: 0; border-radius: 18px; z-index: var(--sp-z-popover);
+  background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4);
+}
+html.sp-ui .cd-option { min-height: 38px; padding: 0 var(--sp-3); border-radius: var(--sp-r-sm); color: var(--sp-text); font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; display: flex; align-items: center; }
+html.sp-ui :is(.cd-option:hover, .cd-option.cd-option-highlight) { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .cd-option.cd-option-active { color: var(--sp-accent-text); font-weight: 600; background: none; }
+html.sp-ui .cd-option.cd-option-disabled { color: var(--sp-text-disabled); }
+
+/* ── 49. Portal labels, small headings and IDs ─────────────────────────── */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) label:not(.consent-check, .checkbox-wrap, .confirm, .sc-drop, .dropzone, .cell-btn) {
+  font: 550 var(--sp-fs-sm)/1.35 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.team-title, .members-title, .review-form-title, .form-divider, .filter-count, .legend, .month-label, .detail-cell > span:first-child) {
+  font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.team-title, .members-title, .review-form-title) { font-size: var(--sp-fs-sm); font-weight: 600; color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.main, .wrap) :is(.filter-count, .legend, .month-label) { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+/* record IDs: a neutral mono chip (the accent is for actions, not labels) */
+html.sp-ui.nf-portal :is(.main, .wrap, .modal) :is(.req-id-badge, .project-code, .project-code-badge, .req-card-id, .bug-code) {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 0; border-radius: var(--sp-r-sm);
+  font: 400 var(--sp-fs-xs)/1 var(--sp-font-mono); letter-spacing: 0; text-transform: none;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: none;
+}
+
+/* ── 50. Admin pages (phase 4d) ────────────────────────────────────────── */
+/* the audit ledger on the admin portal is the protection strip */
+html.sp-ui.nf-portal .main .ledger {
+  display: flex; align-items: center; gap: var(--sp-5); flex-wrap: wrap;
+  margin: var(--sp-8) 0 0; padding: var(--sp-4) var(--sp-5); border: 0; border-radius: 20px;
+  background: rgba(var(--sp-ok-rgb), .08); box-shadow: none; color: var(--sp-text);
+}
+html.sp-ui.nf-portal .main .ledger :is(.ledger-title) { font: 600 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .main .ledger :is(.ledger-desc, .ledger-copy) { font-size: var(--sp-fs-sm); line-height: 1.5; color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main .ledger .ledger-meta { font: 400 var(--sp-fs-xs)/1.4 var(--sp-font-mono); letter-spacing: 0; color: var(--sp-text-3); }
+html.sp-ui.nf-portal .main .ledger .ledger-ok { color: var(--sp-ok); }
+html.sp-ui.nf-portal .main .ledger-breach { border: 0; border-radius: var(--sp-r-card); padding: var(--sp-3) var(--sp-4); background: rgba(var(--sp-bad-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal .main .ledger-breach strong { font-family: var(--sp-font-ui); letter-spacing: 0; color: var(--sp-bad); }
+html.sp-ui.nf-portal .main .ledger-breach code { color: var(--sp-text); }
+
+/* cards and forms inside the panel are flat groups with a hairline */
+html.sp-ui.nf-portal .main :is(.req-card, .project-card, .review-panel, .create-form, .team-section, .webhook-row, .import-results, .review-form, .form-card, .proj-card) {
+  margin: 0; padding: var(--sp-5) 0; border: 0; border-top: 1px solid var(--sp-hair); border-radius: 0; background: none; box-shadow: none;
+}
+html.sp-ui.nf-portal .main :is(.project-card-header, .review-top, .proj-card-header) { padding: 0 0 var(--sp-3); border: 0; background: none; }
+html.sp-ui.nf-portal .main :is(.project-title, .req-card-title) { font: 600 var(--sp-fs-md)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .main :is(.project-meta, .project-req-ref, .req-card-sub, .req-card-client, .review-info, .member-email, .muted-text) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main .member-avatar { border: 0; background: var(--sp-press); color: var(--sp-text); font-family: var(--sp-font-ui); }
+html.sp-ui.nf-portal .main .add-member-row { border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .main .btn-toggle-add { width: 100%; justify-content: center; border-radius: var(--sp-r-ctl); box-shadow: none; outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; background: transparent; }
+html.sp-ui.nf-portal .main .btn-toggle-add:hover { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui.nf-portal .main :is(.detail-row) { border: 0; background: none; }
+html.sp-ui.nf-portal .main .admin-note-existing { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text); }
+html.sp-ui.nf-portal .main :is(.webhook-secret, .webhook-hint code) { font-family: var(--sp-font-mono); border: 0; border-radius: var(--sp-r-sm); background: var(--sp-fill-1); box-shadow: var(--sp-inset); color: var(--sp-text); }
+html.sp-ui.nf-portal .main .webhook-hint { color: var(--sp-text-2); border: 0; background: none; }
+html.sp-ui.nf-portal .main .dropzone { border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main :is(.dropzone:hover, .dropzone.dragover) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+/* attendance matrix: day cells are quiet buttons, status keeps its colour */
+html.sp-ui.nf-portal .main .cell-btn { border: 0; border-radius: var(--sp-r-sm); font-family: var(--sp-font-ui); box-shadow: none; }
+html.sp-ui.nf-portal .main .cell-btn:not([class*="present"], [class*="absent"], [class*="half_day"], [class*="on_leave"], [class*="wfh"]) { background: var(--sp-hover); color: var(--sp-text-3); }
+html.sp-ui.nf-portal .main .emp-col { background: none; border: 0; color: var(--sp-text); }
+html.sp-ui.nf-portal .main .month-nav button { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text); min-width: 36px; min-height: 36px; }
+
+/* ── 51. Employee pages (phase 4e) ─────────────────────────────────────── */
+/* the team lead's task form is a raised group inside the panel (depth 3, no blur) */
+html.sp-ui.nf-portal .main .create-task-form {
+  margin: var(--sp-5) 0; padding: var(--sp-5); border: 0; border-radius: var(--sp-r-card);
+  background: var(--sp-fill-3); box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+html.sp-ui[data-theme="light"].nf-portal .main .create-task-form { background: rgba(255, 255, 255, .7); }
+html.sp-ui.nf-portal .main :is(.create-task-title, .tasks-title) { font: 600 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .main .members-strip { gap: var(--sp-2); }
+html.sp-ui.nf-portal .main .member-chip {
+  border: 0; border-radius: var(--sp-r-pill); padding: 4px 12px 4px 4px; background: var(--sp-hover); box-shadow: none;
+}
+html.sp-ui.nf-portal .main .member-chip-avatar { border: 0; background: var(--sp-press); color: var(--sp-text); font-family: var(--sp-font-ui); }
+html.sp-ui.nf-portal .main .member-chip-name { color: var(--sp-text); font-family: var(--sp-font-ui); }
+html.sp-ui.nf-portal .main :is(.project-block-header, .project-block-body, .task-card-top) { border: 0; background: none; }
+html.sp-ui.nf-portal .main :is(.project-block-title, .project-card-title, .task-title) { font: 600 var(--sp-fs-md)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .main :is(.task-meta, .project-card-meta, .progress-label, .progress-counts, .pending-note) { color: var(--sp-text-2); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .main .progress-track { height: 8px; border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .main .progress-fill { border-radius: inherit; background: var(--sp-accent); box-shadow: none; }
+html.sp-ui.nf-portal .main .progress-fill.complete { background: var(--sp-ok); }
+html.sp-ui.nf-portal .main .task-code { font-family: var(--sp-font-mono); color: var(--sp-text-2); }
+/* deployment portal bug counters: small tinted pills, not outlined mono boxes */
+html.sp-ui.nf-portal .main .bug-stats { gap: 6px; }
+html.sp-ui.nf-portal .main .bug-stat {
+  display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal .main .bug-stat.closed { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+html.sp-ui.nf-portal .main .bug-stat.open { background: rgba(var(--sp-warn-rgb), .13); color: var(--sp-warn); }
+html.sp-ui.nf-portal .main .priority-badge { border: 0; border-radius: var(--sp-r-pill); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+/* native file pickers inside the panel */
+html.sp-ui.nf-portal :is(.main, .modal) input[type="file"] {
+  box-sizing: border-box; width: 100%; min-height: 44px; padding: 6px; border: 0; border-radius: var(--sp-r-ctl);
+  background: var(--sp-fill-1); box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); color: var(--sp-text-2); font: 400 var(--sp-fs-sm) var(--sp-font-ui);
+}
+html.sp-ui.nf-portal :is(.main, .modal) input[type="file"]::file-selector-button {
+  min-height: 32px; margin-right: var(--sp-3); padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); font: 600 var(--sp-fs-xs) var(--sp-font-ui); cursor: pointer;
+}
+
+/* ── 52. Shared flows (phase 4g) ───────────────────────────────────────── */
+/* extra links in the profile pages' top bar */
+html.sp-ui .topnav .nav-divider { width: 1px; height: 20px; background: var(--sp-hair-strong); }
+html.sp-ui .topnav .nav-link {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none; color: var(--sp-text-2); background: none;
+}
+html.sp-ui .topnav .nav-link:hover { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .topnav :is(.btn-logout, .btn-profile) {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; text-decoration: none;
+}
+html.sp-ui .topnav .btn-logout { background: rgba(var(--sp-bad-rgb), .13); color: var(--sp-bad); }
+html.sp-ui .topnav .btn-logout:hover { background: rgba(var(--sp-bad-rgb), .22); }
+html.sp-ui .topnav .btn-profile { background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .topnav :is(.btn-logout, .btn-profile) svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* workspace landing (portals/index.php): island bar, panel, tiles */
+html.sp-ui .workspace-index .bar.sp-glass {
+  position: sticky; top: var(--sp-bar-inset); z-index: var(--sp-z-bar);
+  height: var(--sp-bar-h); margin: var(--sp-bar-inset) var(--sp-bar-inset) 0; padding: 0 var(--sp-2) 0 var(--sp-4); border: 0;
+}
+@media (max-width: 760px) { html.sp-ui .workspace-index .bar.sp-glass { --_radius: 20px; } }
+html.sp-ui .workspace-index .brand { font: 650 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .14em; color: var(--sp-text); }
+html.sp-ui .workspace-index .brand-mark svg { width: 20px; height: 20px; }
+html.sp-ui .workspace-index .account { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .workspace-index .btn-theme-toggle {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui .workspace-index .btn-theme-toggle .theme-icon svg { width: 15px; height: 15px; fill: currentColor; }
+html.sp-ui .workspace-index .intro { color: var(--sp-text-2); font-size: var(--sp-fs-md); }
+html.sp-ui .workspace-index .role-chip::before { background: var(--sp-accent); }
+html.sp-ui .workspace-index .dash-grid { gap: var(--sp-2); margin-top: var(--sp-8); }
+html.sp-ui .workspace-index .dash-card { flex-direction: column; gap: var(--sp-3); opacity: 1; animation: none; overflow: visible; }
+html.sp-ui .workspace-index .dash-card::before { content: none; }
+html.sp-ui .workspace-index .dash-card:hover { box-shadow: none; }
+html.sp-ui .workspace-index .dash-icon { width: 40px; height: 40px; }
+html.sp-ui .workspace-index .dash-card h3 { font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .workspace-index .dash-card p { font-size: var(--sp-fs-sm); color: var(--sp-text-2); }
+html.sp-ui .workspace-index .dash-card:hover .dash-arrow { color: var(--sp-accent-text); }
+
+/* handover terminal: the terminal is the glass panel, the console an inset well */
+html.sp-ui.nf-portal .ht-main { padding-top: var(--sp-6); }
+html.sp-ui.nf-portal .ht-terminal { max-width: 760px; }
+html.sp-ui.nf-portal .ht-wash { display: none; }
+html.sp-ui.nf-portal :is(.ht-back, .sc-back) {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); color: var(--sp-text-2); text-decoration: none; background: var(--sp-hover);
+}
+html.sp-ui.nf-portal :is(.ht-back, .sc-back):hover { color: var(--sp-text); background: var(--sp-press); }
+html.sp-ui.nf-portal .ht-head { padding: 0 0 var(--sp-4); border: 0; background: none; }
+html.sp-ui.nf-portal .ht-head h1 { font: 650 var(--sp-fs-xl)/1.2 var(--sp-font-ui); letter-spacing: -.015em; text-transform: none; color: var(--sp-text); background: none; -webkit-text-fill-color: currentColor; filter: none; }
+html.sp-ui.nf-portal .ht-state { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border: 0; border-radius: var(--sp-r-pill); font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .ht-state.run { background: rgba(var(--sp-info-rgb), .13); color: var(--sp-info); }
+html.sp-ui.nf-portal .ht-state.ok { background: rgba(var(--sp-ok-rgb), .13); color: var(--sp-ok); }
+html.sp-ui.nf-portal .ht-state.fail { background: rgba(var(--sp-bad-rgb), .13); color: var(--sp-bad); }
+html.sp-ui.nf-portal .ht-form label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .ht-row input {
+  min-height: 44px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font: 400 var(--sp-fs-sm)/1 var(--sp-font-mono);
+}
+html.sp-ui.nf-portal .ht-row input:focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui.nf-portal .ht-hint { color: var(--sp-text-2); font-size: var(--sp-fs-xs); }
+html.sp-ui.nf-portal :is(.ht-btn, .sc-btn) {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: var(--sp-accent); color: var(--sp-on-accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+html.sp-ui.nf-portal :is(.ht-btn, .sc-btn):hover:not(:disabled) { background: color-mix(in srgb, var(--sp-accent) 88%, #fff); }
+html.sp-ui.nf-portal :is(.ht-btn-ghost, .sc-btn.ghost) { background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); }
+html.sp-ui.nf-portal :is(.ht-btn-ghost, .sc-btn.ghost):hover:not(:disabled) { background: var(--sp-press); }
+html.sp-ui.nf-portal .ht-btn-danger { background: var(--sp-bad-solid); color: #fff; }
+html.sp-ui.nf-portal :is(.ht-console, .ht-payload pre) {
+  border: 0; border-radius: var(--sp-r-card); background: rgba(3, 4, 7, .55); box-shadow: var(--sp-inset);
+  font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono); color: var(--sp-text);
+}
+html.sp-ui[data-theme="light"].nf-portal :is(.ht-console, .ht-payload pre) { background: var(--sp-fill-1); }
+html.sp-ui.nf-portal .ht-line .ok { color: var(--sp-ok); }
+html.sp-ui.nf-portal .ht-line .bad { color: var(--sp-bad); }
+html.sp-ui.nf-portal .ht-line .warn { color: var(--sp-warn); }
+html.sp-ui.nf-portal :is(.ht-payload, .ht-receipt) { border: 0; background: none; box-shadow: none; padding-left: 0; padding-right: 0; }
+html.sp-ui.nf-portal .ht-warn { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-warn-rgb), .12); color: var(--sp-text); }
+html.sp-ui.nf-portal .ht-receipt-title { font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal .ht-receipt dt { font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+
+/* Scan Center: the main column is the panel; drops, stage and matrix inside are flat */
+html.sp-ui.nf-portal .sc-eyebrow { display: none; }
+html.sp-ui.nf-portal .sc-lede { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .sc-tenant { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border: 0; border-radius: var(--sp-r-pill); font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text-2); }
+html.sp-ui.nf-portal .sc-notice { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text); }
+html.sp-ui.nf-portal .sc-drop {
+  border: 0; border-radius: var(--sp-r-card); padding: var(--sp-5); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2);
+}
+html.sp-ui.nf-portal :is(.sc-drop:hover, .sc-drop:focus-visible, .sc-drop.over) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui.nf-portal .sc-drop-title { font: 600 var(--sp-fs-md)/1.3 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.sc-drop-hint, .sc-drop-meta) { color: var(--sp-text-2); }
+html.sp-ui.nf-portal :is(.sc-stage, .sc-matrix, .sc-metrics) { border: 0; border-radius: 0; background: none; box-shadow: none; padding-left: 0; padding-right: 0; }
+html.sp-ui.nf-portal .sc-stage-wash { display: none; }
+html.sp-ui.nf-portal .sc-matrix-head h2 { font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; text-transform: none; color: var(--sp-text); }
+html.sp-ui.nf-portal :is(.sc-metrics dt, .sc-table th) { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3); }
+html.sp-ui.nf-portal .sc-metrics dd { font: 600 var(--sp-fs-xl)/1.1 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui.nf-portal .sc-sevbar button {
+  min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; box-shadow: inset 0 0 0 1px var(--sp-hair);
+}
+html.sp-ui.nf-portal .sc-sevbar button[aria-pressed="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; }
+html.sp-ui.nf-portal .sc-filters :is(select, input) {
+  min-height: 40px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font: 400 var(--sp-fs-sm)/1 var(--sp-font-ui);
+}
+html.sp-ui.nf-portal .sc-table { border-collapse: collapse; }
+html.sp-ui.nf-portal .sc-table :is(th, td) { background: none; border: 0; }
+html.sp-ui.nf-portal .sc-table td { border-top: 1px solid var(--sp-hair); color: var(--sp-text); }
+html.sp-ui.nf-portal .sc-table tbody tr:is(:hover, :focus-visible) { background: var(--sp-row-hover); }
+html.sp-ui.nf-portal .sc-sev { border: 0; border-radius: var(--sp-r-pill); font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; }
+html.sp-ui.nf-portal .sc-empty { color: var(--sp-text-2); }
+html.sp-ui.nf-portal .sc-drawer-panel {
+  border: 0; border-radius: var(--sp-r-panel); background: var(--sp-fill-4);
+  -webkit-backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4)); backdrop-filter: blur(var(--sp-blur-4)) saturate(var(--sp-sat-4));
+  box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text);
+}
+html.sp-ui.nf-portal .sc-drawer pre { border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); font-family: var(--sp-font-mono); }
+html.sp-ui.nf-portal .sc-toast { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text); }
+
+/* profile page labels and value rows */
+html.sp-ui.nf-portal .main .profile-info-label { font: 500 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui.nf-portal .main :is(.profile-tabs, .tab-bar) { border-color: var(--sp-hair); }
+html.sp-ui.nf-portal .main .tab-btn { font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+html.sp-ui.nf-portal .main :is(.tab-btn.active, .tab-btn:hover) { color: var(--sp-text); border-bottom-color: var(--sp-accent); }
+
+/* ── 53. Hastra Labs (phase 4h) ────────────────────────────────────────── */
+/* the Labs token layer (assets/css/tools-cyber.css) follows the spatial tokens */
+html.sp-ui {
+  --lx-accent: var(--sp-accent);
+  --lx-accent-rgb: var(--sp-accent-rgb);
+  --lx-accent-2: var(--sp-accent-text);
+  --lx-text: var(--sp-text);
+  --lx-dim: var(--sp-text-2);
+  --lx-mute: var(--sp-text-3);
+  --lx-hair: var(--sp-hair);
+  --lx-hair-strong: var(--sp-hair-strong);
+  --lx-plate: var(--sp-fill-3);
+  --lx-plate-2: var(--sp-fill-3);
+  --lx-field: var(--sp-fill-1);
+  --lx-ok: var(--sp-ok); --lx-warn: var(--sp-warn); --lx-crit: var(--sp-bad); --lx-info: var(--sp-info);
+  --lx-mono: var(--sp-font-mono);
+  --lx-sans: var(--sp-font-ui);
+  --lx-radius: var(--sp-r-card);
+}
+/* no laser beams: focus has the ring, hover has the fill */
+html.sp-ui .lx-body :is(.btn-beam, .lx-btn, .lx-chip, .lx-tab, .lx-card, .lx-drop, .lx-subnav button, .lx-seg-opt input + span)::before { content: none; }
+
+/* header: the floating island; module tabs: a pill row under it */
+html.sp-ui .lx-top {
+  top: var(--sp-bar-inset); margin: var(--sp-bar-inset) var(--sp-bar-inset) 0; min-height: var(--sp-bar-h); padding: 6px var(--sp-2) 6px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3)); backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+@media (max-width: 760px) { html.sp-ui .lx-top { border-radius: 20px; } }
+html.sp-ui .lx-brand-tx b { font: 650 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .14em; }
+html.sp-ui .lx-brand-tx i { font: 500 var(--sp-fs-xs)/1.2 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+html.sp-ui .lx-tabs { gap: var(--sp-1); margin: var(--sp-3) auto 0; padding: 0 clamp(16px, 4vw, 48px); border: 0; background: none; }
+html.sp-ui .lx-tab {
+  min-height: 40px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none;
+}
+html.sp-ui .lx-tab:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .lx-tab.is-active { color: var(--sp-text); font-weight: 650; background: var(--sp-fill-3); border: 0; box-shadow: var(--sp-edge), var(--sp-shadow-3); }
+html.sp-ui .lx-tab-num { font-family: var(--sp-font-ui); color: var(--sp-text-3); }
+html.sp-ui .lx-tab:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* the page panel: everything in .lx-main sits on one depth-2 glass */
+html.sp-ui .lx-main {
+  box-sizing: border-box; isolation: isolate;
+  width: min(1320px, calc(100% - 2 * var(--sp-gutter))); margin: var(--sp-5) auto var(--sp-8); padding: var(--sp-panel-pad);
+  border-radius: var(--sp-r-panel); background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2)); backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2);
+}
+@media (max-width: 760px) { html.sp-ui .lx-main { width: calc(100% - 16px); border-radius: 24px; } }
+html.sp-ui .lx-hero { padding: 0 0 var(--sp-6); }
+html.sp-ui .lx-eyebrow { display: none; }
+html.sp-ui .lx-h1 { font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display); }
+/* emphasis in titles comes from weight, not a second colour */
+html.sp-ui .lx-h1 em { color: inherit; font-weight: 650; }
+html.sp-ui .lx-h2 { font: 600 var(--sp-fs-lg)/1.3 var(--sp-font-ui); letter-spacing: -.01em; }
+html.sp-ui .lx-h3 { font: 600 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui .lx-lead { color: var(--sp-text-2); font-size: var(--sp-fs-md); }
+
+/* panes inside the panel are raised groups (depth 3, no blur: the panel already blurs) */
+html.sp-ui .lx-pane {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-3);
+  -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+html.sp-ui[data-theme="light"] .lx-pane { background: rgba(255, 255, 255, .7); }
+html.sp-ui .lx-pane--danger { box-shadow: var(--sp-edge), var(--sp-shadow-3), inset 0 0 0 1.5px rgba(var(--sp-bad-rgb), .35); }
+/* tool cards on the Labs home: flat tiles that tilt */
+html.sp-ui .lx-card {
+  border: 0; border-radius: var(--sp-r-card); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none;
+  transform-style: preserve-3d; transition: background var(--sp-dur-2), transform var(--sp-dur-4) var(--sp-ease-out);
+}
+html.sp-ui .lx-card:hover { background: var(--sp-hover); transform: none; }
+html.sp-ui .lx-card-icon { border: 0; border-radius: var(--sp-r-sm); background: rgba(var(--sp-accent-rgb), .13); color: var(--sp-accent-text); }
+html.sp-ui .lx-card-go { font: 600 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+
+/* labels, fields, drop zones */
+html.sp-ui .lx-label { font: 550 var(--sp-fs-sm)/1.3 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text); }
+html.sp-ui :is(.lx-input, .lx-textarea, .lx-select) {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-fill-1); color: var(--sp-text);
+  box-shadow: var(--sp-inset), inset 0 0 0 1px var(--sp-hair); font-family: var(--sp-font-ui);
+}
+html.sp-ui :is(.lx-input, .lx-textarea, .lx-select):focus { outline: 2px solid var(--sp-ring); outline-offset: 2px; box-shadow: var(--sp-inset); }
+html.sp-ui .lx-drop {
+  border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset);
+  outline: 1.5px dashed var(--sp-hair-strong); outline-offset: -1.5px; color: var(--sp-text-2);
+}
+html.sp-ui :is(.lx-drop:hover, .lx-drop:focus-visible, .lx-drop.is-over) { background: rgba(var(--sp-accent-rgb), .07); outline-color: var(--sp-accent); }
+html.sp-ui .lx-help { color: var(--sp-text-2); }
+html.sp-ui .lx-kv dt { font: 500 var(--sp-fs-xs)/1.6 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); }
+
+/* segmented choices (encrypt / decrypt, engines) */
+html.sp-ui .lx-seg-opt span {
+  border: 0; border-radius: var(--sp-r-ctl); background: var(--sp-hover); box-shadow: inset 0 0 0 1px var(--sp-hair); color: var(--sp-text-2);
+}
+html.sp-ui .lx-seg-opt input:checked + span { background: rgba(var(--sp-accent-rgb), .12); box-shadow: inset 0 0 0 1.5px rgba(var(--sp-accent-rgb), .6); }
+html.sp-ui .lx-seg-opt input:focus-visible + span { outline: 2px solid var(--sp-ring); outline-offset: 2px; }
+
+/* buttons: pills in sentence case */
+html.sp-ui .lx-btn {
+  min-height: 44px; padding: 0 var(--sp-5); border: 0; border-radius: var(--sp-r-pill);
+  background: var(--sp-accent); color: var(--sp-on-accent); filter: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), var(--sp-shadow-accent);
+  font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+  transition: transform var(--sp-dur-3) var(--sp-ease-spring), background var(--sp-dur-2), box-shadow var(--sp-dur-3) var(--sp-ease-out);
+}
+html.sp-ui .lx-btn:hover:not(:disabled) { filter: none; background: color-mix(in srgb, var(--sp-accent) 88%, #fff); transform: translateY(var(--sp-lift)); }
+html.sp-ui .lx-btn--ghost { background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); }
+html.sp-ui .lx-btn--ghost:hover:not(:disabled) { background: var(--sp-press); }
+html.sp-ui .lx-btn--ghost[aria-pressed="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); box-shadow: none; }
+html.sp-ui .lx-btn--danger { background: var(--sp-bad-solid); }
+html.sp-ui .lx-btn--sm { min-height: 32px; padding: 0 var(--sp-3); font-size: var(--sp-fs-xs); border-radius: var(--sp-r-pill); }
+html.sp-ui .lx-btn:focus-visible { outline: 2px solid var(--sp-ring); outline-offset: 3px; }
+html.sp-ui :is(.lx-chip, .lx-badge) {
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-hover); color: var(--sp-text-2);
+  font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; box-shadow: none;
+}
+html.sp-ui .lx-subnav button { border: 0; border-radius: var(--sp-r-pill); font: 550 var(--sp-fs-xs)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; background: var(--sp-hover); color: var(--sp-text); }
+html.sp-ui .lx-subnav button[aria-selected="true"] { background: rgba(var(--sp-accent-rgb), .14); color: var(--sp-accent-text); }
+
+/* the result viewport: a console well, readable in both themes */
+html.sp-ui .lx-out {
+  border: 0; border-radius: var(--sp-r-card); box-shadow: var(--sp-inset);
+  background: rgba(3, 4, 7, .62); color: var(--sp-text); font: 400 var(--sp-fs-sm)/1.6 var(--sp-font-mono);
+}
+html.sp-ui[data-theme="light"] .lx-out { background: var(--sp-fill-1); color: var(--sp-text); }
+html.sp-ui .lx-body code { border: 0; background: var(--sp-hover); font-family: var(--sp-font-mono); }
+
+/* tables, toast, guides, rules */
+html.sp-ui .lx-table :is(th) { font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3); border-color: var(--sp-hair); }
+html.sp-ui .lx-table td { border-color: var(--sp-hair); }
+html.sp-ui .lx-toast { border: 0; border-radius: var(--sp-r-pill); background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text); }
+html.sp-ui .lx-guide {
+  border: 0; border-radius: 18px; background: var(--sp-solid-4); box-shadow: var(--sp-edge), var(--sp-shadow-4); color: var(--sp-text);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html.sp-ui .lx-guide-tag { font-family: var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+html.sp-ui .lx-rules li.is-hit::before { box-shadow: none; }
+html.sp-ui .lx-footwrap { color: var(--sp-text-2); }
+html.sp-ui .lx-enterprise { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border-radius: var(--sp-r-pill); font: 600 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-accent-text); }
+html.sp-ui .lx-enterprise:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .lx-card-icon { display: grid; place-items: center; width: 40px; height: 40px; }
+html.sp-ui :has(> .hx-copy--corner) > :is(.lx-out, pre) { padding-right: 84px; }
+
+/* ── 54. Legal pages (phase 4i) ────────────────────────────────────────── */
+html.sp-ui .legal-page { background: none; font-family: var(--sp-font-ui); }
+html.sp-ui .legal-top {
+  top: var(--sp-bar-inset); z-index: var(--sp-z-bar); min-height: var(--sp-bar-h);
+  margin: var(--sp-bar-inset) var(--sp-bar-inset) 0; padding: 6px var(--sp-2) 6px var(--sp-4);
+  border: 0; border-radius: var(--sp-r-pill); background: var(--sp-fill-3);
+  -webkit-backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3)); backdrop-filter: blur(var(--sp-blur-3)) saturate(var(--sp-sat-3));
+  box-shadow: var(--sp-edge), var(--sp-shadow-3);
+}
+@media (max-width: 760px) { html.sp-ui .legal-top { border-radius: 20px; } }
+html.sp-ui .legal-brand { font: 650 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: .1em; color: var(--sp-text); }
+html.sp-ui .legal-top nav a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-3); border: 0; border-radius: var(--sp-r-pill);
+  font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none; color: var(--sp-text-2); background: none;
+}
+html.sp-ui .legal-top nav a:hover { color: var(--sp-text); background: var(--sp-hover); }
+html.sp-ui .legal-top nav a[aria-current="page"] { color: var(--sp-accent-text); font-weight: 650; background: rgba(var(--sp-accent-rgb), .14); }
+html.sp-ui .legal-theme {
+  min-height: 36px; padding: 0 var(--sp-4); border: 0; border-radius: var(--sp-r-pill); cursor: pointer;
+  background: var(--sp-hover); color: var(--sp-text); box-shadow: var(--sp-edge); font: 550 var(--sp-fs-sm)/1 var(--sp-font-ui); letter-spacing: 0; text-transform: none;
+}
+/* the document is the page panel (Read mode: measure and rhythm first) */
+html.sp-ui .legal-doc {
+  box-sizing: border-box; margin: var(--sp-6) auto 0; padding: clamp(24px, 4vw, 48px);
+  border: 0; border-radius: var(--sp-r-panel); background: var(--sp-fill-2);
+  -webkit-backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2)); backdrop-filter: blur(var(--sp-blur-2)) saturate(var(--sp-sat-2));
+  box-shadow: var(--sp-edge), var(--sp-shadow-2); color: var(--sp-text); font: 400 var(--sp-fs-md)/1.7 var(--sp-font-ui);
+}
+@media (max-width: 760px) { html.sp-ui .legal-doc { margin: var(--sp-4) 8px 0; border-radius: 24px; } }
+html.sp-ui .legal-doc h1 { font: 650 var(--sp-fs-display)/var(--sp-lh-tight) var(--sp-font-ui); letter-spacing: var(--sp-track-display); color: var(--sp-text); }
+html.sp-ui .legal-doc .legal-meta { font-size: var(--sp-fs-xs); color: var(--sp-text-2); }
+html.sp-ui .legal-doc h2 { margin-top: var(--sp-10); font: 600 var(--sp-fs-xl)/1.3 var(--sp-font-ui); letter-spacing: -.015em; color: var(--sp-text); }
+html.sp-ui .legal-doc h3 { font: 600 var(--sp-fs-lg)/1.35 var(--sp-font-ui); color: var(--sp-text); }
+html.sp-ui .legal-doc :is(p, li) { color: var(--sp-text); max-width: 72ch; }
+html.sp-ui .legal-doc a { color: var(--sp-accent-text); text-underline-offset: 3px; }
+html.sp-ui .legal-doc code { border: 0; border-radius: 6px; background: var(--sp-hover); font-family: var(--sp-font-mono); }
+html.sp-ui .legal-doc .legal-note { border: 0; border-radius: var(--sp-r-card); background: rgba(var(--sp-info-rgb), .1); color: var(--sp-text); }
+html.sp-ui .legal-doc table { border-collapse: collapse; }
+html.sp-ui .legal-doc :is(th, td) { border: 0; border-top: 1px solid var(--sp-hair); background: none; }
+html.sp-ui .legal-doc th { border-top: 0; font: 500 var(--sp-fs-xs)/1.3 var(--sp-font-ui); letter-spacing: var(--sp-track-label); text-transform: none; color: var(--sp-text-3); }
+html.sp-ui .legal-toc { border: 0; border-radius: var(--sp-r-card); background: var(--sp-fill-1); box-shadow: var(--sp-inset); }

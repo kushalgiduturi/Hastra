@@ -148,7 +148,7 @@ $status_labels = [
 <title>Deployment Portal · Hastra</title>
 <?php astra_page_meta('Deployment Portal · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -156,32 +156,13 @@ $status_labels = [
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p  { font-size: 13px; color: var(--text-dim); }
 
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-  .stat-card {
-    background: var(--navy-card); border: 1px solid var(--border-dim);
-    border-radius: 4px; padding: 1.2rem 1.4rem; position: relative; overflow: hidden;
-  }
-  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .stat-card.green::before  { background: var(--green); }
-  .stat-card.yellow::before { background: var(--yellow); }
   .stat-card.cyan::before   { background: var(--cyan); }
-  .stat-card.red::before    { background: var(--red); }
-  .stat-label { font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
-  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
 
   .alert {
     display: flex; align-items: flex-start; gap: 8px;
@@ -194,18 +175,7 @@ $status_labels = [
   .alert.success svg { fill: var(--green); }
   .alert.error   svg { fill: var(--red); }
 
-  .section {
-    background: var(--navy-card); border: 1px solid var(--border-dim);
-    border-radius: 4px; overflow: hidden; margin-bottom: 1.5rem;
-  }
-  .section-header {
-    display: flex; align-items: center; gap: 8px;
-    padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim);
-    background: var(--section-header-bg);
-    font-size: 13px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
-  }
   .section-header svg { width: 15px; height: 15px; fill: var(--accent-bright); }
-  .section-body { padding: 1.4rem; }
 
   .badge {
     display: inline-block; padding: 2px 8px; border-radius: 2px;
@@ -308,10 +278,11 @@ $status_labels = [
   }
 
   @media (max-width: 768px) {
-    .stats-row { grid-template-columns: 1fr 1fr; }
   }
 </style>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/tour.css?v=<?= ASSET_VERSION ?>">
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body data-tour-page="emlpoyee/deployment_portal">
 

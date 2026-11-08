@@ -8,6 +8,8 @@ import { dbFor } from "../../_lib/db";
 import { dbDecrypt, blindIndex } from "../../_lib/crypto";
 import { appendAuditLog } from "../../_lib/audit-chain";
 import { createSession } from "../../_lib/session";
+import { roleFor } from "../../_lib/signup";
+import { createCompanyFor, findCompanyByName, type PendingSignup } from "../../_lib/companies";
 
 const MAX_ATTEMPTS = 5;
 
@@ -34,8 +36,41 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     return Response.json({ error: "Invalid code" }, { status: 401 });
   }
 
+  // A register code only activates a pending account, and a login code only
+  // signs in an active one: a code from one flow never opens the other.
+  if (purpose === "login" && user.status !== "active") return Response.json({ error: "Invalid code" }, { status: 401 });
+  if (purpose === "register" && user.status !== "pending_verification") {
+    return Response.json({ error: "This account is already verified. Sign in instead." }, { status: 409 });
+  }
+
   const patch: Record<string, unknown> = { otp: null, otp_expiry: null, otp_attempts: 0 };
-  if (purpose === "register") patch.status = "active";
+  let role: string = user.role;
+  if (purpose === "register") {
+    patch.status = "active";
+    // verify_register.php: the track's company is created now, owned by this
+    // account, and the role comes from the track (never from the request).
+    const signup = user.signup as PendingSignup | null;
+    if (signup?.flow) {
+      role = roleFor(signup.flow);
+      const company = (await findCompanyByName(db, signup.company_name)) ? null : await createCompanyFor(db, user.id, signup, role as "admin" | "client");
+      if (!company) {
+        // The pending account stays (its audit entry points at it), with no
+        // live code, so this email can sign up again with another track.
+        await db.from("users").update({ otp: null, otp_expiry: null, otp_attempts: 0 }).eq("id", user.id);
+        return Response.json(
+          { error: `${signup.company_name} was registered on Hastra while you were verifying. Ask its IT Manager to add you to the team.` },
+          { status: 409 },
+        );
+      }
+      Object.assign(patch, {
+        role,
+        company_id: company.id,
+        company_name: company.name,
+        client_role: role === "client" ? "it_manager" : null,
+        signup: null,
+      });
+    }
+  }
   await db.from("users").update(patch).eq("id", user.id);
 
   const name = await dbDecrypt(user.name, env.HASTRA_DB_ENC_KEY);
@@ -51,7 +86,7 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   });
 
   if (purpose === "register") {
-    return Response.json({ ok: true, status: "active" });
+    return Response.json({ ok: true, status: "active", role });
   }
 
   const { cookie } = await createSession(db, env, request, user.id);

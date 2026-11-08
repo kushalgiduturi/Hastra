@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Sign in · Hastra</title>
 <?php astra_seo_meta(['title' => 'Sign in · Hastra', 'description' => 'Sign in to your Hastra workspace or client gateway.', 'path' => 'signin', 'robots' => 'noindex, follow']); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-authkit.css?v=<?= ASSET_VERSION ?>">
 <?php astra_compliance_css(); ?>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
@@ -167,10 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     height: auto;
     background-color: var(--navy);
     background-image:
-      radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%),
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: auto, 40px 40px, 40px 40px;
+      radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -337,7 +334,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     opacity: 0;
   }
   .card.revealed .brand-icon {
-    animation: hastraIconPop .45s .3s cubic-bezier(.34,1.56,.64,1) forwards;
+    animation: hastraIconPop .45s .3s cubic-bezier(.16,1,.3,1) forwards;
   }
   .card.revealed .brand-text .title {
     animation: hastraTextIntro .6s .6s cubic-bezier(.16,1,.3,1) forwards;
@@ -641,139 +638,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* ═══ AuthKit "Frosted Glass Cathedral at Midnight": deep-glass card,
-     void-violet submit, pill ghost tabs ═══
-     Uses AuthKit's own fixed tokens (assets/css/theme-authkit.css) rather
-     than the app's --navy-card/--accent pair, which flips with the
-     light/dark toggle — AuthKit is one deliberate dark aesthetic, so the
-     card looks the same regardless of the visitor's theme preference. The
-     `[data-theme="light"] .card` block re-asserts the same values for
-     exactly the reason the comment it replaces already explained: that
-     selector is more specific than a bare `.card` and would otherwise win. */
-  .card {
-    background: var(--surface-deep-glass) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid var(--color-glass-edge) !important;
-    border-radius: var(--radius-card) !important;
-    box-shadow: var(--shadow-modal) !important;
-  }
-  [data-theme="light"] .card {
-    background: var(--surface-deep-glass) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid var(--color-glass-edge) !important;
-    border-radius: var(--radius-card) !important;
-    box-shadow: var(--shadow-modal) !important;
-  }
-  .card::before { display: none !important; }
-
-  .brand {
-    display: flex; flex-direction: column; align-items: center;
-    text-align: center; gap: 6px; margin-bottom: 1rem !important;
-  }
-  .brand-icon {
-    width: 34px !important; height: 34px !important;
-    background: none !important; border-radius: 0 !important;
-  }
-  .brand-icon svg { width: 34px !important; height: 34px !important; fill: var(--color-frost-glow) !important; }
-  .brand-text { display: flex; flex-direction: column; align-items: center; }
-  .brand-text .title {
-    font-family: var(--font-sans) !important;
-    font-size: 21px !important; font-weight: 700 !important;
-    letter-spacing: .01em !important; text-transform: none !important;
-    background: var(--gradient-skywash) !important;
-    -webkit-background-clip: text !important; background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-  }
-  .brand-text .sub { display: none !important; }
-
-  .card h1, .card h2 {
-    font-family: var(--font-sans) !important;
-    font-size: 19px !important; font-weight: 600 !important;
-    letter-spacing: .005em !important; margin: 0 0 4px !important;
-    color: var(--color-ice-highlight) !important;
-  }
-  .card .subtitle, .card p.sub {
-    font-size: 13.5px !important; margin: 0 0 1.8rem !important;
-    color: var(--color-moon-mist) !important;
-  }
-
-  .card label {
-    font-size: 11px !important; letter-spacing: .07em !important; font-weight: 500 !important;
-    color: var(--color-moon-mist) !important;
-  }
-
-  /* core/theme.css carries app-wide [data-theme="light"] overrides for
-     bare `input[type=...]` and `.btn-login.btn-login` (a doubled-class
-     specificity trick) so every OTHER page's buttons/fields stay legible in
-     light mode. Those rules tie or beat a plain `.card input[...]`/
-     `.card .btn-login` selector on specificity, so every declaration below
-     is duplicated under an explicit `[data-theme="light"]` prefix to
-     guarantee AuthKit's own look wins regardless of the visitor's theme
-     toggle — this card is deliberately theme-invariant. */
-  .card input[type="email"], .card input[type="password"], .card input[type="text"],
-  .card input[type="tel"], .card select, .card textarea,
-  [data-theme="light"] .card input[type="email"], [data-theme="light"] .card input[type="password"],
-  [data-theme="light"] .card input[type="text"], [data-theme="light"] .card input[type="tel"],
-  [data-theme="light"] .card select, [data-theme="light"] .card textarea {
-    background: rgba(199, 211, 234, 0.06) !important;
-    border: 1px solid var(--color-glass-edge) !important;
-    border-radius: var(--radius-control) !important;
-    color: #ffffff !important;
-    padding: 11px 13px !important;
-  }
-  .card input[type="email"]::placeholder, .card input[type="password"]::placeholder,
-  .card input[type="text"]::placeholder, .card input[type="tel"]::placeholder,
-  [data-theme="light"] .card input[type="email"]::placeholder, [data-theme="light"] .card input[type="password"]::placeholder,
-  [data-theme="light"] .card input[type="text"]::placeholder, [data-theme="light"] .card input[type="tel"]::placeholder {
-    color: rgba(199, 211, 234, 0.6) !important;
-  }
-  .card input[type="email"]:focus, .card input[type="password"]:focus,
-  .card input[type="text"]:focus, .card input[type="tel"]:focus,
-  [data-theme="light"] .card input[type="email"]:focus, [data-theme="light"] .card input[type="password"]:focus,
-  [data-theme="light"] .card input[type="text"]:focus, [data-theme="light"] .card input[type="tel"]:focus {
-    border-color: var(--accent) !important;
-    background: rgba(199, 211, 234, 0.06) !important;
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18) !important;
-  }
-
-  .card button[type="submit"], .card .btn-login, .card .btn-send,
-  .card .btn-submit, .card .btn-primary, .card a.btn-primary,
-  [data-theme="light"] .card button[type="submit"], [data-theme="light"] .card .btn-login,
-  [data-theme="light"] .card .btn-send, [data-theme="light"] .card .btn-submit,
-  [data-theme="light"] .card .btn-primary, [data-theme="light"] .card a.btn-primary {
-    background: var(--accent) !important;
-    color: #ffffff !important;
-    border-color: var(--accent) !important;
-    border-radius: var(--radius-control) !important;
-    font-family: var(--font-sans) !important;
-    font-weight: 600 !important;
-    letter-spacing: .02em !important;
-    text-transform: none !important;
-    box-shadow: 0 8px 24px -8px rgba(var(--accent-rgb), 0.5) !important;
-    transition: transform .15s, box-shadow .15s, background .15s !important;
-  }
-  .card button[type="submit"]:hover, .card .btn-login:hover, .card .btn-send:hover,
-  .card .btn-submit:hover, .card .btn-primary:hover, .card a.btn-primary:hover,
-  [data-theme="light"] .card button[type="submit"]:hover, [data-theme="light"] .card .btn-login:hover,
-  [data-theme="light"] .card .btn-send:hover, [data-theme="light"] .card .btn-submit:hover,
-  [data-theme="light"] .card .btn-primary:hover, [data-theme="light"] .card a.btn-primary:hover {
-    background: var(--accent-dim) !important;
-    box-shadow: 0 8px 28px -6px rgba(var(--accent-rgb), 0.7) !important;
-    transform: translateY(-1px);
-  }
-
-  [data-theme="light"] .card input[type="email"], [data-theme="light"] .card input[type="password"],
-  [data-theme="light"] .card input[type="text"], [data-theme="light"] .card input[type="tel"] {
-    background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important;
-  }
-  [data-theme="light"] .card input[type="email"]::placeholder, [data-theme="light"] .card input[type="password"]::placeholder,
-  [data-theme="light"] .card input[type="text"]::placeholder, [data-theme="light"] .card input[type="tel"]::placeholder {
-    color: #5f6c82 !important;
-  }
-
-  .card .footer-links a, .card .forgot-link { color: var(--color-frost-glow) !important; }
+  /* spatial UI: card, fields, actions and the overview are styled by
+     assets/css/theme-spatial.css (part 4); this block keeps layout only. */
 
   /* ── Two-portal sliding gate: ghost pill tabs, per AuthKit's "Ghost
      Buttons & Social Providers" treatment (999px radius, translucent
@@ -909,8 +775,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .card .footer-links a, .card .forgot-link, .checkbox-wrap { display: inline-flex; align-items: center; min-height: 48px; }
     .card input[type="checkbox"] { min-width: 24px; min-height: 24px; }
   }
-  html.low-perf-mode .card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body data-intro-manual data-cursor-off>
 
@@ -946,7 +813,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="auth-wrapper">
 <div class="auth-stage" id="auth-stage" data-portal="<?= $active_portal ?>">
 
-<aside class="auth-info text-fog-scrim" id="auth-info" aria-label="About the selected portal">
+<aside class="auth-info sp-glass sp-auth-info" id="auth-info" aria-label="About the selected portal">
   <div class="info-stack">
     <div class="info-block<?= $active_portal === 'client' ? ' is-active' : '' ?>" id="info-client"<?= $active_portal === 'client' ? '' : ' inert aria-hidden="true"' ?>>
       <span class="info-badge"><i></i>Client portal</span>
@@ -973,7 +840,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 </aside>
 
-<div class="card" id="auth-card">
+<div class="card sp-glass sp-auth-card" id="auth-card">
 
   <!-- Brand -->
   <div class="brand">

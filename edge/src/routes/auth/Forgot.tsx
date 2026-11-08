@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../lib/api";
+import { AuthShell } from "../../components/spatial/AuthShell";
+import { FloatingInput } from "../../components/watermelon/floating-input";
+import { Button } from "../../components/watermelon/button";
 
 export default function Forgot() {
   const [email, setEmail] = useState("");
@@ -16,15 +19,19 @@ export default function Forgot() {
   }
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "sans-serif" }}>
-      <h1>Reset your password</h1>
-      <form onSubmit={onSubmit}>
-        <label>
-          Email
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required style={{ display: "block", width: "100%" }} />
-        </label>
-        <button type="submit" disabled={busy}>{busy ? "Sending…" : "Send reset code"}</button>
+    <AuthShell
+      title="Reset your password"
+      lead="Enter your account email and we send you a reset code."
+      footer={
+        <span>
+          Remembered it? <Link to="/signin" className="font-medium text-sp-accent-text hover:underline">Back to sign in</Link>
+        </span>
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <FloatingInput label="Email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" required />
+        <Button type="submit" size="lg" loading={busy} loadingLabel="Sending" className="mt-2">Send reset code</Button>
       </form>
-    </main>
+    </AuthShell>
   );
 }

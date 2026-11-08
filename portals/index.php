@@ -75,9 +75,9 @@ $ICONS = [
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="<?= get_base_url() ?>assets/images/hastra-logo.svg"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard · Hastra</title>
 <?php astra_page_meta('Dashboard · Hastra'); ?>
-<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
+<script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script><link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
-body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font-family:var(--font-sans)}
+body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);color:var(--text);font-family:var(--font-sans)}
 .workspace-index .bar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 6vw;border-bottom:1px solid var(--border);background:var(--topnav-bg);position:sticky;top:0;z-index:5}
 .workspace-index .brand{display:flex;align-items:center;gap:10px;color:var(--text);font:600 14px 'Share Tech Mono',monospace;letter-spacing:.1em;text-decoration:none}
 .workspace-index .brand-mark{width:28px;height:28px;display:flex;align-items:center;justify-content:center}
@@ -108,10 +108,12 @@ body.workspace-index{min-height:100vh;margin:0;background-color:var(--navy);back
 @keyframes dashIn{to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){.workspace-index .dash-card{animation:none;opacity:1;transform:none}}
 @media(max-width:560px){.workspace-index .account{display:none}}
-</style></head>
+</style><!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
+</head>
 <body class="workspace-index">
 <?php render_profile_barrier($conn); ?>
-<header class="bar">
+<header class="bar sp-glass sp-d3">
   <span class="brand"><span class="brand-mark"><svg viewBox="0 0 48 48"><defs><linearGradient id="hastra-crimson" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a1224"/><stop offset="1" stop-color="#e11d3c"/></linearGradient><linearGradient id="hastra-cobalt" x1="4" y1="45" x2="45" y2="3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M8 5H16V43H8V5ZM32 5H40V43H32V5ZM4 21H44V27H4V21Z"/><path class="hastra-primary-fill" fill="url(#hastra-crimson)" d="M24 15L30 24L24 33L18 24Z"/></svg></span>HASTRA / DASHBOARD</span>
   <div class="actions">
     <a class="account" href="<?= get_base_url() ?>workspace/user/profile"><?= htmlspecialchars($name) ?></a>

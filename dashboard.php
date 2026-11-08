@@ -16,7 +16,7 @@ if (!isset($_SESSION["user_id"])) {
 <title>Dashboard · Hastra</title>
 <?php astra_page_meta('Dashboard · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/fonts.css?v=<?= ASSET_VERSION ?>">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,11 +24,6 @@ if (!isset($_SESSION["user_id"])) {
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      radial-gradient(ellipse 80% 55% at 50% -8%, var(--accent-glow), transparent 60%),
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: auto, 40px 40px, 40px 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,6 +271,8 @@ if (!isset($_SESSION["user_id"])) {
 
   .card .footer-links a, .card .forgot-link { color: var(--accent-bright) !important; }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 
@@ -285,7 +282,7 @@ if (!isset($_SESSION["user_id"])) {
   <div class="pulse p2"></div>
 </div>
 
-<div class="card">
+<div class="card sp-glass sp-auth-card">
 
   <div class="brand">
     <div class="brand-icon">

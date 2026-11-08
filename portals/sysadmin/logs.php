@@ -68,7 +68,7 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
 <title>Activity Logs · Hastra</title>
 <?php astra_page_meta('Activity Logs · Hastra'); ?>
 <script src="<?= get_base_url() ?>core/theme.js?v=<?= ASSET_VERSION ?>"></script>
-<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-fog-boxless.css?v=<?= ASSET_VERSION ?>">
+<link rel="stylesheet" href="<?= get_base_url() ?>core/theme.css?v=<?= ASSET_VERSION ?>"><link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-contrast.css?v=<?= ASSET_VERSION ?>">
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/custom-dropdowns.css?v=<?= ASSET_VERSION ?>">
 <script src="<?= get_base_url() ?>assets/js/custom-dropdowns.js?v=<?= ASSET_VERSION ?>"></script>
 <link rel="stylesheet" href="<?= get_base_url() ?>assets/css/gooey-search.css?v=<?= ASSET_VERSION ?>">
@@ -80,25 +80,12 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   body {
     min-height: 100vh;
     background-color: var(--navy);
-    background-image:
-      linear-gradient(var(--grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: 40px 40px;
     font-family: var(--font-sans);
     color: var(--text);
     transition: var(--transition);
   }
 
-  .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-  .page-header { margin-bottom: 2rem; }
-  .page-header h1 { font-size: 24px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; margin-bottom: 4px; }
-  .page-header p { font-size: 13px; color: var(--text-dim); }
 
-  .section { background: var(--navy-card); border: 1px solid var(--border-dim); border-radius: 4px; margin-bottom: 1.5rem; overflow: hidden; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-dim); background: var(--section-header-bg); }
-  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.03em; text-transform: uppercase; }
-  .section-title svg { width: 15px; height: 15px; fill: var(--accent-bright); }
-  .section-body { padding: 1.4rem; }
 
   .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
   .badge-success  { background: rgba(34,197,94,0.1);    color: var(--green);       border: 1px solid rgba(34,197,94,0.2); }
@@ -106,14 +93,6 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   .badge-danger   { background: rgba(var(--red-rgb),0.1);    color: var(--red);         border: 1px solid rgba(var(--red-rgb),0.2); }
   .badge-info     { background: rgba(59,130,246,0.1);   color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.2); }
 
-  .tbl-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead tr { background: var(--section-header-bg); border-bottom: 1px solid var(--border-dim); }
-  th { padding: 10px 14px; text-align: left; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); font-weight: 400; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
-  tbody tr:hover { background: var(--hover-bg); }
-  tbody tr:last-child { border-bottom: none; }
-  td { padding: 11px 14px; color: var(--text); vertical-align: middle; }
   td.muted { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
   .filters { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
@@ -132,6 +111,8 @@ while ($u = mysqli_fetch_assoc($user_map_query)) {
   .btn-more { background: rgba(var(--accent-rgb),0.08); border: 1px solid var(--border); border-radius: 3px; color: var(--accent-bright); font-family: var(--font-sans); font-size: 12px; font-weight: 500; padding: 7px 20px; cursor: pointer; transition: background 0.2s; }
   .btn-more:hover { background: rgba(var(--accent-rgb),0.15); }
 </style>
+<!-- spatial UI: last in the cascade (assets/css/theme-spatial.css) -->
+<link rel="stylesheet" href="<?= get_base_url() ?>assets/css/theme-spatial.css?v=<?= ASSET_VERSION ?>">
 </head>
 <body>
 
