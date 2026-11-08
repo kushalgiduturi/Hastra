@@ -38,6 +38,20 @@ export const LANDING_ASSETS = [
   "js/ueba-calculator.js",
 ];
 
+/**
+ * The PHP app's favicon set and social preview image, served from the edge
+ * site's root (repo path -> path under public/). The home page and the app
+ * shell (index.html) link them; /favicon.ico is where browsers and crawlers
+ * look first.
+ */
+export const SITE_ICONS = {
+  "favicon.ico": "favicon.ico",
+  "assets/images/hastra-logo.svg": "icons/hastra-logo.svg",
+  "assets/images/favicon-32.png": "icons/favicon-32.png",
+  "assets/images/apple-touch-icon.png": "icons/apple-touch-icon.png",
+  "assets/images/og-preview.png": "icons/og-preview.png",
+};
+
 export function rewriteLanding(html) {
   return html
     .replace(/(["'])\.\.\/assets\//g, "$1/landing/assets/")
@@ -57,6 +71,11 @@ export function syncLanding() {
     cpSync(join(REPO, "assets", file), to);
   }
   cpSync(join(REPO, "landing-pages", "secret-pathways-assets"), join(OUT, "secret-pathways-assets"), { recursive: true });
+  for (const [from, to] of Object.entries(SITE_ICONS)) {
+    const dest = join(EDGE, "public", to);
+    mkdirSync(dirname(dest), { recursive: true });
+    cpSync(join(REPO, from), dest);
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
