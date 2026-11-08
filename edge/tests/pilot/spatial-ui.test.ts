@@ -125,8 +125,18 @@ describe("screens", () => {
   });
 
   it("loads nothing from another host except the existing reCAPTCHA script", () => {
+    // The PHP app's legal pages are the one other address allowed, and only
+    // as a link the user follows (sign-up's terms checkbox): never loaded.
+    const PHP_LEGAL = "https://hastra.onrender.com/legal/";
     for (const [f, src] of [...files("src").map((f) => [f, read(f)]), ["index.html", indexHtml]]) {
-      for (const m of src.matchAll(/https?:\/\/[^\s"'`)]+/g)) expect(m[0], f).toMatch(/^https:\/\/www\.google\.com\/recaptcha\/api\.js/);
+      for (const m of src.matchAll(/https?:\/\/[^\s"'`)]+/g)) {
+        if (m[0] === PHP_LEGAL) continue;
+        expect(m[0], f).toMatch(/^https:\/\/www\.google\.com\/recaptcha\/api\.js/);
+      }
+      if (src.includes(PHP_LEGAL)) {
+        expect(src, f).not.toMatch(/(src=|fetch\(|import\()[^\n]*(LEGAL|onrender)/);
+        expect(src, f).toMatch(/<a href=\{`\$\{LEGAL\}/);
+      }
     }
   });
 

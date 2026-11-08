@@ -22,7 +22,8 @@ export default function Otp() {
     try {
       const result = await api<{ ok: boolean; role?: string; status?: string }>("/auth/otp", { email, code, purpose });
       if (purpose === "register") {
-        nav("/signin");
+        // an enterprise sign-up is the workspace admin: open its own portal tab
+        nav(result.role === "admin" ? "/signin?portal=enterprise" : "/signin");
       } else if (result.role === "sysadmin") {
         nav("/workspace/sysadmin");
       } else {

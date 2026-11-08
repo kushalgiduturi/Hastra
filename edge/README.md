@@ -119,10 +119,35 @@ sign in → sign in again with a `sysadmin` role set directly in Supabase
 (`update users set role = 'sysadmin' where email_bindex = ...`) → visit
 `/workspace/sysadmin/roles` and `/workspace/sysadmin/logs`.
 
+## Sign-in portals and sign-up tracks
+
+Sign-in has the PHP app's two portals, Enterprise Workspace and Client
+Gateway (`?portal=enterprise` opens the first), with Google sign-in,
+show-password, remember me and forgot password. Both portals use the same
+check; the portal sets the wording and the sign-up link.
+
+Sign-up has the PHP app's four tracks (`functions/_lib/signup.ts`, shared by
+the endpoint and the screen; `?track=enterprise` opens the Enterprise tab):
+
+| Track | Asks for | On verification |
+| --- | --- | --- |
+| Client Gateway, Company | company name, size, contract / PO reference | company created, user is `client` and its IT Manager |
+| Client Gateway, Individual / Freelancer | country | "Name (Individual)" workspace, user is `client` |
+| Enterprise Workspace, Full Organization | organization name, size, leave policy | company with leave policy, user is `admin` |
+| Enterprise Workspace, Solo Enterprise | studio name, country | company created, user is `admin` |
+
+Every track also takes name, email, phone (E.164), a password meeting the
+PHP rules (including a special character) and acceptance of the terms. The
+role is granted only when the emailed code is accepted, from the track
+stored at sign-up (`users.signup`), never from the request. Run
+`supabase/migrations/0004_signup_tracks.sql` before deploying this.
+
 ## What's simplified for the pilot (tracked, not forgotten)
 
-- **reCAPTCHA** is wired server-side (`functions/_lib/recaptcha.ts`) but the
-  actual widget isn't in the `Login` form yet — it sends a placeholder token.
+- **Sign-up** leaves out three PHP pieces: the brand-logo finder (it calls an
+  outside logo service), "Sign up with Google" with a chosen track, and the
+  biometric attendance webhook secret for full organizations (attendance
+  isn't ported).
 - **Rate limiting** on login/OTP attempts beyond the 5-attempt OTP lockout
   (the PHP app's per-IP rate limiter in `core/db.php` isn't ported yet).
 - **Geo/IP reputation screening** (`core/geo_security.php`'s VPN/proxy
